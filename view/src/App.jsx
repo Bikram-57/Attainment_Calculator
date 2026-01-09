@@ -1,9 +1,13 @@
 import './App.css'
+import { NavBar } from './Components/index'
 
 function App() {
 
 	return (
-		<div>hello</div>
+		<>
+			<NavBar />
+			{/* <div className='font-bold bg-red-500'>hello</div> */}
+		</>
 	)
 }
 
