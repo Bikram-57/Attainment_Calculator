@@ -1,13 +1,16 @@
 import './App.css'
-import { NavBar } from './Components/index'
+import { NavBar, SideBar } from './Components/index'
 
 function App() {
 
 	return (
-		<>
-			<NavBar />
-			{/* <div className='font-bold bg-red-500'>hello</div> */}
-		</>
+		<div className='flex'>
+			<SideBar />
+			<div className='w-full bg-red-00 h-screen'>
+				<NavBar />
+				{/* <Outlet /> */}
+			</div>
+		</div>
 	)
 }
 
