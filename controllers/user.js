@@ -48,11 +48,7 @@ async function handleGetUserByFacultyId(req, res) {
 
     return res.status(200).json({
       success: true,
-      data: {
-        id: user.facultyId,
-        name: user.name,
-        email: user.email
-      }
+      data: user
     });
 
   } catch (error) {
