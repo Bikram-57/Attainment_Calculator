@@ -6,6 +6,7 @@ const { connectMongoDB } = require("./connection")
 
 //require routers
 const userRoute  = require('./routes/user')
+const subjectRoute  = require('./routes/subject')
 const staticRouter  = require('./routes/staticRouter')
 
 
@@ -40,6 +41,7 @@ app.set("views", path.resolve("./view"))
 // All Routes
 
 app.use("/user", userRoute)
+app.use("/subject", subjectRoute)
 app.use("/", staticRouter)
 
 

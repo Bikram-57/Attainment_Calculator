@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const urlSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     facultyId:
     {
        type: Number,
@@ -24,5 +24,5 @@ const urlSchema = new mongoose.Schema({
   }
 });
 
-const URL = mongoose.model('users', urlSchema);
+const URL = mongoose.model('users', userSchema);
 module.exports = URL;
