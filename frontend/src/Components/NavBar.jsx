@@ -2,11 +2,11 @@ import React from 'react'
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaUserAlt } from "react-icons/fa";
 
-function NavBar() {
+function NavBar({toggleSideBar}) {
     return (
-        <div className='bg-gray-100 h-[60px] px-4 flex justify-between items-center'>
+        <div className='bg-gray-50 h-[60px] px-4 flex justify-between items-center font-semibold'>
             <div className='h-full flex items-center gap-7 mx-4'>
-                <RxHamburgerMenu className='h-full w-[25px]' />
+                <RxHamburgerMenu className='h-full w-[25px] cursor-pointer' onClick={toggleSideBar} />
                 <div className='text-blue-900'>
                     Manage Faculty
                 </div>
