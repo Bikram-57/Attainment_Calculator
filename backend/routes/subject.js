@@ -2,17 +2,18 @@ const express = require('express')
 
 const {
     handleGenerateNewSubject,
-    handleGetSubjectBySubjectId,
     handleUpdateSubject,
+    handleGetSubjectBySubjectId,
+    handleGetAllSubject,
     handleDeleteSubject
- } = require('../controllers/subject')
+} = require('../controllers/subject')
 
- const router = express.Router()
+const router = express.Router()
 
 router.post('/', handleGenerateNewSubject)
-router.get('/:subjectId', handleGetSubjectBySubjectId)
-router.put('/:subjectId', handleUpdateSubject)
-router.delete('/:subjectId', handleDeleteSubject)
-
+router.put('/:id', handleUpdateSubject)
+router.get('/:id', handleGetSubjectBySubjectId)
+router.get('/', handleGetAllSubject)
+router.delete('/:id', handleDeleteSubject)
 
 module.exports = router

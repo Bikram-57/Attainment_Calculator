@@ -1,141 +1,161 @@
-const Subject = require('../models/subject')
+const Subject = require('../models/subject');
 
 async function handleGenerateNewSubject(req, res) {
+
     try {
         const { subjectId, subjectName, course } = req.body;
         console.log(req.body);
         
-        await Subject.create({
-           subjectId,
-           subjectName,
-           course
-        })
 
-        return res.status(201)
-        .json({
+        const newSubject = await Subject.create({
+            subjectId,
+            subjectName,
+            course
+        });
+
+        res.status(201).json({
             success: true,
-            message: "Subject created successfully",
-              data: {
-                subjectId: subjectId,
-                subjectName: subjectName,
-                course: course
-              }
+            data: newSubject
+        });
+
+    } catch (error) {
+        // This catches the '11000' error so the NODE SERVER DOES NOT CRASH
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: `The Subject ID '${req.body.subjectId}' is already in the database.`
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Server Error",
+            error: error.message
         });
     }
-     catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Error saving data",
-      error: error.message
-    });
-  }
 };
 
-async function handleGetSubjectBySubjectId(req, res) {
-  try {
-    const { subjectId } = req.params;
-
-    const subject = await Subject.findOne({ subjectId });
-
-    if (!subject) {
-      return res.status(404).json({
-        success: false,
-        message: "Subject not found"
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: subject
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error fetching subject",
-      error: error.message
-    });
-  }
-}
-
-
 async function handleUpdateSubject(req, res) {
-  try {
-    const { subjectId } = req.params;
-    const { subjectName, course } = req.body;
 
-    const updatedSubject = await Subject.findOneAndUpdate(
-      { subjectId },              
-      { subjectName, course },     
-      {
-        new: true,                
-        runValidators: true       
-      }
-    );
+    try {
+        const { id } = req.params; // Get code from URL
+        const { subjectName, course } = req.body;
 
-    if (!updatedSubject) {
-      return res.status(404).json({
-        success: false,
-        message: "Subject not found"
-      });
+        // Find by subjectCode and update name/course
+        const updatedSubject = await Subject.findOneAndUpdate(
+            { subjectId: id.toUpperCase() }, // Search criteria
+            { subjectName, course },            // Data to update
+            {
+                new: true,           // Return the updated document
+                runValidators: true  // Ensure schema rules are followed
+            }
+        );
+
+        if (!updatedSubject) {
+            return res.status(404).json({
+                success: false,
+                message: `Subject with code ${id} not found.`
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Subject updated successfully",
+            data: updatedSubject
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
+};
 
-    res.status(200).json({
-      success: true,
-      message: "Subject updated successfully",
-      data: updatedSubject
-    });
+// @desc    Get all subjects
+// @route   GET /api/subjects
+async function handleGetAllSubject(req, res) {
 
-  } catch (error) {
-
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "Subject ID already exists"
-      });
+    try {
+        const subjects = await Subject.find();
+        res.status(200).json({
+            success: true,
+            count: subjects.length,
+            data: subjects
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
     }
+};
 
-    res.status(500).json({
-      success: false,
-      message: "Failed to update subject",
-      error: error.message
-    });
-  }
-}
+// @desc    Get a single subject by Subject Code
+// @route   GET /api/subjects/:code
+async function handleGetSubjectBySubjectId(req, res) {
+
+    try {
+        // We use .findOne because subjectCode is unique
+        const subject = await Subject.findOne({
+            subjectId: req.params.id.toUpperCase()
+        });
+
+        if (!subject) {
+            return res.status(404).json({
+                success: false,
+                message: "Subject not found"
+            });
+        }
+
+        res.status(200).json({ success: true, data: subject });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+// @desc    Delete a subject
+// @route   DELETE /api/subjects/:id
 
 
 async function handleDeleteSubject(req, res) {
-  try {
-    const { subjectId } = req.params;
 
-    const deletedSubject = await Subject.findOneAndDelete({ subjectId });
+    try {
+        const { id } = req.params;
 
-    if (!deletedSubject) {
-      return res.status(404).json({
-        success: false,
-        message: "Subject not found"
-      });
+        // Find by subjectId and delete
+        const deletedSubject = await Subject.findOneAndDelete({ 
+            subjectId: id.toUpperCase() 
+        });
+
+        // If the subject doesn't exist
+        if (!deletedSubject) {
+            return res.status(404).json({
+                success: false,
+                message: `Subject with ID ${id} not found.`
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Subject deleted successfully",
+            data: deletedSubject // Returns the deleted data one last time
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Server Error",
+            error: error.message
+        });
     }
+};
 
-    res.status(200).json({
-      success: true,
-      message: "Subject deleted successfully",
-      data: deletedSubject
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete subject",
-      error: error.message
-    });
-  }
+module.exports = {
+    handleGenerateNewSubject,
+    handleUpdateSubject,
+    handleGetAllSubject,
+    handleGetSubjectBySubjectId,
+    handleDeleteSubject
 }
 
-
-module.exports = { 
-  handleGenerateNewSubject, 
-  handleGetSubjectBySubjectId,
-  handleUpdateSubject,
-  handleDeleteSubject,
-}
+// handleGetSubjectBySubjectId
+// handleUpdateSubject
+// handleDeleteSubject
