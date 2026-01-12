@@ -2,17 +2,21 @@ const express = require('express')
 
 const {
     handleGenerateNewUser,
+    handleEditUserByFacultyId,
     handleGetUserByFacultyId,
     handleDeleteUserByFacultyId,
-    handleEditUserByFacultyId
+    handleGetAllUsers,
 } = require('../controllers/user')
+
+const passwordHash = require('../middleware/PasswordHash')
 
 const router = express.Router();
 
-router.post('/', handleGenerateNewUser)
-router.get('/id/:facultyId', handleGetUserByFacultyId);
-router.delete('/id/:facultyId', handleDeleteUserByFacultyId);
-router.put('/id/:facultyId', handleEditUserByFacultyId);
+router.post('/', passwordHash, handleGenerateNewUser)
+router.put('/:id', handleEditUserByFacultyId);
+router.get('/:id', handleGetUserByFacultyId);
+router.delete('/:id', handleDeleteUserByFacultyId);
+router.get('/', handleGetAllUsers);
 
 
 module.exports = router;
