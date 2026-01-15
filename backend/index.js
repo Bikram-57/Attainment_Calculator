@@ -9,6 +9,7 @@ const { connectMongoDB } = require("./connection")
 const userRoute  = require('./routes/user')
 const staticRouter  = require('./routes/staticRouter')
 const subjectRoute  = require('./routes/subject')
+const marks  = require('./routes/marks')
 
 
 
@@ -44,6 +45,7 @@ app.set("views", path.resolve("./view"))
 app.use("/user", userRoute)
 app.use("/", staticRouter)
 app.use("/sub", subjectRoute)
+app.use("/mark", marks)
 
 
 app.listen(PORT, () => {
