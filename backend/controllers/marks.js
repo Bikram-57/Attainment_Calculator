@@ -1,76 +1,84 @@
 const mongoose = require('mongoose');
+const Mark = require('../models/marks');
 const xlsx = require('xlsx');
 const fs = require('fs');
 
-// --- UPLOAD CONTROLLER ---
-const handleExcelData = async (req, res) => {
+async function handleUploadMarks(req, res) {
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: "No file uploaded" });
-        }
+        if (!req.file) return res.status(400).json({ error: "No file uploaded." });
 
-        // 1. Generate Collection Name from Filename
-        // Example: "Quiz 1.xlsx" -> "Quiz_1"
-        const collectionName = req.file.originalname
-            .replace(/\.[^/.]+$/, "")  // Remove extension
-            .replace(/\s+/g, '_');     // Replace spaces with underscores
+        const { subjectId, academicYear } = req.body;
+        if (!subjectId) return res.status(400).json({ error: "subjectId is required to name the collection." });
 
-        // 2. Read the Excel File
         const workbook = xlsx.readFile(req.file.path);
-        const sheetName = workbook.SheetNames[0]; // Gets the first sheet
-        const sheet = workbook.Sheets[sheetName];
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1 });
 
-        // 3. Convert to "Matrix" (Array of Arrays)
-        // 'header: 1' grabs the data row-by-row. This is CRITICAL for your nested headers.
-        // 'defval: ""' keeps empty cells as empty strings so columns don't shift.
-        const gridData = xlsx.utils.sheet_to_json(sheet, { 
-            header: 1, 
-            defval: "",
-            blankrows: false 
+        const mainHeaders = rawData[0];
+        const coHeaders = rawData[1];
+        const dataRows = rawData.slice(2);
+
+        let currentExam = "";
+
+        const finalData = dataRows.map(row => {
+            let studentPerformance = {};
+            let regNo = "";
+            let examTotals = {};
+
+            row.forEach((cell, i) => {
+                if (mainHeaders[i]) {
+                    currentExam = mainHeaders[i].toString().trim().replace(/\s+/g, '_');
+                }
+                const coLabel = coHeaders[i] ? coHeaders[i].toString().trim() : "";
+
+                // Detection for Reg No
+                if (coLabel.toLowerCase().includes('reg') || (mainHeaders[i] && mainHeaders[i].toLowerCase().includes('reg')) || i === 0) {
+                    if (!regNo) regNo = cell;
+                } else if (coLabel) {
+                    const value = (cell === 'AB' || !cell) ? 0 : Number(cell);
+                    const dynamicKey = `${currentExam}_${coLabel}`;
+                    studentPerformance[dynamicKey] = cell === 'AB' ? 'AB' : value;
+
+                    if (coLabel.toLowerCase().startsWith('co')) {
+                        examTotals[currentExam] = (examTotals[currentExam] || 0) + value;
+                    }
+                }
+            });
+
+            Object.keys(examTotals).forEach(exam => {
+                studentPerformance[`${exam}_Total`] = examTotals[exam];
+            });
+
+            return {
+                regNo: regNo ? String(regNo).trim() : null,
+                academicYear: academicYear,
+                data: studentPerformance,
+                uploadedAt: new Date()
+            };
         });
 
-        // 4. Store in a NEW Dynamic Collection
-        // We access the raw MongoDB connection to create a collection on the fly
-        const db = mongoose.connection.db;
-        
-        // We store the grid data as one document in this new collection
-        await db.collection(collectionName).insertOne({ data: gridData });
+        const validEntries = finalData.filter(d => d.regNo);
 
-        // 5. Cleanup Temp File
-        fs.unlinkSync(req.file.path);
-
-        res.status(200).json({ 
-            message: "File uploaded successfully!", 
-            collection: collectionName,
-            rows: gridData.length 
-        });
-
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// --- FETCH CONTROLLER ---
-const getData = async (req, res) => {
-    try {
-        // We need to know WHICH collection to fetch from
-        // usage: /api/data?collection=Quiz_1
-        const { collection } = req.query;
-
-        if (!collection) {
-            return res.status(400).json({ message: "Collection name required in query" });
+        if (validEntries.length > 0) {
+            // --- THE DYNAMIC PART ---
+            // Instead of Mark.insertMany, we target the collection by the subjectId variable
+            const dynamicCollection = mongoose.connection.db.collection(subjectId);
+            await dynamicCollection.insertMany(validEntries);
+            console.log(`Saved to collection: ${subjectId}`);
         }
 
-        const db = mongoose.connection.db;
+        if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
 
-        // Find the single document holding our sheet
-        const result = await db.collection(collection).findOne({});
+        res.status(200).json({
+            message: `Data stored successfully in collection: ${subjectId}`,
+            count: validEntries.length
+        });
 
-        // Return just the 'data' array so the frontend gets a clean List of Lists
-        res.status(200).json(result ? result.data : []);
     } catch (error) {
+        if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
         res.status(500).json({ error: error.message });
     }
 };
 
-module.exports = { handleExcelData, getData };
+
+module.exports = { handleUploadMarks };

@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 
-const ExcelSchema = new mongoose.Schema({
-    data: []  // <--- This tells Mongo: "I am storing a big array here"
-}, { strict: false });
+const MarkSchema = new mongoose.Schema({
+    subjectId: { type: String, required: true },
+    academicYear: { type: String, required: true },
+    regNo: { type: String, required: true },
+    // This field stores all your CO columns as they are in the sheet
+    data: { type: mongoose.Schema.Types.Mixed, default: {} }
+}, { timestamps: true });
 
-module.exports = mongoose.model('marks', ExcelSchema);
+module.exports = mongoose.model('Mark', MarkSchema);
