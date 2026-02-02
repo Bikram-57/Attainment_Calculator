@@ -10,8 +10,7 @@ function FacultyHeader() {
                 <input
                     type='text'
                     placeholder='Search by id or name'
-                    value=''
-                    // className='border border-gray-300 rounded-md px-3 py-1'
+                    
                     className='border-r border-gray-300 px-3 py-1 w-[250px]'
                 />
                 <div className='px-3 py-1 cursor-pointer'>

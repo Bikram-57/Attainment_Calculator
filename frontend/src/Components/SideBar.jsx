@@ -11,6 +11,7 @@ import { ImStatsBars2 } from "react-icons/im";
 import { BsCardChecklist } from "react-icons/bs";
 import { HiMiniUsers } from "react-icons/hi2";
 import { FaGraduationCap } from "react-icons/fa6";
+import { NavLink } from 'react-router-dom';
 
 function SideBar({isOpen}) {
 
@@ -66,19 +67,29 @@ function SideBar({isOpen}) {
                             <ImStatsBars2 />
                             <div>Manage Subjects</div>
                         </div>
-                        <div className='flex items-center gap-1 px-6 my-4'>
+                        {/* <div className='flex items-center gap-1 px-6 my-4'>
                             <BsCardChecklist />
                             <div>Assign Subjects</div>
-                        </div>
+                        </div> */}
+                        <NavLink to='/' className='flex items-center gap-1 px-6 my-4'>
+                            <BsCardChecklist />
+                            <div>Assign Subjects</div>
+                        </NavLink>
                     </div>
                     <div className='flex items-center gap-1 my-4'>
                         <CiMenuKebab />
                         <div>Faculty</div>
                     </div>
-                    <div className='flex items-center gap-1 px-6'>
+                    <NavLink
+                        to='/users'
+                        className={({ isActive }) => (
+                            `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'}
+                            flex items-center gap-1 px-6 cursor-pointer`
+                        )}
+                    >
                         <HiMiniUsers />
                         <div>Manage Faculty</div>
-                    </div>
+                    </NavLink>
                 </div>
             </div>
         </div>

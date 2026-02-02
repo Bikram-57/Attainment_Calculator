@@ -12,17 +12,18 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: '/',
-				element: <Faculty />
+				// element: <Faculty />
 			},
-			// {
-			// 	path: ''
-			// }
+			{
+				path: 'users/',
+				element: <Faculty />
+			}
 		]
 	}
 ])
 
 createRoot(document.getElementById('root')).render(
-	<StrictMode>
+	// <StrictMode>
 		<RouterProvider router={router} />
-	</StrictMode>,
+	// </StrictMode>,
 )
