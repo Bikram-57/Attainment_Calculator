@@ -10,7 +10,7 @@ const userRoute  = require('./routes/user')
 const staticRouter  = require('./routes/staticRouter')
 const subjectRoute  = require('./routes/subject')
 const marks  = require('./routes/marks')
-// const coAttainment = require('./routes/co_attainment')
+// const calculatedMarks = require('./routes/calculatedMarks')
 
 
 
@@ -47,7 +47,7 @@ app.use("/user", userRoute)
 app.use("/", staticRouter)
 app.use("/sub", subjectRoute)
 app.use("/mark", marks)
-// app.use("/coAttainment", coAttainment)
+// app.use("/calculatedMarks", calculatedMarks)
 
 
 app.listen(PORT, () => {
