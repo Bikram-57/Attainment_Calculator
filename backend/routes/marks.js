@@ -49,111 +49,40 @@
 
 
 
-// // const express = require('express');
-// // const router = express.Router();
-// // const multer = require('multer');
-// // const fs = require('fs');
-
-// // // Import both controllers
-// // const { handleUploadMarks } = require('../controllers/marks'); // Your existing one
-// // const { handleCalculatedMarks } = require('../controllers/calculatedMarks'); // The new one
-
-// // const upload = multer({ dest: 'uploads/' });
-
-// // router.post('/upload', upload.single('file'), async (req, res) => {
-// //     try {
-// //         if (!req.file) return res.status(400).json({ error: "File required" });
-
-// //         // Hit BOTH controllers at the SAME TIME
-// //         await Promise.all([
-// //             handleUploadMarks(req),
-// //             handleCalculatedMarks(req)
-// //         ]);
-
-// //         // Delete file after both are done
-// //         if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-
-// //         res.status(200).json({ 
-// //             success: true, 
-// //             message: "Raw and Calculated data saved in parallel!" 
-// //         });
-
-// //     } catch (error) {
-// //         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-// //         res.status(500).json({ error: error.message });
-// //     }
-// // });
-
-// // module.exports = router;
-
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const fs = require('fs');
 
-// 1. Import both independent controllers
-const { handleUploadMarks } = require('../controllers/marks');
-const { handleCalculatedMarks } = require('../controllers/calculatedMarks');
+// Import both controllers
+const { handleUploadMarks } = require('../controllers/marks'); // Your existing one
+const { handleCalculatedMarks } = require('../controllers/calculatedMarks'); // The new one
 
 const upload = multer({ dest: 'uploads/' });
 
-/**
- * @route   POST /api/marks/upload-all
- * @desc    Single hit triggers both RAW and CALCULATION tasks
- */
-router.post('/upload-all', upload.single('file'), async (req, res) => {
+router.post('/upload', upload.single('file'), async (req, res) => {
     try {
-        if (!req.file) return res.status(400).json({ error: "No Excel file provided." });
+        if (!req.file) return res.status(400).json({ error: "File required" });
 
-        console.log("Upload received. Starting parallel tasks...");
-
-        // 2. PARALLEL EXECUTION
-        // Both tasks start at the same time and use the same 'req' object
+        // Hit BOTH controllers at the SAME TIME
         await Promise.all([
-            handleUploadMarks(req),      // Task 1: Raw Storage
-            handleCalculatedMarks(req) // Task 2: OBE Calculation
+            handleUploadMarks(req),
+            handleCalculatedMarks(req)
         ]);
 
-        // 3. Cleanup the temp file after both are done
-        if (fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
-        }
+        // Delete file after both are done
+        if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
 
         res.status(200).json({ 
             success: true, 
-            message: "Live processing complete! Raw marks and Calculated data are both saved." 
+            message: "Raw and Calculated data saved in parallel!" 
         });
 
     } catch (error) {
-        // Cleanup file if something crashes
-        if (req.file && fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
-        }
-        res.status(500).json({ error: "Parallel Task Failed: " + error.message });
+        if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+        res.status(500).json({ error: error.message });
     }
 });
 
-
-// try {
-//         // We use Promise.all to wait for both controllers to finish their DB work
-//         await Promise.all([
-//             saveRawMarks(req),
-//             saveCalculatedData(req)
-//         ]);
-
-//         // Only send ONE response here
-//         return res.status(200).json({ 
-//             success: true, 
-//             message: "Both tasks finished properly!" 
-//         });
-
-//     } catch (error) {
-//         // If either one fails, it comes here
-//         console.error(error);
-//         if (!res.headersSent) {
-//             return res.status(500).json({ error: error.message });
-//         }
-//     }
-// });
-
 module.exports = router;
+
