@@ -1,4 +1,5 @@
 const Mark = require('../models/marks');
+
 const xlsx = require('xlsx');
 
 /**
@@ -114,51 +115,60 @@ async function handleUploadMarks(req, res, isPipeline = false) {
 }
 
 
-async function getRawMarks(req, res) {
+
+/**
+ * getRawMarksData
+ * Retrieves the exact student scores and max marks as uploaded from Excel.
+ */
+async function getRawMarksData(req, res) {
     try {
         const { subjectId, academicYear, course } = req.query;
 
-        // 1. Check if all required parameters are present
+        // 1. Validate Input
         if (!subjectId || !academicYear || !course) {
             return res.status(400).json({ 
                 success: false, 
-                message: "Missing subjectId, academicYear, or course in URL parameters." 
+                message: "Query parameters 'subjectId', 'academicYear', and 'course' are required." 
             });
         }
 
-        // 2. Fetch the document
-        // We use .select('actualMarks maxMarks') to strictly get the raw data
-        const data = await Mark.findOne({
+        // 2. Query the 'marks' collection
+        // .lean() makes the query faster by returning a plain JS object
+        const result = await Mark.findOne({
             subjectId: subjectId.toUpperCase(),
             academicYear: academicYear,
             course: course.toUpperCase()
-        }).select('actualMarks maxMarks facultyId').lean();
+        }).select('actualMarks maxMarks facultyId uploadedAt').lean();
 
-        // 3. Handle 'Not Found'
-        if (!data) {
+        // 3. Check if document exists
+        if (!result) {
             return res.status(404).json({ 
                 success: false, 
-                message: "No raw marks found for this subject." 
+                message: "No raw marks found for the specified subject and year." 
             });
         }
 
-        // 4. Return the data
+        // 4. Send the raw data
         return res.status(200).json({
             success: true,
-            count: data.actualMarks.length,
-            maxMarks: data.maxMarks, // "Out of" marks for headers
-            studentData: data.actualMarks // This is the array of scores
+            subject: subjectId.toUpperCase(),
+            maxMarks: result.maxMarks,       // Columns for your Table Header
+            students: result.actualMarks,    // Rows for your Table Body
+            uploadedAt: result.uploadedAt
         });
 
     } catch (error) {
-        console.error("Error fetching raw marks:", error.message);
-        return res.status(500).json({ success: false, error: "Internal Server Error" });
+        console.error("API Error (getRawMarksData):", error.message);
+        return res.status(500).json({ 
+            success: false, 
+            error: "Internal Server Error while fetching raw data." 
+        });
     }
 }
 
-// module.exports = { getRawMarks };
+// module.exports = { getRawMarksData, ...others };
 
 module.exports = { 
     handleUploadMarks,
-    getRawMarks
+    getRawMarksData
 };

@@ -7,10 +7,12 @@ const { handleUploadMarks } = require('../controllers/marks');
 const { handleCalculatedMarks } = require('../controllers/calculatedMarks');
 const { handleFinalAttainment } = require('../controllers/finalAttainment');
 
-const { getRawMarks } = require('../controllers/marks');
 
-// Usage: GET /api/marks/get-raw-marks?subjectId=CA2313&academicYear=2025-26&course=BCA
-router.get('/get-raw-marks', getRawMarks);
+const { getRawMarksData } = require('../controllers/marks');
+const { getCalculatedWithStudentMarks } = require('../controllers/calculatedMarks');
+const { getFinalAttainmentData } = require('../controllers/finalAttainment');
+
+
 
 
 // 1. Multer Configuration (Using Memory Storage to avoid "Path" errors)
@@ -65,7 +67,8 @@ router.post('/upload-raw', upload.single('excelFile'), async (req, res) => {
 
 
 
-// Route to get original uploaded marks (Non-calculated)
-router.get('/get-raw-marks', getRawUploadedData);
+router.get('/raw-data', getRawMarksData);
+router.get('/get-calculations', getCalculatedWithStudentMarks);
+router.get('/get-final-attainment', getFinalAttainmentData);
 
 module.exports = router;
