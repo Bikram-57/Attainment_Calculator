@@ -1,194 +1,164 @@
-const mongoose = require('mongoose');
 const Mark = require('../models/marks');
 const xlsx = require('xlsx');
-const fs = require('fs');
 
-async function handleUploadMarks(req, res) {
+/**
+ * handleUploadMarks
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Boolean} isPipeline - If true, returns data instead of sending a JSON response
+ */
+async function handleUploadMarks(req, res, isPipeline = false) {
+    try {
+        if (!req.file || !req.file.buffer) {
+            throw new Error("No file uploaded or file buffer missing.");
+        }
 
-// try {
-//         if (!req.file) return res.status(400).json({ error: "No file uploaded." });
-
-//         // These credentials now strictly control the override logic
-//         const { subjectId, academicYear, facultyId } = req.body;
-
-//         const workbook = xlsx.readFile(req.file.path);
-//         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-//         const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: null });
-
-//         const mainHeaders = rawData[0] || []; 
-//         const coHeaders = rawData[1] || [];
-        
-//         // Find the "Max Marks/CO" row at the bottom
-//         const maxMarksRow = rawData.find(row => 
-//             row && row[0] && row[0].toString().trim() === "Max Marks/CO"
-//         );
-
-//         if (!maxMarksRow) throw new Error("REJECTED: Could not find 'Max Marks/CO' row.");
-
-//         const maxMarksIndex = rawData.indexOf(maxMarksRow);
-//         const dataRows = rawData.slice(2, maxMarksIndex); 
-
-//         let currentExam = "";
-//         let headerMap = [];
-//         let maxMarksMap = {};
-//         let regNoIndex = 0;
-
-//         for (let i = 0; i < coHeaders.length; i++) {
-//             if (mainHeaders[i] && mainHeaders[i].toString().trim() !== "") {
-//                 currentExam = mainHeaders[i].toString().trim().replace(/\s+/g, '_');
-//             }
-//             const coLabel = coHeaders[i] ? coHeaders[i].toString().trim() : "";
-
-//             if (coLabel.toLowerCase().includes('reg') || (mainHeaders[i] && mainHeaders[i].toString().toLowerCase().includes('reg'))) {
-//                 regNoIndex = i;
-//             } 
-//             else if (currentExam && coLabel.toLowerCase().startsWith('co')) {
-//                 const key = `${currentExam}_${coLabel}`;
-//                 headerMap[i] = key;
-//                 maxMarksMap[key] = Number(maxMarksRow[i]) || 0;
-//             }
-//         }
-
-//         const studentsBatch = dataRows.map((row) => {
-//             if (!row || row.length === 0) return null;
-//             let studentMarks = {};
-//             const regNo = row[regNoIndex];
-
-//             if (regNo && regNo.toString().trim() !== "") {
-//                 headerMap.forEach((key, i) => {
-//                     if (key) {
-//                         const cell = row[i];
-//                         studentMarks[key] = (cell === 'AB' || cell === null || cell === "") ? 0 : Number(cell);
-//                     }
-//                 });
-//                 return { regNo: String(regNo).trim(), marks: studentMarks };
-//             }
-//             return null;
-//         }).filter(s => s !== null && Object.keys(s.marks).length > 0);
-
-//         // --- THE OVERRIDE FEATURE: MATCH BY SUBJECT AND YEAR ---
-//         await Mark.findOneAndUpdate(
-//             { 
-//                 subjectId: subjectId, 
-//                 academicYear: academicYear 
-//             }, 
-//             { 
-//                 $set: { 
-//                     facultyId, 
-//                     maxMarks: maxMarksMap, 
-//                     actualMarks: studentsBatch,
-//                     uploadedAt: new Date() 
-//                 } 
-//             },
-//             { upsert: true, new: true }
-//         );
-
-//         if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-//         res.status(200).json({ 
-//             success: true, 
-//             message: `Data for ${subjectId} in ${academicYear} has been overridden/saved.` 
-//         });
-
-//     } catch (error) {
-//         if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-//         res.status(400).json({ success: false, error: error.message });
-//     }
-// };
-
-
-try {
-        if (!req.file) return res.status(400).json({ error: "No file uploaded." });
-
-        // Credentials for matching and overriding
         const { subjectId, academicYear, course, facultyId } = req.body;
 
-        if (!['Bca', 'Mca'].includes(course)) {
-            throw new Error("REJECTED: Course must be either 'Bca' or 'Mca'.");
-        }
-
-        const workbook = xlsx.readFile(req.file.path);
+        // 1. Read Excel from Buffer (Memory Storage)
+        const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: null });
+        const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: 0 });
 
-        const mainHeaders = rawData[0] || []; 
-        const coHeaders = rawData[1] || [];
-        
-        // Find the "Max Marks/CO" row at the bottom
-        const maxMarksRow = rawData.find(row => 
-            row && row[0] && row[0].toString().trim() === "Max Marks/CO"
-        );
-
-        if (!maxMarksRow) throw new Error("REJECTED: Could not find 'Max Marks/CO' row.");
-
-        const maxMarksIndex = rawData.indexOf(maxMarksRow);
-        const dataRows = rawData.slice(2, maxMarksIndex); 
-
+        // 2. Identify Headers (Row 0: Exams, Row 1: COs)
+        const row0 = rawData[0]; 
+        const row1 = rawData[1]; 
         let currentExam = "";
-        let headerMap = [];
-        let maxMarksMap = {};
-        let regNoIndex = 0;
+        const dynamicMapping = [];
 
-        for (let i = 0; i < coHeaders.length; i++) {
-            if (mainHeaders[i] && mainHeaders[i].toString().trim() !== "") {
-                currentExam = mainHeaders[i].toString().trim().replace(/\s+/g, '_');
+        // Dynamic Scan for 1-5 COs per Exam
+        row1.forEach((cell, index) => {
+            if (row0[index] && String(row0[index]).trim() !== "0") {
+                currentExam = String(row0[index]).trim().replace(/\s+/g, '_');
             }
-            const coLabel = coHeaders[i] ? coHeaders[i].toString().trim() : "";
+            const label = String(cell).trim().toUpperCase();
+            if (label.startsWith("CO")) {
+                dynamicMapping.push({ index, key: `${currentExam}_${label}` });
+            }
+        });
 
-            if (coLabel.toLowerCase().includes('reg') || (mainHeaders[i] && mainHeaders[i].toString().toLowerCase().includes('reg'))) {
-                regNoIndex = i;
+        // 3. Find Footer (Max Marks)
+        const maxMarksIndex = rawData.findIndex(row => 
+            row && row[0] && String(row[0]).trim().toLowerCase().includes("max marks")
+        );
+        if (maxMarksIndex === -1) throw new Error("Format Error: 'Max Marks/CO' row not found.");
+
+        const maxMarksRow = rawData[maxMarksIndex];
+        const maxMarksMap = {};
+        dynamicMapping.forEach(col => { 
+            maxMarksMap[col.key] = Number(maxMarksRow[col.index]) || 0; 
+        });
+
+        // 4. Map Student Data (Handles duplicates within the file)
+        const dataRows = rawData.slice(2, maxMarksIndex);
+        const uniqueStudents = {};
+        
+        dataRows.forEach(row => {
+            const regNo = String(row[0]).trim();
+            if (regNo && regNo !== "0") {
+                const marksMap = {};
+                dynamicMapping.forEach(col => {
+                    marksMap[col.key] = Number(row[col.index]) || 0;
+                });
+                uniqueStudents[regNo] = { regNo, marks: marksMap };
+            }
+        });
+        const studentsBatch = Object.values(uniqueStudents);
+
+        // 5. Database Upsert
+        const query = { 
+            subjectId: subjectId.toUpperCase(), 
+            academicYear, 
+            course: course.toUpperCase() 
+        };
+
+        const updateData = { 
+            $set: { 
+                facultyId, 
+                maxMarks: maxMarksMap, 
+                actualMarks: studentsBatch,
+                uploadedAt: new Date() 
             } 
-            else if (currentExam && coLabel.toLowerCase().startsWith('co')) {
-                const key = `${currentExam}_${coLabel}`;
-                headerMap[i] = key;
-                maxMarksMap[key] = Number(maxMarksRow[i]) || 0;
-            }
+        };
+
+        const result = await Mark.findOneAndUpdate(query, updateData, { 
+            upsert: true, 
+            new: true, 
+            includeResultMetadata: true 
+        });
+
+        const isUpdate = result.lastErrorObject.updatedExisting;
+
+        // --- PIPELINE LOGIC: PREVENT DOUBLE HEADERS ---
+        if (isPipeline) {
+            return isUpdate; // Return status to the router
         }
 
-        const studentsBatch = dataRows.map((row) => {
-            if (!row || row.length === 0) return null;
-            let studentMarks = {};
-            const regNo = row[regNoIndex];
-
-            if (regNo && regNo.toString().trim() !== "") {
-                headerMap.forEach((key, i) => {
-                    if (key) {
-                        const cell = row[i];
-                        studentMarks[key] = (cell === 'AB' || cell === null || cell === "") ? 0 : Number(cell);
-                    }
-                });
-                return { regNo: String(regNo).trim(), marks: studentMarks };
-            }
-            return null;
-        }).filter(s => s !== null && Object.keys(s.marks).length > 0);
-
-        // --- OVERRIDE FEATURE: MATCH BY SUBJECT, YEAR, AND COURSE ---
-        await Mark.findOneAndUpdate(
-            { 
-                subjectId: subjectId, 
-                academicYear: academicYear,
-                course: course 
-            }, 
-            { 
-                $set: { 
-                    facultyId, 
-                    maxMarks: maxMarksMap, 
-                    actualMarks: studentsBatch,
-                    uploadedAt: new Date() 
-                } 
-            },
-            { upsert: true, new: true }
-        );
-
-        if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-        res.status(200).json({ 
+        // Only send response if called directly as a single route
+        return res.status(200).json({ 
             success: true, 
-            message: `Data for ${subjectId} (${course} - ${academicYear}) updated successfully.` 
+            message: isUpdate 
+                ? `Marks for ${subjectId} updated successfully.` 
+                : `New marks for ${subjectId} uploaded successfully.`,
+            count: studentsBatch.length
         });
 
     } catch (error) {
-        if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-        res.status(400).json({ success: false, error: error.message });
+        console.error("Marks Controller Error:", error.message);
+        
+        // If in pipeline, let the router handle the error response
+        if (isPipeline) throw error; 
+        
+        return res.status(400).json({ success: false, error: error.message });
     }
-};
+}
 
-module.exports = { handleUploadMarks };
+
+async function getRawMarks(req, res) {
+    try {
+        const { subjectId, academicYear, course } = req.query;
+
+        // 1. Check if all required parameters are present
+        if (!subjectId || !academicYear || !course) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Missing subjectId, academicYear, or course in URL parameters." 
+            });
+        }
+
+        // 2. Fetch the document
+        // We use .select('actualMarks maxMarks') to strictly get the raw data
+        const data = await Mark.findOne({
+            subjectId: subjectId.toUpperCase(),
+            academicYear: academicYear,
+            course: course.toUpperCase()
+        }).select('actualMarks maxMarks facultyId').lean();
+
+        // 3. Handle 'Not Found'
+        if (!data) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "No raw marks found for this subject." 
+            });
+        }
+
+        // 4. Return the data
+        return res.status(200).json({
+            success: true,
+            count: data.actualMarks.length,
+            maxMarks: data.maxMarks, // "Out of" marks for headers
+            studentData: data.actualMarks // This is the array of scores
+        });
+
+    } catch (error) {
+        console.error("Error fetching raw marks:", error.message);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+}
+
+// module.exports = { getRawMarks };
+
+module.exports = { 
+    handleUploadMarks,
+    getRawMarks
+};
