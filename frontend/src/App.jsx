@@ -7,12 +7,12 @@ function App() {
 	const [isSideBarOpen, setIsSideBarOpen] = useState(true)
 
 	return (
-		<div className='flex'>
+		<div className='flex h-screen'>
 			<SideBar isOpen={isSideBarOpen}/>
-			<div className='w-full bg-gray-300 h-screen'>
+			<div className='flex flex-col w-full bg-gray-300'>
 			{/* <div className="flex flex-col flex-1 bg-gray-300"> */}
 				<NavBar toggleSideBar={() => setIsSideBarOpen(prev => !prev)}/>
-				<div className='bg-white m-4 rounded-md'>
+				<div className='bg-white flex-1 m-4 rounded-md overflow-hidden'>
 					<Outlet />
 				</div>
 				{/* Add a Footer component */}

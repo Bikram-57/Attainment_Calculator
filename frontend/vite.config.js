@@ -11,7 +11,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			'/user/': 'http://localhost:8000',
-			// '/user': 'http://localhost:8000',
+			'/sub/': 'http://localhost:8000',
 			// '/user': 'http://localhost:8000',
 			// '/user': 'http://localhost:8000',
 		},

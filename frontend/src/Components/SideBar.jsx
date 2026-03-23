@@ -13,7 +13,7 @@ import { HiMiniUsers } from "react-icons/hi2";
 import { FaGraduationCap } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
 
-function SideBar({isOpen}) {
+function SideBar({ isOpen }) {
 
     return (
         // <div className={`w-[20% h-screen bg-blue-200 ${show ? 'w-[20%] translate-x-0' : 'w-0 -translate-x-full'} overflow-auto transition-all duration-1000`}>
@@ -63,10 +63,19 @@ function SideBar({isOpen}) {
                         <div>Subjects</div>
                     </div>
                     <div>
-                        <div className='flex items-center gap-1 px-6'>
+                        {/* <div className='flex items-center gap-1 px-6'>
                             <ImStatsBars2 />
                             <div>Manage Subjects</div>
-                        </div>
+                        </div> */}
+                        <NavLink
+                            to='/subject'
+                            className={({ isActive }) => (
+                                `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 px-6`
+                            )}
+                        >
+                            <ImStatsBars2 />
+                            <div>Manage Subjects</div>
+                        </NavLink>
                         {/* <div className='flex items-center gap-1 px-6 my-4'>
                             <BsCardChecklist />
                             <div>Assign Subjects</div>
