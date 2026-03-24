@@ -33,10 +33,15 @@ function SideBar({ isOpen }) {
                         <div>Menu</div>
                     </div>
                     <div className='px-6'>
-                        <div className='flex items-center gap-1 mt-4'>
+                        <NavLink
+                            to='/upload-data'
+                            className={({ isActive }) => (
+                                `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 mt-4`
+                            )}
+                        >
                             <FaFileUpload />
                             <div>Upload Data</div>
-                        </div>
+                        </NavLink>
                         <div className='flex items-center gap-1 mt-4'>
                             <FaFileDownload />
                             <div>Fetch Data</div>
