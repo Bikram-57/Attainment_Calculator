@@ -123,7 +123,7 @@ async function handleUploadMarks(req, res, isPipeline = false) {
 async function getRawMarksData(req, res) {
     try {
         const { subjectId, academicYear, course } = req.query;
-
+        
         // 1. Validate Input
         if (!subjectId || !academicYear || !course) {
             return res.status(400).json({ 

@@ -102,10 +102,10 @@ async function getCalculatedWithStudentMarks(req, res) {
                 course: report.course,
                 totalStudents: report.totalStudents
             },
-            // The 4-row Attainment Table (Target, %, Level)
-            attainmentReport: report.reportData, 
             // The Raw Student Marks (RegNo + Individual Scores)
-            studentMarks: report.allStudentMarks 
+            studentMarks: report.allStudentMarks, 
+            // The 4-row Attainment Table (Target, %, Level)
+            attainmentReport: report.reportData
         });
 
     } catch (error) {

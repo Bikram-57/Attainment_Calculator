@@ -11,6 +11,7 @@ const staticRouter  = require('./routes/staticRouter')
 const subjectRoute  = require('./routes/subject')
 const marks  = require('./routes/marks')
  const coPoMapping = require('./routes/coPoMapping')
+ const assignSubject = require('./routes/assignSubject')
 
 
 
@@ -48,6 +49,7 @@ app.use("/", staticRouter)
 app.use("/sub", subjectRoute)
 app.use("/mark", marks)
 app.use("/co-po", coPoMapping)
+app.use("/assignSub", assignSubject)
 
 
 
