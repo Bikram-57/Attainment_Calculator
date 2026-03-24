@@ -1,62 +1,45 @@
-const assignSubject = require('../models/assignSubject')
+const assignSubject = require('../models/assignSubject');
 
+// 1. Assign Subject (Creates a brand new document every time)
 async function handleAssignSubject(req, res) {
+   try {
+        // Accept either a single subjectId (String) OR subjectIds (Array) from the request
+        const { subjectId, subjectIds, facultyId, year } = req.body;
 
-//     try {
-//         const{subjectId, facultyId, year} = req.body;
-//         const assignSub = await assignSubject.create({
-//             subjectId,
-//             facultyId,
-//             year
-//         });
+        // Normalize the input into an array so we can handle both cases seamlessly
+        let subjectsToAdd = [];
+        if (subjectIds && Array.isArray(subjectIds)) {
+            subjectsToAdd = subjectIds;
+        } else if (subjectId) {
+            subjectsToAdd = [subjectId];
+        }
 
-//         res.status(201).json({
-//             success: true,
-//             message: "Assign subject to a faculty successfully",
-//             data: {
-//                 subjectId: assignSub.subjectId,
-//                 facultyId: assignSub.facultyId,
-//                 year: assignSub.year
-//             }
-//         })
+        // Validation check
+        if (subjectsToAdd.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide a subjectId or an array of subjectIds."
+            });
+        }
 
-//     } catch (error) {
-//         if(error.code === 11000){
-//             return res.status(400).json({
-//                 sucess: false,
-//                 message: "Duplicate IDs detected it is may be subjectId or facultyId"
-//             })
-//         }
-
-//         return res.status(500).json({
-//             success: false,
-//             message: "Server error",
-//             error: error.message
-//         });      
-//     }
-// };
-
-try {
-        const { subjectId, facultyId, year } = req.body;
-
-        // Find the faculty. If they exist, add the subject to the array.
-        // If they don't exist, create a new document.
+        // Core Logic: Match Faculty -> Add to Array -> Prevent Duplicates
         const assignSub = await assignSubject.findOneAndUpdate(
-            { facultyId: facultyId }, // Search condition
+            { facultyId: facultyId }, // 1. Match the faculty ID
             { 
-                $addToSet: { subjectIds: subjectId }, // Only adds subjectId if it isn't already in the array
-                $set: { year: year } // Updates or sets the year
+                // 2. $addToSet + $each adds the items but IGNORES exact duplicates
+                $addToSet: { subjectIds: { $each: subjectsToAdd } },
+                $set: { year: year } // Update or set the year
             },
             { 
-                new: true, // Returns the updated document
-                upsert: true, // Creates the document if it doesn't exist
-                runValidators: true // Enforces model validation
+                new: true, // Return the updated document in the response
+                upsert: true, // If the facultyId doesn't exist at all, create a new document
+                runValidators: true
             }
         );
 
         res.status(200).json({
             success: true,
-            message: "Subject assigned to faculty successfully",
+            message: "Subject(s) assigned successfully without duplicates!",
             data: {
                 facultyId: assignSub.facultyId,
                 subjectIds: assignSub.subjectIds,
@@ -65,11 +48,11 @@ try {
         });
 
     } catch (error) {
-        // Handle potential errors
+        // Catch leftover index errors just in case
         if (error.code === 11000) {
             return res.status(400).json({
                 success: false,
-                message: "Duplicate data detected."
+                message: "Database index error. Make sure you dropped old unique indexes in MongoDB."
             });
         }
 
@@ -81,31 +64,45 @@ try {
     }
 }
 
+// 2. Get ALL Assignments in the database
+async function getAllFacultyAssignments(req, res) {
+    try {
+        const allAssignments = await assignSubject.find({});
 
+        res.status(200).json({
+            success: true,
+            count: allAssignments.length,
+            data: allAssignments
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching assignments",
+            error: error.message
+        });
+    }
+}
+
+// 3. Get ALL Subjects for a Specific Faculty Member
 async function getAssignedSubjectsByFaculty(req, res) {
     try {
-        // Extract the facultyId from the URL parameters
         const { facultyId } = req.params; 
 
-        // Find the single document associated with this faculty member
-        const assignment = await assignSubject.findOne({ facultyId: facultyId });
+        // Use .find() because this faculty will have multiple documents
+        const assignments = await assignSubject.find({ facultyId: facultyId });
 
-        // If the database finds nothing, return a 404 (Not Found)
-        if (!assignment) {
+        if (!assignments || assignments.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: `No assigned subjects found for faculty ID: ${facultyId}`
             });
         }
 
-        // If found, return the data
         res.status(200).json({
             success: true,
-            data: {
-                facultyId: assignment.facultyId,
-                subjectIds: assignment.subjectIds,
-                year: assignment.year
-            }
+            count: assignments.length,
+            data: assignments
         });
 
     } catch (error) {
@@ -117,10 +114,54 @@ async function getAssignedSubjectsByFaculty(req, res) {
     }
 }
 
+// 4. Delete a Specific Assignment Document
+async function removeSubjectFromFaculty(req, res) {
+   try {
+        // Assuming you are still passing these in the Postman body as discussed
+        const { facultyId, subjectId } = req.body;
 
+        // Validation check
+        if (!facultyId || !subjectId) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide both facultyId and subjectId."
+            });
+        }
+
+        // 1. Find the faculty by ID
+        // 2. Use $pull to yank the specific subjectId out of the subjectIds array
+        const updatedAssignment = await assignSubject.findOneAndUpdate(
+            { facultyId: facultyId },
+            { $pull: { subjectIds: subjectId } }, 
+            { new: true } // Return the freshly updated document
+        );
+
+        // If the faculty doesn't exist at all
+        if (!updatedAssignment) {
+            return res.status(404).json({
+                success: false,
+                message: `Could not find faculty with ID: ${facultyId}`
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Subject removed from faculty successfully",
+            data: updatedAssignment
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error while deleting assignment",
+            error: error.message
+        });
+    }
+}
 
 module.exports = {
     handleAssignSubject,
+    getAllFacultyAssignments,
     getAssignedSubjectsByFaculty,
-
-}
+    removeSubjectFromFaculty
+};
