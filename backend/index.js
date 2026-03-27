@@ -6,12 +6,12 @@ const { connectMongoDB } = require("./connection")
 
 
 //require routers
-const userRoute  = require('./routes/user')
-const staticRouter  = require('./routes/staticRouter')
-const subjectRoute  = require('./routes/subject')
-const marks  = require('./routes/marks')
- const coPoMapping = require('./routes/coPoMapping')
- const assignSubject = require('./routes/assignSubject')
+const userRoute = require('./routes/user')
+const staticRouter = require('./routes/staticRouter')
+const subjectRoute = require('./routes/subject')
+const marks = require('./routes/marks')
+const coPoMapping = require('./routes/coPoMapping')
+const assignSubject = require('./routes/assignSubject')
 
 
 
@@ -34,7 +34,7 @@ connectMongoDB(mongoUri)
     .catch((err) => {
         console.log("Error: ", err);
     }
-)
+    )
 
 
 // View engine setup
