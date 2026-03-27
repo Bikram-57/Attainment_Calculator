@@ -1,15 +1,19 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { MdOutlineCancelPresentation } from "react-icons/md";
+import { MdDone } from "react-icons/md";
 
 function UploadData() {
 	const [isDisabled, setIsDisabled] = useState(true);
-	const [subjectId, setsubjectId] = useState('')
+	const [subjectId, setSubjectId] = useState('')
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
 	const [file, setFile] = useState(null);
 	const [error, setError] = useState('');
 	const [successMsg, setSuccessMsg] = useState('');
+	const [allSubjects, setAllSubjects] = useState([]);
+	const [subjectList, setSubjectList] = useState([]);
+
 	const fileInputRef = useRef(null);
 
 	const currentYear = new Date().getFullYear();
@@ -18,9 +22,18 @@ function UploadData() {
 		yearList.push(year);
 	}
 
-	const handleCourse = (e) => {
-		setCourse(e.target.value);
-		course !== '' ? setIsDisabled(true) : setIsDisabled(false);
+	const handleCourse = async (e) => {
+		const selectedCourse = e.target.value;
+		setCourse(selectedCourse);
+		if (!selectedCourse) {
+			setSubjectList([]);
+			setIsDisabled(true);
+			return;
+		}
+		const filteredSubjects = allSubjects.filter(sub => sub.course === selectedCourse);
+		setSubjectList(filteredSubjects);
+		selectedCourse === '' ? setIsDisabled(true) : setIsDisabled(false);
+
 	}
 
 	const handleFileChange = (e) => {
@@ -66,14 +79,40 @@ function UploadData() {
 
 		try {
 			const res = await axios.post('/mark/upload-raw', formData);
-			setError('');
 			setSuccessMsg(res.data.message);
+			setError('');
+			setFile(null);
+			setAcademicYear('');
+			setCourse('');
+			setSubjectId('');
+			setIsDisabled(true);
 			console.log(res);
 		} catch (err) {
+			setError("Something went wrong! Format error!");
 			console.log("Error on handleUpload || ", err);
-			setError("Something wrong occured on uploading the file!");
 		}
 	}
+
+	useEffect(() => {
+		const fetchSubjects = async () => {
+			try {
+				const res = await axios.get('/sub/');
+				setAllSubjects(res.data.data);
+			} catch (err) {
+				console.log('Error fetching subjects || ', err);
+			}
+		};
+
+		fetchSubjects();
+	}, []);
+
+	useEffect(() => {
+		if (!successMsg) return;
+		const timer = setTimeout(() => {
+			setSuccessMsg("");
+		}, 3000);
+		return () => clearTimeout(timer);
+	}, [successMsg])
 
 	return (
 		<div className='h-full flex flex-col p-4'>
@@ -102,17 +141,19 @@ function UploadData() {
 					<option value='BCA'>BCA</option>
 					<option value='MCA'>MCA</option>
 				</select>
-				{/* TODO: FETCH DATA DYNAMICALLY FOR SUBJECT ID BELOW */}
+				{/* TODO: FIX MAX HEIGHT OF THE DROPDOWN MENU */}
 				<select
-					className={`${isDisabled ? 'bg-gray-50 text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1`}
+					className={`${isDisabled ? 'bg-gray-50 text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1 h-8`}
 					value={subjectId}
-					onChange={(e) => setsubjectId(e.target.value)}
+					onChange={(e) => setSubjectId(e.target.value)}
 					disabled={isDisabled}
 				>
 					<option value=''>Select a subject</option>
-					<option value='CA101'>CA101</option>
-					<option value='value 2'>value 2</option>
-					<option value='value 3'>value 3</option>
+					{subjectList.map(sub => (
+						<option key={sub.subjectId} value={sub.subjectId}>
+							{sub.subjectId} - {sub.subjectName}
+						</option>
+					))}
 				</select>
 			</div>
 
@@ -155,9 +196,12 @@ function UploadData() {
 						{error}
 					</p>
 				)}
-				<p className="text-green-500 text-sm ml-2">
-					{successMsg}
-				</p>
+				{successMsg && (
+					<p className="text-sm ml-2 flex">
+						<MdDone className='text-green-500 h-full w-[20px] mx-1 order rounded-full' />
+						{successMsg}
+					</p>
+				)}
 			</div>
 		</div>
 	)
