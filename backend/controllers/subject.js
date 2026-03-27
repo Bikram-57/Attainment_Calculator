@@ -3,14 +3,15 @@ const Subject = require('../models/subject');
 async function handleGenerateNewSubject(req, res) {
 
     try {
-        const { subjectId, subjectName, course } = req.body;
-        console.log(req.body);
+        const { subjectId, subjectName, course, year } = req.body;
+        // console.log(req.body);
         
 
         const newSubject = await Subject.create({
             subjectId,
             subjectName,
-            course
+            course,
+            year
         });
 
         res.status(201).json({
@@ -39,7 +40,7 @@ async function handleUpdateSubject(req, res) {
 
     try {
         const { id } = req.params; // Get code from URL
-        const { subjectName, course } = req.body;
+        const { subjectName, course} = req.body;
 
         // Find by subjectCode and update name/course
         const updatedSubject = await Subject.findOneAndUpdate(
@@ -71,6 +72,7 @@ async function handleUpdateSubject(req, res) {
         });
     }
 };
+
 
 // @desc    Get all subjects
 // @route   GET /api/subjects
@@ -155,7 +157,3 @@ module.exports = {
     handleGetSubjectBySubjectId,
     handleDeleteSubject
 }
-
-// handleGetSubjectBySubjectId
-// handleUpdateSubject
-// handleDeleteSubject
