@@ -7,6 +7,7 @@ function NavBar({toggleSideBar}) {
         <div className='bg-gray-50 h-[60px] px-4 flex justify-between items-center font-semibold'>
             <div className='h-full flex items-center gap-7 mx-4'>
                 <RxHamburgerMenu className='h-full w-[25px] cursor-pointer' onClick={toggleSideBar} />
+                {/* TODO: MAKE THE BELOW TEXT DYNAMIC */}
                 <div className='text-blue-900'>
                     Manage Faculty
                 </div>
