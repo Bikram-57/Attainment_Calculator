@@ -30,10 +30,28 @@ function UploadData() {
 			setIsDisabled(true);
 			return;
 		}
-		const filteredSubjects = allSubjects.filter(sub => sub.course === selectedCourse);
+		const filteredSubjects = allSubjects.filter(sub => (
+			sub.course === selectedCourse && sub.year == academicYear
+		));
+		
 		setSubjectList(filteredSubjects);
-		selectedCourse === '' ? setIsDisabled(true) : setIsDisabled(false);
+		(selectedCourse === '' || academicYear == '') ? setIsDisabled(true) : setIsDisabled(false);
+	}
 
+	const handleYear = (e) => {
+		const selectedYear = e.target.value;
+		setAcademicYear(selectedYear);
+		if (!selectedYear){
+			setAcademicYear('');
+			setIsDisabled(true);
+			return;
+		}
+		const filteredSubjects = allSubjects.filter(sub => (
+			sub.year == selectedYear && sub.course == course
+		));
+		
+		setSubjectList(filteredSubjects);
+		(selectedYear === '' || course == '') ? setIsDisabled(true) : setIsDisabled(false);
 	}
 
 	const handleFileChange = (e) => {
@@ -123,7 +141,7 @@ function UploadData() {
 				<select
 					className='border border-gray-300 rounded-sm flex-1 px-2 py-1'
 					value={academicYear}
-					onChange={(e) => setAcademicYear(e.target.value)}
+					onChange={handleYear}
 				>
 					<option value=''>Select a year</option>
 					{yearList.map(year => (
