@@ -33,7 +33,7 @@ function UploadData() {
 		const filteredSubjects = allSubjects.filter(sub => (
 			sub.course === selectedCourse && sub.year == academicYear
 		));
-		
+
 		setSubjectList(filteredSubjects);
 		(selectedCourse === '' || academicYear == '') ? setIsDisabled(true) : setIsDisabled(false);
 	}
@@ -41,7 +41,7 @@ function UploadData() {
 	const handleYear = (e) => {
 		const selectedYear = e.target.value;
 		setAcademicYear(selectedYear);
-		if (!selectedYear){
+		if (!selectedYear) {
 			setAcademicYear('');
 			setIsDisabled(true);
 			return;
@@ -49,7 +49,7 @@ function UploadData() {
 		const filteredSubjects = allSubjects.filter(sub => (
 			sub.year == selectedYear && sub.course == course
 		));
-		
+
 		setSubjectList(filteredSubjects);
 		(selectedYear === '' || course == '') ? setIsDisabled(true) : setIsDisabled(false);
 	}
@@ -173,6 +173,7 @@ function UploadData() {
 						</option>
 					))}
 				</select>
+
 			</div>
 
 			<div className='flex gap-5 my-7'>

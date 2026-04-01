@@ -16,15 +16,18 @@ const router = createBrowserRouter([
 			},
 			{
 				path: 'users/',
-				element: <Faculty />
+				element: <Faculty />,
+				handle: { title: 'Manage Faculty'}
 			},
 			{
 				path: 'subject/',
-				element: <Subject />
+				element: <Subject />,
+				handle: { title: 'Manage Subjects'}
 			},
 			{
 				path: 'upload-data/',
-				element: <UploadData />
+				element: <UploadData />,
+				handle: { title: 'Upload Data'}
 			},
 		]
 	}
