@@ -8,6 +8,7 @@ import Option from "./Option";
 import UploadData from "./UploadData";
 import FetchData from "./FetchData/FetchData";
 import Attainment from "./FetchData/Attainment";
+import COAttainment from "./FetchData/COAttainment";
 
 export {
     NavBar,
@@ -19,5 +20,6 @@ export {
     Option,
     UploadData,
     FetchData,
-    Attainment
+    Attainment,
+    COAttainment,
 }

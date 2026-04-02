@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Faculty, Subject, UploadData, FetchData } from './Components/index.js'
+import { Faculty, Subject, UploadData, FetchData, COAttainment } from './Components/index.js'
 
 const router = createBrowserRouter([
 	{
@@ -33,6 +33,11 @@ const router = createBrowserRouter([
 				path: 'fetch-data/',
 				element: <FetchData />,
 				handle: { title: 'Fetch Data'}
+			},
+			{
+				path: 'co-attainment/:subjectId/:academicYear',
+				element: <COAttainment />,
+				handle: { title: 'CO Attainment'}
 			},
 		]
 	}

@@ -1,10 +1,15 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 // import axios from 'axios'
 
 function Attainment({ coAttainData, finalCOAttainData, poAttainData }) {
+    const navigate = useNavigate();
+    
     const handleCOAttain = () => {
+        const coData = coAttainData.metadata;
         console.log('CO: ', coAttainData)
         // nagivate to respective page with the respective prop data
+        navigate(`/co-attainment/${coData.subjectId}/${coData.academicYear}`);
     }
     const handleFinalCOAttain = () => {
         console.log('Final: ', finalCOAttainData)
