@@ -13,7 +13,9 @@ export default defineConfig({
 			'/user/': 'http://localhost:8000',
 			'/sub/': 'http://localhost:8000',
 			'/mark/upload-raw': 'http://localhost:8000',
-			// '/user': 'http://localhost:8000',
+			'/mark/get-calculations': 'http://localhost:8000',
+			'/mark/get-final-attainment': 'http://localhost:8000',
+			'/co-po/relation': 'http://localhost:8000',
 		},
 	},
 })
