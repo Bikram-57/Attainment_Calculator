@@ -42,10 +42,15 @@ function SideBar({ isOpen }) {
                             <FaFileUpload />
                             <div>Upload Data</div>
                         </NavLink>
-                        <div className='flex items-center gap-1 mt-4'>
+                        <NavLink
+                            to='/fetch-data'
+                            className={({ isActive }) => (
+                                `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 mt-4`
+                            )}
+                        >
                             <FaFileDownload />
                             <div>Fetch Data</div>
-                        </div>
+                        </NavLink>
                         <div className='flex items-center gap-1 mt-4'>
                             <IoMdCloudUpload />
                             <div>CO-PO Relation</div>

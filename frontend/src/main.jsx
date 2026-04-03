@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Faculty, Subject, UploadData } from './Components/index.js'
+import { Faculty, Subject, UploadData, FetchData, COAttainment } from './Components/index.js'
 
 const router = createBrowserRouter([
 	{
@@ -16,15 +16,28 @@ const router = createBrowserRouter([
 			},
 			{
 				path: 'users/',
-				element: <Faculty />
+				element: <Faculty />,
+				handle: { title: 'Manage Faculty'}
 			},
 			{
 				path: 'subject/',
-				element: <Subject />
+				element: <Subject />,
+				handle: { title: 'Manage Subjects'}
 			},
 			{
 				path: 'upload-data/',
-				element: <UploadData />
+				element: <UploadData />,
+				handle: { title: 'Upload Data'}
+			},
+			{
+				path: 'fetch-data/',
+				element: <FetchData />,
+				handle: { title: 'Fetch Data'}
+			},
+			{
+				path: 'co-attainment/:subjectId/:academicYear',
+				element: <COAttainment />,
+				handle: { title: 'CO Attainment'}
 			},
 		]
 	}
