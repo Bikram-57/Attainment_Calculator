@@ -2,8 +2,9 @@ import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { useParams } from 'react-router-dom'
+import COAttainTable from './COAttainTable';
 
-function COAttainment() {
+function COAttainment({data}) {
     const { subjectId, academicYear } = useParams();
     const [subjectName, setSubject] = useState('');
     useEffect(() => {
@@ -28,6 +29,7 @@ function COAttainment() {
         <div>
             <div>COAttainment</div>
             <h1>{subjectId}-{subjectName}-{academicYear}</h1>
+            <COAttainTable data={data}/>
         </div>
     )
 }

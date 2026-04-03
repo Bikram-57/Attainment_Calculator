@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Attainment } from '../index';
+import { Attainment, COAttainment } from '../index';
 
 function FetchData() {
 	const [isDisabled, setIsDisabled] = useState(true);
@@ -154,11 +154,12 @@ function FetchData() {
 	)
 		:
 		(coAttainData && (
-			<Attainment
-				coAttainData={coAttainData}
-				finalCOAttainData={finalCOAttainData}
-				poAttainData={poAttainData}
-			/>
+			// <Attainment
+			// 	coAttainData={coAttainData}
+			// 	finalCOAttainData={finalCOAttainData}
+			// 	poAttainData={poAttainData}
+			// />
+			<COAttainment data={coAttainData} />
 		))
 }
 

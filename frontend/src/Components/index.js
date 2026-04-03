@@ -9,6 +9,7 @@ import UploadData from "./UploadData";
 import FetchData from "./FetchData/FetchData";
 import Attainment from "./FetchData/Attainment";
 import COAttainment from "./FetchData/COAttainment";
+import COAttainTable from "./FetchData/COAttainTable";
 
 export {
     NavBar,
@@ -22,4 +23,5 @@ export {
     FetchData,
     Attainment,
     COAttainment,
+    COAttainTable,
 }
