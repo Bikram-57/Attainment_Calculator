@@ -74,7 +74,6 @@ function FetchData() {
 			// setCOAttainData(res1.data);
 			// setFinalCOAttainData(res2.data);
 			// setPOAttainData(res3.data);
-			// console.log(res1);
 		} catch (error) {
 			console.log(error);
 		}
@@ -166,7 +165,6 @@ function FetchData() {
 				poAttainData={poAttainData}
 			/>
 		))
-		{/* <COAttainment data={coAttainData} /> */}
 }
 
 export default FetchData

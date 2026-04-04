@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { IoOptionsOutline } from "react-icons/io5";
 import { CiMenuKebab } from "react-icons/ci";
 import { FaFileUpload } from "react-icons/fa";
@@ -12,12 +11,20 @@ import { BsCardChecklist } from "react-icons/bs";
 import { HiMiniUsers } from "react-icons/hi2";
 import { FaGraduationCap } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-function SideBar({ isOpen }) {
+function SideBar() {
+    const isOpen = useSelector(state => state.sideBar.isSideBarOpen);
 
     return (
-        // <div className={`w-[20% h-screen bg-blue-200 ${show ? 'w-[20%] translate-x-0' : 'w-0 -translate-x-full'} overflow-auto transition-all duration-1000`}>
-        <div className={`h-screen bg-gray-50 ${isOpen ? 'w-[20%] translate-x-0' : 'w-0 -translate-x-full'} transition-all duration-300 ease-in-out overflow-hidden`}>
+        // <div className={`h-screen bg-gray-50 ${isOpen ? 'w-[20%] translate-x-0' : 'w-0 -translate-x-full'} transition-all duration-300 ease-in-out overflow-hidden`}>
+        <div
+            className={`
+                fixed top-0 left-0 h-screen w-[17%] bg-gray-50
+                transform transition-transform duration-300 ease-in-out
+                ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+            `}
+        >
             <div className='h-[60px] w-full p-2 flex gap-2 justify-between items-center text-blue-900 bg-white'>
                 <FaGraduationCap className='text-5xl' />
                 <div className='text-xs font-bold'>Student Performance Assessment for Outcome Based Education</div>

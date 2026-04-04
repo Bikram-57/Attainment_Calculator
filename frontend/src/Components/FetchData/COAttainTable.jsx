@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { close, open } from '../../store/sideBarSlice';
 
 function COAttainTable({ data }) {
-    console.log(data);
-    
+    const dispatch = useDispatch();
+    const { studentMarks, attainmentReport } = data;
     const columns = [
         {
             title: "Quiz 1",
@@ -48,19 +50,22 @@ function COAttainTable({ data }) {
         },
     ];
 
-    const { studentMarks, attainmentReport } = data;
-
     const getCOName = (key) => key.split("_").pop();
+    const isOpen = useSelector(state => state.sideBar.isSideBarOpen);
+    useEffect(() => {
+        dispatch(close());
+        return () => dispatch(open());
+    }, []);
 
     return (
-        <div className="p-4">
-            <div className="overflow-auto border rounded-lg shadow">
-                <table className="min-w-full text-xs text-center border-collapse whitespace-nowrap">
+        <div className="bg-white">
+            <div className="overflow-auto shadow">
+                <table className={`min-w-full ${isOpen ? 'text-xs' : 'text-sm'} text-center border-collapse whitespace-nowrap`}>
 
                     {/* HEADER */}
-                    <thead className="bg-gray-200 sticky top-0 z-10">
+                    <thead className="bg-gray-100 sticky top-0 z-10">
                         <tr>
-                            <th rowSpan={2} className="border p-2 sticky left-0 bg-gray-200 z-20">
+                            <th rowSpan={2} className="border border-t-0 border-l-0 border-gray-300 px-0 py-2 sticky left-0 bg-gray-100 z-20">
                                 Reg No
                             </th>
 
@@ -68,7 +73,7 @@ function COAttainTable({ data }) {
                                 <th
                                     key={col.title}
                                     colSpan={col.keys.length + 1}
-                                    className="border p-2 font-bold"
+                                    className="border border-gray-300 border-t-0 border-r-0 px-1 py-2 font-bold"
                                 >
                                     {col.title}
                                 </th>
@@ -79,11 +84,11 @@ function COAttainTable({ data }) {
                             {columns.map((col) => (
                                 <React.Fragment key={col.title}>
                                     {col.keys.map((key) => (
-                                        <th key={key} className="border p-2">
+                                        <th key={key} className="border border-gray-300 px-1 py-2">
                                             {getCOName(key)}
                                         </th>
                                     ))}
-                                    <th className="border p-2 font-semibold">Total</th>
+                                    <th className="border border-gray-300 border-r-0 px-1 py-2 font-semibold">Total</th>
                                 </React.Fragment>
                             ))}
                         </tr>
@@ -92,9 +97,9 @@ function COAttainTable({ data }) {
                     {/* BODY */}
                     <tbody>
                         {studentMarks.map((student) => (
-                            <tr key={student.regNo} className="hover:bg-gray-50">
+                            <tr key={student.regNo} className="hover:bg-gray-200">
 
-                                <td className="border p-2 font-medium sticky left-0 bg-white">
+                                <td className="border border-gray-300 border-l-0 px-0 py-2 font-medium sticky left-0 bg-white">
                                     {student.regNo}
                                 </td>
 
@@ -103,13 +108,13 @@ function COAttainTable({ data }) {
 
                                         {/* CO Marks */}
                                         {col.keys.map((key) => (
-                                            <td key={key} className="border p-2">
+                                            <td key={key} className="border border-gray-300 px-1 py-2">
                                                 {student.marks[key] ?? "-"}
                                             </td>
                                         ))}
 
                                         {/* TOTAL (FROM BACKEND) */}
-                                        <td className="border p-2 font-semibold bg-gray-50">
+                                        <td className="border border-gray-300 border-r-0 px-1 py-2 font-semibold bg-gray-100">
                                             {student.marks[col.total] ?? "-"}
                                         </td>
 
@@ -122,7 +127,7 @@ function COAttainTable({ data }) {
                     {/* FOOTER: Attainment % */}
                     <tfoot className="bg-gray-100 font-semibold">
                         <tr>
-                            <td className="border p-2 sticky left-0 bg-gray-100">
+                            <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
                                 Target Marks
                             </td>
 
@@ -131,13 +136,13 @@ function COAttainTable({ data }) {
 
                                     {/* CO */}
                                     {col.keys.map((key) => (
-                                        <td key={key} className="border p-2">
+                                        <td key={key} className="border border-gray-300 px-1 py-2">
                                             {attainmentReport[key]?.targetMarks ?? 0}
                                         </td>
                                     ))}
 
                                     {/* TOTAL */}
-                                    <td className="border p-2 bg-gray-200">
+                                    <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
                                         {attainmentReport[col.total]?.targetMarks ?? 0}
                                     </td>
 
@@ -145,7 +150,7 @@ function COAttainTable({ data }) {
                             ))}
                         </tr>
                         <tr>
-                            <td className="border p-2 sticky left-0 bg-gray-100">
+                            <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
                                 Students {'>'}= 60
                             </td>
 
@@ -154,13 +159,13 @@ function COAttainTable({ data }) {
 
                                     {/* CO */}
                                     {col.keys.map((key) => (
-                                        <td key={key} className="border p-2">
+                                        <td key={key} className="border border-gray-300 px-1 py-2">
                                             {attainmentReport[key]?.studentsAboveTarget ?? 0}
                                         </td>
                                     ))}
 
                                     {/* TOTAL */}
-                                    <td className="border p-2 bg-gray-200">
+                                    <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
                                         {attainmentReport[col.total]?.studentsAboveTarget ?? 0}
                                     </td>
 
@@ -168,7 +173,7 @@ function COAttainTable({ data }) {
                             ))}
                         </tr>
                         <tr>
-                            <td className="border p-2 sticky left-0 bg-gray-100">
+                            <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
                                 Attainment %
                             </td>
 
@@ -177,13 +182,13 @@ function COAttainTable({ data }) {
 
                                     {/* CO % */}
                                     {col.keys.map((key) => (
-                                        <td key={key} className="border p-2">
+                                        <td key={key} className="border border-gray-300 px-1 py-2">
                                             {attainmentReport[key]?.attainmentPercent ?? 0}%
                                         </td>
                                     ))}
 
                                     {/* TOTAL % */}
-                                    <td className="border p-2 bg-gray-200">
+                                    <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
                                         {attainmentReport[col.total]?.attainmentPercent ?? 0}%
                                     </td>
 
@@ -191,7 +196,7 @@ function COAttainTable({ data }) {
                             ))}
                         </tr>
                         <tr>
-                            <td className="border p-2 sticky left-0 bg-gray-100">
+                            <td className="border border-gray-300 border-l-0 border-b-0 px-0 py-2 sticky left-0 bg-gray-100">
                                 CO Attainment
                             </td>
 
@@ -200,13 +205,13 @@ function COAttainTable({ data }) {
 
                                     {/* CO */}
                                     {col.keys.map((key) => (
-                                        <td key={key} className="border p-2">
+                                        <td key={key} className="border border-gray-300 border-b-0 px-1 py-2">
                                             {attainmentReport[key]?.attainmentLevel ?? 0}
                                         </td>
                                     ))}
 
                                     {/* TOTAL */}
-                                    <td className="border p-2 bg-gray-200">
+                                    <td className="border border-gray-300 border-r-0 border-b-0 px-1 py-2 bg-gray-200">
                                         {attainmentReport[col.total]?.attainmentLevel ?? 0}
                                     </td>
 

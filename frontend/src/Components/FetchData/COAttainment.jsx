@@ -4,19 +4,14 @@ import { useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom'
 import COAttainTable from './COAttainTable';
 
-// function COAttainment({data}) {
 function COAttainment() {
     const location = useLocation();
     const data = location.state?.coAttainData;
     const { subjectId, academicYear } = useParams();
     const [subjectName, setSubject] = useState('');
     useEffect(() => {
-        // const id = subjectId;
         const getSubject = async () => {
             try {
-                // const res = await axios.get('/sub/', {
-                //     params: { id }
-                // });
                 const res = await axios.get(`/sub/${subjectId}`);
                 setSubject(res.data.data.subjectName);
             }
@@ -29,10 +24,14 @@ function COAttainment() {
     }, []);
 
     return (
-        <div>
-            <div>COAttainment</div>
-            <h1>{subjectId}-{subjectName}-{academicYear}</h1>
-            <COAttainTable data={data}/>
+        <div className='bg-gray-300'>
+            <div>
+                <button className='bg-white border p-2 font-bold'>{'<-'}</button>
+                <div className='font-semibold text-lg'>
+                    {subjectId} - {subjectName} - CO Attainment, Batch - {academicYear}
+                </div>
+                <COAttainTable data={data} />
+            </div>
         </div>
     )
 }
