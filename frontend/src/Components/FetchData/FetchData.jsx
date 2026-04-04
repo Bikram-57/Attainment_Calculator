@@ -60,14 +60,20 @@ function FetchData() {
 			subjectId: subjectId
 		}
 		try {
-			const [res1, res2, res3] = await Promise.all([
+			const [res1, res3] = await Promise.all([
 				axios.get('/mark/get-calculations', { params: params }),
-				axios.get('/mark/get-final-attainment', { params: params }),
 				axios.get('/co-po/relation', { params: params }),
 			]);
 			setCOAttainData(res1.data);
-			setFinalCOAttainData(res2.data);
 			setPOAttainData(res3.data);
+			// const [res1, res2, res3] = await Promise.all([
+			// 	axios.get('/mark/get-calculations', { params: params }),
+			// 	axios.get('/mark/get-final-attainment', { params: params }),
+			// 	axios.get('/co-po/relation', { params: params }),
+			// ]);
+			// setCOAttainData(res1.data);
+			// setFinalCOAttainData(res2.data);
+			// setPOAttainData(res3.data);
 			// console.log(res1);
 		} catch (error) {
 			console.log(error);
@@ -154,13 +160,13 @@ function FetchData() {
 	)
 		:
 		(coAttainData && (
-			// <Attainment
-			// 	coAttainData={coAttainData}
-			// 	finalCOAttainData={finalCOAttainData}
-			// 	poAttainData={poAttainData}
-			// />
-			<COAttainment data={coAttainData} />
+			<Attainment
+				coAttainData={coAttainData}
+				// finalCOAttainData={finalCOAttainData}
+				poAttainData={poAttainData}
+			/>
 		))
+		{/* <COAttainment data={coAttainData} /> */}
 }
 
 export default FetchData

@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom'
 
 function Attainment({ coAttainData, finalCOAttainData, poAttainData }) {
     const navigate = useNavigate();
-    
+
     const handleCOAttain = () => {
         const coData = coAttainData.metadata;
         console.log('CO: ', coAttainData)
         // nagivate to respective page with the respective prop data
-        navigate(`/co-attainment/${coData.subjectId}/${coData.academicYear}`);
+        navigate(`/co-attainment/${coData.subjectId}/${coData.academicYear}`, {
+            state: { coAttainData }
+        });
     }
     const handleFinalCOAttain = () => {
         console.log('Final: ', finalCOAttainData)

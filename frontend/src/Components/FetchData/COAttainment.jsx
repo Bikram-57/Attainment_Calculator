@@ -1,10 +1,13 @@
 import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import COAttainTable from './COAttainTable';
 
-function COAttainment({data}) {
+// function COAttainment({data}) {
+function COAttainment() {
+    const location = useLocation();
+    const data = location.state?.coAttainData;
     const { subjectId, academicYear } = useParams();
     const [subjectName, setSubject] = useState('');
     useEffect(() => {
