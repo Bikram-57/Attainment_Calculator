@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Attainment, COAttainment } from '../index';
+import { Attainment } from './Attainment/index';
 
 function FetchData() {
 	const [isDisabled, setIsDisabled] = useState(true);
@@ -10,10 +10,10 @@ function FetchData() {
 	const [allSubjects, setAllSubjects] = useState([]);
 	const [subjectList, setSubjectList] = useState([]);
 	const [error, setError] = useState('');
-	const [isFetching, setIsFetching] = useState(false);
-	const [coAttainData, setCOAttainData] = useState({});
-	const [finalCOAttainData, setFinalCOAttainData] = useState({});
-	const [poAttainData, setPOAttainData] = useState({});
+	const [fetchClicked, setFetchClicked] = useState(false);
+	// const [coAttainData, setCOAttainData] = useState({});
+	// const [finalCOAttainData, setFinalCOAttainData] = useState({});
+	// const [poAttainData, setPOAttainData] = useState({});
 
 	const currentYear = new Date().getFullYear();
 	const yearList = [2024];
@@ -53,32 +53,30 @@ function FetchData() {
 		(selectedYear === '' || course == '') ? setIsDisabled(true) : setIsDisabled(false);
 	}
 
-	const handleFetch = async () => {
-		const params = {
-			academicYear: academicYear,
-			course: course,
-			subjectId: subjectId
-		}
-		try {
-			const [res1, res3] = await Promise.all([
-				axios.get('/mark/get-calculations', { params: params }),
-				axios.get('/co-po/relation', { params: params }),
-			]);
-			setCOAttainData(res1.data);
-			setPOAttainData(res3.data);
-			// const [res1, res2, res3] = await Promise.all([
-			// 	axios.get('/mark/get-calculations', { params: params }),
-			// 	axios.get('/mark/get-final-attainment', { params: params }),
-			// 	axios.get('/co-po/relation', { params: params }),
-			// ]);
-			// setCOAttainData(res1.data);
-			// setFinalCOAttainData(res2.data);
-			// setPOAttainData(res3.data);
-		} catch (error) {
-			console.log(error);
-		}
+	// const handleFetch = async () => {
+	// 	const params = {
+	// 		academicYear: academicYear,
+	// 		course: course,
+	// 		subjectId: subjectId
+	// 	}
+	// 	try {
+	// 		const [res1, res2, res3] = await Promise.all([
+	// 			axios.get('/mark/get-calculations', { params: params }),
+	// 			axios.get('/mark/get-final-attainment', { params: params }),
+	// 			axios.get('/co-po/relation', { params: params }),
+	// 		]);
+	// 		setCOAttainData(res1.data);
+	// 		setFinalCOAttainData(res2.data);
+	// 		setPOAttainData(res3.data);
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 	}
 
-		setIsFetching(true)
+	// 	setIsFetching(true)
+	// }
+
+	const handleFetch = () => {
+		setFetchClicked(true);
 	}
 
 	useEffect(() => {
@@ -94,7 +92,8 @@ function FetchData() {
 		fetchSubjects();
 	}, []);
 
-	return !isFetching ? (
+	// return !isFetching ? (
+	return !fetchClicked ? (
 		<div className='h-full flex flex-col p-4'>
 			<div className='flex justify-between pb-4'>
 				<div className='text-blue-900 text-xl font-semibold'>Fetch Data</div>
@@ -158,13 +157,20 @@ function FetchData() {
 		</div >
 	)
 		:
-		(coAttainData && (
+		// (coAttainData && (
+		// 	<Attainment
+		// 		coAttainData={coAttainData}
+		// 		finalCOAttainData={finalCOAttainData}
+		// 		poAttainData={poAttainData}
+		// 	/>
+		// ))
+		(
 			<Attainment
-				coAttainData={coAttainData}
-				// finalCOAttainData={finalCOAttainData}
-				poAttainData={poAttainData}
+				academicYear={academicYear}
+				course={course}
+				subjectId={subjectId}
 			/>
-		))
+		)
 }
 
 export default FetchData
