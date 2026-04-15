@@ -23,8 +23,6 @@ const mongoUri = process.env.MONGO_URI
 // Middelewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(express.static(path.join("C:\Users\bikra\Desktop\Attainment_Calculator\backend\public", 'public')));
-// Change to this:
 app.use(express.static(path.join(__dirname, 'public')));
 
 
