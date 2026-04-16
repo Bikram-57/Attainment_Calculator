@@ -1,5 +1,9 @@
 const express = require('express')
 
+const handleVerifyToken = require('../middleware/authVerifty');
+const handleAuthorizeRoles = require('../middleware/authAuthorize');
+
+
 const {
     handleGenerateNewSubject,
     handleUpdateSubject,
@@ -10,10 +14,10 @@ const {
 
 const router = express.Router()
 
-router.post('/', handleGenerateNewSubject)
-router.put('/:id', handleUpdateSubject)
-router.get('/:id', handleGetSubjectBySubjectId)
-router.get('/', handleGetAllSubject)
-router.delete('/:id', handleDeleteSubject)
+router.post('/', handleVerifyToken, handleAuthorizeRoles('admin'), handleGenerateNewSubject)
+router.put('/:id', handleVerifyToken, handleAuthorizeRoles('admin'), handleUpdateSubject)
+router.get('/:id', handleVerifyToken, handleAuthorizeRoles('admin'), handleGetSubjectBySubjectId)
+router.get('/', handleVerifyToken, handleAuthorizeRoles('admin'), handleGetAllSubject)
+router.delete('/:id', handleVerifyToken, handleAuthorizeRoles('admin'), handleDeleteSubject)
 
 module.exports = router

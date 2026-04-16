@@ -1,17 +1,18 @@
 const express = require('express')
+const router = express.Router();
 
+const requireLogin = require('../middleware/pageAuth');
 
-
-const staticRouter = express.Router();
-
-staticRouter.get('/createUser', (req, res) => {
+router.get('/createUser', (req, res) => {
     return res.render('createUser')
 })
-staticRouter.get("/", (req, res) => {
+router.get("/", (req, res) => {
     return res.render("home", {
         subjectId: "CA2313",      // Provide a default or get from req.query
         academicYear: "2025-26"   // Provide a default
     });
 });
 
-module.exports = staticRouter;
+// router.get("/", requireLogin, something);
+
+module.exports = router;

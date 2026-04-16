@@ -1,62 +1,11 @@
-// const express = require('express')
-
-// const {
-//     handleGenerateNewUser,
-//     handleEditUserByFacultyId,
-//     handleGetUserByFacultyId,
-//     handleDeleteUserByFacultyId,
-//     handleGetAllUsers,
-// } = require('../controllers/user')
-
-// const passwordHash = require('../middleware/PasswordHash')
-
-// const router = express.Router();
-
-// router.post('/', passwordHash, handleGenerateNewUser)
-// router.put('/:id', handleEditUserByFacultyId);
-// router.get('/:id', handleGetUserByFacultyId);
-// router.delete('/:id', handleDeleteUserByFacultyId);
-// router.get('/', handleGetAllUsers);
-
-
-// module.exports = router;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const express = require('express');
 
 // --- 1. IMPORT MIDDLEWARE ---
 const upload = require('../middleware/upload'); 
 const passwordHash = require('../middleware/PasswordHash'); 
+
+const handleVerifyToken = require('../middleware/authVerifty');
+const handleAuthorizeRoles = require('../middleware/authAuthorize');
 
 // --- 2. IMPORT CONTROLLERS ---
 const {
@@ -78,15 +27,15 @@ const router = express.Router();
 
 // @route   GET /api/users/profile/:id
 // @desc    User gets their own profile
-router.get('/profile/:id', handleGetMyProfile);
+router.get('/profile/:id', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), handleGetMyProfile);
 
 // @route   PATCH /api/users/profile/:id
 // @desc    User updates their own profile (Name and Image only - locked email & ID)
-router.patch('/profile/:id', upload.single('profileImage'), handleUserSelfUpdate);
+router.patch('/profile/:id', upload.single('profileImage'), handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), handleUserSelfUpdate);
 
 // @route   DELETE /api/users/image/:id
 // @desc    Delete JUST their profile picture and reset to default
-router.delete('/image/:id', handleDeleteProfileImage);
+router.delete('/image/:id', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), handleDeleteProfileImage);
 
 
 // ==========================================
@@ -95,23 +44,23 @@ router.delete('/image/:id', handleDeleteProfileImage);
 
 // @route   POST /api/users/
 // @desc    Create new user (includes optional image upload & password hash)
-router.post('/', upload.single('profileImage'), passwordHash, handleGenerateNewUser);
+router.post('/', upload.single('profileImage'), handleVerifyToken, handleAuthorizeRoles('admin'), passwordHash, handleGenerateNewUser);
 
 // @route   PUT /api/users/:id
 // @desc    Admin updates everything (Name, Email, Image)
-router.put('/:id', upload.single('profileImage'), handleEditUserByFacultyId);
+router.put('/:id', upload.single('profileImage'), handleVerifyToken, handleAuthorizeRoles('admin'), handleEditUserByFacultyId);
 
 // @route   GET /api/users/:id
 // @desc    Get a specific user's details
-router.get('/:id', handleGetUserByFacultyId);
+router.get('/:id', handleVerifyToken, handleAuthorizeRoles('admin'), handleGetUserByFacultyId);
 
 // @route   DELETE /api/users/:id
 // @desc    Delete the entire user account (and removes their image from the server)
-router.delete('/:id', handleDeleteUserByFacultyId);
+router.delete('/:id', handleVerifyToken, handleAuthorizeRoles('admin'), handleDeleteUserByFacultyId);
 
 // @route   GET /api/users/
 // @desc    Get a list of all users (excludes Super Admin)
-router.get('/', handleGetAllUsers);
+router.get('/', handleVerifyToken, handleAuthorizeRoles('admin'), handleGetAllUsers);
 
 // --- 3. EXPORT ROUTER ---
 module.exports = router;

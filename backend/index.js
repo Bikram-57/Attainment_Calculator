@@ -1,5 +1,7 @@
 const express = require('express')
 const path = require("path");
+const cookieParser = require('cookie-parser');
+
 require('dotenv').config();
 
 const { connectMongoDB } = require("./connection")
@@ -12,6 +14,7 @@ const subjectRoute = require('./routes/subject')
 const marks = require('./routes/marks')
 const coPoMapping = require('./routes/coPoMapping')
 const assignSubject = require('./routes/assignSubject')
+const login = require('./routes/login')
 
 
 
@@ -51,6 +54,7 @@ app.use("/sub", subjectRoute)
 app.use("/mark", marks)
 app.use("/co-po", coPoMapping)
 app.use("/assignSub", assignSubject)
+app.use("/login", login)
 
 
 
