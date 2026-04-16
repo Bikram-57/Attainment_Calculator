@@ -2,7 +2,15 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Faculty, Subject, UploadData, FetchData, COAttainment } from './Components/index.js'
+import {
+	Faculty,
+	Subject,
+	UploadData,
+	FetchData,
+	COAttainment,
+	FinalCOAttainment,
+	POAttainment,
+} from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
 
@@ -47,16 +55,16 @@ const router = createBrowserRouter([
 		element: <COAttainment />,
 		handle: { title: 'CO Attainment' }
 	},
-	// {
-	// 	path: 'final-co-attainment/:academicYear/:course/:subjectId',
-	// 	element: <FinalCOAttainment />,
-	// 	handle: { title: 'Final CO Attainment' }
-	// },
-	// {
-	// 	path: 'po-attainment/:academicYear/:course/:subjectId',
-	// 	element: <POAttainment />,
-	// 	handle: { title: 'PO Attainment' }
-	// },
+	{
+		path: 'final-co-attainment/:academicYear/:course/:subjectId',
+		element: <FinalCOAttainment />,
+		handle: { title: 'Final CO Attainment' }
+	},
+	{
+		path: 'po-attainment/:academicYear/:course/:subjectId',
+		element: <POAttainment />,
+		handle: { title: 'PO Attainment' }
+	},
 ])
 
 createRoot(document.getElementById('root')).render(
