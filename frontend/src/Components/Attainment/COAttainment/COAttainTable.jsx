@@ -51,7 +51,7 @@ function COAttainTable({ data }) {
     ];
 
     const getCOName = (key) => key.split("_").pop();
-    const isOpen = useSelector(state => state.sideBar.isSideBarOpen);
+    // const isOpen = useSelector(state => state.sideBar.isSideBarOpen);
     useEffect(() => {
         dispatch(close());
         return () => dispatch(open());
@@ -60,7 +60,8 @@ function COAttainTable({ data }) {
     return (
         <div className="bg-white">
             <div className="overflow-auto shadow">
-                <table className={`min-w-full ${isOpen ? 'text-xs' : 'text-sm'} text-center border-collapse whitespace-nowrap`}>
+                <table className='min-w-full text-sm text-center border-collapse whitespace-nowrap'>
+                {/* <table className={`min-w-full ${isOpen ? 'text-xs' : 'text-sm'} text-center border-collapse whitespace-nowrap`}> */}
 
                     {/* HEADER */}
                     <thead className="bg-gray-100 sticky top-0 z-10">

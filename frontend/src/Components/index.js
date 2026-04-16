@@ -7,7 +7,15 @@ import SubjectHeader from "./Subject/SubjectHeader";
 import Option from "./Option";
 import UploadData from "./UploadData";
 import FetchData from "./FetchData";
-import { Attainment, COAttainment, COAttainTable} from "./Attainment/index"
+import {
+    Attainment,
+    COAttainment,
+    COAttainTable,
+    FinalCOAttainment,
+    FinalCOAttainTable,
+    POAttainment,
+    POAttainTable,
+} from "./Attainment/index"
 
 export {
     NavBar,
@@ -22,4 +30,8 @@ export {
     Attainment,
     COAttainment,
     COAttainTable,
+    FinalCOAttainment,
+    FinalCOAttainTable,
+    POAttainment,
+    POAttainTable,
 }

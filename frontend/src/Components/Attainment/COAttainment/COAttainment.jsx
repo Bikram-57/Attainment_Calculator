@@ -9,7 +9,7 @@ function COAttainment() {
     // const data = location.state?.coAttainData;
     const [data, setData] = useState(null);
     const { academicYear, course, subjectId } = useParams();
-    const [subjectName, setSubject] = useState('');
+    const [subjectName, setSubjectName] = useState('');
     useEffect(() => {
         const getCOData = async () => {
             try {
@@ -26,17 +26,17 @@ function COAttainment() {
                 console.log(res.data);
 
             } catch (err) {
-                console.log('ERROR: ', err);
+                console.log('ERROR || useEffect - getCOData(): ', err);
             }
         }
 
         const getSubject = async () => {
             try {
                 const res = await axios.get(`/sub/${subjectId}`);
-                setSubject(res.data.data.subjectName);
+                setSubjectName(res.data.data.subjectName);
             }
             catch (err) {
-                console.log('ERROR: ', err);
+                console.log('ERROR || useEffect - getSubject(): ', err);
             }
         }
 
