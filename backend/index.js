@@ -14,6 +14,7 @@ const subjectRoute = require('./routes/subject')
 const marks = require('./routes/marks')
 const coPoMapping = require('./routes/coPoMapping')
 const assignSubject = require('./routes/assignSubject')
+const calculatedPo = require('./routes/calculatedPo')
 const login = require('./routes/login')
 
 
@@ -54,6 +55,7 @@ app.use("/sub", subjectRoute)
 app.use("/mark", marks)
 app.use("/co-po", coPoMapping)
 app.use("/assignSub", assignSubject)
+app.use("/calpo", calculatedPo)
 app.use("/login", login)
 
 
