@@ -14,9 +14,16 @@ const {
 
 const router  = express.Router();
 
-router.post('/', handleVerifyToken, handleAuthorizeRoles('admin'), handleAssignSubject);
-router.get('/:facultyId', handleVerifyToken, handleAuthorizeRoles('admin'), getAssignedSubjectsByFaculty);
-router.get('/', handleVerifyToken, handleAuthorizeRoles('admin'), getAllFacultyAssignments);
-router.delete('/', handleVerifyToken, handleAuthorizeRoles('admin'), removeSubjectFromFaculty);
+// router.post('/', handleVerifyToken, handleAuthorizeRoles('admin'), handleAssignSubject);
+router.post('/', handleAssignSubject);
+
+// router.get('/:facultyId', handleVerifyToken, handleAuthorizeRoles('admin'), getAssignedSubjectsByFaculty);
+router.get('/:facultyId', getAssignedSubjectsByFaculty);
+
+// router.get('/', handleVerifyToken, handleAuthorizeRoles('admin'), getAllFacultyAssignments);
+router.get('/', getAllFacultyAssignments);
+
+// router.delete('/', handleVerifyToken, handleAuthorizeRoles('admin'), removeSubjectFromFaculty);
+router.delete('/', removeSubjectFromFaculty);
 
 module.exports = router;

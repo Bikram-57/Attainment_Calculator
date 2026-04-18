@@ -32,7 +32,8 @@ const upload = multer({
  * @desc    Upload Excel, Calculate 4-Row Marks, and Generate Final Direct Attainment
  * @access  Public (or add your Auth Middleware here)
  */
-router.post('/upload-raw', upload.single('excelFile'), handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), async (req, res) => {
+// router.post('/upload-raw', upload.single('excelFile'), handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), async (req, res) => {
+router.post('/upload-raw', upload.single('excelFile'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ success: false, error: "No Excel file provided." });
@@ -72,8 +73,13 @@ router.post('/upload-raw', upload.single('excelFile'), handleVerifyToken, handle
 });
 
 
-router.get('/raw-data', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), getRawMarksData);
-router.get('/get-calculations', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), getCalculatedWithStudentMarks);
-router.get('/get-final-attainment', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), getFinalAttainmentData);
+// router.get('/raw-data', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), getRawMarksData);
+router.get('/raw-data', getRawMarksData);
+
+// router.get('/get-calculations', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), getCalculatedWithStudentMarks);
+router.get('/get-calculations', getCalculatedWithStudentMarks);
+
+// router.get('/get-final-attainment', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), getFinalAttainmentData);
+router.get('/get-final-attainment', getFinalAttainmentData);
 
 module.exports = router;
