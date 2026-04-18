@@ -119,7 +119,7 @@ async function generateAndSavePoAttainment(req, res) {
     // This logs the full stack trace to your terminal
     console.error('Error generating and saving PO Attainment:', error);
     
-    // This sends the exact error message straight to your API response
+    
     return res.status(500).json({ 
       success: false,
       message: 'Internal server error during processing',
