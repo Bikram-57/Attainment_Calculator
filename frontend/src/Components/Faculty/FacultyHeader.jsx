@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { BsSearch } from "react-icons/bs";
+import AddFacultyForm from './AddFacultyForm';
 
-function FacultyHeader() {
+function FacultyHeader({ setToggleNewUser }) {
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
         <div className='flex justify-between p-4'>
             <div className='text-blue-900 text-xl font-semibold'>List of Faculty</div>
@@ -20,11 +23,19 @@ function FacultyHeader() {
                 <div>
                     <button
                         className='bg-blue-900 text-white px-3 py-1 rounded-lg cursor-pointer'
+                        onClick={() => setIsOpen(true)}
                     >
                         Add Faculty
                     </button>
                 </div>
             </div>
+            {isOpen &&
+                <AddFacultyForm
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}
+                    setToggleNewUser={setToggleNewUser}
+                />
+            }
         </div>
     )
 }

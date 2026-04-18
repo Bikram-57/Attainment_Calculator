@@ -15,7 +15,9 @@ import {
     FinalCOAttainTable,
     POAttainment,
     POAttainTable,
-} from "./Attainment/index"
+} from "./Attainment/index";
+import Login from "./Login";
+import AddFacultyForm from "./Faculty/AddFacultyForm";
 
 export {
     NavBar,
@@ -34,4 +36,6 @@ export {
     FinalCOAttainTable,
     POAttainment,
     POAttainTable,
+    Login,
+    AddFacultyForm
 }
