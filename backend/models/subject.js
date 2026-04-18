@@ -23,13 +23,13 @@ const subjectSchema = new mongoose.Schema({
     required: [true, 'Academic Year is required'],
     index: true 
   },
-  status: {
-    type: String,
-    required: [true, 'Subject status is mandatory'], // NEW: Makes the field mandatory
-    enum: ['Pending', 'Done'], 
-    default: 'Pending',        
-    index: true                
-  }
+  // status: {
+  //   type: String,
+  //   required: [true, 'Subject status is mandatory'], // NEW: Makes the field mandatory
+  //   enum: ['Pending', 'Done'], 
+  //   default: 'Pending',        
+  //   index: true                
+  // }
 }, { timestamps: true });
 
 // COMPOUND INDEX: This ensures a subject ID is unique within a specific year
