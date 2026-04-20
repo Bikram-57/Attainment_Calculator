@@ -1,11 +1,17 @@
 const express = require("express");
 
-const { handleGenerateDirectPoAttainment } = require("../controllers/directPoAttainment")
+const { 
+    handleGenerateDirectPoAttainment,
+    // fetchCoGrandTotals
+    getDirectPoAttainment
+ } = require("../controllers/directPoAttainment")
 
 const router = express.Router();
 
 
 
-router.get("/", handleGenerateDirectPoAttainment);
+router.post("/", handleGenerateDirectPoAttainment);
+router.get("/", getDirectPoAttainment);
+// router.get("/", fetchCoGrandTotals);
 
 module.exports = router
