@@ -6,15 +6,14 @@ const PoAttainment = require('../models/calculatedPo');
 // const generateAndSavePoAttainment = async (req, res) => {
 async function generateAndSavePoAttainment(req, res) {
 
-
 try {
-    // 1. Extract parameters from the request query
-    let { course, academicYear, subjectId } = req.query;
+    // 1. Extract parameters from the request BODY
+    let { course, academicYear, subjectId } = req.body;
 
     if (!course || !academicYear || !subjectId) {
       return res.status(400).json({
         success: false,
-        message: 'Course, academicYear, and subjectId are required query parameters'
+        message: 'Course, academicYear, and subjectId are required in the request body'
       });
     }
 
@@ -61,15 +60,11 @@ try {
       let sum = 0;
       let count = 0;
 
-      // Check CO1 through CO5 dynamically
       for (let j = 1; j <= 5; j++) {
         const coKey = `CO${j}`;
         
-        // Ensure the CO row exists before checking its PO column
         if (mappingData[coKey] && mappingData[coKey][poKey] !== undefined) {
-          // Parse the value (safely handles strings, numbers, and ignores empty strings "")
           const val = parseFloat(mappingData[coKey][poKey]);
-          
           if (!isNaN(val) && val > 0) {
             sum += val;
             count++;
@@ -78,11 +73,9 @@ try {
       }
 
       if (count > 0) {
-        // Compute Average CO
         const avg = sum / count;
         averageCo[poKey] = Number.isInteger(avg) ? avg : parseFloat(avg.toFixed(2));
         
-        // Compute Final PO Attainment: (Average CO * Final Subject Score) / 3
         const poScore = (avg * finalScore) / 3;
         poAttainment[poKey] = parseFloat(poScore.toFixed(2));
       } else {
@@ -91,132 +84,105 @@ try {
       }
     }
 
-    // 6. Return the perfectly formatted payload mirroring your exact requested order
-    return res.status(200).json({
-      success: true,
-      mappingData: {
-        ...mappingData,                         // Injects CO1 through CO5
-        averageCo: averageCo,                   // Injects your calculated averageCo row
-        finalSubjectAttainment: finalScore,     // <--- Moved up!
-        poAttainment: poAttainment              // <--- Moved down!
+    // 6. SAVE TO DATABASE (UPSERT)
+    const savedData = await PoAttainment.findOneAndUpdate(
+      { 
+        course: course, 
+        subjectId: subjectId, 
+        academicYear: academicYear 
+      },
+      { 
+        $set: {
+          course: course,
+          subjectId: subjectId,
+          academicYear: academicYear,
+          mappingData: mappingData,          // <--- NEW: Saves the raw CO-PO mappings!
+          averageCo: averageCo,
+          finalSubjectAttainment: finalScore,
+          poAttainment: poAttainment
+        } 
+      },
+      { 
+        new: true,    
+        upsert: true  
       }
+    );
+
+    // 7. Return success response
+    return res.status(201).json({
+      success: true,
+      message: 'PO Attainment calculated and saved successfully!',
+      data: savedData
     });
 
   } catch (error) {
-    console.error('Error retrieving combined data:', error);
-
+    console.error('Error saving PO Attainment data:', error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error during processing',
+      message: 'Internal server error during database save',
       errorDetails: error.message
     });
   }
 };
 
-// try {
-//     // 1. Extract parameters from the request query
-//     let { course, academicYear, subjectId } = req.query;
 
-//     if (!course || !academicYear || !subjectId) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'Course, academicYear, and subjectId are required query parameters'
-//       });
-//     }
 
-//     // --- INPUT SANITIZATION & FORMATTING ---
-//     course = course.trim();
-//     subjectId = subjectId.trim();
-//     academicYear = academicYear.trim();
+const getPoAttainmentData = async (req, res) => {
+  try {
+    // 1. Extract parameters from the request query (URL parameters)
+    let { course, academicYear, subjectId } = req.query;
 
-//     if (academicYear.includes('-')) {
-//       academicYear = academicYear.split('-')[1].trim();
-//     }
+    if (!course || !academicYear || !subjectId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Course, academicYear, and subjectId are required query parameters'
+      });
+    }
 
-//     // 2. Fetch BOTH documents simultaneously (Using .lean() for clean JS objects)
-//     const [mappingRecord, finalAttainmentRecord] = await Promise.all([
-//       CopoMapping.findOne({ course, subjectId, academicYear }).lean(),
-//       CoAttainment.findOne({ course, subjectId, academicYear }).lean()
-//     ]);
+    // --- INPUT SANITIZATION & FORMATTING ---
+    course = course.trim();
+    subjectId = subjectId.trim();
+    academicYear = academicYear.trim();
 
-//     // 3. Validation Checks
-//     if (!mappingRecord || !mappingRecord.mappingData) {
-//       return res.status(404).json({
-//         success: false,
-//         message: `No CO-PO mappings found for Course: ${course}, Subject: ${subjectId}, Year: ${academicYear}`
-//       });
-//     }
+    // Handle standard "2025-2026" format if passed from frontend
+    if (academicYear.includes('-')) {
+      academicYear = academicYear.split('-')[1].trim();
+    }
 
-//     if (!finalAttainmentRecord) {
-//       return res.status(404).json({
-//         success: false,
-//         message: `No Final Attainment found for Course: ${course}, Subject: ${subjectId}, Year: ${academicYear}`
-//       });
-//     }
+    // 2. Fetch the saved data from the database
+    // Using .lean() to get a clean JavaScript object back
+    const attainmentRecord = await PoAttainment.findOne({ 
+      course: course, 
+      subjectId: subjectId, 
+      academicYear: academicYear 
+    }).lean();
 
-//     // 4. Extract data
-//     const finalScore = finalAttainmentRecord.finalSubjectAttainment;
-//     const mappingData = mappingRecord.mappingData; 
+    // 3. Validation Check
+    if (!attainmentRecord) {
+      return res.status(404).json({
+        success: false,
+        message: `No PO Attainment record found for Course: ${course}, Subject: ${subjectId}, Year: ${academicYear}`
+      });
+    }
 
-//     // 5. CALCULATE THE AVERAGE CO & PO ATTAINMENT MATRIX
-//     const averageCo = {};
-//     const poAttainment = {};
+    // 4. Return the beautifully formatted document straight to the frontend
+    return res.status(200).json({
+      success: true,
+      data: attainmentRecord
+    });
 
-//     for (let i = 1; i <= 8; i++) {
-//       const poKey = `PO${i}`;
-//       let sum = 0;
-//       let count = 0;
+  } catch (error) {
+    console.error('Error retrieving PO Attainment data:', error);
+    
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error during data retrieval',
+      errorDetails: error.message
+    });
+  }
+};
 
-//       // Check CO1 through CO5 dynamically
-//       for (let j = 1; j <= 5; j++) {
-//         const coKey = `CO${j}`;
-        
-//         // Ensure the CO row exists before checking its PO column
-//         if (mappingData[coKey] && mappingData[coKey][poKey] !== undefined) {
-//           // Parse the value (safely handles strings, numbers, and ignores empty strings "")
-//           const val = parseFloat(mappingData[coKey][poKey]);
-          
-//           if (!isNaN(val) && val > 0) {
-//             sum += val;
-//             count++;
-//           }
-//         }
-//       }
-
-//       if (count > 0) {
-//         // Compute Average CO
-//         const avg = sum / count;
-//         averageCo[poKey] = Number.isInteger(avg) ? avg : parseFloat(avg.toFixed(2));
-        
-//         // Compute Final PO Attainment: (Average CO * Final Subject Score) / 3
-//         const poScore = (avg * finalScore) / 3;
-//         poAttainment[poKey] = parseFloat(poScore.toFixed(2));
-//       } else {
-//         // Output empty strings to match your exact JSON format for unmapped cells
-//         averageCo[poKey] = "";
-//         poAttainment[poKey] = "";
-//       }
-//     }
-
-//     // 6. Return the perfectly formatted payload mirroring your exact structure
-//     return res.status(200).json({
-//       success: true,
-//       mappingData: {
-//         ...mappingData,                         // Injects CO1 through CO5
-//         averageCo: averageCo,                   // Injects your calculated averageCo row
-//         poAttainment: poAttainment,             // Injects the final calculated PO matrix
-//         finalSubjectAttainment: finalScore      // Injects the 0.9 directly at the bottom
-//       }
-//     });
-
-//   } catch (error) {
-//     console.error('Error retrieving combined data:', error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: 'Internal server error during processing',
-//       errorDetails: error.message
-//     });
-//   }
-// };
-module.exports = { generateAndSavePoAttainment };
+module.exports = { 
+  generateAndSavePoAttainment,
+  getPoAttainmentData
+ };

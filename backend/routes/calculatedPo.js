@@ -1,8 +1,9 @@
 const express = require("express")
 const router = express.Router();
 
-const { generateAndSavePoAttainment } = require("../controllers/calculatedPo")
+const { generateAndSavePoAttainment, getPoAttainmentData } = require("../controllers/calculatedPo")
 
-router.get("/", generateAndSavePoAttainment)
+router.post("/", generateAndSavePoAttainment)
+router.get("/", getPoAttainmentData)
 
 module.exports = router
