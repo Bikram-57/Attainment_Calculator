@@ -5,22 +5,23 @@ import { Option } from '../index'
 
 function Faculty() {
 	const [facultyData, setFacultyData] = useState([]);
+	const [toggleNewUser, setToggleNewUser] = useState(false);
 
 	const getFacultyData = async () => {
 		try {
-			const response = await axios.get('/user/');			
+			const response = await axios.get('/user/');
 			setFacultyData(response.data.data);
 		} catch (error) {
 			console.log('Axios Error | getFacultyData(): ', error);
 		}
 	}
-	
+
 	useEffect(() => {
 		getFacultyData();
-	}, []);
+	}, [toggleNewUser]);
 	return (
 		<div className=''>
-			<FacultyHeader />
+			<FacultyHeader setToggleNewUser={setToggleNewUser} />
 			<div>
 				<table className='w-full'>
 					<thead>
@@ -39,7 +40,10 @@ function Faculty() {
 								<td className='px-5 py-2 w-[35%]'>{faculty.email}</td>
 								<td className='px-5 py-2 flex items-center justify-center'>
 									{/* <SlOptions className='cursor-pointer'/> */}
-									<Option />
+									<Option
+										setToggleNewUser={setToggleNewUser}
+										facultyId={faculty.facultyId}
+									/>
 								</td>
 							</tr>
 						))}
