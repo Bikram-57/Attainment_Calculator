@@ -6,14 +6,15 @@ const PoAttainment = require('../models/calculatedPo');
 // const generateAndSavePoAttainment = async (req, res) => {
 async function generateAndSavePoAttainment(req, res) {
 
-  try {
+
+try {
     // 1. Extract parameters from the request query
     let { course, academicYear, subjectId } = req.query;
 
     if (!course || !academicYear || !subjectId) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'Course, academicYear, and subjectId are required query parameters' 
+        message: 'Course, academicYear, and subjectId are required query parameters'
       });
     }
 
@@ -22,50 +23,37 @@ async function generateAndSavePoAttainment(req, res) {
     subjectId = subjectId.trim();
     academicYear = academicYear.trim();
 
-    // If the year comes in as "2025-2026", split it and grab "2026"
     if (academicYear.includes('-')) {
-      academicYear = academicYear.split('-')[1].trim(); 
+      academicYear = academicYear.split('-')[1].trim();
     }
 
-    // Validate ObjectIds to prevent Mongoose casting failures
-    if (!mongoose.Types.ObjectId.isValid(course) || !mongoose.Types.ObjectId.isValid(subjectId)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid format for Course ID or Subject ID' 
-      });
-    }
+    // 2. Fetch BOTH documents simultaneously (Using .lean() for clean JS objects)
+    const [mappingRecord, finalAttainmentRecord] = await Promise.all([
+      CopoMapping.findOne({ course, subjectId, academicYear }).lean(),
+      CoAttainment.findOne({ course, subjectId, academicYear }).lean()
+    ]);
 
-    // 2. Fetch the CO-PO mappings (Now searching with just "2026")
-    const mappings = await CopoMapping.find({ 
-      subject: subjectId, 
-      academicYear: academicYear
-    });
-
-    if (!mappings || mappings.length === 0) {
-      return res.status(404).json({ 
+    // 3. Validation Checks
+    if (!mappingRecord || !mappingRecord.mappingData) {
+      return res.status(404).json({
         success: false,
-        message: `No CO-PO mappings found for Subject ID: ${subjectId} in year: ${academicYear}` 
+        message: `No CO-PO mappings found for Course: ${course}, Subject: ${subjectId}, Year: ${academicYear}`
       });
     }
 
-    // 3. Fetch the pre-calculated CO Attainment
-    const coAttainmentRecord = await CoAttainment.findOne({
-      subject: subjectId,
-      academicYear: academicYear
-    });
-
-    if (!coAttainmentRecord) {
-      return res.status(404).json({ 
+    if (!finalAttainmentRecord) {
+      return res.status(404).json({
         success: false,
-        message: `CO Attainment record not found for Subject ID: ${subjectId} in year: ${academicYear}` 
+        message: `No Final Attainment found for Course: ${course}, Subject: ${subjectId}, Year: ${academicYear}`
       });
     }
 
-    // Assuming the value is stored under 'coAttainmentValue' in your schema
-    const overallCoAttainment = coAttainmentRecord.coAttainmentValue; 
+    // 4. Extract data
+    const finalScore = finalAttainmentRecord.finalSubjectAttainment;
+    const mappingData = mappingRecord.mappingData; 
 
-    // 4. Calculate the PO Matrix (Strictly limited to 8 POs)
-    const averageCO = {};
+    // 5. CALCULATE THE AVERAGE CO & PO ATTAINMENT MATRIX
+    const averageCo = {};
     const poAttainments = {};
 
     for (let i = 1; i <= 8; i++) {
@@ -73,54 +61,52 @@ async function generateAndSavePoAttainment(req, res) {
       let sum = 0;
       let count = 0;
 
-      // Loop through all CO rows for this specific PO column
-      mappings.forEach(mappingRow => {
-        if (mappingRow[poKey] && mappingRow[poKey] > 0) {
-          sum += mappingRow[poKey];
-          count++;
+      // Check CO1 through CO5 dynamically
+      for (let j = 1; j <= 5; j++) {
+        const coKey = `CO${j}`;
+        
+        // Ensure the CO row exists before checking its PO column
+        if (mappingData[coKey] && mappingData[coKey][poKey] !== undefined) {
+          // Parse the value (This safely handles string "2", number 2, and ignores "")
+          const val = parseFloat(mappingData[coKey][poKey]);
+          
+          if (!isNaN(val) && val > 0) {
+            sum += val;
+            count++;
+          }
         }
-      });
+      }
 
       if (count > 0) {
-        // Calculate Average CO for this column
+        // Compute Average CO
         const avg = sum / count;
-        averageCO[poKey] = Number.isInteger(avg) ? avg : parseFloat(avg.toFixed(2));
+        averageCo[poKey] = Number.isInteger(avg) ? avg : parseFloat(avg.toFixed(2));
         
-        // PO Attainment Formula: (Average CO * Overall CO Attainment) / 3
-        const poScore = (avg * overallCoAttainment) / 3;
+        // Compute Final PO Attainment: (Average CO * Final Subject Score) / 3
+        const poScore = (avg * finalScore) / 3;
         poAttainments[poKey] = parseFloat(poScore.toFixed(2));
       } else {
-        // Leave null if no mappings exist for this PO
-        averageCO[poKey] = null;
-        poAttainments[poKey] = null;
+        // Output empty strings to match your exact JSON format
+        averageCo[poKey] = "";
+        poAttainments[poKey] = "";
       }
     }
 
-    // 5. Save the calculated data into the NEW database collection
-    const newPoAttainmentReport = new PoAttainment({
-      course: course,
-      subject: subjectId,
-      academicYear: academicYear, // This will save as "2026" to keep your DB consistent
-      overallCoAttainment: overallCoAttainment,
-      averageCO: averageCO,
-      poAttainments: poAttainments
-    });
-
-    const savedReport = await newPoAttainmentReport.save();
-
-    // 6. Return success response
-    return res.status(201).json({
+    // 6. Return the perfectly formatted payload
+    return res.status(200).json({
       success: true,
-      message: 'PO Attainment calculated and saved successfully',
-      data: savedReport
+      finalSubjectAttainment: finalScore,
+      mappingData: {
+        ...mappingData,        // Spreads CO1, CO2, CO3, CO4, CO5 into the object
+        averageCo: averageCo   // Injects your formatted averageCo row right below them
+      },
+      finalPoAttainment: poAttainments // The finalized (Avg * Final / 3) math
     });
 
   } catch (error) {
-    // This logs the full stack trace to your terminal
-    console.error('Error generating and saving PO Attainment:', error);
-    
-    
-    return res.status(500).json({ 
+    console.error('Error retrieving combined data:', error);
+
+    return res.status(500).json({
       success: false,
       message: 'Internal server error during processing',
       errorDetails: error.message

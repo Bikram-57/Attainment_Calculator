@@ -3,6 +3,6 @@ const router = express.Router();
 
 const { generateAndSavePoAttainment } = require("../controllers/calculatedPo")
 
-router.post("/", generateAndSavePoAttainment)
+router.get("/", generateAndSavePoAttainment)
 
 module.exports = router
