@@ -3,7 +3,6 @@ const CopoMapping = require('../models/coPoMapping');
 const CoAttainment = require('../models/finalAttainment');
 const PoAttainment = require('../models/calculatedPo');
 
-// const generateAndSavePoAttainment = async (req, res) => {
 async function generateAndSavePoAttainment(req, res) {
 
 try {
