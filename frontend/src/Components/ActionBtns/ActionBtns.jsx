@@ -1,19 +1,30 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
 import { SlOptions } from 'react-icons/sl';
+import DeleteModal from './DeleteModal';
 
-function Option({setToggleNewUser, facultyId}) {
+function ActionBtns({setToggleNewUser, facultyId}) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const ref = useRef();
 
+	// const deleteUser = async () => {
 	const deleteUser = async () => {
-		try {
-			const response = await axios.delete(`/user/${facultyId}`);			
-			setToggleNewUser(prev => !prev);
-		} catch (error) {
-			console.log('Axios Error | deleteUser(): ', error);
-		}
+        alert('working')
+		// try {
+		// 	const response = await axios.delete(`/user/${facultyId}`);			
+		// 	setToggleNewUser(prev => !prev);
+		// } catch (error) {
+		// 	console.log('Axios Error | deleteUser(): ', error);
+		// }
+        setIsDeleteOpen(false);
+        setIsOpen(false);
 	}
+
+    const closeMenu = () => {
+        setIsDeleteOpen(false);
+        setIsOpen(false);
+    }
 
     useEffect(() => {
         const close = (e) => !ref.current?.contains(e.target) && setIsOpen(false);
@@ -34,14 +45,18 @@ function Option({setToggleNewUser, facultyId}) {
                     <p className="px-4 py-1 hover:bg-gray-100 cursor-pointer">Edit</p>
                     <p
                         className="px-4 py-1 hover:bg-gray-100 cursor-pointer"
-                        onClick={deleteUser}
+                        // onClick={deleteUser}
+                        onClick={() => setIsDeleteOpen(prev => !prev)}
                     >
                         Delete
                     </p>
                 </div>
             )}
+            {isDeleteOpen && (
+                <DeleteModal onDelete={deleteUser} onClose={closeMenu}/>
+            )}
         </div>
     )
 }
 
-export default Option
+export default ActionBtns

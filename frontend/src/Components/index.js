@@ -4,7 +4,7 @@ import Faculty from "./Faculty/Faculty";
 import FacultyHeader from "./Faculty/FacultyHeader";
 import Subject from "./Subject/Subject";
 import SubjectHeader from "./Subject/SubjectHeader";
-import Option from "./Option";
+import ActionBtns from "./ActionBtns/ActionBtns";
 import UploadData from "./UploadData";
 import FetchData from "./FetchData";
 import {
@@ -18,6 +18,7 @@ import {
 } from "./Attainment/index";
 import Login from "./Login";
 import AddFacultyForm from "./Faculty/AddFacultyForm";
+import DeleteModal from "./ActionBtns/DeleteModal";
 
 export {
     NavBar,
@@ -26,7 +27,7 @@ export {
     FacultyHeader,
     Subject,
     SubjectHeader,
-    Option,
+    ActionBtns,
     UploadData,
     FetchData,
     Attainment,
@@ -37,5 +38,6 @@ export {
     POAttainment,
     POAttainTable,
     Login,
-    AddFacultyForm
+    AddFacultyForm,
+    DeleteModal,
 }

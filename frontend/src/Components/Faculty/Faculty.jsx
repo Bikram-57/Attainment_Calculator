@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import FacultyHeader from './FacultyHeader'
 import axios from 'axios'
-import { Option } from '../index'
+import { ActionBtns } from '../index';
 
 function Faculty() {
 	const [facultyData, setFacultyData] = useState([]);
@@ -40,7 +40,7 @@ function Faculty() {
 								<td className='px-5 py-2 w-[35%]'>{faculty.email}</td>
 								<td className='px-5 py-2 flex items-center justify-center'>
 									{/* <SlOptions className='cursor-pointer'/> */}
-									<Option
+									<ActionBtns
 										setToggleNewUser={setToggleNewUser}
 										facultyId={faculty.facultyId}
 									/>

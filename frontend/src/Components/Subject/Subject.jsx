@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import SubjectHeader from './SubjectHeader';
-import { Option } from '../index'
+import { ActionBtns } from '../index'
 
 function Subject() {
     const [subjectData, setSubjectData] = useState([]);
@@ -39,7 +39,7 @@ function Subject() {
                                 <td className='px-5 py-2 w-[35%]'>{sub.subjectName}</td>
                                 <td className='px-5 py-2 w-[35%]'>{sub.course}</td>
                                 <td className='px-5 py-2 flex items-center justify-center'>
-                                    <Option />
+                                    <ActionBtns />
                                 </td>
                             </tr>
                         ))}
