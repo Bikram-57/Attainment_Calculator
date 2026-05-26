@@ -372,6 +372,60 @@ async function handleCalculatedMarks(req, res, isPipeline = false) {
  * getCalculatedWithStudentMarks
  * Returns the 4-row attainment data + the full student list with their scores.
  */
+// async function getCalculatedWithStudentMarks(req, res) {
+//     try {
+//         const { subjectId, academicYear, course } = req.query;
+
+//         // 1. Validation
+//         if (!subjectId || !academicYear || !course) {
+//             return res.status(400).json({ 
+//                 success: false, 
+//                 message: "subjectId, academicYear, and course are required query parameters." 
+//             });
+//         }
+
+//         // 2. Fetch the document
+//         // .lean() ensures the nested Mixed/Maps are converted safely to standard JSON
+//         const report = await CalculatedMark.findOne({
+//             subjectId: subjectId.toUpperCase(),
+//             academicYear: academicYear,
+//             course: course.toUpperCase()
+//         }).lean();
+
+//         // 3. Handle 'Not Found'
+//         if (!report) {
+//             return res.status(404).json({ 
+//                 success: false, 
+//                 message: "No calculated data found for this subject." 
+//             });
+//         }
+
+//         // 4. Return the combined data
+//         return res.status(200).json({
+//             success: true,
+//             metadata: {
+//                 subjectId: report.subjectId,
+//                 academicYear: report.academicYear,
+//                 course: report.course,
+//                 totalStudents: report.totalStudents
+//             },
+//             // The Raw Student Marks (RegNo + Individual Scores)
+//             studentMarks: report.allStudentMarks, 
+//             // The 4-row Attainment Table (Target, %, Level)
+//             attainmentReport: report.reportData
+//         });
+
+//     } catch (error) {
+//         console.error("Fetch Combined Calculated Marks Error:", error.message);
+//         return res.status(500).json({ 
+//             success: false, 
+//             error: "Internal Server Error while fetching calculations." 
+//         });
+//     }
+// }
+
+
+
 async function getCalculatedWithStudentMarks(req, res) {
     try {
         const { subjectId, academicYear, course } = req.query;
@@ -409,9 +463,13 @@ async function getCalculatedWithStudentMarks(req, res) {
                 course: report.course,
                 totalStudents: report.totalStudents
             },
-            // The Raw Student Marks (RegNo + Individual Scores)
-            studentMarks: report.allStudentMarks, 
-            // The 4-row Attainment Table (Target, %, Level)
+            // THE FIX: Changed to actualMarks to match the database
+            studentMarks: report.actualMarks, 
+            
+            // BONUS: Included maxMarks since we just saved it to the DB
+            maxMarks: report.maxMarks,
+
+            // The Attainment Table (Target, %, Level)
             attainmentReport: report.reportData
         });
 
