@@ -1,17 +1,34 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useState } from 'react'
+import { IoMdClose } from "react-icons/io";
 
-function FacultyEditModal({
-    // isOpen,
-    onClose,
-    faculty,
-    onUpdate,
-}) {
-    // if (!isOpen) return null;
+function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
+    const [id, setId] = useState(data.facultyId);
+    const [name, setName] = useState(data.name);
+    const [email, setEmail] = useState(data.email);
 
+    const updateUser = async () => {
+        try {
+            const res = await axios.put(`/user/${data.facultyId}`, {
+                name: name,
+                email: email
+            });
+            closeMenu();
+            toggleUpdate();
+            alert('Faculty updated successfully!');
+        } catch (error) {
+
+        }
+    }
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <div className="w-[90%] max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden">
-
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm cursor-default"
+            onClick={closeMenu}
+        >
+            <div
+                className="w-[90%] max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b">
                     <h2 className="text-3xl font-semibold text-blue-700">
@@ -19,10 +36,10 @@ function FacultyEditModal({
                     </h2>
 
                     <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700 transition"
+                        onClick={closeMenu}
+                        className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
                     >
-                        <X size={32} />
+                        <IoMdClose className='w-10 h-10' />
                     </button>
                 </div>
 
@@ -36,8 +53,8 @@ function FacultyEditModal({
                         </label>
                         <input
                             type="text"
-                            value={faculty.id}
-                            readOnly
+                            value={id}
+                            onChange={(e) => setId(e.target.value)}
                             className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg bg-gray-50 outline-none"
                         />
                     </div>
@@ -49,8 +66,8 @@ function FacultyEditModal({
                         </label>
                         <input
                             type="text"
-                            value={faculty.name}
-                            readOnly
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg bg-gray-50 outline-none"
                         />
                     </div>
@@ -62,8 +79,8 @@ function FacultyEditModal({
                         </label>
                         <input
                             type="email"
-                            value={faculty.email}
-                            readOnly
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg bg-gray-50 outline-none"
                         />
                     </div>
@@ -72,8 +89,8 @@ function FacultyEditModal({
                 {/* Footer */}
                 <div className="px-6 py-4 border-t flex justify-end">
                     <button
-                        onClick={onUpdate}
-                        className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded-lg text-lg font-medium shadow"
+                        onClick={updateUser}
+                        className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded-lg text-lg font-medium shadow cursor-pointer"
                     >
                         Update
                     </button>

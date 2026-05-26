@@ -42,7 +42,7 @@ function Faculty() {
 								<td className='px-5 py-2 w-[35%]'>{faculty.email}</td>
 								<td className='px-5 py-2 flex items-center justify-center'>
 									<ActionBtns
-										facultyId={faculty.facultyId}
+										data={faculty}
 										toggleUpdate={toggleUpdate}
 										ViewModal={FacultyViewModal}
 										EditModal={FacultyEditModal}

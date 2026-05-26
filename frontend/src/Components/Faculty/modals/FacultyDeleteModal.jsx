@@ -2,10 +2,10 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { IoWarning } from "react-icons/io5";
 
-function FacultyDeleteModal({ facultyId, toggleUpdate, closeMenu }) {
+function FacultyDeleteModal({ data, toggleUpdate, closeMenu }) {
     const deleteUser = async () => {
         try {
-            const res = await axios.delete(`/user/${facultyId}`)
+            const res = await axios.delete(`/user/${data.facultyId}`)
             closeMenu();
             toggleUpdate();
             alert('Faculty deleted successfully!');
