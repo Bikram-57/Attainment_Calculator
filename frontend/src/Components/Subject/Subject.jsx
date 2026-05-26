@@ -26,7 +26,7 @@ function Subject() {
     }, [toggleNewSubject]);
     return (
         <div className='h-full flex flex-col'>
-            <SubjectHeader />
+            <SubjectHeader toggleUpdate={toggleUpdate} />
             <div className="flex-1 overflow-y-auto">
                 <table className='w-full'>
                     <thead>

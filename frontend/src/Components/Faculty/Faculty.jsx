@@ -23,7 +23,7 @@ function Faculty() {
 	}, [toggleNewUser]);
 	return (
 		<div className=''>
-			<FacultyHeader setToggleNewUser={setToggleNewUser} />
+			<FacultyHeader toggleUpdate={toggleUpdate} />
 			<div>
 				<table className='w-full'>
 					<thead>

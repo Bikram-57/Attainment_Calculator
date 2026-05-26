@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { BsSearch } from "react-icons/bs";
 import AddFacultyForm from './AddFacultyForm';
 
-function FacultyHeader({ setToggleNewUser }) {
+function FacultyHeader({ toggleUpdate }) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -14,7 +14,7 @@ function FacultyHeader({ setToggleNewUser }) {
                         type='text'
                         placeholder='Search by id or name'
 
-                        className='border-r border-gray-300 px-3 py-1 w-[250px]'
+                        className='border-r border-gray-300 px-3 py-1 w-62.5'
                     />
                     <div className='px-3 py-1 cursor-pointer'>
                         <BsSearch />
@@ -33,7 +33,7 @@ function FacultyHeader({ setToggleNewUser }) {
                 <AddFacultyForm
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}
-                    setToggleNewUser={setToggleNewUser}
+                    toggleUpdate={toggleUpdate}
                 />
             }
         </div>

@@ -17,16 +17,16 @@ function NavBar() {
     }
 
     return (
-        <div className='bg-gray-50 h-[60px] px-4 flex justify-between items-center font-semibold'>
+        <div className='bg-gray-50 h-15 px-4 flex justify-between items-center font-semibold'>
             <div className='h-full flex items-center gap-7 mx-4'>
-                <RxHamburgerMenu className='h-full w-[25px] cursor-pointer' onClick={handleClick} />
+                <RxHamburgerMenu className='h-full w-6.25 cursor-pointer' onClick={handleClick} />
                 {/* TODO: MAKE THE BELOW TEXT DYNAMIC */}
                 <div className='text-blue-900'>
                     {title}
                 </div>
             </div>
             <div className='text-blue-900 h-full flex items-center gap-2'>
-                <FaUserAlt className='h-full w-[20px]' />
+                <FaUserAlt className='h-full w-5' />
                 <div>Admin</div>
             </div>
         </div>

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from 'axios'
+import { IoMdClose } from "react-icons/io";
 
-function AddFacultyForm({ isOpen, setIsOpen, setToggleNewUser }) {
+function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
     const [facultyId, setFacultyId] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const password = "cadept@1234";
-    
+
     if (!isOpen) return null;
 
     const handleAddFaculty = async () => {
@@ -17,7 +18,7 @@ function AddFacultyForm({ isOpen, setIsOpen, setToggleNewUser }) {
                 email: email,
                 password: password
             });
-            setToggleNewUser(prev => !prev);
+            toggleUpdate();
             setIsOpen(false);
             console.log(res.data);
         } catch (err) {
@@ -31,9 +32,9 @@ function AddFacultyForm({ isOpen, setIsOpen, setToggleNewUser }) {
                 {/* Close Button */}
                 <button
                     onClick={() => setIsOpen(false)}
-                    className="absolute top-3 right-3 text-gray-500 hover:text-black cursor-pointer"
+                    className="absolute top-5 right-4 text-gray-500 hover:text-black cursor-pointer"
                 >
-                    ✕
+                    <IoMdClose className='w-6 h-6' />
                 </button>
 
                 {/* Title */}
@@ -84,7 +85,7 @@ function AddFacultyForm({ isOpen, setIsOpen, setToggleNewUser }) {
                             defaultValue={password}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 bg-gr ay-100"
                             disabled
-                            // readOnly
+                        // readOnly
                         />
                     </div>
 
