@@ -5,6 +5,7 @@ import { ActionBtns } from '../index'
 
 function Subject() {
     const [subjectData, setSubjectData] = useState([]);
+    const [toggleNewSubject, setToggleNewSubject] = useState(false);
 
     const getSubjectData = async () => {
         try {
@@ -18,7 +19,7 @@ function Subject() {
 
     useEffect(() => {
         getSubjectData();
-    }, []);
+    }, [toggleNewSubject]);
     return (
         <div className='h-full flex flex-col'>
             <SubjectHeader />
@@ -33,13 +34,16 @@ function Subject() {
                         </tr>
                     </thead>
                     <tbody>
-                        {subjectData?.map(sub => (
-                            <tr className='text-left border-b border-gray-300' key={sub._id}>
-                                <td className='px-5 py-2 w-[15%]'>{sub.subjectId}</td>
-                                <td className='px-5 py-2 w-[35%]'>{sub.subjectName}</td>
-                                <td className='px-5 py-2 w-[35%]'>{sub.course}</td>
+                        {subjectData?.map(subject => (
+                            <tr className='text-left border-b border-gray-300' key={subject._id}>
+                                <td className='px-5 py-2 w-[15%]'>{subject.subjectId}</td>
+                                <td className='px-5 py-2 w-[35%]'>{subject.subjectName}</td>
+                                <td className='px-5 py-2 w-[35%]'>{subject.course}</td>
                                 <td className='px-5 py-2 flex items-center justify-center'>
-                                    <ActionBtns />
+                                    <ActionBtns
+                                        toggleUpdate={setToggleNewSubject}
+                                        data={subject}
+                                    />
                                 </td>
                             </tr>
                         ))}
