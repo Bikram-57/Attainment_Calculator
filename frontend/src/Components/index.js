@@ -21,6 +21,9 @@ import AddFacultyForm from "./Faculty/AddFacultyForm";
 import FacultyViewModal from "./Faculty/modals/FacultyViewModal";
 import FacultyEditModal from "./Faculty/modals/FacultyEditModal";
 import FacultyDeleteModal from "./Faculty/modals/FacultyDeleteModal";
+import SubjectViewModal from "./Subject/modals/SubjectViewModal";
+import SubjectEditModal from "./Subject/modals/SubjectEditModal";
+import SubjectDeleteModal from "./Subject/modals/SubjectDeleteModal";
 
 export {
     NavBar,
@@ -44,4 +47,7 @@ export {
     FacultyViewModal,
     FacultyEditModal,
     FacultyDeleteModal,
+    SubjectViewModal,
+    SubjectEditModal,
+    SubjectDeleteModal,
 }

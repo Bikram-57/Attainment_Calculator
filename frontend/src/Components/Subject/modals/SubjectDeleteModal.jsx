@@ -2,15 +2,15 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { IoWarning } from "react-icons/io5";
 
-function FacultyDeleteModal({ data, toggleUpdate, closeMenu }) {
-    const deleteUser = async () => {
+function SubjectDeleteModal({ data, toggleUpdate, closeMenu }) {
+    const deleteSubject = async () => {
         try {
-            const res = await axios.delete(`/user/${data.facultyId}`)
+            const res = await axios.delete(`/sub/${data.subjectId}`)
             closeMenu();
             toggleUpdate();
-            alert('Faculty deleted successfully!');
+            alert('Subject deleted successfully!');
         } catch (error) {
-            console.log('Axios Error | FacultyDeleteModal | deleteUser(): ', error);
+            console.log('Axios Error | SubjectDeleteModal | deleteSubject(): ', error);
         }
     }
     return (
@@ -29,12 +29,12 @@ function FacultyDeleteModal({ data, toggleUpdate, closeMenu }) {
 
                 {/* Title */}
                 <h2 className="text-2xl font-semibold text-blue-900 mb-2">
-                    Delete Faculty
+                    Delete Subject
                 </h2>
 
                 {/* Message */}
                 <p className="text-red-600 text-xl leading-relaxed mb-4">
-                    Are you sure you want to delete this faculty?
+                    Are you sure you want to delete this subject?
                     <br />
                     This action cannot be undone !
                 </p>
@@ -49,7 +49,7 @@ function FacultyDeleteModal({ data, toggleUpdate, closeMenu }) {
                     </button>
 
                     <button
-                        onClick={deleteUser}
+                        onClick={deleteSubject}
                         className="px-4 py-1 rounded-md bg-red-600 text-white text-lg font-medium hover:bg-red-700 transition cursor-pointer"
                     >
                         Yes, Delete !
@@ -60,4 +60,4 @@ function FacultyDeleteModal({ data, toggleUpdate, closeMenu }) {
     );
 }
 
-export default FacultyDeleteModal
+export default SubjectDeleteModal

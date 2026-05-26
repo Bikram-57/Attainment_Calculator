@@ -2,21 +2,21 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { IoMdClose } from "react-icons/io";
 
-function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
-    const [name, setName] = useState(data.name);
-    const [email, setEmail] = useState(data.email);
+function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
+    const [subjectName, setSubjectName] = useState(data.subjectName);
+    const [course, setCourse] = useState(data.course);
 
-    const updateUser = async () => {
+    const updateSubject = async () => {
         try {
-            const res = await axios.put(`/user/${data.facultyId}`, {
-                name: name,
-                email: email
+            const res = await axios.put(`/sub/${data.subjectId}`, {
+                subjectName: subjectName,
+                course: course
             });
             closeMenu();
             toggleUpdate();
-            alert('Faculty updated successfully!');
+            alert('Subject updated successfully!');
         } catch (error) {
-            console.log('Axios Error | FacultyEditModal | updateUser(): ', error);
+            console.log('Axios Error | SubjectEditModal | updateSubject(): ', error);
         }
     }
     return (
@@ -31,7 +31,7 @@ function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300">
                     <h2 className="text-2xl font-semibold text-blue-900">
-                        Faculty Details
+                        Subject Details
                     </h2>
 
                     <button
@@ -45,41 +45,41 @@ function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
                 {/* Body */}
                 <div className="p-4 space-y-3">
 
-                    {/* Faculty ID */}
+                    {/* Subject ID */}
                     <div>
                         <label className="block text-lg text-gray-700 mb-1">
-                            Faculty Id
+                            Subject Id
                         </label>
                         <input
                             type="text"
-                            value={data.facultyId}
+                            value={data.subjectId}
                             readOnly
                             className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg bg-gray-50 outline-none cursor-not-allowed"
                         />
                     </div>
 
-                    {/* Name */}
+                    {/* Subject Name */}
                     <div>
                         <label className="block text-lg text-gray-700 mb-1">
-                            Name
+                            Subject Name
                         </label>
                         <input
                             type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            value={subjectName}
+                            onChange={(e) => setSubjectName(e.target.value)}
                             className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg bg-gray-50 outline-none"
                         />
                     </div>
 
-                    {/* Email */}
+                    {/* Course */}
                     <div>
                         <label className="block text-lg text-gray-700 mb-1">
-                            Email
+                            Course
                         </label>
                         <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            type="text"
+                            value={course}
+                            onChange={(e) => setCourse(e.target.value)}
                             className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg bg-gray-50 outline-none"
                         />
                     </div>
@@ -88,7 +88,7 @@ function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
                 {/* Footer */}
                 <div className="px-4 py-4 border-t border-gray-300 flex justify-end">
                     <button
-                        onClick={updateUser}
+                        onClick={updateSubject}
                         className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-1 rounded-lg text-lg font-medium shadow cursor-pointer"
                     >
                         Update
@@ -99,5 +99,4 @@ function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
     );
 };
 
-
-export default FacultyEditModal
+export default SubjectEditModal

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import SubjectHeader from './SubjectHeader';
-import { ActionBtns } from '../index'
+import { ActionBtns, SubjectDeleteModal, SubjectEditModal, SubjectViewModal } from '../index'
 
 function Subject() {
     const [subjectData, setSubjectData] = useState([]);
@@ -15,6 +15,10 @@ function Subject() {
         } catch (error) {
             console.log('Axios Error | getSubjectData(): ', error);
         }
+    }
+
+    const toggleUpdate = () => {
+        setToggleNewSubject(prev => !prev)
     }
 
     useEffect(() => {
@@ -41,8 +45,11 @@ function Subject() {
                                 <td className='px-5 py-2 w-[35%]'>{subject.course}</td>
                                 <td className='px-5 py-2 flex items-center justify-center'>
                                     <ActionBtns
-                                        toggleUpdate={setToggleNewSubject}
                                         data={subject}
+                                        toggleUpdate={toggleUpdate}
+                                        ViewModal={SubjectViewModal}
+                                        EditModal={SubjectEditModal}
+                                        DeleteModal={SubjectDeleteModal}
                                     />
                                 </td>
                             </tr>
