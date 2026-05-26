@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import FacultyHeader from './FacultyHeader'
 import axios from 'axios'
-import { ActionBtns } from '../index';
+import { ActionBtns, FacultyDeleteModal, FacultyEditModal, FacultyViewModal } from '../index';
 
 function Faculty() {
 	const [facultyData, setFacultyData] = useState([]);
@@ -15,6 +15,8 @@ function Faculty() {
 			console.log('Axios Error | getFacultyData(): ', error);
 		}
 	}
+
+	const toggleUpdate = () => setToggleNewUser(prev => !prev);
 
 	useEffect(() => {
 		getFacultyData();
@@ -39,10 +41,12 @@ function Faculty() {
 								<td className='px-5 py-2 w-[35%]'>{faculty.name}</td>
 								<td className='px-5 py-2 w-[35%]'>{faculty.email}</td>
 								<td className='px-5 py-2 flex items-center justify-center'>
-									{/* <SlOptions className='cursor-pointer'/> */}
 									<ActionBtns
-										setToggleNewUser={setToggleNewUser}
-										facultyId={faculty.facultyId}
+										data={faculty}
+										toggleUpdate={toggleUpdate}
+										ViewModal={FacultyViewModal}
+										EditModal={FacultyEditModal}
+										DeleteModal={FacultyDeleteModal}
 									/>
 								</td>
 							</tr>

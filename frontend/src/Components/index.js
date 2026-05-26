@@ -18,7 +18,9 @@ import {
 } from "./Attainment/index";
 import Login from "./Login";
 import AddFacultyForm from "./Faculty/AddFacultyForm";
-import DeleteModal from "./ActionBtns/DeleteModal";
+import FacultyViewModal from "./Faculty/modals/FacultyViewModal";
+import FacultyEditModal from "./Faculty/modals/FacultyEditModal";
+import FacultyDeleteModal from "./Faculty/modals/FacultyDeleteModal";
 
 export {
     NavBar,
@@ -39,5 +41,7 @@ export {
     POAttainTable,
     Login,
     AddFacultyForm,
-    DeleteModal,
+    FacultyViewModal,
+    FacultyEditModal,
+    FacultyDeleteModal,
 }
