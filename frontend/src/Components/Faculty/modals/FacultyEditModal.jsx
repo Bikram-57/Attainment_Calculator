@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { IoMdClose } from "react-icons/io";
 
 function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
-    const [id, setId] = useState(data.facultyId);
     const [name, setName] = useState(data.name);
     const [email, setEmail] = useState(data.email);
 
@@ -26,12 +25,12 @@ function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
             onClick={closeMenu}
         >
             <div
-                className="w-[90%] max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden"
+                className="w-[90%] max-w-xl bg-white rounded-lg shadow-2xl overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b">
-                    <h2 className="text-3xl font-semibold text-blue-700">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300">
+                    <h2 className="text-2xl font-semibold text-blue-900">
                         Faculty Details
                     </h2>
 
@@ -39,29 +38,29 @@ function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
                         onClick={closeMenu}
                         className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
                     >
-                        <IoMdClose className='w-10 h-10' />
+                        <IoMdClose className='w-8 h-8' />
                     </button>
                 </div>
 
                 {/* Body */}
-                <div className="p-6 space-y-5">
+                <div className="p-4 space-y-3">
 
                     {/* Faculty ID */}
                     <div>
-                        <label className="block text-lg text-gray-700 mb-2">
+                        <label className="block text-lg text-gray-700 mb-1">
                             Faculty Id
                         </label>
                         <input
                             type="text"
-                            value={id}
-                            onChange={(e) => setId(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg bg-gray-50 outline-none"
+                            value={data.facultyId}
+                            readOnly
+                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg bg-gray-50 outline-none cursor-not-allowed"
                         />
                     </div>
 
                     {/* Name */}
                     <div>
-                        <label className="block text-lg text-gray-700 mb-2">
+                        <label className="block text-lg text-gray-700 mb-1">
                             Name
                         </label>
                         <input
@@ -74,7 +73,7 @@ function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
 
                     {/* Email */}
                     <div>
-                        <label className="block text-lg text-gray-700 mb-2">
+                        <label className="block text-lg text-gray-700 mb-1">
                             Email
                         </label>
                         <input
@@ -87,10 +86,10 @@ function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t flex justify-end">
+                <div className="px-4 py-4 border-t border-gray-300 flex justify-end">
                     <button
                         onClick={updateUser}
-                        className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded-lg text-lg font-medium shadow cursor-pointer"
+                        className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-1 rounded-lg text-lg font-medium shadow cursor-pointer"
                     >
                         Update
                     </button>

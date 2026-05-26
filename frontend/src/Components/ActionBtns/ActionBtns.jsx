@@ -57,7 +57,10 @@ function ActionBtns({ data, toggleUpdate, ViewModal, EditModal, DeleteModal }) {
             )}
 
             {viewOpen && (
-                <ViewModal />
+                <ViewModal
+                    data={data}
+                    closeMenu={closeMenu}
+                />
             )}
 
             {editOpen && (
