@@ -129,6 +129,29 @@ function COAttainTable({ data }) {
                     <tfoot className="bg-gray-100 font-semibold">
                         <tr>
                             <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
+                                Max Marks
+                            </td>
+
+                            {columns.map((col) => (
+                                <React.Fragment key={col.title}>
+
+                                    {/* CO */}
+                                    {col.keys.map((key) => (
+                                        <td key={key} className="border border-gray-300 px-1 py-2">
+                                            {attainmentReport[key]?.maxMarks ?? 0}
+                                        </td>
+                                    ))}
+
+                                    {/* TOTAL */}
+                                    <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
+                                        {attainmentReport[col.total]?.maxMarks ?? 0}
+                                    </td>
+
+                                </React.Fragment>
+                            ))}
+                        </tr>
+                        <tr>
+                            <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
                                 Target Marks
                             </td>
 
