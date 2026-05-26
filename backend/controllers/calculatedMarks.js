@@ -103,6 +103,149 @@ const { getActiveRubric } = require('../utils/rubricHelper'); // Adjust the path
 // Make sure to require the helper at the top of your file:
 // const { getActiveRubric } = require('../utils/rubricHelper');
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// async function handleCalculatedMarks(req, res, isPipeline = false) {
+//     try {
+//         const { subjectId, academicYear, course } = req.body;
+
+//         // 1. Fetch the Raw Data
+//         const rawData = await Mark.findOne({ 
+//             subjectId: subjectId.toUpperCase(), 
+//             academicYear, 
+//             course: course.toUpperCase() 
+//         }).lean(); 
+
+//         if (!rawData) {
+//             const errMsg = "Calculation Logic: Raw marks not found.";
+//             if (isPipeline) throw new Error(errMsg);
+//             return res.status(404).json({ success: false, message: errMsg });
+//         }
+
+//         // --- NEW: Fetch the Dynamic Rubric ---
+//         const activeRubric = await getActiveRubric(course, academicYear);
+
+//         if (!activeRubric || !activeRubric.thresholds || activeRubric.thresholds.length === 0) {
+//             const errMsg = `Calculation Logic: No rubric found for ${course.toUpperCase()} in or before ${academicYear}.`;
+//             if (isPipeline) throw new Error(errMsg);
+//             return res.status(404).json({ success: false, message: errMsg });
+//         }
+//         // -------------------------------------
+
+//         const totalStudents = rawData.actualMarks.length;
+//         const attainmentReport = {};
+//         const coKeys = Object.keys(rawData.maxMarks);
+
+//         // 2. Perform the 4-Row Math
+//         coKeys.forEach(coKey => {
+//             const max = rawData.maxMarks[coKey];
+
+//             // SAFETY CHECK: Skip columns that have 0 max marks to avoid division by zero
+//             if (!max || max <= 0) return; 
+
+//             const target = max * 0.60; // 60% target
+            
+//             const countAbove = rawData.actualMarks.filter(student => {
+//                 const score = student.marks[coKey] || 0;
+//                 return score >= target;
+//             }).length;
+
+//             // Calculate percent and round safely to 2 decimals before checking the rubric
+//             const rawPercent = totalStudents > 0 ? (countAbove / totalStudents) * 100 : 0;
+//             const percent = parseFloat(rawPercent.toFixed(2));
+
+//             // --- NEW: Dynamic Level Calculation ---
+//             let level = 0; // Default fallback
+
+//             // Loop through the database thresholds to find the matching range
+//             for (const threshold of activeRubric.thresholds) {
+//                 if (percent >= threshold.minPercent && percent <= threshold.maxPercent) {
+//                     level = threshold.level;
+//                     break; // Stop looping once we find the match
+//                 }
+//             }
+//             // --------------------------------------
+
+//             attainmentReport[coKey] = {
+//                 targetMarks: parseFloat(target.toFixed(2)),
+//                 studentsAboveTarget: countAbove,
+//                 attainmentPercent: percent,
+//                 attainmentLevel: level
+//             };
+//         });
+
+//         // 3. Save everything (including Raw Marks) into the Calculated Document
+//         const calculatedData = await CalculatedMark.findOneAndUpdate(
+//             { subjectId: subjectId.toUpperCase(), academicYear, course: course.toUpperCase() },
+//             { 
+//                 $set: { 
+//                     allStudentMarks: rawData.actualMarks, 
+//                     reportData: attainmentReport, 
+//                     totalStudents,
+//                     calculatedAt: new Date() 
+//                 } 
+//             },
+//             { upsert: true, new: true } 
+//         );
+
+//         // 4. THE FIX: Only send a response if we are NOT in a pipeline
+//         if (isPipeline) {
+//             return true; // Pass control safely back to the main route
+//         } else {
+//             return res.status(200).json({
+//                 success: true,
+//                 message: "Attainment calculated and saved successfully.",
+//                 data: calculatedData
+//             });
+//         }
+
+//     } catch (error) {
+//         console.error("Attainment Log Error:", error.message);
+        
+//         // 5. THE FIX: Handle errors properly for pipelines vs direct calls
+//         if (isPipeline) {
+//             throw error; // Throw it so the main route's catch block can handle it
+//         } else {
+//             if (!res.headersSent) {
+//                 return res.status(500).json({ success: false, message: "Server Error", error: error.message });
+//             }
+//         }
+//     }
+// }
+
+
+
+
+
+
+
 async function handleCalculatedMarks(req, res, isPipeline = false) {
     try {
         const { subjectId, academicYear, course } = req.body;
@@ -120,7 +263,7 @@ async function handleCalculatedMarks(req, res, isPipeline = false) {
             return res.status(404).json({ success: false, message: errMsg });
         }
 
-        // --- NEW: Fetch the Dynamic Rubric ---
+        // --- Fetch the Dynamic Rubric ---
         const activeRubric = await getActiveRubric(course, academicYear);
 
         if (!activeRubric || !activeRubric.thresholds || activeRubric.thresholds.length === 0) {
@@ -134,7 +277,7 @@ async function handleCalculatedMarks(req, res, isPipeline = false) {
         const attainmentReport = {};
         const coKeys = Object.keys(rawData.maxMarks);
 
-        // 2. Perform the 4-Row Math
+        // 2. Perform the Math
         coKeys.forEach(coKey => {
             const max = rawData.maxMarks[coKey];
 
@@ -148,23 +291,24 @@ async function handleCalculatedMarks(req, res, isPipeline = false) {
                 return score >= target;
             }).length;
 
-            // Calculate percent and round safely to 2 decimals before checking the rubric
+            // Calculate percent and round safely to 2 decimals
             const rawPercent = totalStudents > 0 ? (countAbove / totalStudents) * 100 : 0;
             const percent = parseFloat(rawPercent.toFixed(2));
 
-            // --- NEW: Dynamic Level Calculation ---
+            // --- Dynamic Level Calculation ---
             let level = 0; // Default fallback
 
-            // Loop through the database thresholds to find the matching range
             for (const threshold of activeRubric.thresholds) {
                 if (percent >= threshold.minPercent && percent <= threshold.maxPercent) {
                     level = threshold.level;
-                    break; // Stop looping once we find the match
+                    break; 
                 }
             }
             // --------------------------------------
 
+            // Individual report object
             attainmentReport[coKey] = {
+                maxMarks: max, 
                 targetMarks: parseFloat(target.toFixed(2)),
                 studentsAboveTarget: countAbove,
                 attainmentPercent: percent,
@@ -172,23 +316,24 @@ async function handleCalculatedMarks(req, res, isPipeline = false) {
             };
         });
 
-        // 3. Save everything (including Raw Marks) into the Calculated Document
+        // 3. Save exactly in the requested order
         const calculatedData = await CalculatedMark.findOneAndUpdate(
             { subjectId: subjectId.toUpperCase(), academicYear, course: course.toUpperCase() },
             { 
                 $set: { 
-                    allStudentMarks: rawData.actualMarks, 
-                    reportData: attainmentReport, 
+                    actualMarks: rawData.actualMarks, // 1. First actual marks
+                    maxMarks: rawData.maxMarks,       // 2. Then maxMarks
+                    reportData: attainmentReport,     // 3. Then after report data
                     totalStudents,
                     calculatedAt: new Date() 
                 } 
             },
-            { upsert: true, new: true } 
+            { upsert: true, new: true, strict: false } 
         );
 
-        // 4. THE FIX: Only send a response if we are NOT in a pipeline
+        // 4. Pass control safely for pipelines vs direct calls
         if (isPipeline) {
-            return true; // Pass control safely back to the main route
+            return true; 
         } else {
             return res.status(200).json({
                 success: true,
@@ -200,9 +345,9 @@ async function handleCalculatedMarks(req, res, isPipeline = false) {
     } catch (error) {
         console.error("Attainment Log Error:", error.message);
         
-        // 5. THE FIX: Handle errors properly for pipelines vs direct calls
+        // 5. Handle errors
         if (isPipeline) {
-            throw error; // Throw it so the main route's catch block can handle it
+            throw error; 
         } else {
             if (!res.headersSent) {
                 return res.status(500).json({ success: false, message: "Server Error", error: error.message });
@@ -210,6 +355,18 @@ async function handleCalculatedMarks(req, res, isPipeline = false) {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * getCalculatedWithStudentMarks

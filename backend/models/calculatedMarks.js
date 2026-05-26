@@ -24,12 +24,12 @@ const CalculatedMarkSchema = new mongoose.Schema({
     },
     
     // Stores the Raw Marks for reference in the same document
-    allStudentMarks: [
-        {
-            regNo: { type: String, required: true }, // 👈 Made required
-            marks: { type: mongoose.Schema.Types.Mixed }
-        }
-    ],
+    // allStudentMarks: [
+    //     {
+    //         regNo: { type: String, required: true }, // 👈 Made required
+    //         marks: { type: mongoose.Schema.Types.Mixed }
+    //     }
+    // ],
 
     // 👈 Switched to Mixed to prevent MongoDB casting errors 
     // with your dynamic keys (Quiz_1_TOTAL, Mid_Term_CO1, etc.)
