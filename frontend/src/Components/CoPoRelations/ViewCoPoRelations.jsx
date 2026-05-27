@@ -1,7 +1,7 @@
 import React from 'react'
 
-function ViewCoPoRelations({ subjectId, data, setOpenView }) {
-    const rows = Object.entries(data);
+function ViewCoPoRelations({ data, setOpenView }) {
+    const rows = Object.entries(data.mappingData);
     const poColumns = Object.keys(rows[0][1]);
 
     return (
@@ -15,7 +15,7 @@ function ViewCoPoRelations({ subjectId, data, setOpenView }) {
                         <thead className="bg-gray-300 sticky top-0 z-10">
                             <tr>
                                 <th className="border p-2 font-bold">
-                                    {subjectId}
+                                    {data.subjectId}
                                 </th>
                                 {poColumns.map((po) => (
                                     <th key={po} className="border p-2 font-bold">

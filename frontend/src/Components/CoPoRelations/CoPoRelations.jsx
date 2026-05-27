@@ -12,7 +12,6 @@ function CoPoRelations() {
     const [openView, setOpenView] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedSubjectData, setSelectedSubjectData] = useState(null);
-    const [subjectId, setSubjectId] = useState('');
 
     const fetchData = async (sub) => {
         try {
@@ -23,10 +22,11 @@ function CoPoRelations() {
                     course: sub.course
                 }
             });
-            setSelectedSubjectData(res.data.mappingData);
-            setSubjectId(sub.subjectId);
+            setSelectedSubjectData(res.data);
         } catch (error) {
             console.log('Axios Error | ViewCoPoRelations | fetchData(): ', error);
+            setSelectedSubjectData(null);
+            alert("Data not available!");
         }
     }
 
@@ -35,8 +35,8 @@ function CoPoRelations() {
         setOpenView(true);
     }
 
-    const handleEditOpen = (sub) => {
-        fetchData(sub);
+    const handleEditOpen = async (sub) => {
+        await fetchData(sub);
         setOpenEdit(true);
     }
 
@@ -147,23 +147,25 @@ function CoPoRelations() {
             </div>
         );
     }
-    else if (openView) {
+    else if (openView && selectedSubjectData) {
         return (
             <ViewCoPoRelations
-                subjectId={subjectId}
                 data={selectedSubjectData}
                 setOpenView={setOpenView}
             />
         )
     }
-    else {
+    else if (openEdit && selectedSubjectData) {
         return (
             <EditCoPoRelations
-                subjectId={subjectId}
                 data={selectedSubjectData}
                 setOpenEdit={setOpenEdit}
             />
         )
+    }
+    else {
+        setOpenView(false);
+        setOpenEdit(false);
     }
 }
 
