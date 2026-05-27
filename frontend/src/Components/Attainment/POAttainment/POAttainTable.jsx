@@ -1,7 +1,7 @@
 import React from "react";
 
 const POAttainTable = ({ data }) => {
-    const { averageCo, mappingData, poAttainment, subjectId } = data;
+    const { averageCo, finalSubjectAttainment, mappingData, poAttainment, subjectId } = data;
 
     // Convert CO object → array
     const rows = Object.entries(mappingData);
@@ -55,8 +55,8 @@ const POAttainTable = ({ data }) => {
                         ))}
 
                         {/* Average CO */}
-                        <tr>
-                            <td className="border-b border-r border-gray-300 p-2 font-medium bg-gray-50">
+                        <tr className="bg-gray-200">
+                            <td className="border-b border-r border-gray-300 p-2 font-medium bg-gray-100">
                                 Average CO
                             </td>
                             {/* PO Values */}
@@ -67,9 +67,20 @@ const POAttainTable = ({ data }) => {
                             ))}
                         </tr>
 
+                        {/* CO Attainment */}
+                        <tr className="bg-gray-600">
+                            <td className="border-b border-r border-gray-300 p-2 font-medium bg-gray-100">
+                                CO Attainment
+                            </td>
+                            {/* PO Values */}
+                            <td colSpan={8} className="text-white font-bold border-r border-b border-gray-300 p-2">
+                                {finalSubjectAttainment}
+                            </td>
+                        </tr>
+
                         {/* PO Attainment */}
-                        <tr>
-                            <td className="border-b border-r border-gray-300 p-2 font-medium bg-gray-50">
+                        <tr className="bg-gray-200">
+                            <td className="border-b border-r border-gray-300 p-2 font-medium bg-gray-100">
                                 PO Attainment
                             </td>
                             {/* PO Values */}
