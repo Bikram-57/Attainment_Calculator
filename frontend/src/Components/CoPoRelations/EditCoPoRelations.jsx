@@ -1,6 +1,6 @@
 import React from 'react'
 
-function EditCoPoRelations() {
+function EditCoPoRelations({ subjectId, data, setEditView }) {
     return (
         <div>EditCoPoRelations</div>
     )
