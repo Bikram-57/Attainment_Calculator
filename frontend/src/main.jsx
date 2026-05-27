@@ -10,6 +10,7 @@ import {
 	COAttainment,
 	FinalCOAttainment,
 	POAttainment,
+	CoPoRelations,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -42,6 +43,11 @@ const router = createBrowserRouter([
 				path: 'fetch-data/',
 				element: <FetchData />,
 				handle: { title: 'Fetch Data' }
+			},
+			{
+				path: 'co_po_relations/',
+				element: <CoPoRelations />,
+				handle: { title: 'CO PO Relations' }
 			},
 			// {
 			// 	path: 'co-attainment/:academicYear/:course/:subjectId',

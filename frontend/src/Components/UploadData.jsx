@@ -196,7 +196,7 @@ function UploadData() {
 							className='ml-auto mr-2'
 							onClick={handleRemoveFile}
 						>
-							<MdOutlineCancelPresentation className='h-full w-[25px] cursor-pointer text-red-600' />
+							<MdOutlineCancelPresentation className='h-full w-6.25 cursor-pointer text-red-600' />
 						</div>
 					)}
 				</div>
@@ -217,7 +217,7 @@ function UploadData() {
 				)}
 				{successMsg && (
 					<p className="text-sm ml-2 flex">
-						<MdDone className='text-green-500 h-full w-[20px] mx-1 order rounded-full' />
+						<MdDone className='text-green-500 h-full w-5 mx-1 order rounded-full' />
 						{successMsg}
 					</p>
 				)}

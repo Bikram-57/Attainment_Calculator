@@ -25,7 +25,7 @@ function SideBar() {
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}
         >
-            <div className='h-[60px] w-full p-2 flex gap-2 justify-between items-center text-blue-900 bg-white'>
+            <div className='h-15 w-full p-2 flex gap-2 justify-between items-center text-blue-900 bg-white'>
                 <FaGraduationCap className='text-5xl' />
                 <div className='text-xs font-bold'>Student Performance Assessment for Outcome Based Education</div>
             </div>
@@ -58,10 +58,15 @@ function SideBar() {
                             <FaFileDownload />
                             <div>Fetch Data</div>
                         </NavLink>
-                        <div className='flex items-center gap-1 mt-4'>
+                        <NavLink
+                            to='/co_po_relations'
+                            className={({ isActive }) => (
+                                `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 mt-4`
+                            )}
+                        >
                             <IoMdCloudUpload />
                             <div>CO-PO Relation</div>
-                        </div>
+                        </NavLink>
                         <div className='flex items-center gap-1 mt-4'>
                             <IoMdCloudUpload />
                             <div>Direct Attainment</div>
