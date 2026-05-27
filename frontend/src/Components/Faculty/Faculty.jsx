@@ -12,7 +12,7 @@ function Faculty() {
 			const response = await axios.get('/user/');
 			setFacultyData(response.data.data);
 		} catch (error) {
-			console.log('Axios Error | getFacultyData(): ', error);
+			console.log('Axios Error | Faculty | getFacultyData(): ', error);
 		}
 	}
 

@@ -26,6 +26,8 @@ import SubjectEditModal from "./Subject/modals/SubjectEditModal";
 import SubjectDeleteModal from "./Subject/modals/SubjectDeleteModal";
 import AddSubjectForm from "./Subject/AddSubjectForm";
 import CoPoRelations from "./CoPoRelations/CoPoRelations";
+import ViewCoPoRelations from "./CoPoRelations/ViewCoPoRelations";
+import EditCoPoRelations from "./CoPoRelations/EditCoPoRelations";
 
 export {
     NavBar,
@@ -54,4 +56,6 @@ export {
     SubjectDeleteModal,
     AddSubjectForm,
     CoPoRelations,
+    ViewCoPoRelations,
+    EditCoPoRelations,
 }
