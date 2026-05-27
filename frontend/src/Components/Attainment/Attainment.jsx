@@ -24,6 +24,7 @@ function Attainment({ academicYear, course, subjectId }){
         // console.log('PO: ', poAttainData)
         // nagivate to respective page with the respective prop data
         window.open(`/po-attainment/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
+        // window.open(`/calpo/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
     }
 
     return (

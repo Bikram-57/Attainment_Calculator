@@ -11,14 +11,15 @@ function POAttainment() {
     useEffect(() => {
         const getPOData = async () => {
             try {
-                const res = await axios.get('/co-po/relation', {
+                // const res = await axios.get('/co-po/relation', {
+                const res = await axios.get('/calpo/', {
                     params: {
                         academicYear: academicYear,
                         course: course,
                         subjectId: subjectId
                     },
                 });
-                setData(res.data);
+                setData(res.data.data);
             } catch (err) {
                 console.log('ERROR || useEffect - getPOData(): ', err);
             }

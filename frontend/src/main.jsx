@@ -62,6 +62,7 @@ const router = createBrowserRouter([
 	},
 	{
 		path: 'po-attainment/:academicYear/:course/:subjectId',
+		// path: 'calpo/:academicYear/:course/:subjectId',
 		element: <POAttainment />,
 		handle: { title: 'PO Attainment' }
 	},
