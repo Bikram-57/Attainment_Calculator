@@ -28,6 +28,8 @@ import AddSubjectForm from "./Subject/AddSubjectForm";
 import CoPoRelations from "./CoPoRelations/CoPoRelations";
 import ViewCoPoRelations from "./CoPoRelations/ViewCoPoRelations";
 import EditCoPoRelations from "./CoPoRelations/EditCoPoRelations";
+import Footer from "./Footer";
+import ContactUs from "./ContactUs";
 
 export {
     NavBar,
@@ -58,4 +60,6 @@ export {
     CoPoRelations,
     ViewCoPoRelations,
     EditCoPoRelations,
+    Footer,
+    ContactUs,
 }

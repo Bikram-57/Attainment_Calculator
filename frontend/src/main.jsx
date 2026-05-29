@@ -11,6 +11,7 @@ import {
 	FinalCOAttainment,
 	POAttainment,
 	CoPoRelations,
+	ContactUs,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -71,6 +72,12 @@ const router = createBrowserRouter([
 		// path: 'calpo/:academicYear/:course/:subjectId',
 		element: <POAttainment />,
 		handle: { title: 'PO Attainment' }
+	},
+	{
+		path: 'contact-us',
+		// path: 'calpo/:academicYear/:course/:subjectId',
+		element: <ContactUs />,
+		handle: { title: 'Contact Us' }
 	},
 ])
 

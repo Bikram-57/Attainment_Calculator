@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import './App.css'
-import { NavBar, SideBar } from './Components/index'
+import { Footer, NavBar, SideBar } from './Components/index'
 import { Outlet } from 'react-router-dom'
 
 function App() {
@@ -16,9 +16,11 @@ function App() {
 				`}
 			>
 				<NavBar />
-				<div className='bg-white flex-1 m-4 rounded-md overflow-hidden'>
+				<div className='bg-white flex-1 m-4 mb-0 rounded-md overflow-hidden'>
 					<Outlet />
 				</div>
+				{/* Footer */}
+				<Footer />
 			</div>
 		</div>
 		// <div className='flex h-screen'>
