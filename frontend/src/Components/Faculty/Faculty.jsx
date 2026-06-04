@@ -22,9 +22,9 @@ function Faculty() {
 		getFacultyData();
 	}, [toggleNewUser]);
 	return (
-		<div className=''>
+		<div className='h-full flex flex-col'>
 			<FacultyHeader toggleUpdate={toggleUpdate} />
-			<div>
+			<div className='flex-1 overflow-y-auto'>
 				<table className='w-full'>
 					<thead>
 						<tr className='text-left border-b border-gray-300'>
