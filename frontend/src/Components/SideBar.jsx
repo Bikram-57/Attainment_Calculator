@@ -12,6 +12,7 @@ import { HiMiniUsers } from "react-icons/hi2";
 import { FaGraduationCap } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { COLORS } from "../constants/theme";
 
 function SideBar() {
     const isOpen = useSelector(state => state.sideBar.isSideBarOpen);
@@ -20,7 +21,6 @@ function SideBar() {
     const latteShade = '#fffaf3';
     const latteDarkShade = '#e4ddd3';
     const fontShade = '#ffffff';
-
     return (
         // <div className={`h-screen bg-gray-50 ${isOpen ? 'w-[20%] translate-x-0' : 'w-0 -translate-x-full'} transition-all duration-300 ease-in-out overflow-hidden`}>
         // <div
@@ -32,17 +32,26 @@ function SideBar() {
         // >
         <div
             className={`
-                fixed top-0 left-0 h-screen w-[17%] bg-[${mintShade}]
-                transform transition-transform duration-300 ease-in-out
+                fixed top-0 left-0 h-screen w-[17%] transform transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}
+            style={{ backgroundColor: COLORS.mint }}
         >
             {/* <div className='h-15 w-full p-2 flex gap-2 justify-between items-center text-blue-900 bg-white'> */}
-            <div className={`h-15 w-full p-2 flex gap-2 justify-between items-center text-[${mintShade}] bg-[${latteShade}]`}>
+            <div
+                className='h-15 w-full p-2 flex gap-2 justify-between items-center'
+                style={{
+                    backgroundColor: COLORS.latte,
+                    color: COLORS.mint
+                }}
+            >
                 <FaGraduationCap className='text-5xl' />
                 <div className='text-xs font-bold'>Student Performance Assessment for Outcome Based Education</div>
             </div>
-            <div className={`p-3 font-semibold text-lg text-[${fontShade}]`}>
+            <div
+                className='p-3 font-semibold text-lg'
+                style={{ color: COLORS.font }}
+            >
                 <div className='flex items-center gap-1'>
                     <IoOptionsOutline />
                     <div>Dashboard</div>
@@ -62,8 +71,12 @@ function SideBar() {
                             //     `${isActive ? `bg-[${latteShade}] text-[${mintDarkShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
                             // )}
                             className={({ isActive }) => (
-                                `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
                             )}
+                            style={({ isActive }) => ({
+                                backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                                color: COLORS.font
+                            })}
                         >
                             <FaFileUpload />
                             <div>Upload Data</div>
@@ -74,8 +87,12 @@ function SideBar() {
                             //     `${isActive ? `bg-[${latteShade}] text-[${mintDarkShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
                             // )}
                             className={({ isActive }) => (
-                                `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
                             )}
+                            style={({ isActive }) => ({
+                                backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                                color: COLORS.font
+                            })}
                         >
                             <FaFileDownload />
                             <div>Fetch Data</div>
@@ -83,8 +100,12 @@ function SideBar() {
                         <NavLink
                             to='/co_po_relations'
                             className={({ isActive }) => (
-                                `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
                             )}
+                            style={({ isActive }) => ({
+                                backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                                color: COLORS.font
+                            })}
                         >
                             <IoMdCloudUpload />
                             <div>CO-PO Relation</div>
@@ -114,8 +135,12 @@ function SideBar() {
                         <NavLink
                             to='/subject'
                             className={({ isActive }) => (
-                                `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 px-6`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 px-6`
                             )}
+                            style={({ isActive }) => ({
+                                backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                                color: COLORS.font
+                            })}
                         >
                             <ImStatsBars2 />
                             <div>Manage Subjects</div>
@@ -136,9 +161,13 @@ function SideBar() {
                     <NavLink
                         to='/users'
                         className={({ isActive }) => (
-                            `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'}
+                            `${isActive ? 'font-bold' : ''}
                             flex items-center gap-1 px-6 cursor-pointer`
                         )}
+                        style={({ isActive }) => ({
+                            backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                            color: COLORS.font
+                        })}
                     >
                         <HiMiniUsers />
                         <div>Manage Faculty</div>
