@@ -15,21 +15,34 @@ import { useSelector } from 'react-redux';
 
 function SideBar() {
     const isOpen = useSelector(state => state.sideBar.isSideBarOpen);
+    const mintShade = '#00A19B';
+    const mintDarkShade = '#008985';
+    const latteShade = '#fffaf3';
+    const latteDarkShade = '#e4ddd3';
+    const fontShade = '#ffffff';
 
     return (
         // <div className={`h-screen bg-gray-50 ${isOpen ? 'w-[20%] translate-x-0' : 'w-0 -translate-x-full'} transition-all duration-300 ease-in-out overflow-hidden`}>
+        // <div
+        //     className={`
+        //         fixed top-0 left-0 h-screen w-[17%] bg-gray-50
+        //         transform transition-transform duration-300 ease-in-out
+        //         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        //     `}
+        // >
         <div
             className={`
-                fixed top-0 left-0 h-screen w-[17%] bg-gray-50
+                fixed top-0 left-0 h-screen w-[17%] bg-[${mintShade}]
                 transform transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}
         >
-            <div className='h-15 w-full p-2 flex gap-2 justify-between items-center text-blue-900 bg-white'>
+            {/* <div className='h-15 w-full p-2 flex gap-2 justify-between items-center text-blue-900 bg-white'> */}
+            <div className={`h-15 w-full p-2 flex gap-2 justify-between items-center text-[${mintShade}] bg-[${latteShade}]`}>
                 <FaGraduationCap className='text-5xl' />
                 <div className='text-xs font-bold'>Student Performance Assessment for Outcome Based Education</div>
             </div>
-            <div className='p-3 font-semibold text-lg'>
+            <div className={`p-3 font-semibold text-lg text-[${fontShade}]`}>
                 <div className='flex items-center gap-1'>
                     <IoOptionsOutline />
                     <div>Dashboard</div>
@@ -39,11 +52,17 @@ function SideBar() {
                         <CiMenuKebab />
                         <div>Menu</div>
                     </div>
-                    <div className='px-6'>
+                    <div className=''>
                         <NavLink
                             to='/upload-data'
+                            // className={({ isActive }) => (
+                            //     `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
+                            // )}
+                            // className={({ isActive }) => (
+                            //     `${isActive ? `bg-[${latteShade}] text-[${mintDarkShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
+                            // )}
                             className={({ isActive }) => (
-                                `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 mt-4`
+                                `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
                             )}
                         >
                             <FaFileUpload />
@@ -51,8 +70,11 @@ function SideBar() {
                         </NavLink>
                         <NavLink
                             to='/fetch-data'
+                            // className={({ isActive }) => (
+                            //     `${isActive ? `bg-[${latteShade}] text-[${mintDarkShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
+                            // )}
                             className={({ isActive }) => (
-                                `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 mt-4`
+                                `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
                             )}
                         >
                             <FaFileDownload />
@@ -61,13 +83,13 @@ function SideBar() {
                         <NavLink
                             to='/co_po_relations'
                             className={({ isActive }) => (
-                                `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 mt-4`
+                                `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
                             )}
                         >
                             <IoMdCloudUpload />
                             <div>CO-PO Relation</div>
                         </NavLink>
-                        <div className='flex items-center gap-1 mt-4'>
+                        <div className='flex items-center gap-1 mt-4 px-6'>
                             <IoMdCloudUpload />
                             <div>Direct Attainment</div>
                         </div>
@@ -92,7 +114,7 @@ function SideBar() {
                         <NavLink
                             to='/subject'
                             className={({ isActive }) => (
-                                `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 px-6`
+                                `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 px-6`
                             )}
                         >
                             <ImStatsBars2 />
@@ -114,7 +136,7 @@ function SideBar() {
                     <NavLink
                         to='/users'
                         className={({ isActive }) => (
-                            `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'}
+                            `${isActive ? `bg-[${mintDarkShade}] text-[${fontShade}] font-bold` : 'bg-transparent'}
                             flex items-center gap-1 px-6 cursor-pointer`
                         )}
                     >

@@ -17,14 +17,18 @@ function NavBar() {
     }
 
     return (
-        <div className='bg-gray-50 h-15 px-4 flex justify-between items-center font-semibold'>
+        // <div className='bg-gray-50 h-15 px-4 flex justify-between items-center font-semibold'>
+        <div className='bg-[#00A19B] h-15 px-4 flex justify-between items-center font-semibold'>
             <div className='h-full flex items-center gap-7 mx-4'>
-                <RxHamburgerMenu className='h-full w-6.25 cursor-pointer' onClick={handleClick} />
-                <div className='text-blue-900'>
+                <RxHamburgerMenu className='h-full w-6.25 cursor-pointer text-white' onClick={handleClick} />
+                {/* <div className='text-blue-900'> */}
+                <div className='text-white'>
                     {title}
                 </div>
             </div>
-            <div className='text-blue-900 h-full flex items-center gap-2'>
+            {/* <div className='text-blue-900 h-full flex items-center gap-2'> */}
+            {/* <div className='text-[#e4ddd3] h-full flex items-center gap-2'> */}
+            <div className='text-white h-full flex items-center gap-2'>
                 <FaUserAlt className='h-full w-5' />
                 <div>Admin</div>
             </div>
