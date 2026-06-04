@@ -6,6 +6,7 @@ import { ActionBtns, FacultyDeleteModal, FacultyEditModal, FacultyViewModal } fr
 function Faculty() {
 	const [facultyData, setFacultyData] = useState([]);
 	const [toggleNewUser, setToggleNewUser] = useState(false);
+	const [searchQuery, setSearchQuery] = useState('');
 
 	const getFacultyData = async () => {
 		try {
@@ -18,12 +19,16 @@ function Faculty() {
 
 	const toggleUpdate = () => setToggleNewUser(prev => !prev);
 
+    const filteredFaculty = facultyData.filter(sub => (
+        sub.facultyId.toLowerCase().includes(searchQuery) || sub.name.toLowerCase().includes(searchQuery)
+    )) || facultyData;
+
 	useEffect(() => {
 		getFacultyData();
 	}, [toggleNewUser]);
 	return (
 		<div className='h-full flex flex-col'>
-			<FacultyHeader toggleUpdate={toggleUpdate} />
+			<FacultyHeader toggleUpdate={toggleUpdate} setSearchQuery={setSearchQuery} />
 			<div className='flex-1 overflow-y-auto'>
 				<table className='w-full'>
 					<thead>
@@ -35,7 +40,7 @@ function Faculty() {
 						</tr>
 					</thead>
 					<tbody>
-						{facultyData.map(faculty => (
+						{filteredFaculty.map(faculty => (
 							<tr className='text-left border-b border-gray-300' key={faculty._id}>
 								<td className='px-5 py-2 w-[15%]'>{faculty.facultyId}</td>
 								<td className='px-5 py-2 w-[35%]'>{faculty.name}</td>

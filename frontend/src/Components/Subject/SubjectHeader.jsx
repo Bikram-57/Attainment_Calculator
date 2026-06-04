@@ -3,20 +3,24 @@ import { BsSearch } from 'react-icons/bs'
 import AddSubjectForm from './AddSubjectForm';
 import { COLORS } from '../../constants/theme';
 
-function SubjectHeader({ toggleUpdate }) {
+function SubjectHeader({ toggleUpdate, setSearchQuery }) {
     const [isOpen, setIsOpen] = useState(false);
-    // const mintShade = '#00A19B';
-    // const mintDarkShade = '#008985';
-    // const latteShade = '#fffaf3';
-    // const latteDarkShade = '#e4ddd3';
-    // const fontShade = '#ffffff';
+    const [search, setSearch] = useState('');
+
+    const handleChange = (e) => {
+        if (e.target.value == ''){
+            setSearchQuery('');
+        }
+        setSearch(e.target.value);
+        // setSearchQuery(e.target.value);
+    }
 
     return (
         <div className='flex justify-between p-4'>
             {/* <div className='text-blue-900 text-xl font-semibold'>All Subjects</div> */}
             <div
                 className='text-xl font-semibold'
-                style={{color: COLORS.mint}}
+                style={{ color: COLORS.mint }}
             >
                 All Subjects
             </div>
@@ -24,12 +28,12 @@ function SubjectHeader({ toggleUpdate }) {
                 {/* <div className='border border-gray-300 rounded-md flex items-center'> */}
                 <div
                     className='border rounded-md flex items-center'
-                    style={{borderColor: COLORS.mintDark}}
+                    style={{ borderColor: COLORS.mintDark }}
                 >
                     <input
                         type='text'
                         placeholder='Search by subject code or name'
-
+                        value={search}
                         // className='border-r border-gray-300 px-3 py-1 w-87.5'
                         // className='border-r-4 border-r-red-200 px-3 py-1 w-87.5'
                         className='border-r px-3 py-1 w-87.5 outline-none'
@@ -37,9 +41,13 @@ function SubjectHeader({ toggleUpdate }) {
                             borderRightColor: COLORS.mintDark,
                             color: COLORS.mintDark
                         }}
+                        onChange={(e) => handleChange(e)}
                     />
-                    <div className='px-3 py-1 cursor-pointer'>
-                        <BsSearch style={{color: COLORS.mintDark}}/>
+                    <div
+                        className='px-3 py-1 cursor-pointer'
+                        onClick={() => setSearchQuery(search)}
+                    >
+                        <BsSearch style={{ color: COLORS.mintDark }} />
                     </div>
                 </div>
                 <div>
@@ -56,7 +64,7 @@ function SubjectHeader({ toggleUpdate }) {
                     </button>
                 </div>
             </div>
-            {isOpen && 
+            {isOpen &&
                 <AddSubjectForm
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}

@@ -9,6 +9,7 @@ import EditCoPoRelations from './EditCoPoRelations';
 function CoPoRelations() {
     const [subjects, setSubjects] = useState(null);
     const [search, setSearch] = useState("");
+    const [searchQuery, setSearchQuery] = useState('');
     const [openView, setOpenView] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedSubjectData, setSelectedSubjectData] = useState(null);
@@ -39,6 +40,18 @@ function CoPoRelations() {
         await fetchData(sub);
         setOpenEdit(true);
     }
+
+    const handleChange = (e) => {
+        if (e.target.value == ''){
+            setSearchQuery('');
+        }
+        setSearch(e.target.value);
+        // setSearchQuery(e.target.value);
+    }
+
+    const filteredSubjects = subjects?.filter(sub => (
+        sub.subjectId.toLowerCase().includes(searchQuery) || sub.subjectName.toLowerCase().includes(searchQuery)
+    )) || subjects;
 
     useEffect(() => {
         const fetchSubjects = async () => {
@@ -75,12 +88,12 @@ function CoPoRelations() {
                             type="text"
                             placeholder="Search by id or name"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) => handleChange(e)}
                             className="w-full px-3 py-1 text-sm outline-none"
                         />
 
                         <button className="border-l border-gray-300 px-3 text-gray-500 hover:bg-gray-100 cursor-pointer">
-                            <BsSearch />
+                            <BsSearch onClick={() => setSearchQuery(search)} />
                         </button>
                     </div>
                 </div>
@@ -105,7 +118,7 @@ function CoPoRelations() {
                         </thead>
 
                         <tbody>
-                            {subjects?.map((subject, index) => (
+                            {filteredSubjects?.map((subject, index) => (
                                 <tr
                                     key={index}
                                     className={`border-b border-gray-200 ${index % 2 === 0
