@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { IoWarning } from "react-icons/io5";
+import { COLORS } from '../../../constants/theme';
 
 function FacultyDeleteModal({ data, toggleUpdate, closeMenu }) {
     const deleteUser = async () => {
@@ -15,7 +16,7 @@ function FacultyDeleteModal({ data, toggleUpdate, closeMenu }) {
     }
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm cursor-default"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default"
             onClick={closeMenu}
         >
             <div
@@ -28,7 +29,10 @@ function FacultyDeleteModal({ data, toggleUpdate, closeMenu }) {
                 </div>
 
                 {/* Title */}
-                <h2 className="text-2xl font-semibold text-blue-900 mb-2">
+                <h2
+                    className="text-2xl font-semibold text-blue-900 mb-2"
+                    style={{color: COLORS.mintDark}}
+                >
                     Delete Faculty
                 </h2>
 

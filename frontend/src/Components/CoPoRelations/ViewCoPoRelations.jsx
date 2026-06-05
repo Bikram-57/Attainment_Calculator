@@ -1,18 +1,25 @@
 import React from 'react'
+import { COLORS } from '../../constants/theme'
 
 function ViewCoPoRelations({ data, setOpenView }) {
     const rows = Object.entries(data.mappingData);
     const poColumns = Object.keys(rows[0][1]);
 
     return (
-        <div className='bg-white px-3 py-4'>
-            <div className='font-semibold text-blue-900 text-lg pb-6'>
+        <div className='px-3 py-4'>
+            <div
+                className='font-semibold text-lg pb-6'
+                style={{ color: COLORS.mint }}
+            >
                 View CO/PO Relation
             </div>
             <div>
                 <div className="overflow-auto shadow">
                     <table className="min-w-full text-xs text-center border-collapse whitespace-nowrap">
-                        <thead className="bg-gray-300 sticky top-0 z-10">
+                        <thead
+                            className="sticky top-0 z-10"
+                            style={{ backgroundColor: COLORS.latteDark }}
+                        >
                             <tr>
                                 <th className="border p-2 font-bold">
                                     {data.subjectId}
@@ -26,7 +33,7 @@ function ViewCoPoRelations({ data, setOpenView }) {
                         </thead>
                         <tbody>
                             {rows.map(([co, val]) => (
-                                <tr key={co} className="bg-gray-300 hover:bg-gray-200">
+                                <tr key={co} className="bg-gray-200 hover:bg-gray-300">
                                     <td className="border p-2 font-bold bg-gray-300">
                                         {co}
                                     </td>
@@ -43,7 +50,7 @@ function ViewCoPoRelations({ data, setOpenView }) {
             </div>
             <div className='flex justify-end'>
                 <button
-                    className='mt-4 px-3 py-1 rounded-md bg-red-500 text-white font-semibold cursor-pointer'
+                    className='mt-4 px-3 py-1 rounded-md bg-red-500 hover:bg-red-600 text-white font-semibold cursor-pointer'
                     onClick={() => setOpenView(false)}
                 >
                     Close

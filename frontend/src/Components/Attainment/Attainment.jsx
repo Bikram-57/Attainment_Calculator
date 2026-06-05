@@ -1,4 +1,5 @@
 import React from 'react'
+import { COLORS } from '../../constants/theme'
 // import { useNavigate } from 'react-router-dom'
 // import axios from 'axios'
 
@@ -30,21 +31,47 @@ function Attainment({ academicYear, course, subjectId }){
     return (
         <div className='h-full flex flex-col p-4'>
             <div className='flex justify-between pb-4'>
-                <div className='text-blue-900 text-xl font-semibold'>Attainment</div>
+                <div
+                    className='text-xl font-semibold'
+                    style={{ color: COLORS.mint }}
+                >
+                    Attainment
+                </div>
             </div>
             <div className='flex w-1/2 gap-8'>
                 <div className=''>
-                    <button className='bg-blue-900 rounded-sm text-white px-4 py-1 cursor-pointer hover:bg-blue-800 duration-200' onClick={handleCOAttain}>
+                    <button
+                        className='rounded-sm px-4 py-1 cursor-pointer duration-200'
+                        onClick={handleCOAttain}
+                        style={{
+                            backgroundColor: COLORS.mint,
+                            color: COLORS.font
+                        }}
+                    >
                         CO Attainment
                     </button>
                 </div>
                 <div className=''>
-                    <button className='bg-blue-900 rounded-sm text-white px-4 py-1 cursor-pointer hover:bg-blue-800 duration-200' onClick={handleFinalCOAttain}>
+                    <button
+                        className='rounded-sm px-4 py-1 cursor-pointer duration-200'
+                        onClick={handleFinalCOAttain}
+                        style={{
+                            backgroundColor: COLORS.mint,
+                            color: COLORS.font
+                        }}
+                    >
                         Final CO Attainment
                     </button>
                 </div>
                 <div className=''>
-                    <button className='bg-blue-900 rounded-sm text-white px-4 py-1 cursor-pointer hover:bg-blue-800 duration-200' onClick={handlePOAttain}>
+                    <button
+                        className='rounded-sm px-4 py-1 cursor-pointer duration-200'
+                        onClick={handlePOAttain}
+                        style={{
+                            backgroundColor: COLORS.mint,
+                            color: COLORS.font
+                        }}
+                    >
                         PO Attainment
                     </button>
                 </div>

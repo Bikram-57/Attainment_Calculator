@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { IoWarning } from "react-icons/io5";
+import { COLORS } from '../../../constants/theme';
 
 function SubjectDeleteModal({ data, toggleUpdate, closeMenu }) {
     const deleteSubject = async () => {
@@ -15,11 +16,12 @@ function SubjectDeleteModal({ data, toggleUpdate, closeMenu }) {
     }
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm cursor-default"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default"
             onClick={closeMenu}
         >
             <div
-                className="w-[90%] max-w-lg rounded-lg bg-white p-4 shadow-2xl text-center relative"
+                className="w-[90%] max-w-lg rounded-lg p-4 shadow-2xl text-center relative"
+                style={{backgroundColor: COLORS.latte}}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Warning Icon */}
@@ -28,7 +30,10 @@ function SubjectDeleteModal({ data, toggleUpdate, closeMenu }) {
                 </div>
 
                 {/* Title */}
-                <h2 className="text-2xl font-semibold text-blue-900 mb-2">
+                <h2
+                    className="text-2xl font-semibold mb-2"
+                    style={{color: COLORS.mintDark}}
+                >
                     Delete Subject
                 </h2>
 

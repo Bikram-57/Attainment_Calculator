@@ -5,6 +5,7 @@ import axios from 'axios';
 import { BsSearch } from "react-icons/bs";
 import ViewCoPoRelations from './ViewCoPoRelations';
 import EditCoPoRelations from './EditCoPoRelations';
+import { COLORS } from '../../constants/theme'
 
 function CoPoRelations() {
     const [subjects, setSubjects] = useState(null);
@@ -42,7 +43,7 @@ function CoPoRelations() {
     }
 
     const handleChange = (e) => {
-        if (e.target.value == ''){
+        if (e.target.value == '') {
             setSearchQuery('');
         }
         setSearch(e.target.value);
@@ -75,25 +76,41 @@ function CoPoRelations() {
 
     if (!openView && !openEdit) {
         return (
-            <div className="w-full bg-white px-3 py-1">
+            <div
+                className="w-full p-4"
+                style={{ backgroundColor: COLORS.latte }}
+            >
                 {/* Header */}
                 <div className="mb-3 flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-[#2f436c]">
+                    <h2
+                        className="text-xl font-semibold"
+                        style={{ color: COLORS.mint }}
+                    >
                         CO PO Relations
                     </h2>
 
                     {/* Search */}
-                    <div className="flex w-105 overflow-hidden rounded border border-gray-300 bg-white">
+                    <div
+                        className="flex w-105 overflow-hidden rounded-md border"
+                        style={{ borderColor: COLORS.mintDark }}
+                    >
                         <input
                             type="text"
                             placeholder="Search by id or name"
                             value={search}
                             onChange={(e) => handleChange(e)}
-                            className="w-full px-3 py-1 text-sm outline-none"
+                            className="w-full border-r px-3 py-1 text-sm outline-none"
+                            style={{
+                                borderRightColor: COLORS.mintDark,
+                                color: COLORS.mintDark
+                            }}
                         />
 
-                        <button className="border-l border-gray-300 px-3 text-gray-500 hover:bg-gray-100 cursor-pointer">
-                            <BsSearch onClick={() => setSearchQuery(search)} />
+                        <button className="px-3 cursor-pointer">
+                            <BsSearch
+                                onClick={() => setSearchQuery(search)}
+                                style={{ color: COLORS.mintDark }}
+                            />
                         </button>
                     </div>
                 </div>
@@ -102,7 +119,12 @@ function CoPoRelations() {
                 <div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="bg-[#233b67] text-white">
+                            <tr
+                                style={{
+                                    backgroundColor: COLORS.mint,
+                                    color: COLORS.font
+                                }} 
+                            >
                                 <th className="px-2 py-1 text-left font-semibold">
                                     Subject Code
                                 </th>
@@ -138,14 +160,22 @@ function CoPoRelations() {
                                         <div className="flex items-center justify-center gap-2">
                                             {/* View */}
                                             <button
-                                                className="rounded bg-[#35528d] p-1 text-white transition hover:bg-[#2a4272] cursor-pointer"
+                                                className="rounded p-1 transition cursor-pointer"
+                                                style={{
+                                                    backgroundColor: COLORS.mint,
+                                                    color: COLORS.font
+                                                }}
                                                 onClick={() => handleViewOpen(subject)}
                                             >
                                                 <MdRemoveRedEye />
                                             </button>
                                             {/* Edit */}
                                             <button
-                                                className="rounded bg-[#35528d] p-1 text-white transition hover:bg-[#2a4272] cursor-pointer"
+                                                className="rounded p-1 transition cursor-pointer"
+                                                style={{
+                                                    backgroundColor: COLORS.mint,
+                                                    color: COLORS.font
+                                                }}
                                                 onClick={() => handleEditOpen(subject)}
                                             >
                                                 <GrEdit />

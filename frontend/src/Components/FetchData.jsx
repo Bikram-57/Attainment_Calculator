@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Attainment } from './Attainment/index';
+import { COLORS } from '../constants/theme';
 
 function FetchData() {
 	const [isDisabled, setIsDisabled] = useState(true);
@@ -11,6 +12,7 @@ function FetchData() {
 	const [subjectList, setSubjectList] = useState([]);
 	const [error, setError] = useState('');
 	const [fetchClicked, setFetchClicked] = useState(false);
+	const [isHovered, setIsHovered] = useState(false);
 	// const [coAttainData, setCOAttainData] = useState({});
 	// const [finalCOAttainData, setFinalCOAttainData] = useState({});
 	// const [poAttainData, setPOAttainData] = useState({});
@@ -96,11 +98,17 @@ function FetchData() {
 	return !fetchClicked ? (
 		<div className='h-full flex flex-col p-4'>
 			<div className='flex justify-between pb-4'>
-				<div className='text-blue-900 text-xl font-semibold'>Fetch Data</div>
+				<div
+					className='text-blue-900 text-xl font-semibold'
+					style={{ color: COLORS.mint }}
+				>
+					Fetch Data
+				</div>
 			</div>
 			<div className='w-full flex gap-4'>
 				<select
-					className='border border-gray-300 rounded-sm flex-1 px-2 py-1'
+					className='border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none'
+					style={{ backgroundColor: COLORS.font }}
 					value={academicYear}
 					onChange={handleYear}
 				>
@@ -112,7 +120,8 @@ function FetchData() {
 					))}
 				</select>
 				<select
-					className='border border-gray-300 rounded-sm flex-1 px-2 py-1'
+					className='border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none'
+					style={{ backgroundColor: COLORS.font }}
 					value={course}
 					onChange={handleCourse}
 				>
@@ -122,7 +131,8 @@ function FetchData() {
 				</select>
 				{/* TODO: FIX MAX HEIGHT OF THE DROPDOWN MENU */}
 				<select
-					className={`${isDisabled ? 'bg-gray-50 text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1 h-8`}
+					className={`${isDisabled ? 'cursor-not-allowed text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none h-8`}
+					style={{backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font}}
 					value={subjectId}
 					onChange={(e) => setSubjectId(e.target.value)}
 					disabled={isDisabled}
@@ -140,7 +150,13 @@ function FetchData() {
 			<div className='flex gap-5 my-7'>
 				<div className='flex-1'>
 					<button
-						className='bg-blue-900 w-1/2 rounded-sm text-white p-1 cursor-pointer hover:bg-blue-800 duration-200'
+						onMouseEnter={() => setIsHovered(true)}
+						onMouseLeave={() => setIsHovered(false)}
+						className='w-1/5 rounded-sm p-1 cursor-pointer duration-200'
+						style={{
+							backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint,
+							color: COLORS.font
+						}}
 						onClick={handleFetch}
 					>
 						Fetch

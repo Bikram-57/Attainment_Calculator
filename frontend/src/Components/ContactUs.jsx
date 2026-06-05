@@ -103,13 +103,6 @@ function ContactUs() {
 
 
 
-
-
-
-
-
-
-
         // <div className="min-h-screen bg-linear-to-br from-slate-900 to-slate-700 flex flex-col items-center justify-center px-6 py-12">
         //     <h1 className="text-4xl font-bold text-white mb-10">
         //         Contact Us
@@ -228,22 +221,6 @@ function ContactUs() {
         //         ))}
         //     </div>
         // </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

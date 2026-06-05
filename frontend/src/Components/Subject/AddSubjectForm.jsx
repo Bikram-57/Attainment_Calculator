@@ -2,11 +2,13 @@ import axios from "axios";
 import React, { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
+import { COLORS } from '../../constants/theme'
 
 function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
     const [subjectId, setSubjectId] = useState('');
     const [subjectName, setSubjectName] = useState('');
     const [course, setCourse] = useState('');
+    const [isHovered, setIsHovered] = useState(false);
     const d = new Date();
 
     const handleAddSubject = async () => {
@@ -29,19 +31,24 @@ function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="w-[92%] max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
-
+            <div
+                className="w-[92%] max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+                style={{backgroundColor: COLORS.latte}}
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-blue-800">
+                    <h2
+                        className="text-xl font-semibold"
+                        style={{color: COLORS.mint}}
+                    >
                         Add Subject
                     </h2>
 
                     <button
                         onClick={() => setIsOpen(false)}
-                        className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
+                        className="cursor-pointer"
                     >
-                        <IoMdClose className='w-6 h-6' />
+                        <IoMdClose className='w-6 h-6' style={{color: COLORS.mint}}/>
                     </button>
                 </div>
 
@@ -58,7 +65,7 @@ function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
                             placeholder="E.G. CA1603"
                             value={subjectId}
                             onChange={(e) => setSubjectId(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-1 text-lg"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-1 text-lg outline-none"
                         />
                     </div>
 
@@ -72,7 +79,7 @@ function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
                             placeholder="E.g. Software Engineering"
                             value={subjectName}
                             onChange={(e) => setSubjectName(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-1 text-lg"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-1 text-lg outline-none"
                         />
                     </div>
 
@@ -86,7 +93,7 @@ function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
                             <select
                                 value={course}
                                 onChange={(e) => setCourse(e.target.value)}
-                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer"
+                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
                             >
                                 <option value="">Select course from list</option>
                                 <option value="BCA">BCA</option>
@@ -101,14 +108,21 @@ function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
                     <div className="flex justify-end gap-3 pt-2">
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                            className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                            style={{color: COLORS.font}}
                         >
                             Close
                         </button>
 
                         <button
+                            className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                            style={{
+                                color: COLORS.font,
+                                backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
+                            }}
                             onClick={handleAddSubject}
-                            className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
                         >
                             Add
                         </button>

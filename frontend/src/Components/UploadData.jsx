@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { MdDone } from "react-icons/md";
+import { COLORS } from '../constants/theme'
 
 function UploadData() {
 	const [isDisabled, setIsDisabled] = useState(true);
@@ -13,6 +14,7 @@ function UploadData() {
 	const [successMsg, setSuccessMsg] = useState('');
 	const [allSubjects, setAllSubjects] = useState([]);
 	const [subjectList, setSubjectList] = useState([]);
+	const [isHovered, setIsHovered] = useState(false);
 
 	const fileInputRef = useRef(null);
 
@@ -88,7 +90,6 @@ function UploadData() {
 			return;
 		}
 
-
 		const formData = new FormData();
 		formData.append('excelFile', file);
 		formData.append('subjectId', subjectId);
@@ -135,11 +136,17 @@ function UploadData() {
 	return (
 		<div className='h-full flex flex-col p-4'>
 			<div className='flex justify-between pb-4'>
-				<div className='text-blue-900 text-xl font-semibold'>Upload Data</div>
+				<div
+					className='text-xl font-semibold'
+					style={{ color: COLORS.mint }}
+				>
+					Upload Data
+				</div>
 			</div>
 			<div className='w-full flex gap-4'>
 				<select
-					className='border border-gray-300 rounded-sm flex-1 px-2 py-1'
+					className='border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none'
+					style={{ backgroundColor: COLORS.font }}
 					value={academicYear}
 					onChange={handleYear}
 				>
@@ -151,7 +158,8 @@ function UploadData() {
 					))}
 				</select>
 				<select
-					className='border border-gray-300 rounded-sm flex-1 px-2 py-1'
+					className='border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none'
+					style={{ backgroundColor: COLORS.font }}
 					value={course}
 					onChange={handleCourse}
 				>
@@ -161,7 +169,8 @@ function UploadData() {
 				</select>
 				{/* TODO: FIX MAX HEIGHT OF THE DROPDOWN MENU */}
 				<select
-					className={`${isDisabled ? 'bg-gray-50 text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1 h-8`}
+					className={`${isDisabled ? 'cursor-not-allowed text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none h-8`}
+					style={{backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font}}
 					value={subjectId}
 					onChange={(e) => setSubjectId(e.target.value)}
 					disabled={isDisabled}
@@ -202,7 +211,13 @@ function UploadData() {
 				</div>
 				<div className='flex-1'>
 					<button
-						className='bg-blue-900 w-1/2 rounded-sm text-white p-1 cursor-pointer hover:bg-blue-800 duration-200'
+						className='w-1/2 rounded-sm p-1 cursor-pointer duration-200'
+						onMouseEnter={() => setIsHovered(true)}
+						onMouseLeave={() => setIsHovered(false)}
+						style={{
+							backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint,
+							color: COLORS.font
+						}}
 						onClick={handleUpload}
 					>
 						Upload

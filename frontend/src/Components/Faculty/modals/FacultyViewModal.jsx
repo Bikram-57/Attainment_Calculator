@@ -1,28 +1,36 @@
 import React from 'react'
 import { IoMdClose } from "react-icons/io";
+import { COLORS } from '../../../constants/theme';
 
 function FacultyViewModal({data, closeMenu}) {
 	return (
 		<div
-			className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 cursor-default"
+			className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default"
 			onClick={closeMenu}
 		>
 			<div
-				className="w-[90%] max-w-xl rounded-xl bg-white shadow-2xl overflow-hidden"
+				className="w-[90%] max-w-xl rounded-lg shadow-2xl overflow-hidden"
+				style={{backgroundColor: COLORS.latte}}
 				onClick={(e) => e.stopPropagation()}
 			>
 
 				{/* Header */}
-				<div className="flex items-center justify-between px-6 py-5 border-b border-gray-200">
-					<h2 className="text-2xl font-semibold text-blue-900">
+				<div
+					className="flex items-center justify-between px-6 py-3"
+					style={{backgroundColor: COLORS.mint}}
+				>
+					<h2
+						className="text-2xl font-semibold"
+						style={{color: COLORS.font}}
+					>
 						Faculty Details
 					</h2>
 
 					<button
 						onClick={closeMenu}
-						className="text-gray-500 hover:text-gray-600 transition cursor-pointer"
+						className="cursor-pointer"
 					>
-						<IoMdClose className='w-8 h-8' />
+						<IoMdClose className='w-8 h-8' style={{color: COLORS.font}}/>
 					</button>
 				</div>
 
