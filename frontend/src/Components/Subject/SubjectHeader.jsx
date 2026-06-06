@@ -2,9 +2,11 @@ import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
 import AddSubjectForm from './AddSubjectForm';
 import { COLORS } from '../../constants/theme';
+import AddAllSubjectsForm from './AddAllSubjectsForm';
 
 function SubjectHeader({ toggleUpdate, setSearchQuery }) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
+    const [isAddAllSubjectOpen, setIsAddAllSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
 
     const handleChange = (e) => {
@@ -58,16 +60,34 @@ function SubjectHeader({ toggleUpdate, setSearchQuery }) {
                             backgroundColor: COLORS.mint,
                             color: COLORS.font
                         }}
-                        onClick={() => setIsOpen(true)}
+                        onClick={() => setIsAddSubjectOpen(true)}
                     >
                         Add Subject
                     </button>
+                    <button
+                        // className='bg-blue-900 text-white px-3 py-1 rounded-lg cursor-pointer'
+                        className='px-3 py-1 ml-2 rounded-lg cursor-pointer'
+                        style={{
+                            backgroundColor: COLORS.mint,
+                            color: COLORS.font
+                        }}
+                        onClick={() => setIsAddAllSubjectOpen(true)}
+                    >
+                        Add All Subjects
+                    </button>
                 </div>
             </div>
-            {isOpen &&
+            {isAddSubjectOpen &&
                 <AddSubjectForm
-                    isOpen={isOpen}
-                    setIsOpen={setIsOpen}
+                    isAddSubjectOpen={isAddSubjectOpen}
+                    setIsAddSubjectOpen={setIsAddSubjectOpen}
+                    toggleUpdate={toggleUpdate}
+                />
+            }
+            {isAddAllSubjectOpen &&
+                <AddAllSubjectsForm
+                    isAddAllSubjectOpen={isAddAllSubjectOpen}
+                    setIsAddAllSubjectOpen={setIsAddAllSubjectOpen}
                     toggleUpdate={toggleUpdate}
                 />
             }
