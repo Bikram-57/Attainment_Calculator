@@ -92,7 +92,7 @@ function CoPoRelations() {
                     {/* Search */}
                     <div
                         className="flex w-105 overflow-hidden rounded-md border"
-                        style={{ borderColor: COLORS.mintDark }}
+                        // style={{ borderColor: COLORS.mintDark }}
                     >
                         <input
                             type="text"
@@ -101,7 +101,7 @@ function CoPoRelations() {
                             onChange={(e) => handleChange(e)}
                             className="w-full border-r px-3 py-1 text-sm outline-none"
                             style={{
-                                borderRightColor: COLORS.mintDark,
+                                // borderRightColor: COLORS.mintDark,
                                 color: COLORS.mintDark
                             }}
                         />

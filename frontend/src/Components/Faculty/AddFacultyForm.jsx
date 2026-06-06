@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import axios from 'axios'
 import { IoMdClose } from "react-icons/io";
+import { COLORS } from '../../constants/theme'
 
 function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
+    const [isHovered, setIsHovered] = useState(false);
     const [facultyId, setFacultyId] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -27,23 +29,57 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
     }
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-            <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-6 relative">
-                {/* Close Button */}
-                <button
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
+            {/* <div
+                className="w-full max-w-md rounded-2xl shadow-lg p-6 relative"
+                style={{backgroundColor: COLORS.latte}}
+            > */}
+            {/* Close Button */}
+            {/* <button
                     onClick={() => setIsOpen(false)}
                     className="absolute top-5 right-4 text-gray-500 hover:text-black cursor-pointer"
                 >
                     <IoMdClose className='w-6 h-6' />
-                </button>
+                </button> */}
 
-                {/* Title */}
-                <h2 className="text-xl font-semibold mb-4">Add Faculty</h2>
+            {/* Title */}
+            {/* <h2 className="text-xl font-semibold mb-4">Add Faculty</h2> */}
+
+
+
+
+            <div
+                className="w-[92%] max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+                style={{ backgroundColor: COLORS.latte }}
+            >
+                {/* Header */}
+                <div
+                    className="flex items-center justify-between px-5 py-4 border-b border-gray-200"
+                    style={{ backgroundColor: COLORS.mint }}
+                >
+                    <h2
+                        className="text-xl font-semibold"
+                        style={{ color: COLORS.font }}
+                    >
+                        Add Faculty
+                    </h2>
+
+                    <button
+                        onClick={() => setIsOpen(false)}
+                        className="cursor-pointer"
+                    >
+                        <IoMdClose className='w-6 h-6' style={{ color: COLORS.font }} />
+                    </button>
+                </div>
+
+
+
 
                 {/* Form */}
-                <div className="space-y-4">
+                {/* <div className="space-y-4"> */}
+                <div className="px-6 py-3 space-y-2">
                     <div>
-                        <label className="block text-sm font-medium">
+                        <label className="block text-lg font-medium">
                             Faculty Id <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -55,7 +91,7 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium">
+                        <label className="block text-lg font-medium">
                             Name <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -67,7 +103,7 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium">
+                        <label className="block text-lg font-medium">
                             Email <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -79,7 +115,7 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium">Password</label>
+                        <label className="block text-lg font-medium">Password</label>
                         <input
                             type="text"
                             defaultValue={password}
@@ -98,7 +134,13 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
 
                     {/* Submit */}
                     <button
-                        className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-800"
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                        className="w-full py-2 rounded-lg cursor-pointer"
+                        style={{
+                            backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint,
+                            color: COLORS.font
+                        }}
                         onClick={handleAddFaculty}
                     >
                         Add
