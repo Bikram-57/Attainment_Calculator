@@ -16,34 +16,35 @@ function AddAllSubjectsForm({ isAddAllSubjectOpen, setIsAddAllSubjectOpen, toggl
     const [file, setFile] = useState(null);
     const fileInputRef = useRef(null);
 
-    // const d = new Date();
-
     useEffect(() => {
-            if (!successMsg) return;
-            const timer = setTimeout(() => {
-                setSuccessMsg("");
-                setIsAddAllSubjectOpen(false);
-            }, 3000);
-            return () => clearTimeout(timer);
-        }, [successMsg])
+        if (!successMsg) return;
+        const timer = setTimeout(() => {
+            setSuccessMsg("");
+            setIsAddAllSubjectOpen(false);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, [successMsg])
 
-    // const handleAddAllSubjects = async () => {
-    const handleAddAllSubjects = () => {
+    const handleAddAllSubjects = async () => {
         if (!file) {
             setError("Please choose a file!");
             return;
         }
 
+        const formData = new FormData();
+        formData.append('file', file);
+
         try {
-            // const res = await axios.post('/uploadAll/', {
-            //     file: file
-            // });
-            // setSuccessMsg(res.data.message);
-            setSuccessMsg('success');
+            const res = await axios.post('/uploadAll/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setSuccessMsg(res.data.message);
             toggleUpdate();
             console.log(res.data);
         } catch (error) {
-            console.log('ERROR || AddAllSubjectsForm || handleAddAllSubjects(): ', err);
+            console.log('ERROR || AddAllSubjectsForm || handleAddAllSubjects(): ', error);
         }
     }
 
