@@ -12,8 +12,6 @@ function Subject() {
         try {
             const response = await axios.get('/sub/');
             setSubjectData(response.data.data);
-            console.log(response.data.data.length);
-            
         } catch (error) {
             console.log('Axios Error | getSubjectData(): ', error);
         }

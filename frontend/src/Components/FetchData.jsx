@@ -85,11 +85,8 @@ function FetchData() {
 		const fetchSubjects = async () => {
 			try {
 				const res = await axios.get('/sub/');
-				console.log('yess');
-				
 				setAllSubjects(res.data.data);
 			} catch (err) {
-				console.log('no');
 				console.log('Error fetching subjects || ', err);
 			}
 		};

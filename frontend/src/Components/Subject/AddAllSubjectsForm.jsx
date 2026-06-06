@@ -32,14 +32,10 @@ function AddAllSubjectsForm({ isAddAllSubjectOpen, setIsAddAllSubjectOpen, toggl
         }
 
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('excelFile', file);
 
         try {
-            const res = await axios.post('/uploadAll/', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            const res = await axios.post('/uploadAll/', formData);
             setSuccessMsg(res.data.message);
             toggleUpdate();
             console.log(res.data);
