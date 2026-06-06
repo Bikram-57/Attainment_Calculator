@@ -18,6 +18,7 @@ const calculatedPo = require('./routes/calculatedPo')
 const directPoAttain = require('./routes/directPoAttainment')
 const uploadAllSubjects = require('./routes/uploadAllSubjects')
 const uploadRubrics = require('./routes/rubrics')
+const downloadReport = require('./routes/downloadReport')
 const login = require('./routes/login')
 
 
@@ -62,6 +63,7 @@ app.use("/calpo", calculatedPo)
 app.use("/directpo", directPoAttain)
 app.use("/uploadAll", uploadAllSubjects)
 app.use("/rubrics", uploadRubrics)
+app.use("/file", downloadReport)
 app.use("/login", login)
 
 
