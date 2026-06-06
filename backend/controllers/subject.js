@@ -3,7 +3,7 @@ const Subject = require('../models/subject');
 async function handleGenerateNewSubject(req, res) {
 
     try {
-        const { subjectId, subjectName, course, year } = req.body;
+        const { subjectId, subjectName, course, academicYear } = req.body;
         // console.log(req.body);
         
 
@@ -11,7 +11,7 @@ async function handleGenerateNewSubject(req, res) {
             subjectId,
             subjectName,
             course,
-            year
+            academicYear
         });
 
         res.status(201).json({
