@@ -4,7 +4,7 @@ import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 import { COLORS } from '../../constants/theme'
 
-function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
+function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
     const [subjectId, setSubjectId] = useState('');
     const [subjectName, setSubjectName] = useState('');
     const [course, setCourse] = useState('');
@@ -17,9 +17,9 @@ function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
                 subjectId: subjectId,
                 subjectName: subjectName,
                 course: course,
-                year: d.getFullYear()
+                academicYear: d.getFullYear()
             });
-            setIsOpen(false);
+            setIsAddSubjectOpen(false);
             toggleUpdate();
             console.log(res.data);
         } catch (error) {
@@ -27,7 +27,7 @@ function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
         }
     }
 
-    if (!isOpen) return null;
+    if (!isAddSubjectOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -48,7 +48,7 @@ function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
                     </h2>
 
                     <button
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => setIsAddSubjectOpen(false)}
                         className="cursor-pointer"
                     >
                         <IoMdClose className='w-6 h-6' style={{color: COLORS.font}}/>
@@ -110,7 +110,7 @@ function AddSubjectForm({ isOpen, setIsOpen, toggleUpdate }) {
                     {/* Buttons */}
                     <div className="flex justify-end gap-3 pt-2">
                         <button
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => setIsAddSubjectOpen(false)}
                             className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
                             style={{color: COLORS.font}}
                         >

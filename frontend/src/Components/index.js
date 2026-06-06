@@ -30,6 +30,7 @@ import ViewCoPoRelations from "./CoPoRelations/ViewCoPoRelations";
 import EditCoPoRelations from "./CoPoRelations/EditCoPoRelations";
 import Footer from "./Footer";
 import ContactUs from "./ContactUs";
+import AddAllSubjectsForm from "./Subject/AddAllSubjectsForm";
 
 export {
     NavBar,
@@ -62,4 +63,5 @@ export {
     EditCoPoRelations,
     Footer,
     ContactUs,
+    AddAllSubjectsForm,
 }
