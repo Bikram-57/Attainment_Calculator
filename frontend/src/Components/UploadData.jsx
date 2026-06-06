@@ -186,7 +186,10 @@ function UploadData() {
 			</div>
 
 			<div className='flex gap-5 my-7'>
-				<div className='flex w-3/5 border-2 border-gray-300 rounded-sm'>
+				<div
+					className='flex w-3/5 border-2 border-gray-300 rounded-sm'
+					style={{ backgroundColor: COLORS.font }}
+				>
 					<label className='bg-gray-200 border-gray-300 px-3 border-r-2 cursor-pointer'>
 						Choose File
 						<input
@@ -197,7 +200,10 @@ function UploadData() {
 							onChange={handleFileChange}
 						/>
 					</label>
-					<div className='w-2/3 mx-2'>
+					<div
+						className='w-2/3 mx-2'
+						style={{ backgroundColor: COLORS.font }}
+					>
 						{!file ? 'No file choose' : file.name}
 					</div>
 					{file && (

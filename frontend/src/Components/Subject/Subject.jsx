@@ -23,7 +23,7 @@ function Subject() {
     }
 
     const filteredSubjects = subjectData.filter(sub => (
-        sub.subjectId.toLowerCase().includes(searchQuery) || sub.subjectName.toLowerCase().includes(searchQuery)
+        sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase()) || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase())
     )) || subjectData;
 
     useEffect(() => {

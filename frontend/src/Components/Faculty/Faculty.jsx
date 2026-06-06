@@ -20,7 +20,7 @@ function Faculty() {
 	const toggleUpdate = () => setToggleNewUser(prev => !prev);
 
     const filteredFaculty = facultyData.filter(sub => (
-        sub.facultyId.toLowerCase().includes(searchQuery) || sub.name.toLowerCase().includes(searchQuery)
+        sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase()) || sub.name.toLowerCase().includes(searchQuery.toLowerCase())
     )) || facultyData;
 
 	useEffect(() => {

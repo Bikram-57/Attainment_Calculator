@@ -12,7 +12,7 @@ function FacultyHeader({ toggleUpdate, setSearchQuery }) {
             setSearchQuery('');
         }
         setSearch(e.target.value);
-        // setSearchQuery(e.target.value);
+        setSearchQuery(e.target.value);
     }
 
     return (
@@ -25,16 +25,16 @@ function FacultyHeader({ toggleUpdate, setSearchQuery }) {
             </div>
             <div className='flex gap-5 mx-10'>
                 <div
-                    className='border border-gray-300 rounded-md flex items-center'
-                    style={{ borderColor: COLORS.mintDark }}
+                    className='border rounded-md flex items-center'
+                    // style={{ borderColor: COLORS.mintDark }}
                 >
                     <input
                         type='text'
                         placeholder='Search by id or name'
                         value={search}
-                        className='border-r border-gray-300 px-3 py-1 w-62.5 outline-none'
+                        className='border-r px-3 py-1 w-62.5 outline-none'
                         style={{
-                            borderRightColor: COLORS.mintDark,
+                            // borderRightColor: COLORS.mintDark,
                             color: COLORS.mintDark
                         }}
                         onChange={(e) => handleChange(e)}

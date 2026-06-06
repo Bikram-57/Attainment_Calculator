@@ -12,7 +12,7 @@ function SubjectHeader({ toggleUpdate, setSearchQuery }) {
             setSearchQuery('');
         }
         setSearch(e.target.value);
-        // setSearchQuery(e.target.value);
+        setSearchQuery(e.target.value);
     }
 
     return (
@@ -28,7 +28,7 @@ function SubjectHeader({ toggleUpdate, setSearchQuery }) {
                 {/* <div className='border border-gray-300 rounded-md flex items-center'> */}
                 <div
                     className='border rounded-md flex items-center'
-                    style={{ borderColor: COLORS.mintDark }}
+                    // style={{ borderColor: COLORS.mintDark }}
                 >
                     <input
                         type='text'
@@ -38,7 +38,7 @@ function SubjectHeader({ toggleUpdate, setSearchQuery }) {
                         // className='border-r-4 border-r-red-200 px-3 py-1 w-87.5'
                         className='border-r px-3 py-1 w-87.5 outline-none'
                         style={{
-                            borderRightColor: COLORS.mintDark,
+                            // borderRightColor: COLORS.mintDark,
                             color: COLORS.mintDark
                         }}
                         onChange={(e) => handleChange(e)}
