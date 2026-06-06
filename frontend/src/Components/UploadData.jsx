@@ -33,7 +33,7 @@ function UploadData() {
 			return;
 		}
 		const filteredSubjects = allSubjects.filter(sub => (
-			sub.course === selectedCourse && sub.year == academicYear
+			sub.course === selectedCourse && sub.academicYear == academicYear
 		));
 
 		setSubjectList(filteredSubjects);
@@ -49,7 +49,7 @@ function UploadData() {
 			return;
 		}
 		const filteredSubjects = allSubjects.filter(sub => (
-			sub.year == selectedYear && sub.course == course
+			sub.academicYear == selectedYear && sub.course == course
 		));
 
 		setSubjectList(filteredSubjects);
