@@ -20,7 +20,7 @@ function CoPoRelations() {
             const res = await axios.get('/co-po/relation', {
                 params: {
                     subjectId: sub.subjectId,
-                    academicYear: sub.year,
+                    academicYear: sub.academicYear,
                     course: sub.course
                 }
             });
@@ -47,7 +47,7 @@ function CoPoRelations() {
             setSearchQuery('');
         }
         setSearch(e.target.value);
-        // setSearchQuery(e.target.value);
+        setSearchQuery(e.target.value);
     }
 
     const filteredSubjects = subjects?.filter(sub => (
