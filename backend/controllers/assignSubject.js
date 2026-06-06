@@ -1,4 +1,3 @@
-// controllers/assignSubject.js
 const assignSubject = require('../models/assignSubject');
 
 async function handleAssignSubject(req, res) {
@@ -79,99 +78,13 @@ async function handleAssignSubject(req, res) {
     }
 }
 
-// module.exports = { handleAssignSubject };
-
-// 7. Export the module so your Express router can access it
-// module.exports = { handleAssignSubject };
-
-
-
-//   try {
-//         const { subjectId, subjectIds, facultyId, year } = req.body;
-
-//         // Normalize the input into an array
-//         let subjectsToAdd = [];
-//         if (subjectIds && Array.isArray(subjectIds)) {
-//             subjectsToAdd = subjectIds;
-//         } else if (subjectId) {
-//             subjectsToAdd = [subjectId];
-//         }
-
-//         // Validation check
-//         if (subjectsToAdd.length === 0 || !year) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "Please provide a year and subjectId(s)."
-//             });
-//         }
-
-//         // 1. Find the faculty document
-//         let assignSub = await assignSubject.findOne({ facultyId: facultyId });
-
-//         if (!assignSub) {
-//             // SCENARIO A: Faculty doesn't exist yet. Create a new document.
-//             assignSub = new assignSubject({
-//                 facultyId: facultyId,
-//                 assignments: [{
-//                     year: Number(year),
-//                     subjectIds: subjectsToAdd
-//                 }]
-//             });
-//         } else {
-//             // SCENARIO B: Faculty exists. Check if the year already exists in their array.
-//             const yearIndex = assignSub.assignments.findIndex(a => a.year === Number(year));
-
-//             if (yearIndex > -1) {
-//                 // Year exists! Add new subjects, preventing exact duplicates
-//                 subjectsToAdd.forEach(newSubject => {
-//                     if (!assignSub.assignments[yearIndex].subjectIds.includes(newSubject)) {
-//                         assignSub.assignments[yearIndex].subjectIds.push(newSubject);
-//                     }
-//                 });
-//             } else {
-//                 // Year does NOT exist yet for this faculty. Push a new year object.
-//                 assignSub.assignments.push({
-//                     year: Number(year),
-//                     subjectIds: subjectsToAdd
-//                 });
-//             }
-//         }
-
-//         // 2. Save the document to the database
-//         await assignSub.save();
-
-//         res.status(200).json({
-//             success: true,
-//             message: "Subject(s) assigned successfully!",
-//             data: {
-//                 facultyId: assignSub.facultyId,
-//                 assignments: assignSub.assignments
-//             }
-//         });
-
-//     } catch (error) {
-//         if (error.code === 11000) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "Database index error. Make sure you dropped old unique indexes."
-//             });
-//         }
-
-//         return res.status(500).json({
-//             success: false,
-//             message: "Server error",
-//             error: error.message
-//         });      
-//     }
-// }
 
 // 2. Get ALL Assignments in the database
 async function getAllFacultyAssignments(req, res) {
     try {
-        const { year } = req.query; // Check if the frontend asked for a specific year
+        const { academicYear } = req.query; // Updated to match our new naming convention
 
-        // 1. Fetch all faculty records
-        // .lean() makes the query faster by returning plain JS objects instead of heavy Mongoose documents
+        // .lean() returns plain JS objects. Maps become standard objects.
         const allRecords = await assignSubject.find({}).lean();
 
         if (!allRecords || allRecords.length === 0) {
@@ -183,86 +96,94 @@ async function getAllFacultyAssignments(req, res) {
 
         let dataToSend = allRecords;
 
-        // 2. If a year was requested, filter the nested arrays
-        if (year) {
-            const targetYear = Number(year);
+        // If a specific year was requested, filter using object keys
+        if (academicYear) {
+            const academicYearStr = academicYear.toString().trim();
 
-            dataToSend = allRecords.map(faculty => {
-                // Find only the assignment object for the requested year
-                const yearData = faculty.assignments.find(a => a.year === targetYear);
-
-                return {
-                    facultyId: faculty.facultyId,
-                    // If they taught that year, put it in an array. If not, return an empty array.
-                    assignments: yearData ? [yearData] : []
-                };
-            })
-                // Optional: Remove faculty members who have no assignments for that specific year
-                .filter(faculty => faculty.assignments.length > 0);
+            dataToSend = allRecords.reduce((filteredRecords, faculty) => {
+                // Check if the assignments object has this specific year as a key
+                if (faculty.assignments && faculty.assignments[academicYearStr]) {
+                    filteredRecords.push({
+                        facultyId: faculty.facultyId,
+                        // Return just that year's data in the new flat structure
+                        assignments: {
+                            [academicYearStr]: faculty.assignments[academicYearStr]
+                        }
+                    });
+                }
+                return filteredRecords;
+            }, []); // Start with an empty array
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             count: dataToSend.length,
             data: dataToSend
         });
 
     } catch (error) {
+        console.error('Full Error Detail:', error);
         return res.status(500).json({
             success: false,
             message: "Server error while fetching assignments",
-            error: error.message
+            actualError: error.message
         });
     }
 }
 
 // 3. Get ALL Subjects for a Specific Faculty Member
+// 3. Get ALL Subjects for a Specific Faculty Member
 async function getAssignedSubjectsByFaculty(req, res) {
     try {
         const { facultyId } = req.params;
-        const { year } = req.query; // Optional: Check if the frontend asked for a specific year
+        const { academicYear } = req.query;
 
-        // 1. Use .findOne() because there is now exactly ONE document per faculty
-        const facultyRecord = await assignSubject.findOne({ facultyId: facultyId });
+        const cleanFacultyId = facultyId.trim();
+        const facultyRecord = await assignSubject.findOne({ facultyId: cleanFacultyId });
 
-        // 2. Check if the faculty exists and has assignments
-        if (!facultyRecord || !facultyRecord.assignments || facultyRecord.assignments.length === 0) {
+        // Maps use .size instead of .length to check if they are empty
+        if (!facultyRecord || !facultyRecord.assignments || facultyRecord.assignments.size === 0) {
             return res.status(404).json({
                 success: false,
-                message: `No assigned subjects found for faculty ID: ${facultyId}`
+                message: `No assigned subjects found for faculty ID: ${cleanFacultyId}`
             });
         }
 
-        // 3. Handle optional year filtering
-        let dataToSend = facultyRecord.assignments;
+        let dataToSend;
 
-        if (year) {
-            // Find the specific object in the array that matches the requested year
-            const yearData = facultyRecord.assignments.find(a => a.year === Number(year));
+        // Handle optional year filtering directly with Map lookups
+        if (academicYear) {
+            const academicYearStr = academicYear.toString().trim();
 
-            if (!yearData) {
+            if (!facultyRecord.assignments.has(academicYearStr)) {
                 return res.status(404).json({
                     success: false,
-                    message: `No subjects found for faculty ID ${facultyId} in the year ${year}`
+                    message: `No subjects found for faculty ID ${cleanFacultyId} in the year ${academicYearStr}`
                 });
             }
-            // Wrap in an array so the frontend always receives the same data structure type
-            dataToSend = [yearData];
+            
+            // Reconstruct the flat structure for the response
+            dataToSend = {
+                [academicYearStr]: facultyRecord.assignments.get(academicYearStr)
+            };
+        } else {
+            // Convert the Map to a standard plain Object so it sends cleanly in JSON
+            dataToSend = Object.fromEntries(facultyRecord.assignments);
         }
 
-        // 4. Send the successful response
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             facultyId: facultyRecord.facultyId,
-            totalYearsRecorded: dataToSend.length,
+            totalYearsRecorded: Object.keys(dataToSend).length,
             data: dataToSend
         });
 
     } catch (error) {
+        console.error('Full Error Detail:', error);
         return res.status(500).json({
             success: false,
             message: "Server error while fetching the faculty's subjects",
-            error: error.message
+            actualError: error.message
         });
     }
 }
@@ -270,72 +191,76 @@ async function getAssignedSubjectsByFaculty(req, res) {
 // 4. Delete a Specific Assignment Document
 async function removeSubjectFromFaculty(req, res) {
     try {
-        // We now need the year to know WHICH nested array to remove the subject from
-        const { facultyId, subjectId, year } = req.body;
+        const { facultyId, subjectId, academicYear } = req.body;
 
         // Validation check
-        if (!facultyId || !subjectId || !year) {
+        if (!facultyId || !subjectId || academicYear === undefined) {
             return res.status(400).json({
                 success: false,
-                message: "Please provide facultyId, subjectId, and year."
+                message: "Please provide facultyId, subjectId, and academicYear."
             });
         }
 
+        const cleanFacultyId = facultyId.trim();
+        const cleanSubjectId = subjectId.trim();
+        const academicYearStr = academicYear.toString().trim();
+
         // 1. Find the faculty document
-        const facultyRecord = await assignSubject.findOne({ facultyId: facultyId });
+        const facultyRecord = await assignSubject.findOne({ facultyId: cleanFacultyId });
 
         if (!facultyRecord) {
             return res.status(404).json({
                 success: false,
-                message: `Could not find faculty with ID: ${facultyId}`
+                message: `Could not find faculty with ID: ${cleanFacultyId}`
             });
         }
 
-        // 2. Find the index of the specific year in the assignments array
-        const yearIndex = facultyRecord.assignments.findIndex(a => a.year === Number(year));
-
-        if (yearIndex === -1) {
+        // 2. Check if the Map has this specific year key
+        if (!facultyRecord.assignments.has(academicYearStr)) {
             return res.status(404).json({
                 success: false,
-                message: `No assignments found for the year ${year}.`
+                message: `No assignments found for the year ${academicYearStr}.`
             });
         }
 
-        // 3. Check if the subject actually exists in that year's array
-        const subjectExists = facultyRecord.assignments[yearIndex].subjectIds.includes(subjectId);
+        // 3. Extract the array of subjects for that year
+        let yearSubjects = facultyRecord.assignments.get(academicYearStr);
 
-        if (!subjectExists) {
+        // 4. Check if the subject actually exists in that array
+        if (!yearSubjects.includes(cleanSubjectId)) {
             return res.status(404).json({
                 success: false,
-                message: `Subject ${subjectId} is not assigned to this faculty for the year ${year}.`
+                message: `Subject ${cleanSubjectId} is not assigned to this faculty for the year ${academicYearStr}.`
             });
         }
 
-        // 4. Remove the subject by filtering it out
-        facultyRecord.assignments[yearIndex].subjectIds = facultyRecord.assignments[yearIndex].subjectIds.filter(
-            id => id !== subjectId
-        );
+        // 5. Remove the subject by filtering it out
+        yearSubjects = yearSubjects.filter(id => id !== cleanSubjectId);
 
-        // 5. PRO TIP: Database Cleanup
-        // If removing this subject leaves the year completely empty, remove the year object entirely!
-        if (facultyRecord.assignments[yearIndex].subjectIds.length === 0) {
-            facultyRecord.assignments.splice(yearIndex, 1);
+        // 6. PRO TIP: Database Cleanup
+        // If removing this subject leaves the year completely empty, delete the year key from the Map!
+        if (yearSubjects.length === 0) {
+            facultyRecord.assignments.delete(academicYearStr);
+        } else {
+            // Otherwise, update the Map with the new filtered array
+            facultyRecord.assignments.set(academicYearStr, yearSubjects);
         }
 
-        // 6. Save the updated document
+        // 7. Save the updated document
         await facultyRecord.save();
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Subject removed successfully.",
             data: facultyRecord
         });
 
     } catch (error) {
+        console.error('Full Error Detail:', error);
         return res.status(500).json({
             success: false,
             message: "Server error while deleting assignment",
-            error: error.message
+            actualError: error.message
         });
     }
 }
