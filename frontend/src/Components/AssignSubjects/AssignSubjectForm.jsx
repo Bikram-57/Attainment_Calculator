@@ -52,7 +52,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 				academicYear: year
 			});
 			setIsAssignSubjectOpen(false);
-			// toggleUpdate();
+			toggleUpdate();
 			console.log(res.data);
 		} catch (error) {
 			if (error.status == 409) {
