@@ -1,30 +1,61 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 import { COLORS } from '../../constants/theme'
 
 function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggleUpdate }) {
-	const [subjectName, setSubjectName] = useState('');
+	const [subject, setSubject] = useState('');
 	const [faculty, setFaculty] = useState('');
 	const [year, setYear] = useState('');
 	const [isHovered, setIsHovered] = useState(false);
-	const d = new Date();
+	const [subjectData, setSubjectData] = useState([]);
+	const [facultyData, setFacultyData] = useState([]);
+	const [filteredSubjects, setFilteredSubjects] = useState([]);
+	// const d = new Date();
+	const yearList = [2024, 2025, 2026];
 
-	const handleAddSubject = async () => {
-		// try {
-		// 	const res = await axios.post('/sub/', {
-		// 		subjectId: subjectId,
-		// 		subjectName: subjectName,
-		// 		course: course,
-		// 		academicYear: d.getFullYear()
-		// 	});
-		// 	setIsAssignSubjectOpen(false);
-		// 	toggleUpdate();
-		// 	console.log(res.data);
-		// } catch (error) {
-		// 	console.log('ERROR || handleAddSubject(): ', err);
-		// }
+	useEffect(() => {
+		setFilteredSubjects(
+			subjectData?.filter(sub => (sub.academicYear == year))
+		)
+	}, [year]);
+
+	useEffect(() => {
+		const getSubjects = async () => {
+			try {
+				const response = await axios.get('/sub/');
+				setSubjectData(response.data.data);
+			} catch (error) {
+				console.log('Axios Error | AssignSubjectForm | useEffect() | getSubjects(): ', error);
+			}
+		}
+		const getFaculties = async () => {
+			try {
+				const response = await axios.get('/user/');
+				setFacultyData(response.data.data);
+			} catch (error) {
+				console.log('Axios Error | AssignSubjectForm | useEffect() | getFacultyData(): ', error);
+			}
+		}
+
+		getSubjects();
+		getFaculties();
+	}, []);
+
+	const handleAssignSubject = async () => {
+		try {
+			const res = await axios.post('/assignSub/', {
+				subjectId: subject,
+				facultyId: faculty,
+				academicYear: year
+			});
+			setIsAssignSubjectOpen(false);
+			// toggleUpdate();
+			console.log(res.data);
+		} catch (error) {
+			console.log('ERROR || AssignSubjectForm | handleAssignSubject(): ', error);
+		}
 	}
 
 	if (!isAssignSubjectOpen) return null;
@@ -63,21 +94,19 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 						<label className="block text-lg text-gray-700 mb-2 font-semibold">
 							Subject Name
 						</label>
-						{/* <input
-							type="text"
-							placeholder="E.G. CA1603"
-							value={subjectId}
-							onChange={(e) => setSubjectId(e.target.value)}
-							className="w-full border border-gray-300 rounded-lg px-4 py-1 text-lg outline-none"
-						/> */}
 						<div className="relative">
 							<select
-								value={subjectName}
-								onChange={(e) => setSubjectName(e.target.value)}
+								value={subject}
+								onChange={(e) => setSubject(e.target.value)}
 								className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
+								disabled={year.length !== 4 ? true : false}
 							>
 								<option value="">Select subject from list</option>
-								<option value="subject">subject</option>
+								{filteredSubjects?.map(sub => (
+									<option key={sub.subjectId} value={sub.subjectId}>
+										{sub.subjectName}
+									</option>
+								))}
 							</select>
 
 							<FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
@@ -87,15 +116,8 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 					{/* Subject Name */}
 					<div>
 						<label className="block text-lg text-gray-700 mb-2 font-semibold">
-							Faculty 
+							Faculty
 						</label>
-						{/* <input
-							type="text"
-							placeholder="E.g. Software Engineering"
-							value={subjectName}
-							onChange={(e) => setSubjectName(e.target.value)}
-							className="w-full border border-gray-300 rounded-lg px-4 py-1 text-lg outline-none"
-						/> */}
 						<div className="relative">
 							<select
 								value={faculty}
@@ -103,7 +125,11 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 								className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
 							>
 								<option value="">Select faculty from list</option>
-								<option value="faculty">faculty</option>
+								{facultyData.map(faculty => (
+									<option key={faculty.facultyId} value={faculty.facultyId}>
+										{faculty.name}
+									</option>
+								))}
 							</select>
 
 							<FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
@@ -121,9 +147,15 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 								value={year}
 								onChange={(e) => setYear(e.target.value)}
 								className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
+								disabled={subjectData.length > 0 ? false : true}
 							>
 								<option value="">Select year from list</option>
-								<option value="2026">2026</option>
+								{/* <option value="2026">2026</option> */}
+								{yearList.map(y => (
+									<option key={y} value={y}>
+										{y}
+									</option>
+								))}
 							</select>
 
 							<FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
@@ -146,7 +178,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 								color: COLORS.font,
 								backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
 							}}
-							onClick={handleAddSubject}
+							onClick={handleAssignSubject}
 							onMouseEnter={() => setIsHovered(true)}
 							onMouseLeave={() => setIsHovered(false)}
 						>
