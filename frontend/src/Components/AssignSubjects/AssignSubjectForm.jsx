@@ -12,6 +12,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 	const [subjectData, setSubjectData] = useState([]);
 	const [facultyData, setFacultyData] = useState([]);
 	const [filteredSubjects, setFilteredSubjects] = useState([]);
+	const [errorMsg, setErrorMsg] = useState('');
 	// const d = new Date();
 	const yearList = [2024, 2025, 2026];
 
@@ -54,7 +55,12 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 			// toggleUpdate();
 			console.log(res.data);
 		} catch (error) {
-			console.log('ERROR || AssignSubjectForm | handleAssignSubject(): ', error);
+			if (error.status == 409) {
+				setErrorMsg('Subject already assigned!');
+			}
+			else {
+				console.log('ERROR || AssignSubjectForm | handleAssignSubject(): ', error);
+			}
 		}
 	}
 
@@ -189,7 +195,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 					{/* Divider */}
 					<div className="border-t border-gray-300 pt-5">
 						<p className="text-red-500 text-md">
-							Note: Once a subject is created, Subject Code cannot be changed.
+							{errorMsg}
 						</p>
 					</div>
 				</div>
