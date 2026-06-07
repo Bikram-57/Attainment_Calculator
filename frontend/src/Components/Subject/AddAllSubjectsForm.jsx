@@ -101,10 +101,13 @@ function AddAllSubjectsForm({ isAddAllSubjectOpen, setIsAddAllSubjectOpen, toggl
 
                     {/* Subject Code */}
                     <div
-                        className='flex w-3/5 border-2 border-gray-300 rounded-sm'
+                        className='flex border-2 border-gray-300 rounded-sm'
                         style={{ backgroundColor: COLORS.font }}
                     >
-                        <label className='bg-gray-200 border-gray-300 px-3 border-r-2 cursor-pointer'>
+                        <label
+                            className='border-gray-300 px-3 py-1 border-r-2 cursor-pointer'
+                            style={{backgroundColor: COLORS.latteDark}}
+                        >
                             Choose File
                             <input
                                 ref={fileInputRef}
@@ -115,8 +118,8 @@ function AddAllSubjectsForm({ isAddAllSubjectOpen, setIsAddAllSubjectOpen, toggl
                             />
                         </label>
                         <div
-                            className='w-2/3 mx-2'
-                            style={{ backgroundColor: COLORS.font }}
+                            className='w-2/3 px-2 py-1'
+                            // style={{ backgroundColor: COLORS.font }}
                         >
                             {!file ? 'No file choose' : file.name}
                         </div>

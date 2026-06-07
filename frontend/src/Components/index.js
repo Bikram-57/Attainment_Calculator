@@ -31,6 +31,10 @@ import EditCoPoRelations from "./CoPoRelations/EditCoPoRelations";
 import Footer from "./Footer";
 import ContactUs from "./ContactUs";
 import AddAllSubjectsForm from "./Subject/AddAllSubjectsForm";
+import AssignSubjects from "./AssignSubjects/AssignSubjects";
+import AssignSubjectForm from "./AssignSubjects/AssignSubjectForm";
+import DeleteAssignedSubject from "./AssignSubjects/DeleteAssignedSubject";
+import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
 
 export {
     NavBar,
@@ -64,4 +68,8 @@ export {
     Footer,
     ContactUs,
     AddAllSubjectsForm,
+    AssignSubjects,
+    AssignSubjectForm,
+    DeleteAssignedSubject,
+    AssignSubjectsHeader,
 }

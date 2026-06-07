@@ -149,7 +149,17 @@ function SideBar() {
                             <BsCardChecklist />
                             <div>Assign Subjects</div>
                         </div> */}
-                        <NavLink to='/' className='flex items-center gap-1 px-6 my-4'>
+                        <NavLink
+                            to='/'
+                            className={({ isActive }) => (
+                                `${isActive ? 'font-bold' : ''}
+                            flex items-center gap-1 mt-4 px-6 cursor-pointer`
+                            )}
+                            style={({ isActive }) => ({
+                                backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                                color: COLORS.font
+                            })}
+                        >
                             <BsCardChecklist />
                             <div>Assign Subjects</div>
                         </NavLink>
