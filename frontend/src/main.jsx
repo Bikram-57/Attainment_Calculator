@@ -12,6 +12,7 @@ import {
 	POAttainment,
 	CoPoRelations,
 	ContactUs,
+	AssignSubjects,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -23,7 +24,8 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: '/',
-				// element: <Faculty />
+				element: <AssignSubjects />,
+				handle: { title: 'Assign Subjects' }
 			},
 			{
 				path: 'users/',
