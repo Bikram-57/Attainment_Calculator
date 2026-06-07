@@ -51,7 +51,7 @@ function CoPoRelations() {
     }
 
     const filteredSubjects = subjects?.filter(sub => (
-        sub.subjectId.toLowerCase().includes(searchQuery) || sub.subjectName.toLowerCase().includes(searchQuery)
+        sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase()) || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase())
     )) || subjects;
 
     useEffect(() => {
