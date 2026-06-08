@@ -7,7 +7,8 @@ import { COLORS } from '../../constants/theme'
 function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggleUpdate }) {
 	const [subjectId, setSubjectId] = useState('');
 	const [subjectName, setSubjectName] = useState('');
-	const [faculty, setFaculty] = useState('');
+	const [facultyId, setFacultyId] = useState('');
+	const [facultyName, setFacultyName] = useState('');
 	const [year, setYear] = useState('');
 	const [isHovered, setIsHovered] = useState(false);
 	const [subjectData, setSubjectData] = useState([]);
@@ -45,6 +46,11 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 		getSubjects();
 		getFaculties();
 	}, []);
+	
+	const handleFaculty = (e) => {
+		setFacultyId(e.target.value);
+		setFacultyName((facultyData.find(faculty => faculty.facultyId === e.target.value)).name);
+	}
 
 	const handleYear = (e) => {
 		setYear(e.target.value)
@@ -57,13 +63,14 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 	}
 
 	const handleAssignSubject = async () => {
-		console.log(subjectId, subjectName, faculty, year);
+		console.log(subjectId, subjectName, facultyId, year, facultyName);
 		
 		try {
 			const res = await axios.post('/assignSub/', {
 				subjectId: subjectId,
 				subjectName: subjectName,
-				facultyId: faculty,
+				facultyId: facultyId,
+				// facultyName: facultyName,
 				academicYear: year
 			});
 			setIsAssignSubjectOpen(false);
@@ -117,8 +124,8 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 						</label>
 						<div className="relative">
 							<select
-								value={faculty}
-								onChange={(e) => setFaculty(e.target.value)}
+								value={facultyId}
+								onChange={(e) => handleFaculty(e)}
 								className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
 							>
 								<option value="">Select faculty from list</option>

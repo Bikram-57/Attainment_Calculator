@@ -2,13 +2,23 @@ import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
 import AssignSubjectForm from './AssignSubjectForm';
 import { COLORS } from '../../constants/theme';
+import { FaFilter } from "react-icons/fa";
 
-function AssignSubjectsHeader({ toggleUpdate, setSearchQuery }) {
+function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFilterYear }) {
     const [isAssignSubjectOpen, setIsAssignSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
+    const [year, setYear] = useState('');
+
+
+    const yearList = [2025, 2024];
+
+    const handleYear = (e) => {
+        setYear(e.target.value);
+        setFilterYear(e.target.value);
+    }
 
     const handleChange = (e) => {
-        if (e.target.value == ''){
+        if (e.target.value == '') {
             setSearchQuery('');
         }
         setSearch(e.target.value);
@@ -24,11 +34,36 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery }) {
             >
                 Assigned Subjects
             </div>
+            <div className="w-1/8 flex items-center gap-2">
+                <div
+                    className='flex items-center gap-1 font-semibold text-lg'
+                    style={{ color: COLORS.mint }}
+                >
+                    <FaFilter />
+                    <div>
+                        Filter:
+                    </div>
+                </div>
+                <div className='w-1/2'>
+                    <select
+                        value={year}
+                        onChange={(e) => handleYear(e)}
+                        className="w-full border border-gray-400 text-center rounded-lg px-2 text-md cursor-pointer outline-none"
+                    >
+                        <option value={currentYear}>{currentYear}</option>
+                        {yearList.map(y => (
+                            <option key={y} value={y}>
+                                {y}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
             <div className='flex gap-5 mx-10'>
                 {/* <div className='border border-gray-300 rounded-md flex items-center'> */}
                 <div
                     className='border rounded-md flex items-center'
-                    // style={{ borderColor: COLORS.mintDark }}
+                // style={{ borderColor: COLORS.mintDark }}
                 >
                     <input
                         type='text'
