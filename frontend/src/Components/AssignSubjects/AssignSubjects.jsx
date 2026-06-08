@@ -8,6 +8,12 @@ function AssignSubjects() {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [assignedSubjectsData, setAssignedSubjectsData] = useState([]);
 	const [updateData, setUpdateData] = useState(false);
+	const [filterYear, setFilterYear] = useState(new Date().getFullYear());
+
+	// const d = new Date();
+    // const currentYear = d.getFullYear();
+
+	const yearList = [2024, 2025, 2026];
 
 	const filteredAssignedSubjectsData = assignedSubjectsData?.filter(sub => (
 		sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase())
@@ -18,7 +24,7 @@ function AssignSubjects() {
 			try {
 				const res = await axios.get('/assignSub/');
 				setAssignedSubjectsData(res.data.data);
-				console.log(res.data);
+				console.log(res.data.data);
 			} catch (error) {
 				if (error.status == 409) {
 					setErrorMsg('Subject already assigned!');
@@ -38,7 +44,7 @@ function AssignSubjects() {
 
 	return (
 		<div className='h-full flex flex-col'>
-			<AssignSubjectsHeader toggleUpdate={toggleUpdate} setSearchQuery={setSearchQuery} />
+			<AssignSubjectsHeader toggleUpdate={toggleUpdate} setSearchQuery={setSearchQuery} currentYear={filterYear} setFilterYear={setFilterYear}/>
 			<div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
 				<table className="w-full text-sm">
 					<thead>
@@ -64,15 +70,13 @@ function AssignSubjects() {
 
 					<tbody>
 
-						{filteredAssignedSubjectsData.map((data) => {
+						{/* {filteredAssignedSubjectsData.map((data) => {
 							const totalSubjects = Object.values(data.assignments).flat().length;
-
 							return (
 								<tr
 									key={data.facultyId}
 									className="border-b hover:bg-slate-50 transition-colors"
 								>
-									{/* Faculty */}
 									<td className="px-4 py-3">
 										<div className="flex flex-col">
 											<span className="font-semibold text-slate-800">
@@ -84,7 +88,6 @@ function AssignSubjects() {
 										</div>
 									</td>
 
-									{/* Assigned Subjects */}
 									<td className="px-4 py-3">
 										<details className="group rounded-lg border bg-white shadow-sm">
 											<summary className="flex cursor-pointer items-center justify-between px-4 py-3 font-medium">
@@ -136,7 +139,6 @@ function AssignSubjects() {
 										</details>
 									</td>
 
-									{/* Actions */}
 									<td className="px-4 py-3">
 										<div className="flex justify-center">
 											<button
@@ -145,7 +147,7 @@ function AssignSubjects() {
 													backgroundColor: COLORS.mint,
 													color: COLORS.font
 												}}
-											// onClick={() => handleEditOpen(data)}
+											onClick={() => handleEditOpen(data)}
 											>
 												<GrEdit size={16} />
 											</button>
@@ -153,14 +155,13 @@ function AssignSubjects() {
 									</td>
 								</tr>
 							);
-						})}
+						})} */}
 
 
-						{/* {filteredAssignedSubjectsData.map((data) => (
+						{filteredAssignedSubjectsData.map((data) => (
 							<tr key={data.facultyId}>
 								<td>
-									{data.facultyId}
-									{data.facultyName || ' Faculty'}
+									{data.facultyId} - {data.facultyName || ' Faculty'}
 								</td>
 								<td>
 									<details className="rounded border bg-white">
@@ -204,7 +205,7 @@ function AssignSubjects() {
 									</div>
 								</td>
 							</tr>
-						))} */}
+						))}
 
 
 
