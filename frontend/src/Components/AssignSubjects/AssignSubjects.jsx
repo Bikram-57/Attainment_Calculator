@@ -9,14 +9,10 @@ function AssignSubjects() {
 	const [assignedSubjectsData, setAssignedSubjectsData] = useState([]);
 	const [updateData, setUpdateData] = useState(false);
 	const [filterYear, setFilterYear] = useState(new Date().getFullYear());
-
-	// const d = new Date();
-    // const currentYear = d.getFullYear();
-
-	const yearList = [2024, 2025, 2026];
+	const currentYear = new Date().getFullYear();
 
 	const filteredAssignedSubjectsData = assignedSubjectsData?.filter(sub => (
-		sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase())
+		(sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase()) && Object.hasOwn(sub.assignments, filterYear))
 	)) || assignedSubjectsData;
 
 	useEffect(() => {
@@ -44,7 +40,12 @@ function AssignSubjects() {
 
 	return (
 		<div className='h-full flex flex-col'>
-			<AssignSubjectsHeader toggleUpdate={toggleUpdate} setSearchQuery={setSearchQuery} currentYear={filterYear} setFilterYear={setFilterYear}/>
+			<AssignSubjectsHeader
+				toggleUpdate={toggleUpdate}
+				setSearchQuery={setSearchQuery}
+				currentYear={currentYear}
+				setFilterYear={setFilterYear}
+			/>
 			<div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
 				<table className="w-full text-sm">
 					<thead>
@@ -164,31 +165,33 @@ function AssignSubjects() {
 									{data.facultyId} - {data.facultyName || ' Faculty'}
 								</td>
 								<td>
-									<details className="rounded border bg-white">
-										<summary className="cursor-pointer px-3 py-2">
+									{/* <details className="rounded border bg-white"> */}
+										{/* <summary className="cursor-pointer px-3 py-2">
 											Assigned Subjects
-										</summary>
+										</summary> */}
 
 										<div className="p-2">
 											{Object.entries(data.assignments).map(
 												([year, subjects]) => (
-													<details key={year} className="mb-2">
-														<summary className="font-semibold">
-															Academic Year {year}
-														</summary>
+													year == filterYear ? (
+														<details key={year} className="mb-2">
+															<summary className="font-semibold cursor-pointer">
+																Academic Year {year}
+															</summary>
 
-														<ul className="ml-4 list-disc">
-															{subjects.map((subject) => (
-																<li key={subject.subjectId}>
-																	{subject.subjectName}
-																</li>
-															))}
-														</ul>
-													</details>
+															<ul className="ml-4 list-disc">
+																{subjects.map((subject) => (
+																	<li key={subject.subjectId}>
+																		{subject.subjectName}
+																	</li>
+																))}
+															</ul>
+														</details>
+													) : null
 												)
 											)}
 										</div>
-									</details>
+									{/* </details> */}
 								</td>
 								<td className="px-2 py-1">
 									<div className="flex items-center justify-center gap-2">
@@ -198,7 +201,7 @@ function AssignSubjects() {
 												backgroundColor: COLORS.mint,
 												color: COLORS.font
 											}}
-											// onClick={() => handleEditOpen(subject)}
+										// onClick={() => handleEditOpen(subject)}
 										>
 											<GrEdit />
 										</button>
