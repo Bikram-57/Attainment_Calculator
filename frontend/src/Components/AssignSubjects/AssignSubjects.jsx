@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import AssignSubjectsHeader from './AssignSubjectsHeader'
-import { GrEdit } from "react-icons/gr";
+import { MdDelete } from "react-icons/md";
 import axios from 'axios';
 import { COLORS } from '../../constants/theme';
 
@@ -38,6 +38,22 @@ function AssignSubjects() {
 		setUpdateData(prev => !prev);
 	}
 
+	const deAssignSubject = async (subjectId, facultyId, academicYear) => {
+		console.log(subjectId, facultyId, academicYear);
+		
+		try {
+			const res = await axios.delete('/assignSub/',{
+				subjectId: subjectId,
+				facultyId: facultyId,
+				academicYear: academicYear
+			});
+			toggleUpdate();
+			console.log(res.data.data);
+		} catch (error) {
+			console.log('ERROR || AssignSubjectForm | getAssignSubjects(): ', error);
+		}
+	}
+
 	return (
 		<div className='h-full flex flex-col'>
 			<AssignSubjectsHeader
@@ -63,13 +79,58 @@ function AssignSubjects() {
 								Subjects Assigned
 							</th>
 
-							<th className="px-2 py-1 text-center font-semibold w-35">
+							{/* <th className="px-2 py-1 text-center font-semibold w-35">
 								Action
-							</th>
+							</th> */}
 						</tr>
 					</thead>
 
 					<tbody>
+
+						{filteredAssignedSubjectsData.map((data) => (
+							<tr
+								key={data.facultyId}
+								className="border-b hover:bg-gray-50 transition"
+							>
+								<td className="w-1/3 px-3 py-3 font-medium">
+									{data.facultyId} - {data.facultyName}
+								</td>
+
+								<td className="px-3 py-3">
+									{Object.entries(data.assignments).map(([year, subjects]) =>
+										year == filterYear ? (
+											<div key={year}>
+												<div className="mb-2 text-sm font-semibold text-gray-600">
+													Academic Year {year}
+													<span className="ml-2 rounded bg-gray-100 px-2 py-1 text-xs">
+														{subjects.length} Subjects
+													</span>
+												</div>
+
+												<ul className="space-y-1">
+													{subjects.map((subject) => (
+														<li
+															key={subject.subjectId}
+															className="flex items-center justify-between rounded px-2 py-1 hover:bg-gray-100"
+														>
+															<span>{subject.subjectName}</span>
+
+															<button
+																className="rounded p-1 text-red-500 hover:bg-red-50 hover:text-red-600 transition cursor-pointer"
+																title="De-assign Subject"
+																onClick={() => deAssignSubject(subject.subjectId, data.facultyId, year)}
+															>
+																<MdDelete size={18} />
+															</button>
+														</li>
+													))}
+												</ul>
+											</div>
+										) : null
+									)}
+								</td>
+							</tr>
+						))}
 
 						{/* {filteredAssignedSubjectsData.map((data) => {
 							const totalSubjects = Object.values(data.assignments).flat().length;
@@ -158,42 +219,55 @@ function AssignSubjects() {
 							);
 						})} */}
 
-
+						{/* 
 						{filteredAssignedSubjectsData.map((data) => (
 							<tr key={data.facultyId}>
-								<td>
+								<td className='w-1/3'>
 									{data.facultyId} - {data.facultyName || ' Faculty'}
-								</td>
-								<td>
-									{/* <details className="rounded border bg-white"> */}
-										{/* <summary className="cursor-pointer px-3 py-2">
+								</td> */}
+						{/* <td className='bg-amber-200'> */}
+						{/* <td> */}
+						{/* <details className="rounded border bg-white"> */}
+						{/* <summary className="cursor-pointer px-3 py-2">
 											Assigned Subjects
 										</summary> */}
 
-										<div className="p-2">
-											{Object.entries(data.assignments).map(
-												([year, subjects]) => (
-													year == filterYear ? (
-														<details key={year} className="mb-2">
-															<summary className="font-semibold cursor-pointer">
-																Academic Year {year}
-															</summary>
+						{/* <div className="p-2">
+										{Object.entries(data.assignments).map(
+											([year, subjects]) => (
+												year == filterYear ? (
+													<details key={year} className="mb-2">
+														<summary className="font-semibold cursor-pointer">
+															Academic Year {year}
+														</summary>
 
-															<ul className="ml-4 list-disc">
-																{subjects.map((subject) => (
+														<ul className="ml-4 list-disc">
+															{subjects.map((subject) => (
+																<div className='flex justify-between'>
 																	<li key={subject.subjectId}>
 																		{subject.subjectName}
 																	</li>
-																))}
-															</ul>
-														</details>
-													) : null
-												)
-											)}
-										</div>
-									{/* </details> */}
-								</td>
-								<td className="px-2 py-1">
+																	<button
+																		className="rounded p-1 transition cursor-pointer"
+																		style={{
+																			// backgroundColor: COLORS.mint,
+																			color: COLORS.mint
+																		}}
+																	// onClick={() => handleEditOpen(subject)}
+																	>
+																		<MdDelete />
+																	</button>
+																</div>
+															))}
+														</ul>
+													</details>
+												) : null
+											)
+										)}
+									</div> */}
+						{/* </details> */}
+						{/* </td> */}
+						{/* <td className="px-2 py-1">
 									<div className="flex items-center justify-center gap-2">
 										<button
 											className="rounded p-1 transition cursor-pointer"
@@ -201,14 +275,14 @@ function AssignSubjects() {
 												backgroundColor: COLORS.mint,
 												color: COLORS.font
 											}}
-										// onClick={() => handleEditOpen(subject)}
 										>
-											<GrEdit />
+
+											phaltu btn
 										</button>
 									</div>
-								</td>
-							</tr>
-						))}
+								</td> */}
+						{/* </tr>
+						))} */}
 
 
 
