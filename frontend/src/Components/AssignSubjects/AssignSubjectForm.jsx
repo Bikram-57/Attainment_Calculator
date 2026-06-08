@@ -5,7 +5,8 @@ import { FaChevronDown } from "react-icons/fa";
 import { COLORS } from '../../constants/theme'
 
 function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggleUpdate }) {
-	const [subject, setSubject] = useState('');
+	const [subjectId, setSubjectId] = useState('');
+	const [subjectName, setSubjectName] = useState('');
 	const [faculty, setFaculty] = useState('');
 	const [year, setYear] = useState('');
 	const [isHovered, setIsHovered] = useState(false);
@@ -50,10 +51,18 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 		setIsDisabled(false);
 	}
 
+	const handleSubject = (e) => {
+		setSubjectId(e.target.value);
+		setSubjectName((filteredSubjects.find(sub => sub.subjectId === e.target.value)).subjectName);
+	}
+
 	const handleAssignSubject = async () => {
+		console.log(subjectId, subjectName, faculty, year);
+		
 		try {
 			const res = await axios.post('/assignSub/', {
-				subjectId: subject,
+				subjectId: subjectId,
+				subjectName: subjectName,
 				facultyId: faculty,
 				academicYear: year
 			});
@@ -115,7 +124,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 								<option value="">Select faculty from list</option>
 								{facultyData.map(faculty => (
 									<option key={faculty.facultyId} value={faculty.facultyId}>
-										{faculty.name}
+										{faculty.name} - {faculty.facultyId}
 									</option>
 								))}
 							</select>
@@ -156,8 +165,8 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 						</label>
 						<div className="relative">
 							<select
-								value={subject}
-								onChange={(e) => setSubject(e.target.value)}
+								value={subjectId}
+								onChange={(e) => handleSubject(e)}
 								className={`${isDisabled ? 'cursor-not-allowed text-gray-400' : 'cursor-pointer'} w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg outline-none`}
 								style={{ backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font }}
 								disabled={isDisabled}

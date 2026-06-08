@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 import { COLORS } from '../../constants/theme'
@@ -8,8 +8,14 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
     const [subjectId, setSubjectId] = useState('');
     const [subjectName, setSubjectName] = useState('');
     const [course, setCourse] = useState('');
+    const [academicYear, setAcademicYear] = useState('');
     const [isHovered, setIsHovered] = useState(false);
+    const academicYearList = [];
     const d = new Date();
+
+    for (let i = 2026; i <= d.getFullYear(); i++) {
+        academicYearList.push(i)
+    }
 
     const handleAddSubject = async () => {
         try {
@@ -17,13 +23,14 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 subjectId: subjectId,
                 subjectName: subjectName,
                 course: course,
-                academicYear: d.getFullYear()
+                academicYear: academicYear
+                // academicYear: d.getFullYear()
             });
             setIsAddSubjectOpen(false);
             toggleUpdate();
             console.log(res.data);
         } catch (error) {
-            console.log('ERROR || handleAddSubject(): ', err);
+            console.log('ERROR || handleAddSubject(): ', error);
         }
     }
 
@@ -33,16 +40,16 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div
                 className="w-[92%] max-w-lg rounded-2xl shadow-2xl overflow-hidden"
-                style={{backgroundColor: COLORS.latte}}
+                style={{ backgroundColor: COLORS.latte }}
             >
                 {/* Header */}
                 <div
                     className="flex items-center justify-between px-5 py-4 border-b border-gray-200"
-                    style={{backgroundColor: COLORS.mint}}
+                    style={{ backgroundColor: COLORS.mint }}
                 >
                     <h2
                         className="text-xl font-semibold"
-                        style={{color: COLORS.font}}
+                        style={{ color: COLORS.font }}
                     >
                         Add Subject
                     </h2>
@@ -51,7 +58,7 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                         onClick={() => setIsAddSubjectOpen(false)}
                         className="cursor-pointer"
                     >
-                        <IoMdClose className='w-6 h-6' style={{color: COLORS.font}}/>
+                        <IoMdClose className='w-6 h-6' style={{ color: COLORS.font }} />
                     </button>
                 </div>
 
@@ -86,6 +93,30 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                         />
                     </div>
 
+                    {/* Year */}
+                    <div>
+                        <label className="block text-lg text-gray-700 mb-2 font-semibold">
+                            Academic Year
+                        </label>
+
+                        <div className="relative">
+                            <select
+                                value={academicYear}
+                                onChange={(e) => setAcademicYear(e.target.value)}
+                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
+                            >
+                                <option value="">Select academic year from list</option>
+                                {academicYearList.map(year => (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                        </div>
+                    </div>
+
                     {/* Course Name */}
                     <div>
                         <label className="block text-lg text-gray-700 mb-2 font-semibold">
@@ -103,7 +134,7 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                                 <option value="MCA">MCA</option>
                             </select>
 
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"/>
+                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                         </div>
                     </div>
 
@@ -112,7 +143,7 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                         <button
                             onClick={() => setIsAddSubjectOpen(false)}
                             className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
-                            style={{color: COLORS.font}}
+                            style={{ color: COLORS.font }}
                         >
                             Close
                         </button>

@@ -64,11 +64,103 @@ function AssignSubjects() {
 
 					<tbody>
 
+						{filteredAssignedSubjectsData.map((data) => {
+							const totalSubjects = Object.values(data.assignments).flat().length;
 
-						{filteredAssignedSubjectsData.map((data) => (
+							return (
+								<tr
+									key={data.facultyId}
+									className="border-b hover:bg-slate-50 transition-colors"
+								>
+									{/* Faculty */}
+									<td className="px-4 py-3">
+										<div className="flex flex-col">
+											<span className="font-semibold text-slate-800">
+												{data.facultyName || "Faculty"}
+											</span>
+											<span className="text-sm text-slate-500">
+												ID: {data.facultyId}
+											</span>
+										</div>
+									</td>
+
+									{/* Assigned Subjects */}
+									<td className="px-4 py-3">
+										<details className="group rounded-lg border bg-white shadow-sm">
+											<summary className="flex cursor-pointer items-center justify-between px-4 py-3 font-medium">
+												<div className="flex items-center gap-2">
+													<span>Assigned Subjects</span>
+
+													<span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
+														{totalSubjects}
+													</span>
+												</div>
+
+												<span className="text-slate-400 transition group-open:rotate-180">
+													▼
+												</span>
+											</summary>
+
+											<div className="space-y-3 border-t p-4">
+												{Object.entries(data.assignments).map(
+													([year, subjects]) => (
+														<div
+															key={year}
+															className="rounded-md bg-slate-50 p-3"
+														>
+															<div className="mb-2 flex items-center justify-between">
+																<h4 className="font-semibold text-slate-700">
+																	Academic Year {year}
+																</h4>
+
+																<span className="text-xs text-slate-500">
+																	{subjects.length} Subject
+																	{subjects.length !== 1 ? "s" : ""}
+																</span>
+															</div>
+
+															<div className="flex flex-wrap gap-2">
+																{subjects.map((subject) => (
+																	<span
+																		key={subject.subjectId}
+																		className="rounded-full bg-white px-3 py-1 text-sm border text-slate-700"
+																	>
+																		{subject.subjectName}
+																	</span>
+																))}
+															</div>
+														</div>
+													)
+												)}
+											</div>
+										</details>
+									</td>
+
+									{/* Actions */}
+									<td className="px-4 py-3">
+										<div className="flex justify-center">
+											<button
+												className="rounded-lg p-2 shadow-sm transition-all hover:scale-105 hover:shadow-md"
+												style={{
+													backgroundColor: COLORS.mint,
+													color: COLORS.font
+												}}
+											// onClick={() => handleEditOpen(data)}
+											>
+												<GrEdit size={16} />
+											</button>
+										</div>
+									</td>
+								</tr>
+							);
+						})}
+
+
+						{/* {filteredAssignedSubjectsData.map((data) => (
 							<tr key={data.facultyId}>
 								<td>
 									{data.facultyId}
+									{data.facultyName || ' Faculty'}
 								</td>
 								<td>
 									<details className="rounded border bg-white">
@@ -86,7 +178,9 @@ function AssignSubjects() {
 
 														<ul className="ml-4 list-disc">
 															{subjects.map((subject) => (
-																<li key={subject}>{subject}</li>
+																<li key={subject.subjectId}>
+																	{subject.subjectName}
+																</li>
 															))}
 														</ul>
 													</details>
@@ -110,7 +204,7 @@ function AssignSubjects() {
 									</div>
 								</td>
 							</tr>
-						))}
+						))} */}
 
 
 
