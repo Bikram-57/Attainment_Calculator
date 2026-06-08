@@ -1,33 +1,41 @@
-const assignSubject = require('../models/assignSubject');
+const assignSubject = require('../models/assignSubject'); //Current model
+const Faculty = require('../models/user'); // Model holding faculty names and faculty ids
+const Subject = require('../models/subject'); // Model holding subject names and Subject ids
+
+
+
+
+
+
 
 async function handleAssignSubject(req, res) {
     try {
-        const { facultyId, subjectId, academicYear } = req.body;
+        // 1. ADDED subjectName to the destructuring
+        const { facultyId, subjectId, subjectName, academicYear } = req.body;
 
-        // 1. Validate inputs
-        if (!facultyId || !subjectId || academicYear === undefined) {
+        // Validate inputs (including subjectName)
+        if (!facultyId || !subjectId || !subjectName || academicYear === undefined) {
             return res.status(400).json({
                 success: false,
-                message: 'facultyId, subjectId, and academicYear are strictly required.'
+                message: 'facultyId, subjectId, subjectName, and academicYear are strictly required.'
             });
         }
 
-        // 2. Sanitize inputs
+        // Sanitize inputs
         const cleanFacultyId = facultyId.trim();
         const cleanSubjectId = subjectId.trim();
+        const cleanSubjectName = subjectName.trim();
         const academicYearStr = academicYear.toString().trim();
 
         // ------------------------------------------------------------------
-        // 3. NEW GLOBAL CONFLICT CHECK
-        // Dynamically build the query key (e.g., "assignments.2026")
+        // 2. GLOBAL CONFLICT CHECK
         const queryKey = `assignments.${academicYearStr}`;
         
-        // Search the ENTIRE database to see if this subject is in this year's array anywhere
+        // UPDATED: Use $elemMatch because the array now holds objects, not strings
         const existingAssignment = await assignSubject.findOne({
-            [queryKey]: cleanSubjectId
+            [queryKey]: { $elemMatch: { subjectId: cleanSubjectId } }
         });
 
-        // If we found a match, block the request immediately
         if (existingAssignment) {
             return res.status(409).json({
                 success: false,
@@ -36,35 +44,63 @@ async function handleAssignSubject(req, res) {
         }
         // ------------------------------------------------------------------
 
-        // 4. Find the teacher (We now know it is safe to assign the subject)
+        // 3. Find the teacher 
         let teacherDoc = await assignSubject.findOne({ facultyId: cleanFacultyId });
 
-        // 5. Create new document if teacher doesn't exist
+        // 4. Create or Update Document
         if (!teacherDoc) {
             teacherDoc = new assignSubject({
                 facultyId: cleanFacultyId,
                 assignments: {} 
             });
-            
-            // Set the first subject for this year
-            teacherDoc.assignments.set(academicYearStr, [cleanSubjectId]);
+            // FIXED: Save as an OBJECT, not a string
+            teacherDoc.assignments.set(academicYearStr, [{ 
+                subjectId: cleanSubjectId, 
+                subjectName: cleanSubjectName 
+            }]);
         } else {
-            // 6. If teacher exists, get the array for the year (or default to empty array)
-            // Note: We removed the localized duplicate check because the Global Check above handles it!
             const yearSubjects = teacherDoc.assignments.get(academicYearStr) || [];
             
-            // Push the new subject and update the Map
-            yearSubjects.push(cleanSubjectId);
-            teacherDoc.assignments.set(academicYearStr, yearSubjects);
+            // Check locally just to be absolutely safe
+            const alreadyExists = yearSubjects.some(sub => sub.subjectId === cleanSubjectId);
+            
+            if (!alreadyExists) {
+                // FIXED: Push an OBJECT, not a string
+                yearSubjects.push({ 
+                    subjectId: cleanSubjectId, 
+                    subjectName: cleanSubjectName 
+                });
+                teacherDoc.assignments.set(academicYearStr, yearSubjects);
+            }
         }
 
-        // 7. Save to database
+        // 5. Save to database
         await teacherDoc.save();
 
+        // ==================================================================
+        // 6. FORMAT THE RESPONSE
+        // ==================================================================
+        
+        // Fetch the Faculty Name
+        const facultyDetails = await Faculty.findOne({ facultyId: cleanFacultyId }).lean();
+        const facultyName = facultyDetails ? facultyDetails.name : "Unknown Faculty";
+
+        // Build the final response object (No more complex mapping needed!)
+        const responseData = {
+            _id: teacherDoc._id,
+            facultyId: teacherDoc.facultyId,
+            facultyName: facultyName,
+            assignments: teacherDoc.assignments, // The Map already holds perfectly formatted objects!
+            createdAt: teacherDoc.createdAt,
+            updatedAt: teacherDoc.updatedAt,
+            __v: teacherDoc.__v
+        };
+
+        // 7. Send the response
         return res.status(200).json({
             success: true,
             message: 'Subject assigned successfully.',
-            data: teacherDoc
+            data: responseData
         });
 
     } catch (error) {
@@ -77,6 +113,99 @@ async function handleAssignSubject(req, res) {
         });
     }
 }
+
+
+
+
+
+// async function handleAssignSubject(req, res) {
+//     try {
+//         const { facultyId, subjectId, academicYear } = req.body;
+
+//         // 1. Validate inputs
+//         if (!facultyId || !subjectId || academicYear === undefined) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'facultyId, subjectId, and academicYear are strictly required.'
+//             });
+//         }
+
+//         // 2. Sanitize inputs
+//         const cleanFacultyId = facultyId.trim();
+//         const cleanSubjectId = subjectId.trim();
+//         const academicYearStr = academicYear.toString().trim();
+
+//         // ------------------------------------------------------------------
+//         // 3. NEW GLOBAL CONFLICT CHECK
+//         // Dynamically build the query key (e.g., "assignments.2026")
+//         const queryKey = `assignments.${academicYearStr}`;
+        
+//         // Search the ENTIRE database to see if this subject is in this year's array anywhere
+//         const existingAssignment = await assignSubject.findOne({
+//             [queryKey]: cleanSubjectId
+//         });
+
+//         // If we found a match, block the request immediately
+//         if (existingAssignment) {
+//             return res.status(409).json({
+//                 success: false,
+//                 message: `Conflict: Subject ${cleanSubjectId} is already assigned to faculty ${existingAssignment.facultyId} for the year ${academicYearStr}.`
+//             });
+//         }
+//         // ------------------------------------------------------------------
+
+//         // 4. Find the teacher (We now know it is safe to assign the subject)
+//         let teacherDoc = await assignSubject.findOne({ facultyId: cleanFacultyId });
+
+//         // 5. Create new document if teacher doesn't exist
+//         if (!teacherDoc) {
+//             teacherDoc = new assignSubject({
+//                 facultyId: cleanFacultyId,
+//                 assignments: {} 
+//             });
+            
+//             // Set the first subject for this year
+//             teacherDoc.assignments.set(academicYearStr, [cleanSubjectId]);
+//         } else {
+//             // 6. If teacher exists, get the array for the year (or default to empty array)
+//             // Note: We removed the localized duplicate check because the Global Check above handles it!
+//             const yearSubjects = teacherDoc.assignments.get(academicYearStr) || [];
+            
+//             // Push the new subject and update the Map
+//             yearSubjects.push(cleanSubjectId);
+//             teacherDoc.assignments.set(academicYearStr, yearSubjects);
+//         }
+
+//         // 7. Save to database
+//         await teacherDoc.save();
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Subject assigned successfully.',
+//             data: teacherDoc
+//         });
+
+//     } catch (error) {
+//         console.error('Full Error Detail:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Server error while assigning subject.',
+//             actualError: error.message,
+//             stack: error.stack
+//         });
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
+
 
 
 // 2. Get ALL Assignments in the database
@@ -130,6 +259,17 @@ async function getAllFacultyAssignments(req, res) {
         });
     }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 // 3. Get ALL Subjects for a Specific Faculty Member
 // 3. Get ALL Subjects for a Specific Faculty Member
@@ -187,6 +327,18 @@ async function getAssignedSubjectsByFaculty(req, res) {
         });
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // 4. Delete a Specific Assignment Document
 async function removeSubjectFromFaculty(req, res) {
@@ -269,5 +421,5 @@ module.exports = {
     handleAssignSubject,
     getAllFacultyAssignments,
     getAssignedSubjectsByFaculty,
-    removeSubjectFromFaculty
+    removeSubjectFromFaculty,
 };

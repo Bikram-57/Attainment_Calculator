@@ -64,12 +64,12 @@ async function handleDownloadReport(req, res) {
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 
     // Uncomment for production caching
-    /*
+    
     if (fs.existsSync(filePath)) {
       console.log('Serving existing Excel file from cache...');
       return res.download(filePath, fileName);
     }
-    */
+    
 
     console.log(`\n--- Fetching Data for ${subjectId} | ${course} | ${academicYear} ---`);
 
@@ -301,12 +301,12 @@ async function handleDownloadCalculatedMarks(req, res) {
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 
     // Uncomment for production caching
-    /*
+    
     if (fs.existsSync(filePath)) {
       console.log('Serving existing Excel file from cache...');
       return res.download(filePath, fileName); 
     }
-    */
+    
 
     console.log(`\n--- Fetching Calculated Marks for ${subjectId} | ${course} | ${academicYear} ---`);
 
@@ -433,12 +433,12 @@ async function handleDownloadFinalCoAttainment(req, res) {
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 
     // Uncomment for production caching
-    /*
+    
     if (fs.existsSync(filePath)) {
       console.log('Serving existing Excel file from cache...');
       return res.download(filePath, fileName); 
     }
-    */
+    
 
     console.log(`\n--- Fetching Final CO Attainment for ${subjectId} | ${course} | ${academicYear} ---`);
 
@@ -542,12 +542,12 @@ async function handleDownloadPoAttainment(req, res) {
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 
     // Uncomment for production caching
-    /*
+    
     if (fs.existsSync(filePath)) {
       console.log('Serving existing Excel file from cache...');
       return res.download(filePath, fileName); 
     }
-    */
+    
 
     console.log(`\n--- Fetching Final PO Attainment for ${subjectId} | ${course} | ${academicYear} ---`);
 
