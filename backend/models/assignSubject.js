@@ -29,13 +29,48 @@
 
 
 
+// const mongoose = require('mongoose');
+
+// // Define what each subject object looks like
+// const assignedSubjectDetailSchema = new mongoose.Schema({
+//     subjectId: { type: String, required: true, trim: true },
+//     subjectName: { type: String, required: true, trim: true }
+// }, { _id: false }); // _id: false stops Mongoose from creating random IDs for every subject
+
+// const assignSubjectSchema = new mongoose.Schema({
+//     facultyId: { 
+//         type: String, 
+//         required: [true, 'Faculty ID is required'],
+//         unique: true,
+//         trim: true,
+//         uppercase: true
+//     },
+//     // The Map now holds an Array of Objects instead of an Array of Strings
+//     assignments: {
+//         type: Map,
+//         of: [assignedSubjectDetailSchema], 
+//         default: {}
+//     }
+// }, { timestamps: true });
+
+// module.exports = mongoose.model('assignSubject', assignSubjectSchema);
+
+
+
+
+
+
+
+
+
+
+
 const mongoose = require('mongoose');
 
-// Define what each subject object looks like
 const assignedSubjectDetailSchema = new mongoose.Schema({
     subjectId: { type: String, required: true, trim: true },
     subjectName: { type: String, required: true, trim: true }
-}, { _id: false }); // _id: false stops Mongoose from creating random IDs for every subject
+}, { _id: false });
 
 const assignSubjectSchema = new mongoose.Schema({
     facultyId: { 
@@ -45,7 +80,17 @@ const assignSubjectSchema = new mongoose.Schema({
         trim: true,
         uppercase: true
     },
-    // The Map now holds an Array of Objects instead of an Array of Strings
+    // NEW: Save the name directly in this document
+    facultyName: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    // NEW: Keep a running count of the years
+    totalYearsRecorded: {
+        type: Number,
+        default: 1
+    },
     assignments: {
         type: Map,
         of: [assignedSubjectDetailSchema], 
