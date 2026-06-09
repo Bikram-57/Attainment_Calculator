@@ -37,10 +37,24 @@ function FinalCOAttainment() {
         getSubject();
     }, []);
 
+    const handleDownload = () => {
+        
+    }
+
     return (
         <div className='bg-gray-300 px-2 py-4'>
-            <div className='font-semibold text-lg pb-3'>
-                {subjectId} - {subjectName} - Final CO Attainment, Batch - {academicYear}
+            <div className='flex justify-between mx-2'>
+                <div className='font-semibold text-lg pb-3'>
+                    {subjectId} - {subjectName} - Final CO Attainment, Batch - {academicYear}
+                </div>
+                <div>
+                    <button
+                        className='border px-2 py-1 rounded-md cursor-pointer'
+                        onClick={handleDownload}
+                    >
+                        Download
+                    </button>
+                </div>
             </div>
             {data && <FinalCOAttainTable data={data} />}
         </div>
