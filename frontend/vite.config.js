@@ -20,6 +20,7 @@ export default defineConfig({
 			'/calpo/': 'http://localhost:8000',
 			'/co-po/save-relation': 'http://localhost:8000',
 			'/assignSub/': 'http://localhost:8000',
+			'/file/': 'http://localhost:8000',
 		},
 	},
 })

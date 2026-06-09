@@ -1,7 +1,7 @@
 import React from 'react'
 import { COLORS } from '../../constants/theme'
 
-function Attainment({ academicYear, course, subjectId }){
+function Attainment({ academicYear, course, subjectId }) {
     const handleCOAttain = () => {
         window.open(`/co-attainment/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
     }
@@ -60,7 +60,7 @@ function Attainment({ academicYear, course, subjectId }){
                     </button>
                 </div>
             </div>
-            <div className='my-8'>
+            {/* <div className='my-8'>
                 <div className=''>
                     <button
                         className='rounded-sm px-4 py-1 border cursor-pointer duration-200'
@@ -73,7 +73,7 @@ function Attainment({ academicYear, course, subjectId }){
                         Download complete report
                     </button>
                 </div>
-            </div>
+            </div> */}
             <div>
                 {/* {error && (
 					<p className="text-red-500 text-sm ml-2">

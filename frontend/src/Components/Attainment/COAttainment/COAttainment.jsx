@@ -44,8 +44,32 @@ function COAttainment() {
         getSubject();
     }, []);
 
-    const handleDownload = () => {
-        
+    const handleDownload = async () => {
+        try {
+            const response = await axios.get('/file/calMark', {
+                params: {
+                    subjectId,
+                    course,
+                    academicYear
+                },
+                responseType: 'blob'
+            });
+
+            const url = window.URL.createObjectURL(response.data);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `CalculatedMarks_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
+
+            document.body.appendChild(link);
+            link.click();
+
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error('Download failed:', error);
+        }
     }
 
     return (
