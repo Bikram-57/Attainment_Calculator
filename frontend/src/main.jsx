@@ -13,6 +13,7 @@ import {
 	CoPoRelations,
 	ContactUs,
 	AssignSubjects,
+	DownloadReports,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -46,6 +47,11 @@ const router = createBrowserRouter([
 				path: 'fetch-data/',
 				element: <FetchData />,
 				handle: { title: 'Fetch Data' }
+			},
+			{
+				path: 'download-reports',
+				element: <DownloadReports />,
+				handle: { title: 'Download Reports' }
 			},
 			{
 				path: 'co_po_relations/',

@@ -60,20 +60,6 @@ function Attainment({ academicYear, course, subjectId }) {
                     </button>
                 </div>
             </div>
-            {/* <div className='my-8'>
-                <div className=''>
-                    <button
-                        className='rounded-sm px-4 py-1 border cursor-pointer duration-200'
-                        // onClick={handlePOAttain}
-                        style={{
-                            backgroundColor: COLORS.latteDark,
-                            color: COLORS.mint
-                        }}
-                    >
-                        Download complete report
-                    </button>
-                </div>
-            </div> */}
             <div>
                 {/* {error && (
 					<p className="text-red-500 text-sm ml-2">

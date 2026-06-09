@@ -35,6 +35,7 @@ import AssignSubjects from "./AssignSubjects/AssignSubjects";
 import AssignSubjectForm from "./AssignSubjects/AssignSubjectForm";
 import DeleteAssignedSubject from "./AssignSubjects/DeleteAssignedSubject";
 import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
+import DownloadReports from "./DownloadReports/DownloadReports";
 
 export {
     NavBar,
@@ -72,4 +73,5 @@ export {
     AssignSubjectForm,
     DeleteAssignedSubject,
     AssignSubjectsHeader,
+    DownloadReports,
 }
