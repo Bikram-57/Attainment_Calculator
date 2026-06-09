@@ -64,7 +64,7 @@ function AssignSubjects() {
 				currentYear={currentYear}
 				setFilterYear={setFilterYear}
 			/>
-			<div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200 px-4 py-1">
+			<div className="max-h-125 overflow-y-auto overflow-x-auto px-4 py-1">
 				{filteredAssignedSubjectsData.length > 0 ?
 					(<table className="w-full text-md border border-gray-300">
 						<thead>
@@ -88,7 +88,7 @@ function AssignSubjects() {
 							{filteredAssignedSubjectsData.map((data) => (
 								<tr
 									key={data.facultyId}
-									className="border-b border-gray-400 hover:bg-gray-50 transition"
+									className="border-b border-gray-300 hover:bg-gray-50 transition"
 								>
 									<td className="w-1/3 px-3 py-3 text-md">
 										{data.facultyId} - {data.facultyName}
@@ -173,10 +173,9 @@ function AssignSubjects() {
 								</tr>
 							))}
 						</tbody>
-					</table>
-					) :
+					</table>) :
 					(
-						<div className='text-center text-lg'>No data available for the year: {filterYear}</div>
+						<div className='text-center text-lg'>No data available</div>
 					)
 				}
 			</div>

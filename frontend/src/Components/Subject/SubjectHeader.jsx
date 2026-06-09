@@ -1,16 +1,26 @@
 import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
+import { FaFilter } from "react-icons/fa";
 import AddSubjectForm from './AddSubjectForm';
 import { COLORS } from '../../constants/theme';
 import AddAllSubjectsForm from './AddAllSubjectsForm';
 
-function SubjectHeader({ toggleUpdate, setSearchQuery }) {
+function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear }) {
     const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
     const [isAddAllSubjectOpen, setIsAddAllSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
+    const [year, setYear] = useState('');
+    const currentYear = new Date().getFullYear();
 
+    const yearList = [currentYear, 2025, 2024];
+
+    const handleYear = (e) => {
+        setYear(e.target.value);
+        setFilterYear(e.target.value);
+    }
+    
     const handleChange = (e) => {
-        if (e.target.value == ''){
+        if (e.target.value == '') {
             setSearchQuery('');
         }
         setSearch(e.target.value);
@@ -26,11 +36,38 @@ function SubjectHeader({ toggleUpdate, setSearchQuery }) {
             >
                 All Subjects
             </div>
+
+            <div className="w-1/4 flex items-center gap-2">
+                <div
+                    className='flex items-center gap-1 font-semibold text-md'
+                    style={{ color: COLORS.mint }}
+                >
+                    <FaFilter />
+                    <div>
+                        Academic Year:
+                    </div>
+                </div>
+                <div className='w-1/3'>
+                    <select
+                        value={year}
+                        onChange={(e) => handleYear(e)}
+                        className="w-full border border-gray-400 text-center rounded-lg px-1 text-md cursor-pointer outline-none"
+                    >
+                        <option value=''>Select year</option>
+                        {yearList.map(y => (
+                            <option key={y} value={y}>
+                                {y}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
             <div className='flex gap-5 mx-10'>
                 {/* <div className='border border-gray-300 rounded-md flex items-center'> */}
                 <div
                     className='border rounded-md flex items-center'
-                    // style={{ borderColor: COLORS.mintDark }}
+                // style={{ borderColor: COLORS.mintDark }}
                 >
                     <input
                         type='text'

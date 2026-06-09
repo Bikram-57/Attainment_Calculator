@@ -66,14 +66,6 @@ function CoPoRelations() {
         fetchSubjects();
     }, []);
 
-
-
-    // const filteredData = subjects.filter(
-    //     (item) =>
-    //         item.code.toLowerCase().includes(search.toLowerCase()) ||
-    //         item.name.toLowerCase().includes(search.toLowerCase())
-    // );
-
     if (!openView && !openEdit) {
         return (
             <div
@@ -117,7 +109,7 @@ function CoPoRelations() {
 
                 {/* Table */}
                 <div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-md">
                         <thead>
                             <tr
                                 style={{

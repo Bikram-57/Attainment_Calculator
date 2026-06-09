@@ -67,7 +67,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                 >
                     <input
                         type='text'
-                        placeholder='Search by subject code or name'
+                        placeholder='Search by faculty ID'
                         value={search}
                         // className='border-r border-gray-300 px-3 py-1 w-87.5'
                         // className='border-r-4 border-r-red-200 px-3 py-1 w-87.5'
