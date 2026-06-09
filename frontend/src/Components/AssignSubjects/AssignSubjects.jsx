@@ -26,7 +26,7 @@ function AssignSubjects() {
 					setErrorMsg('Subject already assigned!');
 				}
 				else {
-					console.log('ERROR || AssignSubjectForm | getAssignSubjects(): ', error);
+					console.log('ERROR || AssignSubject | getAssignSubjects(): ', error);
 				}
 			}
 		}
@@ -39,18 +39,20 @@ function AssignSubjects() {
 	}
 
 	const deAssignSubject = async (subjectId, facultyId, academicYear) => {
-		console.log(subjectId, facultyId, academicYear);
-		
+		console.log(subjectId, typeof (subjectId), facultyId, typeof (facultyId), academicYear, typeof (academicYear));
+
 		try {
-			const res = await axios.delete('/assignSub/',{
-				subjectId: subjectId,
-				facultyId: facultyId,
-				academicYear: academicYear
+			const res = await axios.delete('/assignSub/', {
+				data: {
+					subjectId: subjectId,
+					facultyId: facultyId,
+					academicYear: academicYear
+				}
 			});
 			toggleUpdate();
 			console.log(res.data.data);
 		} catch (error) {
-			console.log('ERROR || AssignSubjectForm | getAssignSubjects(): ', error);
+			console.log('ERROR || AssignSubject | deAssignSubject(): ', error);
 		}
 	}
 
@@ -63,328 +65,77 @@ function AssignSubjects() {
 				setFilterYear={setFilterYear}
 			/>
 			<div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
-				<table className="w-full text-sm">
-					<thead>
-						<tr
-							style={{
-								backgroundColor: COLORS.mint,
-								color: COLORS.font
-							}}
-						>
-							<th className="px-2 py-1 text-left font-semibold">
-								Faculty ID/Name
-							</th>
-
-							<th className="px-2 py-1 text-left font-semibold">
-								Subjects Assigned
-							</th>
-
-							{/* <th className="px-2 py-1 text-center font-semibold w-35">
-								Action
-							</th> */}
-						</tr>
-					</thead>
-
-					<tbody>
-
-						{filteredAssignedSubjectsData.map((data) => (
+				{filteredAssignedSubjectsData.length > 0 ?
+					(<table className="w-full text-sm">
+						<thead>
 							<tr
-								key={data.facultyId}
-								className="border-b hover:bg-gray-50 transition"
+								style={{
+									backgroundColor: COLORS.mint,
+									color: COLORS.font
+								}}
 							>
-								<td className="w-1/3 px-3 py-3 font-medium">
-									{data.facultyId} - {data.facultyName}
-								</td>
+								<th className="px-2 py-1 text-left font-semibold">
+									Faculty ID/Name
+								</th>
 
-								<td className="px-3 py-3">
-									{Object.entries(data.assignments).map(([year, subjects]) =>
-										year == filterYear ? (
-											<div key={year}>
-												<div className="mb-2 text-sm font-semibold text-gray-600">
-													Academic Year {year}
-													<span className="ml-2 rounded bg-gray-100 px-2 py-1 text-xs">
-														{subjects.length} Subjects
-													</span>
-												</div>
-
-												<ul className="space-y-1">
-													{subjects.map((subject) => (
-														<li
-															key={subject.subjectId}
-															className="flex items-center justify-between rounded px-2 py-1 hover:bg-gray-100"
-														>
-															<span>{subject.subjectName}</span>
-
-															<button
-																className="rounded p-1 text-red-500 hover:bg-red-50 hover:text-red-600 transition cursor-pointer"
-																title="De-assign Subject"
-																onClick={() => deAssignSubject(subject.subjectId, data.facultyId, year)}
-															>
-																<MdDelete size={18} />
-															</button>
-														</li>
-													))}
-												</ul>
-											</div>
-										) : null
-									)}
-								</td>
+								<th className="px-2 py-1 text-left font-semibold">
+									Subjects Assigned
+								</th>
 							</tr>
-						))}
+						</thead>
 
-						{/* {filteredAssignedSubjectsData.map((data) => {
-							const totalSubjects = Object.values(data.assignments).flat().length;
-							return (
+						<tbody>
+							{filteredAssignedSubjectsData.map((data) => (
 								<tr
 									key={data.facultyId}
-									className="border-b hover:bg-slate-50 transition-colors"
+									className="border-b hover:bg-gray-50 transition"
 								>
-									<td className="px-4 py-3">
-										<div className="flex flex-col">
-											<span className="font-semibold text-slate-800">
-												{data.facultyName || "Faculty"}
-											</span>
-											<span className="text-sm text-slate-500">
-												ID: {data.facultyId}
-											</span>
-										</div>
+									<td className="w-1/3 px-3 py-3 font-medium">
+										{data.facultyId} - {data.facultyName}
 									</td>
 
-									<td className="px-4 py-3">
-										<details className="group rounded-lg border bg-white shadow-sm">
-											<summary className="flex cursor-pointer items-center justify-between px-4 py-3 font-medium">
-												<div className="flex items-center gap-2">
-													<span>Assigned Subjects</span>
+									<td className="px-3 py-3">
+										{Object.entries(data.assignments).map(([year, subjects]) =>
+											year == filterYear ? (
+												<div key={year}>
+													<div className="mb-2 text-sm font-semibold text-gray-600">
+														Academic Year {year}
+														<span className="ml-2 rounded bg-gray-100 px-2 py-1 text-xs">
+															{subjects.length} Subjects
+														</span>
+													</div>
 
-													<span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
-														{totalSubjects}
-													</span>
-												</div>
+													<ul className="space-y-1">
+														{subjects.map((subject) => (
+															<li
+																key={subject.subjectId}
+																className="flex items-center justify-between rounded px-2 py-1 hover:bg-gray-100"
+															>
+																<span>{subject.subjectName}</span>
 
-												<span className="text-slate-400 transition group-open:rotate-180">
-													▼
-												</span>
-											</summary>
-
-											<div className="space-y-3 border-t p-4">
-												{Object.entries(data.assignments).map(
-													([year, subjects]) => (
-														<div
-															key={year}
-															className="rounded-md bg-slate-50 p-3"
-														>
-															<div className="mb-2 flex items-center justify-between">
-																<h4 className="font-semibold text-slate-700">
-																	Academic Year {year}
-																</h4>
-
-																<span className="text-xs text-slate-500">
-																	{subjects.length} Subject
-																	{subjects.length !== 1 ? "s" : ""}
-																</span>
-															</div>
-
-															<div className="flex flex-wrap gap-2">
-																{subjects.map((subject) => (
-																	<span
-																		key={subject.subjectId}
-																		className="rounded-full bg-white px-3 py-1 text-sm border text-slate-700"
-																	>
-																		{subject.subjectName}
-																	</span>
-																))}
-															</div>
-														</div>
-													)
-												)}
-											</div>
-										</details>
-									</td>
-
-									<td className="px-4 py-3">
-										<div className="flex justify-center">
-											<button
-												className="rounded-lg p-2 shadow-sm transition-all hover:scale-105 hover:shadow-md"
-												style={{
-													backgroundColor: COLORS.mint,
-													color: COLORS.font
-												}}
-											onClick={() => handleEditOpen(data)}
-											>
-												<GrEdit size={16} />
-											</button>
-										</div>
-									</td>
-								</tr>
-							);
-						})} */}
-
-						{/* 
-						{filteredAssignedSubjectsData.map((data) => (
-							<tr key={data.facultyId}>
-								<td className='w-1/3'>
-									{data.facultyId} - {data.facultyName || ' Faculty'}
-								</td> */}
-						{/* <td className='bg-amber-200'> */}
-						{/* <td> */}
-						{/* <details className="rounded border bg-white"> */}
-						{/* <summary className="cursor-pointer px-3 py-2">
-											Assigned Subjects
-										</summary> */}
-
-						{/* <div className="p-2">
-										{Object.entries(data.assignments).map(
-											([year, subjects]) => (
-												year == filterYear ? (
-													<details key={year} className="mb-2">
-														<summary className="font-semibold cursor-pointer">
-															Academic Year {year}
-														</summary>
-
-														<ul className="ml-4 list-disc">
-															{subjects.map((subject) => (
-																<div className='flex justify-between'>
-																	<li key={subject.subjectId}>
-																		{subject.subjectName}
-																	</li>
-																	<button
-																		className="rounded p-1 transition cursor-pointer"
-																		style={{
-																			// backgroundColor: COLORS.mint,
-																			color: COLORS.mint
-																		}}
-																	// onClick={() => handleEditOpen(subject)}
-																	>
-																		<MdDelete />
-																	</button>
-																</div>
-															))}
-														</ul>
-													</details>
-												) : null
-											)
-										)}
-									</div> */}
-						{/* </details> */}
-						{/* </td> */}
-						{/* <td className="px-2 py-1">
-									<div className="flex items-center justify-center gap-2">
-										<button
-											className="rounded p-1 transition cursor-pointer"
-											style={{
-												backgroundColor: COLORS.mint,
-												color: COLORS.font
-											}}
-										>
-
-											phaltu btn
-										</button>
-									</div>
-								</td> */}
-						{/* </tr>
-						))} */}
-
-
-
-
-
-						{/* {filteredAssignedSubjectsData.map((faculty) => (
-							<tr key={faculty.facultyId}>
-								<td>{faculty.facultyName}</td>
-
-								<td>
-									<select className="w-full rounded border px-2 py-1">
-										{Object.entries(faculty.assignments).map(
-											([year, subjects]) => (
-												<optgroup key={year} label={`Year ${year}`}>
-													{subjects.map((subjectCode) => (
-														<option
-															key={`${year}-${subjectCode}`}
-															value={subjectCode}
-														>
-															{subjectCode}
-														</option>
-													))}
-												</optgroup>
-											)
-										)}
-									</select>
-								</td>
-							</tr>
-						))} */}
-
-
-
-
-
-						{/* {
-							filteredAssignedSubjectsData.map((faculty) => (
-								<tr key={faculty._id}>
-									<td>{faculty.facultyName}</td>
-
-									<td>
-										{Object.entries(faculty.assignments).map(
-											([year, subjects]) => (
-												<details
-													key={year}
-													className="mb-2 rounded border border-gray-200"
-												>
-													<summary className="cursor-pointer px-3 py-2 bg-gray-50">
-														{year}
-													</summary>
-
-													<ul className="px-4 py-2">
-														{subjects.map((subjectCode) => (
-															<li key={subjectCode}>
-																{subjectCode}
+																<button
+																	className="rounded p-1 text-red-500 hover:bg-red-50 hover:text-red-600 transition cursor-pointer"
+																	title="De-assign Subject"
+																	onClick={() => deAssignSubject(subject.subjectId, data.facultyId, year)}
+																>
+																	<MdDelete size={18} />
+																</button>
 															</li>
 														))}
 													</ul>
-												</details>
-											)
+												</div>
+											) : null
 										)}
 									</td>
 								</tr>
-							))
-						} */}
-
-
-
-						{/* {filteredAssignedSubjectsData?.map((subject, index) => (
-							<tr
-								key={index}
-								className={`border-b border-gray-200 ${index % 2 === 0
-									? "bg-[#f1f1f1]"
-									: "bg-[#fafafa]"
-									}`}
-							>
-								<td className="px-2 py-1 text-gray-700">
-									demo data
-								</td>
-
-								<td className="px-2 py-1 text-gray-700">
-									demo data
-								</td>
-
-								<td className="px-2 py-1">
-									<div className="flex items-center justify-center gap-2"> */}
-						{/* Edit */}
-						{/* <button
-											className="rounded p-1 transition cursor-pointer"
-											style={{
-												backgroundColor: COLORS.mint,
-												color: COLORS.font
-											}}
-											onClick={() => handleEditOpen(subject)}
-										>
-											<GrEdit />
-										</button>
-									</div>
-								</td>
-							</tr>
-						))} */}
-					</tbody>
-				</table>
+							))}
+						</tbody>
+					</table>
+					) :
+					(
+						<div className='text-center text-lg'>No data available for the year: {filterYear}</div>
+					)
+				}
 			</div>
 		</div >
 	)
