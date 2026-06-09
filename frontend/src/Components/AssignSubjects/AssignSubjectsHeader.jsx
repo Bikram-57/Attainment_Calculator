@@ -34,17 +34,17 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
             >
                 Assigned Subjects
             </div>
-            <div className="w-1/8 flex items-center gap-2">
+            <div className="w-1/4 flex items-center gap-2">
                 <div
-                    className='flex items-center gap-1 font-semibold text-lg'
+                    className='flex items-center gap-1 font-semibold text-md'
                     style={{ color: COLORS.mint }}
                 >
                     <FaFilter />
                     <div>
-                        Filter:
+                        Academic Year:
                     </div>
                 </div>
-                <div className='w-1/2'>
+                <div className='w-1/4'>
                     <select
                         value={year}
                         onChange={(e) => handleYear(e)}

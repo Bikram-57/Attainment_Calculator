@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import AssignSubjectsHeader from './AssignSubjectsHeader'
-import { MdDelete } from "react-icons/md";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import axios from 'axios';
 import { COLORS } from '../../constants/theme';
 
@@ -64,9 +64,9 @@ function AssignSubjects() {
 				currentYear={currentYear}
 				setFilterYear={setFilterYear}
 			/>
-			<div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
+			<div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200 px-4 py-1">
 				{filteredAssignedSubjectsData.length > 0 ?
-					(<table className="w-full text-sm">
+					(<table className="w-full text-md border border-gray-300">
 						<thead>
 							<tr
 								style={{
@@ -88,28 +88,31 @@ function AssignSubjects() {
 							{filteredAssignedSubjectsData.map((data) => (
 								<tr
 									key={data.facultyId}
-									className="border-b hover:bg-gray-50 transition"
+									className="border-b border-gray-400 hover:bg-gray-50 transition"
 								>
-									<td className="w-1/3 px-3 py-3 font-medium">
+									<td className="w-1/3 px-3 py-3 text-md">
 										{data.facultyId} - {data.facultyName}
+										<span
+											className='ml-2 rounded px-2 py-0.5 text-xs'
+											style={{ backgroundColor: COLORS.latteDark }}
+										>
+											{(data.assignments[filterYear] || []).length} Subjects
+										</span>
 									</td>
 
 									<td className="px-3 py-3">
 										{Object.entries(data.assignments).map(([year, subjects]) =>
 											year == filterYear ? (
-												<div key={year}>
-													<div className="mb-2 text-sm font-semibold text-gray-600">
-														Academic Year {year}
-														<span className="ml-2 rounded bg-gray-100 px-2 py-1 text-xs">
-															{subjects.length} Subjects
-														</span>
-													</div>
+												<details key={year}>
+													<summary className='cursor-pointer font-semibold'>
+														Assigned Subject List
+													</summary>
 
 													<ul className="space-y-1">
 														{subjects.map((subject) => (
 															<li
 																key={subject.subjectId}
-																className="flex items-center justify-between rounded px-2 py-1 hover:bg-gray-100"
+																className="flex items-center justify-between border-b border-gray-300 rounded px-2 py-1 hover:bg-gray-100"
 															>
 																<span>{subject.subjectName}</span>
 
@@ -118,15 +121,55 @@ function AssignSubjects() {
 																	title="De-assign Subject"
 																	onClick={() => deAssignSubject(subject.subjectId, data.facultyId, year)}
 																>
-																	<MdDelete size={18} />
+																	<RiDeleteBin6Line size={18} />
 																</button>
 															</li>
 														))}
 													</ul>
-												</div>
+												</details>
 											) : null
 										)}
 									</td>
+
+									{/* <td>
+										<div className="p-2">
+											{Object.entries(data.assignments).map(([year, subjects]) =>
+												year == filterYear ? (
+													subjects.length > 0 ? (
+														<details key={year} className="mb-2">
+															<summary className="font-semibold cursor-pointer">
+																{subjects[0].subjectName}
+															</summary>
+
+															<ul className="mt-2 ml-4 list-disc">
+																{subjects.slice(1).map((subject) => (
+																	<li
+																		key={subject.subjectId}
+																		className="flex items-center justify-between"
+																	>
+																		<span>{subject.subjectName}</span>
+
+																		<button
+																			className="rounded p-1 transition cursor-pointer"
+																			style={{
+																				color: COLORS.mint
+																			}}
+																		>
+																			<MdDelete />
+																		</button>
+																	</li>
+																))}
+															</ul>
+														</details>
+													) : (
+														<span key={year}>No subjects assigned</span>
+													)
+												) : null
+											)}
+										</div>
+									</td> */}
+
+
 								</tr>
 							))}
 						</tbody>
