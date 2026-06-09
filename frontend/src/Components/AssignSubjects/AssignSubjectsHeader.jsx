@@ -3,12 +3,13 @@ import { BsSearch } from 'react-icons/bs'
 import AssignSubjectForm from './AssignSubjectForm';
 import { COLORS } from '../../constants/theme';
 import { FaFilter } from "react-icons/fa";
+import YearFilter from '../YearFilter';
 
 function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFilterYear }) {
     const [isAssignSubjectOpen, setIsAssignSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [year, setYear] = useState('');
-
+    const defaultYear = new Date().getFullYear();
 
     const yearList = [2025, 2024];
 
@@ -34,7 +35,10 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
             >
                 Assigned Subjects
             </div>
-            <div className="w-1/4 flex items-center gap-2">
+
+            <YearFilter defaultYear={defaultYear} setFilterYear={setFilterYear} />
+            
+            {/* <div className="w-1/4 flex items-center gap-2">
                 <div
                     className='flex items-center gap-1 font-semibold text-md'
                     style={{ color: COLORS.mint }}
@@ -58,7 +62,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                         ))}
                     </select>
                 </div>
-            </div>
+            </div> */}
             <div className='flex gap-5 mx-10'>
                 {/* <div className='border border-gray-300 rounded-md flex items-center'> */}
                 <div
