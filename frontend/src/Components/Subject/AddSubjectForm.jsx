@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
+import { MdDone } from "react-icons/md";
 import { COLORS } from '../../constants/theme'
 
 function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
@@ -10,6 +11,8 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
     const [academicYear, setAcademicYear] = useState('');
     const [course, setCourse] = useState('');
     const [isHovered, setIsHovered] = useState(false);
+    const [successMsg, setSuccessMsg] = useState('');
+    const [error, setError] = useState('');
     const academicYearList = [];
     const d = new Date();
 
@@ -17,16 +20,29 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
         academicYearList.push(i)
     }
 
+    useEffect(() => {
+        if (!successMsg) return;
+        const timer = setTimeout(() => {
+            setSuccessMsg("");
+            setIsAddSubjectOpen(false);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, [successMsg])
+
     const handleAddSubject = async () => {
+        if (subjectId.length === 0 || subjectName.length === 0 || academicYear.length === 0 || course.length === 0) {
+            setError("Please fill all the fields!");
+            return;
+        }
+        setError('');
         try {
             const res = await axios.post('/sub/', {
                 subjectId: subjectId,
                 subjectName: subjectName,
                 course: course,
                 academicYear: academicYear
-                // academicYear: d.getFullYear()
             });
-            setIsAddSubjectOpen(false);
+            setSuccessMsg('Subject successfully added!');
             toggleUpdate();
             console.log(res.data);
         } catch (error) {
@@ -133,6 +149,20 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 >
                     Add
                 </button>
+            </div>
+
+            <div>
+                {error && (
+                    <p className="text-red-500 text-sm ml-2">
+                        {error}
+                    </p>
+                )}
+                {successMsg && (
+                    <p className="text-sm ml-2 flex">
+                        <MdDone className='text-green-500 h-full w-5 mx-1 order rounded-full' />
+                        {successMsg}
+                    </p>
+                )}
             </div>
 
             {/* Divider */}

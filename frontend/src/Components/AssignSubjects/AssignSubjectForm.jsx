@@ -2,22 +2,33 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
+import { MdDone } from "react-icons/md";
 import { COLORS } from '../../constants/theme'
 
 function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggleUpdate }) {
-	const [subjectId, setSubjectId] = useState('');
-	const [subjectName, setSubjectName] = useState('');
 	const [facultyId, setFacultyId] = useState('');
 	const [facultyName, setFacultyName] = useState('');
 	const [year, setYear] = useState('');
+	const [subjectId, setSubjectId] = useState('');
+	const [subjectName, setSubjectName] = useState('');
 	const [isHovered, setIsHovered] = useState(false);
 	const [subjectData, setSubjectData] = useState([]);
 	const [facultyData, setFacultyData] = useState([]);
 	const [filteredSubjects, setFilteredSubjects] = useState([]);
-	const [errorMsg, setErrorMsg] = useState('');
 	const [isDisabled, setIsDisabled] = useState(true);
+	const [successMsg, setSuccessMsg] = useState('');
+	const [error, setError] = useState('');
 	// const d = new Date();
 	const yearList = [2024, 2025, 2026];
+
+	useEffect(() => {
+		if (!successMsg) return;
+		const timer = setTimeout(() => {
+			setSuccessMsg("");
+			setIsAssignSubjectOpen(false);
+		}, 3000);
+		return () => clearTimeout(timer);
+	}, [successMsg])
 
 	useEffect(() => {
 		setFilteredSubjects(
@@ -46,7 +57,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 		getSubjects();
 		getFaculties();
 	}, []);
-	
+
 	const handleFaculty = (e) => {
 		setFacultyId(e.target.value);
 		setFacultyName((facultyData.find(faculty => faculty.facultyId === e.target.value)).name);
@@ -63,22 +74,24 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 	}
 
 	const handleAssignSubject = async () => {
-		console.log(subjectId, subjectName, facultyId, year, facultyName);
-		
+		if (facultyName.length === 0 || year.length === 0 || subjectName.length === 0) {
+			setError("Please fill all the fields!");
+			return;
+		}
+		setError('');
 		try {
 			const res = await axios.post('/assignSub/', {
 				subjectId: subjectId,
 				subjectName: subjectName,
 				facultyId: facultyId,
-				// facultyName: facultyName,
 				academicYear: year
 			});
-			setIsAssignSubjectOpen(false);
+			setSuccessMsg('Subject successfully assigned!');
 			toggleUpdate();
 			console.log(res.data);
 		} catch (error) {
 			if (error.status == 409) {
-				setErrorMsg('Subject already assigned!');
+				setError('Subject already assigned!');
 			}
 			else {
 				console.log('ERROR || AssignSubjectForm | handleAssignSubject(): ', error);
@@ -213,12 +226,18 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 							Assign
 						</button>
 					</div>
-
-					{/* Divider */}
-					<div className="border-t border-gray-300 pt-5">
-						<p className="text-red-500 text-md">
-							{errorMsg}
-						</p>
+					<div>
+						{error && (
+							<p className="text-red-500 text-sm ml-2">
+								{error}
+							</p>
+						)}
+						{successMsg && (
+							<p className="text-sm ml-2 flex">
+								<MdDone className='text-green-500 h-full w-5 mx-1 order rounded-full' />
+								{successMsg}
+							</p>
+						)}
 					</div>
 				</div>
 			</div>
