@@ -40,6 +40,7 @@ import YearFilter from "./YearFilter";
 import UnderDevelopment from "./UnderDevelopment";
 import PageNotFound from "./PageNotFound";
 import AddSubject from "./Subject/AddSubject";
+import ErrorSuccessMsg from "./ErrorSuccessMsg";
 
 export {
     NavBar,
@@ -82,4 +83,5 @@ export {
     UnderDevelopment,
     PageNotFound,
     AddSubject,
+    ErrorSuccessMsg,
 }

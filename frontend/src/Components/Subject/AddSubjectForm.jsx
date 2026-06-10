@@ -2,8 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
-import { MdDone } from "react-icons/md";
 import { COLORS } from '../../constants/theme'
+import ErrorSuccessMsg from "../ErrorSuccessMsg";
 
 function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
     const [subjectId, setSubjectId] = useState('');
@@ -12,7 +12,7 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
     const [course, setCourse] = useState('');
     const [isHovered, setIsHovered] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
-    const [error, setError] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
     const academicYearList = [];
     const d = new Date();
 
@@ -20,21 +20,22 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
         academicYearList.push(i)
     }
 
-    useEffect(() => {
-        if (!successMsg) return;
-        const timer = setTimeout(() => {
-            setSuccessMsg("");
-            setIsAddSubjectOpen(false);
-        }, 3000);
-        return () => clearTimeout(timer);
-    }, [successMsg])
+    // Error/Success Message timer
+    // useEffect(() => {
+    //     if (!successMsg) return;
+    //     const timer = setTimeout(() => {
+    //         setSuccessMsg("");
+    //         setIsAddSubjectOpen(false);
+    //     }, 3000);
+    //     return () => clearTimeout(timer);
+    // }, [successMsg])
 
     const handleAddSubject = async () => {
         if (subjectId.length === 0 || subjectName.length === 0 || academicYear.length === 0 || course.length === 0) {
-            setError("Please fill all the fields!");
+            setErrorMsg("Please fill all the fields!");
             return;
         }
-        setError('');
+        setErrorMsg('');
         try {
             const res = await axios.post('/sub/', {
                 subjectId: subjectId,
@@ -151,10 +152,18 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 </button>
             </div>
 
-            <div>
-                {error && (
+            {/* Error/Success Message */}
+            <ErrorSuccessMsg
+                errorMsg={errorMsg}
+                successMsg={successMsg}
+                setSuccessMsg={setSuccessMsg}
+                setIsOpen={setIsAddSubjectOpen}
+            />
+            
+            {/* <div>
+                {errorMsg && (
                     <p className="text-red-500 text-sm ml-2">
-                        {error}
+                        {errorMsg}
                     </p>
                 )}
                 {successMsg && (
@@ -163,7 +172,7 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                         {successMsg}
                     </p>
                 )}
-            </div>
+            </div> */}
 
             {/* Divider */}
             <div className="border-t border-gray-300 mt-2 pt-2">

@@ -2,8 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
-import { MdDone } from "react-icons/md";
 import { COLORS } from '../../constants/theme'
+import ErrorSuccessMsg from "../ErrorSuccessMsg";
 
 function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggleUpdate }) {
 	const [facultyId, setFacultyId] = useState('');
@@ -17,18 +17,9 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 	const [filteredSubjects, setFilteredSubjects] = useState([]);
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [successMsg, setSuccessMsg] = useState('');
-	const [error, setError] = useState('');
+	const [errorMsg, setErrorMsg] = useState('');
 	// const d = new Date();
 	const yearList = [2024, 2025, 2026];
-
-	useEffect(() => {
-		if (!successMsg) return;
-		const timer = setTimeout(() => {
-			setSuccessMsg("");
-			setIsAssignSubjectOpen(false);
-		}, 3000);
-		return () => clearTimeout(timer);
-	}, [successMsg])
 
 	useEffect(() => {
 		setFilteredSubjects(
@@ -75,10 +66,10 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 
 	const handleAssignSubject = async () => {
 		if (facultyName.length === 0 || year.length === 0 || subjectName.length === 0) {
-			setError("Please fill all the fields!");
+			setErrorMsg("Please fill all the fields!");
 			return;
 		}
-		setError('');
+		setErrorMsg('');
 		try {
 			const res = await axios.post('/assignSub/', {
 				subjectId: subjectId,
@@ -91,7 +82,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 			console.log(res.data);
 		} catch (error) {
 			if (error.status == 409) {
-				setError('Subject already assigned!');
+				setErrorMsg('Subject already assigned!');
 			}
 			else {
 				console.log('ERROR || AssignSubjectForm | handleAssignSubject(): ', error);
@@ -226,19 +217,12 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 							Assign
 						</button>
 					</div>
-					<div>
-						{error && (
-							<p className="text-red-500 text-sm ml-2">
-								{error}
-							</p>
-						)}
-						{successMsg && (
-							<p className="text-sm ml-2 flex">
-								<MdDone className='text-green-500 h-full w-5 mx-1 order rounded-full' />
-								{successMsg}
-							</p>
-						)}
-					</div>
+					<ErrorSuccessMsg
+						errorMsg={errorMsg}
+						successMsg={successMsg}
+						setSuccessMsg={setSuccessMsg}
+						setIsOpen={setIsAssignSubjectOpen}
+					/>
 				</div>
 			</div>
 		</div>
