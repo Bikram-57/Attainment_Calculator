@@ -37,6 +37,8 @@ import DeleteAssignedSubject from "./AssignSubjects/DeleteAssignedSubject";
 import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
 import DownloadReports from "./DownloadReports/DownloadReports";
 import YearFilter from "./YearFilter";
+import UnderDevelopment from "./UnderDevelopment";
+import PageNotFound from "./PageNotFound";
 
 export {
     NavBar,
@@ -76,4 +78,6 @@ export {
     AssignSubjectsHeader,
     DownloadReports,
     YearFilter,
+    UnderDevelopment,
+    PageNotFound,
 }

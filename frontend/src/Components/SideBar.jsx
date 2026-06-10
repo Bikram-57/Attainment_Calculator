@@ -111,10 +111,19 @@ function SideBar() {
                             <IoMdCloudUpload />
                             <div>CO-PO Relation</div>
                         </NavLink>
-                        <div className='flex items-center gap-1 mt-4 px-6'>
+                        <NavLink
+                            to='/direct-attainment'
+                            className={({ isActive }) => (
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
+                            )}
+                            style={({ isActive }) => ({
+                                backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                                color: COLORS.font
+                            })}
+                        >
                             <IoMdCloudUpload />
                             <div>Direct Attainment</div>
-                        </div>
+                        </NavLink>
                     </div>
                     <div className='flex items-center gap-1 my-4 w-full'>
                         <BiSolidReport />
@@ -144,10 +153,19 @@ function SideBar() {
                         <BiSolidReport />
                         <div>Analysis</div>
                     </div>
-                    <div className='flex items-center gap-1 px-6'>
+                    <NavLink
+                        to='/subject-report'
+                        className={({ isActive }) => (
+                            `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
+                        )}
+                        style={({ isActive }) => ({
+                            backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                            color: COLORS.font
+                        })}
+                    >
                         <LiaChartBarSolid />
                         <div>Subject Report</div>
-                    </div>
+                    </NavLink>
                     <div className='flex items-center gap-1 my-4 '>
                         <LuNotebookText />
                         <div>Subjects</div>
