@@ -7,6 +7,7 @@ function EditCoPoRelations({ data, setOpenEdit }) {
     const [isHovered, setIsHovered] = useState(false);
     const rows = Object.entries(tableData);
     const poColumns = Object.keys(rows[0][1]);
+    const prevData = data.mappingData;
 
     const handleChange = (co, po, val) => {
         if (val !== '' && !['1', '2', '3'].includes(val)) return;
@@ -20,6 +21,10 @@ function EditCoPoRelations({ data, setOpenEdit }) {
         }))
     }
     const handleUpdate = async () => {
+        if (prevData === tableData) {
+            setOpenEdit(false);
+            return;
+        }
         try {
             const res = await axios.post('/co-po/save-relation', {
                 subjectId: data.subjectId,

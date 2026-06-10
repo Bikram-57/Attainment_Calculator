@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from 'axios'
 import { IoMdClose } from "react-icons/io";
 import { COLORS } from '../../constants/theme'
+import ErrorSuccessMsg from "../ErrorSuccessMsg";
 
 function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -9,10 +10,17 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const password = "cadept@1234";
+    const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
 
     if (!isOpen) return null;
 
     const handleAddFaculty = async () => {
+        if (facultyId.length === 0 || name.length === 0 || email.length === 0) {
+            setErrorMsg('Please fill all the fields!');
+            return;
+        }
+        setErrorMsg('');
         try {
             const res = await axios.post('/user/', {
                 facultyId: facultyId,
@@ -20,8 +28,8 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
                 email: email,
                 password: password
             });
+            setSuccessMsg('Faculty successfully added!');
             toggleUpdate();
-            setIsOpen(false);
             console.log(res.data);
         } catch (err) {
             console.log('ERROR || handleAddFaculty(): ', err);
@@ -124,6 +132,13 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
                         // readOnly
                         />
                     </div>
+
+                    <ErrorSuccessMsg
+                        errorMsg={errorMsg}
+                        successMsg={successMsg}
+                        setSuccessMsg={setSuccessMsg}
+                        setIsOpen={setIsOpen}
+                    />
 
                     {/* Note */}
                     <p className="text-sm text-red-500">
