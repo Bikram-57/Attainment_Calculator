@@ -3,12 +3,13 @@ import { BsSearch } from 'react-icons/bs'
 import AssignSubjectForm from './AssignSubjectForm';
 import { COLORS } from '../../constants/theme';
 import { FaFilter } from "react-icons/fa";
+import YearFilter from '../YearFilter';
 
 function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFilterYear }) {
     const [isAssignSubjectOpen, setIsAssignSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [year, setYear] = useState('');
-
+    const defaultYear = new Date().getFullYear();
 
     const yearList = [2025, 2024];
 
@@ -34,17 +35,20 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
             >
                 Assigned Subjects
             </div>
-            <div className="w-1/8 flex items-center gap-2">
+
+            <YearFilter defaultYear={defaultYear} setFilterYear={setFilterYear} />
+            
+            {/* <div className="w-1/4 flex items-center gap-2">
                 <div
-                    className='flex items-center gap-1 font-semibold text-lg'
+                    className='flex items-center gap-1 font-semibold text-md'
                     style={{ color: COLORS.mint }}
                 >
                     <FaFilter />
                     <div>
-                        Filter:
+                        Academic Year:
                     </div>
                 </div>
-                <div className='w-1/2'>
+                <div className='w-1/4'>
                     <select
                         value={year}
                         onChange={(e) => handleYear(e)}
@@ -58,7 +62,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                         ))}
                     </select>
                 </div>
-            </div>
+            </div> */}
             <div className='flex gap-5 mx-10'>
                 {/* <div className='border border-gray-300 rounded-md flex items-center'> */}
                 <div
@@ -67,7 +71,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                 >
                     <input
                         type='text'
-                        placeholder='Search by subject code or name'
+                        placeholder='Search by faculty ID'
                         value={search}
                         // className='border-r border-gray-300 px-3 py-1 w-87.5'
                         // className='border-r-4 border-r-red-200 px-3 py-1 w-87.5'

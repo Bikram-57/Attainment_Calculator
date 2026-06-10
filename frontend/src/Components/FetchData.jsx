@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Attainment } from './Attainment/index';
 import { COLORS } from '../constants/theme';
+import ErrorSuccessMsg from './ErrorSuccessMsg';
 
 function FetchData() {
-	const [isDisabled, setIsDisabled] = useState(true);
-	const [subjectId, setSubjectId] = useState('')
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
+	const [subjectId, setSubjectId] = useState('')
+	const [isDisabled, setIsDisabled] = useState(true);
 	const [allSubjects, setAllSubjects] = useState([]);
 	const [subjectList, setSubjectList] = useState([]);
-	const [error, setError] = useState('');
+	const [errorMsg, setErrorMsg] = useState('');
 	const [fetchClicked, setFetchClicked] = useState(false);
 	const [isHovered, setIsHovered] = useState(false);
 	// const [coAttainData, setCOAttainData] = useState({});
@@ -78,6 +79,11 @@ function FetchData() {
 	// }
 
 	const handleFetch = () => {
+		if (academicYear.length === 0 || course.length === 0 || subjectId.length === 0) {
+			setErrorMsg('Please fill all the fields!');
+			return;
+		}
+		setErrorMsg('');
 		setFetchClicked(true);
 	}
 
@@ -86,7 +92,7 @@ function FetchData() {
 			try {
 				const res = await axios.get('/sub/');
 				console.log('yes');
-				
+
 				setAllSubjects(res.data.data);
 			} catch (err) {
 				console.log('Error fetching subjects || ', err);
@@ -134,7 +140,7 @@ function FetchData() {
 				{/* TODO: FIX MAX HEIGHT OF THE DROPDOWN MENU */}
 				<select
 					className={`${isDisabled ? 'cursor-not-allowed text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none h-8`}
-					style={{backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font}}
+					style={{ backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font }}
 					value={subjectId}
 					onChange={(e) => setSubjectId(e.target.value)}
 					disabled={isDisabled}
@@ -165,14 +171,10 @@ function FetchData() {
 					</button>
 				</div>
 			</div>
-			<div>
-				{error && (
-					<p className="text-red-500 text-sm ml-2">
-						{error}
-					</p>
-				)}
-			</div>
-		</div >
+			<ErrorSuccessMsg
+				errorMsg={errorMsg}
+			/>
+		</div>
 	)
 		:
 		// (coAttainData && (

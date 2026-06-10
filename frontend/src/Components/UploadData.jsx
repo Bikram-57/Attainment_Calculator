@@ -2,15 +2,16 @@ import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { MdDone } from "react-icons/md";
-import { COLORS } from '../constants/theme'
+import { COLORS } from '../constants/theme';
+import ErrorSuccessMsg from './ErrorSuccessMsg';
 
 function UploadData() {
-	const [isDisabled, setIsDisabled] = useState(true);
-	const [subjectId, setSubjectId] = useState('')
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
+	const [subjectId, setSubjectId] = useState('')
 	const [file, setFile] = useState(null);
-	const [error, setError] = useState('');
+	const [isDisabled, setIsDisabled] = useState(true);
+	const [errorMsg, setErrorMsg] = useState('');
 	const [successMsg, setSuccessMsg] = useState('');
 	const [allSubjects, setAllSubjects] = useState([]);
 	const [subjectList, setSubjectList] = useState([]);
@@ -66,12 +67,12 @@ function UploadData() {
 
 		if (!selectedFile) return;
 		if (!validTypes.includes(selectedFile.type)) {
-			setError('Only Excel files (.xls, .xlsx) are allowed');
+			setErrorMsg('Only Excel files (.xls, .xlsx) are allowed');
 			setFile(null);
 			return;
 		}
 
-		setError('');
+		setErrorMsg('');
 		setFile(selectedFile);
 	}
 
@@ -82,11 +83,11 @@ function UploadData() {
 
 	const handleUpload = async () => {
 		if (!subjectId || !academicYear || !course) {
-			setError("Please fill all the fields");
+			setErrorMsg("Please fill all the fields");
 			return;
 		}
 		if (!file) {
-			setError("Please choose a file!");
+			setErrorMsg("Please choose a file!");
 			return;
 		}
 
@@ -99,7 +100,7 @@ function UploadData() {
 		try {
 			const res = await axios.post('/mark/upload-raw', formData);
 			setSuccessMsg(res.data.message);
-			setError('');
+			setErrorMsg('');
 			setFile(null);
 			setAcademicYear('');
 			setCourse('');
@@ -107,7 +108,7 @@ function UploadData() {
 			setIsDisabled(true);
 			console.log(res);
 		} catch (err) {
-			setError("Something went wrong! Format error!");
+			setErrorMsg("Something went wrong! Format error!");
 			console.log("Error on handleUpload || ", err);
 		}
 	}
@@ -124,14 +125,6 @@ function UploadData() {
 
 		fetchSubjects();
 	}, []);
-
-	useEffect(() => {
-		if (!successMsg) return;
-		const timer = setTimeout(() => {
-			setSuccessMsg("");
-		}, 3000);
-		return () => clearTimeout(timer);
-	}, [successMsg])
 
 	return (
 		<div className='h-full flex flex-col p-4'>
@@ -230,19 +223,11 @@ function UploadData() {
 					</button>
 				</div>
 			</div>
-			<div>
-				{error && (
-					<p className="text-red-500 text-sm ml-2">
-						{error}
-					</p>
-				)}
-				{successMsg && (
-					<p className="text-sm ml-2 flex">
-						<MdDone className='text-green-500 h-full w-5 mx-1 order rounded-full' />
-						{successMsg}
-					</p>
-				)}
-			</div>
+			<ErrorSuccessMsg
+				errorMsg={errorMsg}
+				successMsg={successMsg}
+				setSuccessMsg={setSuccessMsg}
+			/>
 		</div>
 	)
 }

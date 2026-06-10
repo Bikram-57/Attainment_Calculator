@@ -36,6 +36,11 @@ import AssignSubjectForm from "./AssignSubjects/AssignSubjectForm";
 import DeleteAssignedSubject from "./AssignSubjects/DeleteAssignedSubject";
 import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
 import DownloadReports from "./DownloadReports/DownloadReports";
+import YearFilter from "./YearFilter";
+import UnderDevelopment from "./UnderDevelopment";
+import PageNotFound from "./PageNotFound";
+import AddSubject from "./Subject/AddSubject";
+import ErrorSuccessMsg from "./ErrorSuccessMsg";
 
 export {
     NavBar,
@@ -74,4 +79,9 @@ export {
     DeleteAssignedSubject,
     AssignSubjectsHeader,
     DownloadReports,
+    YearFilter,
+    UnderDevelopment,
+    PageNotFound,
+    AddSubject,
+    ErrorSuccessMsg,
 }

@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
-import AddSubjectForm from './AddSubjectForm';
+import { FaFilter } from "react-icons/fa";
 import { COLORS } from '../../constants/theme';
-import AddAllSubjectsForm from './AddAllSubjectsForm';
+import YearFilter from '../YearFilter';
+import AddSubject from './AddSubject';
 
-function SubjectHeader({ toggleUpdate, setSearchQuery }) {
+function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear }) {
     const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
-    const [isAddAllSubjectOpen, setIsAddAllSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
 
     const handleChange = (e) => {
-        if (e.target.value == ''){
+        if (e.target.value == '') {
             setSearchQuery('');
         }
         setSearch(e.target.value);
@@ -19,18 +19,20 @@ function SubjectHeader({ toggleUpdate, setSearchQuery }) {
 
     return (
         <div className='flex justify-between p-4'>
-            {/* <div className='text-blue-900 text-xl font-semibold'>All Subjects</div> */}
             <div
                 className='text-xl font-semibold'
                 style={{ color: COLORS.mint }}
             >
                 All Subjects
             </div>
+
+            <YearFilter setFilterYear={setFilterYear} />
+
             <div className='flex gap-5 mx-10'>
                 {/* <div className='border border-gray-300 rounded-md flex items-center'> */}
                 <div
                     className='border rounded-md flex items-center'
-                    // style={{ borderColor: COLORS.mintDark }}
+                // style={{ borderColor: COLORS.mintDark }}
                 >
                     <input
                         type='text'
@@ -64,30 +66,12 @@ function SubjectHeader({ toggleUpdate, setSearchQuery }) {
                     >
                         Add Subject
                     </button>
-                    <button
-                        // className='bg-blue-900 text-white px-3 py-1 rounded-lg cursor-pointer'
-                        className='px-3 py-1 ml-2 rounded-lg cursor-pointer'
-                        style={{
-                            backgroundColor: COLORS.mint,
-                            color: COLORS.font
-                        }}
-                        onClick={() => setIsAddAllSubjectOpen(true)}
-                    >
-                        Add All Subjects
-                    </button>
                 </div>
             </div>
             {isAddSubjectOpen &&
-                <AddSubjectForm
+                <AddSubject
                     isAddSubjectOpen={isAddSubjectOpen}
                     setIsAddSubjectOpen={setIsAddSubjectOpen}
-                    toggleUpdate={toggleUpdate}
-                />
-            }
-            {isAddAllSubjectOpen &&
-                <AddAllSubjectsForm
-                    isAddAllSubjectOpen={isAddAllSubjectOpen}
-                    setIsAddAllSubjectOpen={setIsAddAllSubjectOpen}
                     toggleUpdate={toggleUpdate}
                 />
             }

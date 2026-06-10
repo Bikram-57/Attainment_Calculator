@@ -14,6 +14,8 @@ import {
 	ContactUs,
 	AssignSubjects,
 	DownloadReports,
+	UnderDevelopment,
+	PageNotFound,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -49,14 +51,28 @@ const router = createBrowserRouter([
 				handle: { title: 'Fetch Data' }
 			},
 			{
-				path: 'download-reports',
+				path: 'co_po_relations/',
+				element: <CoPoRelations />,
+				handle: { title: 'CO PO Relations' }
+			},
+			{
+				path: 'direct-attainment/',
+				element: <UnderDevelopment />,
+				handle: { title: 'Direct Attainment' }
+			},
+			{
+				path: 'download-reports/',
 				element: <DownloadReports />,
 				handle: { title: 'Download Reports' }
 			},
 			{
-				path: 'co_po_relations/',
-				element: <CoPoRelations />,
-				handle: { title: 'CO PO Relations' }
+				path: 'subject-report/',
+				element: <UnderDevelopment />,
+				handle: { title: 'Subject Report' }
+			},
+			{
+				path: '*',
+				element: <PageNotFound />
 			},
 			// {
 			// 	path: 'co-attainment/:academicYear/:course/:subjectId',

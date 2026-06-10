@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { COLORS } from '../../constants/theme'
 import axios from 'axios';
+import ErrorSuccessMsg from '../ErrorSuccessMsg';
 
 function DownloadReports() {
-	const [isDisabled, setIsDisabled] = useState(true);
-	const [subjectId, setSubjectId] = useState('')
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
+	const [subjectId, setSubjectId] = useState('')
+	const [isDisabled, setIsDisabled] = useState(true);
 	const [allSubjects, setAllSubjects] = useState([]);
 	const [subjectList, setSubjectList] = useState([]);
-	const [error, setError] = useState('');
 	const [isHovered, setIsHovered] = useState(false);
+	const [errorMsg, setErrorMsg] = useState('');
 
 	const currentYear = new Date().getFullYear();
 	const yearList = [2024];
@@ -53,6 +54,11 @@ function DownloadReports() {
 	const [downloading, setDownloading] = useState(false);
 
 	const handleDownload = async () => {
+		if (academicYear.length === 0 || course.length === 0 || subjectId.length === 0) {
+			setErrorMsg('Please fill all the fields!');
+			return;
+		}
+		setErrorMsg('');
 		try {
 			setDownloading(true);
 
@@ -168,14 +174,10 @@ function DownloadReports() {
 					</button>
 				</div>
 			</div>
-			<div>
-				{error && (
-					<p className="text-red-500 text-sm ml-2">
-						{error}
-					</p>
-				)}
-			</div>
-		</div >
+			<ErrorSuccessMsg
+				errorMsg={errorMsg}
+			/>
+		</div>
 	)
 }
 
