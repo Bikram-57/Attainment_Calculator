@@ -39,6 +39,7 @@ import DownloadReports from "./DownloadReports/DownloadReports";
 import YearFilter from "./YearFilter";
 import UnderDevelopment from "./UnderDevelopment";
 import PageNotFound from "./PageNotFound";
+import AddSubject from "./Subject/AddSubject";
 
 export {
     NavBar,
@@ -80,4 +81,5 @@ export {
     YearFilter,
     UnderDevelopment,
     PageNotFound,
+    AddSubject,
 }

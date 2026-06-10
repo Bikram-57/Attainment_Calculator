@@ -1,16 +1,14 @@
 import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
 import { FaFilter } from "react-icons/fa";
-import AddSubjectForm from './AddSubjectForm';
 import { COLORS } from '../../constants/theme';
-import AddAllSubjectsForm from './AddAllSubjectsForm';
 import YearFilter from '../YearFilter';
+import AddSubject from './AddSubject';
 
 function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear }) {
     const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
-    const [isAddAllSubjectOpen, setIsAddAllSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
-    
+
     const handleChange = (e) => {
         if (e.target.value == '') {
             setSearchQuery('');
@@ -68,30 +66,12 @@ function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear }) {
                     >
                         Add Subject
                     </button>
-                    <button
-                        // className='bg-blue-900 text-white px-3 py-1 rounded-lg cursor-pointer'
-                        className='px-3 py-1 ml-2 rounded-lg cursor-pointer'
-                        style={{
-                            backgroundColor: COLORS.mint,
-                            color: COLORS.font
-                        }}
-                        onClick={() => setIsAddAllSubjectOpen(true)}
-                    >
-                        Add All Subjects
-                    </button>
                 </div>
             </div>
             {isAddSubjectOpen &&
-                <AddSubjectForm
+                <AddSubject
                     isAddSubjectOpen={isAddSubjectOpen}
                     setIsAddSubjectOpen={setIsAddSubjectOpen}
-                    toggleUpdate={toggleUpdate}
-                />
-            }
-            {isAddAllSubjectOpen &&
-                <AddAllSubjectsForm
-                    isAddAllSubjectOpen={isAddAllSubjectOpen}
-                    setIsAddAllSubjectOpen={setIsAddAllSubjectOpen}
                     toggleUpdate={toggleUpdate}
                 />
             }
