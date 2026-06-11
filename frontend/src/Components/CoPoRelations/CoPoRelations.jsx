@@ -84,7 +84,7 @@ function CoPoRelations() {
                     {/* Search */}
                     <div
                         className="flex w-105 overflow-hidden rounded-md border"
-                        // style={{ borderColor: COLORS.mintDark }}
+                    // style={{ borderColor: COLORS.mintDark }}
                     >
                         <input
                             type="text"
@@ -109,75 +109,81 @@ function CoPoRelations() {
 
                 {/* Table */}
                 <div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
-                    <table className="w-full text-md">
-                        <thead>
-                            <tr
-                                style={{
-                                    backgroundColor: COLORS.mint,
-                                    color: COLORS.font
-                                }} 
-                            >
-                                <th className="px-2 py-1 text-left font-semibold">
-                                    Subject Code
-                                </th>
-
-                                <th className="px-2 py-1 text-left font-semibold">
-                                    Subject Name
-                                </th>
-
-                                <th className="px-2 py-1 text-center font-semibold w-35">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {filteredSubjects?.map((subject, index) => (
+                    {filteredSubjects?.length > 0 ? (
+                        <table className="w-full text-md">
+                            <thead>
                                 <tr
-                                    key={index}
-                                    className={`border-b border-gray-200 ${index % 2 === 0
-                                        ? "bg-[#f1f1f1]"
-                                        : "bg-[#fafafa]"
-                                        }`}
+                                    style={{
+                                        backgroundColor: COLORS.mint,
+                                        color: COLORS.font
+                                    }}
                                 >
-                                    <td className="px-2 py-1 text-gray-700">
-                                        {subject.subjectId}
-                                    </td>
+                                    <th className="px-2 py-1 text-left font-semibold">
+                                        Subject Code
+                                    </th>
 
-                                    <td className="px-2 py-1 text-gray-700">
-                                        {subject.subjectName}
-                                    </td>
+                                    <th className="px-2 py-1 text-left font-semibold">
+                                        Subject Name
+                                    </th>
 
-                                    <td className="px-2 py-1">
-                                        <div className="flex items-center justify-center gap-2">
-                                            {/* View */}
-                                            <button
-                                                className="rounded p-1 transition cursor-pointer"
-                                                style={{
-                                                    backgroundColor: COLORS.mint,
-                                                    color: COLORS.font
-                                                }}
-                                                onClick={() => handleViewOpen(subject)}
-                                            >
-                                                <MdRemoveRedEye />
-                                            </button>
-                                            {/* Edit */}
-                                            <button
-                                                className="rounded p-1 transition cursor-pointer"
-                                                style={{
-                                                    backgroundColor: COLORS.mint,
-                                                    color: COLORS.font
-                                                }}
-                                                onClick={() => handleEditOpen(subject)}
-                                            >
-                                                <GrEdit />
-                                            </button>
-                                        </div>
-                                    </td>
+                                    <th className="px-2 py-1 text-center font-semibold w-35">
+                                        Action
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                                {filteredSubjects?.map((subject, index) => (
+                                    <tr
+                                        key={index}
+                                        className={`border-b border-gray-200 ${index % 2 === 0
+                                            ? "bg-[#f1f1f1]"
+                                            : "bg-[#fafafa]"
+                                            }`}
+                                    >
+                                        <td className="px-2 py-1 text-gray-700">
+                                            {subject.subjectId}
+                                        </td>
+
+                                        <td className="px-2 py-1 text-gray-700">
+                                            {subject.subjectName}
+                                        </td>
+
+                                        <td className="px-2 py-1">
+                                            <div className="flex items-center justify-center gap-2">
+                                                {/* View */}
+                                                <button
+                                                    className="rounded p-1 transition cursor-pointer"
+                                                    style={{
+                                                        backgroundColor: COLORS.mint,
+                                                        color: COLORS.font
+                                                    }}
+                                                    onClick={() => handleViewOpen(subject)}
+                                                >
+                                                    <MdRemoveRedEye />
+                                                </button>
+                                                {/* Edit */}
+                                                <button
+                                                    className="rounded p-1 transition cursor-pointer"
+                                                    style={{
+                                                        backgroundColor: COLORS.mint,
+                                                        color: COLORS.font
+                                                    }}
+                                                    onClick={() => handleEditOpen(subject)}
+                                                >
+                                                    <GrEdit />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) :
+                        (
+                            <div className='text-center text-lg'>No data available</div>
+                        )
+                    }
                 </div>
             </div>
         );

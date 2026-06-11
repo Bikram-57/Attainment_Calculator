@@ -19,9 +19,9 @@ function Faculty() {
 
 	const toggleUpdate = () => setToggleNewUser(prev => !prev);
 
-    const filteredFaculty = facultyData.filter(sub => (
-        sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase()) || sub.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )) || facultyData;
+	const filteredFaculty = facultyData.filter(sub => (
+		sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase()) || sub.name.toLowerCase().includes(searchQuery.toLowerCase())
+	)) || facultyData;
 
 	useEffect(() => {
 		getFacultyData();
@@ -30,34 +30,40 @@ function Faculty() {
 		<div className='h-full flex flex-col'>
 			<FacultyHeader toggleUpdate={toggleUpdate} setSearchQuery={setSearchQuery} />
 			<div className='flex-1 overflow-y-auto'>
-				<table className='w-full'>
-					<thead>
-						<tr className='text-left border-b border-gray-300'>
-							<th className='px-5 py-2 w-[15%]'>Faculty ID</th>
-							<th className='px-5 py-2 w-[35%]'>Name</th>
-							<th className='px-5 py-2 w-[35%]'>Email</th>
-							<th className='px-5 py-2 text-center w-[15%]'>Action</th>
-						</tr>
-					</thead>
-					<tbody>
-						{filteredFaculty.map(faculty => (
-							<tr className='text-left border-b border-gray-300' key={faculty._id}>
-								<td className='px-5 py-2 w-[15%]'>{faculty.facultyId}</td>
-								<td className='px-5 py-2 w-[35%]'>{faculty.name}</td>
-								<td className='px-5 py-2 w-[35%]'>{faculty.email}</td>
-								<td className='px-5 py-2 flex items-center justify-center'>
-									<ActionBtns
-										data={faculty}
-										toggleUpdate={toggleUpdate}
-										ViewModal={FacultyViewModal}
-										EditModal={FacultyEditModal}
-										DeleteModal={FacultyDeleteModal}
-									/>
-								</td>
+				{filteredFaculty?.length > 0 ? (
+					<table className='w-full'>
+						<thead>
+							<tr className='text-left border-b border-gray-300'>
+								<th className='px-5 py-2 w-[15%]'>Faculty ID</th>
+								<th className='px-5 py-2 w-[35%]'>Name</th>
+								<th className='px-5 py-2 w-[35%]'>Email</th>
+								<th className='px-5 py-2 text-center w-[15%]'>Action</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{filteredFaculty.map(faculty => (
+								<tr className='text-left border-b border-gray-300' key={faculty._id}>
+									<td className='px-5 py-2 w-[15%]'>{faculty.facultyId}</td>
+									<td className='px-5 py-2 w-[35%]'>{faculty.name}</td>
+									<td className='px-5 py-2 w-[35%]'>{faculty.email}</td>
+									<td className='px-5 py-2 flex items-center justify-center'>
+										<ActionBtns
+											data={faculty}
+											toggleUpdate={toggleUpdate}
+											ViewModal={FacultyViewModal}
+											EditModal={FacultyEditModal}
+											DeleteModal={FacultyDeleteModal}
+										/>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				) :
+					(
+						<div className='text-center text-lg'>No data available</div>
+					)
+				}
 			</div>
 		</div>
 	)

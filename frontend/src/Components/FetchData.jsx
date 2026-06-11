@@ -107,7 +107,7 @@ function FetchData() {
 		<div className='h-full flex flex-col p-4'>
 			<div className='flex justify-between pb-4'>
 				<div
-					className='text-blue-900 text-xl font-semibold'
+					className='text-xl font-semibold'
 					style={{ color: COLORS.mint }}
 				>
 					Fetch Data

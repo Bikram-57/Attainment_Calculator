@@ -65,7 +65,7 @@ function AssignSubjects() {
 				setFilterYear={setFilterYear}
 			/>
 			<div className="max-h-125 overflow-y-auto overflow-x-auto px-4 py-1">
-				{filteredAssignedSubjectsData.length > 0 ?
+				{filteredAssignedSubjectsData?.length > 0 ?
 					(<table className="w-full text-md border border-gray-300">
 						<thead>
 							<tr
@@ -179,7 +179,7 @@ function AssignSubjects() {
 					)
 				}
 			</div>
-		</div >
+		</div>
 	)
 }
 

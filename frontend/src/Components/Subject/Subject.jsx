@@ -38,7 +38,7 @@ function Subject() {
                 setFilterYear={setFilterYear}
             />
             <div className="flex-1 overflow-y-auto">
-                {filteredSubjects.length > 0 ?
+                {filteredSubjects?.length > 0 ?
                     (<table className='w-full'>
                         <thead>
                             <tr className='text-left border-b border-gray-300'>

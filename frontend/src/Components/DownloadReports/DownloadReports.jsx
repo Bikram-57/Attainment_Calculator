@@ -84,7 +84,12 @@ function DownloadReports() {
 			link.remove();
 			window.URL.revokeObjectURL(url);
 		} catch (error) {
-			console.error('Download failed:', error);
+			if (error.status === 404) {
+				setErrorMsg('Data not available!');
+			}
+			else {
+				console.error('Download failed:', error);
+			}
 		} finally {
 			setDownloading(false);
 		}
