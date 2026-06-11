@@ -1,10 +1,13 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { COLORS } from '../../constants/theme';
+import Loading from '../Loading';
 
 function EditCoPoRelations({ data, setOpenEdit }) {
     const [tableData, setTableData] = useState(data.mappingData);
     const [isHovered, setIsHovered] = useState(false);
+    const [loading, setLoading] = useState(false);
+
     const rows = Object.entries(tableData);
     const poColumns = Object.keys(rows[0][1]);
     const prevData = data.mappingData;
@@ -25,6 +28,7 @@ function EditCoPoRelations({ data, setOpenEdit }) {
             setOpenEdit(false);
             return;
         }
+        setLoading(true);
         try {
             const res = await axios.post('/co-po/save-relation', {
                 subjectId: data.subjectId,
@@ -36,6 +40,8 @@ function EditCoPoRelations({ data, setOpenEdit }) {
             alert('Updated successfully!')
         } catch (error) {
             console.log('Axios Error | EditCoPoRelations | handleUpdate(): ', error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -88,6 +94,12 @@ function EditCoPoRelations({ data, setOpenEdit }) {
                 </div>
             </div>
             <div className='flex justify-end gap-2'>
+                {loading &&
+                    <Loading
+                        type='update'
+                        className='mt-4 flex items-center'
+                    />
+                }
                 <button
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}

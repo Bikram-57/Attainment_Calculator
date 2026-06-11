@@ -3,11 +3,13 @@ import AssignSubjectsHeader from './AssignSubjectsHeader'
 import { RiDeleteBin6Line } from "react-icons/ri";
 import axios from 'axios';
 import { COLORS } from '../../constants/theme';
+import Loading from '../Loading';
 
 function AssignSubjects() {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [assignedSubjectsData, setAssignedSubjectsData] = useState([]);
 	const [updateData, setUpdateData] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [filterYear, setFilterYear] = useState(new Date().getFullYear());
 	const currentYear = new Date().getFullYear();
 
@@ -28,9 +30,10 @@ function AssignSubjects() {
 				else {
 					console.log('ERROR || AssignSubject | getAssignSubjects(): ', error);
 				}
+			} finally {
+				setLoading(false);
 			}
 		}
-
 		getAssignSubjects();
 	}, [updateData]);
 
@@ -56,7 +59,7 @@ function AssignSubjects() {
 		}
 	}
 
-	return (
+	return !loading ? (
 		<div className='h-full flex flex-col'>
 			<AssignSubjectsHeader
 				toggleUpdate={toggleUpdate}
@@ -180,7 +183,7 @@ function AssignSubjects() {
 				}
 			</div>
 		</div>
-	)
+	) : <Loading />
 }
 
 export default AssignSubjects

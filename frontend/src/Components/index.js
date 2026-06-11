@@ -41,6 +41,7 @@ import UnderDevelopment from "./UnderDevelopment";
 import PageNotFound from "./PageNotFound";
 import AddSubject from "./Subject/AddSubject";
 import ErrorSuccessMsg from "./ErrorSuccessMsg";
+import Loading from "./Loading";
 
 export {
     NavBar,
@@ -84,4 +85,5 @@ export {
     PageNotFound,
     AddSubject,
     ErrorSuccessMsg,
+    Loading,
 }

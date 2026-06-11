@@ -6,6 +6,7 @@ import { BsSearch } from "react-icons/bs";
 import ViewCoPoRelations from './ViewCoPoRelations';
 import EditCoPoRelations from './EditCoPoRelations';
 import { COLORS } from '../../constants/theme'
+import Loading from '../Loading';
 
 function CoPoRelations() {
     const [subjects, setSubjects] = useState(null);
@@ -14,6 +15,7 @@ function CoPoRelations() {
     const [openView, setOpenView] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedSubjectData, setSelectedSubjectData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const fetchData = async (sub) => {
         try {
@@ -29,15 +31,19 @@ function CoPoRelations() {
             console.log('Axios Error | ViewCoPoRelations | fetchData(): ', error);
             setSelectedSubjectData(null);
             alert("Data not available!");
+        } finally {
+            setLoading(false);
         }
     }
 
     const handleViewOpen = async (sub) => {
+        setLoading(true);
         await fetchData(sub);
         setOpenView(true);
     }
 
     const handleEditOpen = async (sub) => {
+        setLoading(true);
         await fetchData(sub);
         setOpenEdit(true);
     }
@@ -61,13 +67,15 @@ function CoPoRelations() {
                 setSubjects(res.data.data);
             } catch (error) {
                 console.log('Axios Error | CoPoRelations | fetchSubjects(): ', error);
+            } finally {
+                setLoading(false);
             }
         }
         fetchSubjects();
     }, []);
 
     if (!openView && !openEdit) {
-        return (
+        return !loading ? (
             <div
                 className="w-full p-4"
                 style={{ backgroundColor: COLORS.latte }}
@@ -186,7 +194,7 @@ function CoPoRelations() {
                     }
                 </div>
             </div>
-        );
+        ) : <Loading />
     }
     else if (openView && selectedSubjectData) {
         return (

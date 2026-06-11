@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { COLORS } from '../../constants/theme'
 import axios from 'axios';
 import ErrorSuccessMsg from '../ErrorSuccessMsg';
+import Loading from '../Loading';
 
 function DownloadReports() {
 	const [academicYear, setAcademicYear] = useState('')
@@ -12,6 +13,7 @@ function DownloadReports() {
 	const [subjectList, setSubjectList] = useState([]);
 	const [isHovered, setIsHovered] = useState(false);
 	const [errorMsg, setErrorMsg] = useState('');
+	const [downloading, setDownloading] = useState(false);
 
 	const currentYear = new Date().getFullYear();
 	const yearList = [2024];
@@ -51,8 +53,6 @@ function DownloadReports() {
 		(selectedYear === '' || course == '') ? setIsDisabled(true) : setIsDisabled(false);
 	}
 
-	const [downloading, setDownloading] = useState(false);
-
 	const handleDownload = async () => {
 		if (academicYear.length === 0 || course.length === 0 || subjectId.length === 0) {
 			setErrorMsg('Please fill all the fields!');
@@ -61,7 +61,6 @@ function DownloadReports() {
 		setErrorMsg('');
 		try {
 			setDownloading(true);
-
 			const response = await axios.get('/file/download', {
 				params: {
 					subjectId,
@@ -110,7 +109,6 @@ function DownloadReports() {
 		fetchSubjects();
 	}, []);
 
-	// return !isFetching ? (
 	return (
 		<div className='h-full flex flex-col p-4'>
 			<div className='flex justify-between pb-4'>
@@ -164,7 +162,7 @@ function DownloadReports() {
 			</div>
 
 			<div className='flex gap-5 my-7'>
-				<div className='flex-1'>
+				{/* <div className='flex-1'>
 					<button
 						onMouseEnter={() => setIsHovered(true)}
 						onMouseLeave={() => setIsHovered(false)}
@@ -177,6 +175,21 @@ function DownloadReports() {
 					>
 						Download
 					</button>
+				</div> */}
+				<div className='flex w-full h-4 items-center'>
+					<button
+						onMouseEnter={() => setIsHovered(true)}
+						onMouseLeave={() => setIsHovered(false)}
+						className='w-1/5 rounded-sm p-1 cursor-pointer duration-200'
+						style={{
+							backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint,
+							color: COLORS.font
+						}}
+						onClick={handleDownload}
+					>
+						Download
+					</button>
+					{downloading && <Loading type='download' />}
 				</div>
 			</div>
 			<ErrorSuccessMsg

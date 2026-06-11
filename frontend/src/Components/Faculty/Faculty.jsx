@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import FacultyHeader from './FacultyHeader'
 import axios from 'axios'
-import { ActionBtns, FacultyDeleteModal, FacultyEditModal, FacultyViewModal } from '../index';
+import { ActionBtns, FacultyDeleteModal, FacultyEditModal, FacultyViewModal, Loading } from '../index';
 
 function Faculty() {
 	const [facultyData, setFacultyData] = useState([]);
 	const [toggleNewUser, setToggleNewUser] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
+	const [loading, setLoading] = useState(true);
 
 	const getFacultyData = async () => {
 		try {
@@ -14,6 +15,8 @@ function Faculty() {
 			setFacultyData(response.data.data);
 		} catch (error) {
 			console.log('Axios Error | Faculty | getFacultyData(): ', error);
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -26,7 +29,7 @@ function Faculty() {
 	useEffect(() => {
 		getFacultyData();
 	}, [toggleNewUser]);
-	return (
+	return !loading ? (
 		<div className='h-full flex flex-col'>
 			<FacultyHeader toggleUpdate={toggleUpdate} setSearchQuery={setSearchQuery} />
 			<div className='flex-1 overflow-y-auto'>
@@ -66,6 +69,8 @@ function Faculty() {
 				}
 			</div>
 		</div>
+	) : (
+		<Loading />
 	)
 }
 

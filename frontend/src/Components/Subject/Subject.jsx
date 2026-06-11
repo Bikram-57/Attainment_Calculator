@@ -1,13 +1,14 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import SubjectHeader from './SubjectHeader';
-import { ActionBtns, SubjectDeleteModal, SubjectEditModal, SubjectViewModal } from '../index'
+import { ActionBtns, Loading, SubjectDeleteModal, SubjectEditModal, SubjectViewModal } from '../index'
 
 function Subject() {
     const [subjectData, setSubjectData] = useState([]);
     const [toggleNewSubject, setToggleNewSubject] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterYear, setFilterYear] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const getSubjectData = async () => {
         try {
@@ -15,6 +16,8 @@ function Subject() {
             setSubjectData(response.data.data);
         } catch (error) {
             console.log('Axios Error | getSubjectData(): ', error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -30,7 +33,7 @@ function Subject() {
     useEffect(() => {
         getSubjectData();
     }, [toggleNewSubject]);
-    return (
+    return !loading ? (
         <div className='h-full flex flex-col'>
             <SubjectHeader
                 toggleUpdate={toggleUpdate}
@@ -76,7 +79,7 @@ function Subject() {
                 }
             </div>
         </div>
-    )
+    ) : <Loading />
 }
 
 export default Subject
