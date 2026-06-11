@@ -20,6 +20,7 @@ const uploadAllSubjects = require('./routes/uploadAllSubjects')
 const uploadRubrics = require('./routes/rubrics')
 const downloadReport = require('./routes/downloadReport')
 const login = require('./routes/login')
+const forgotPassword = require('./routes/forgotPassword')
 
 
 
@@ -53,8 +54,8 @@ app.set("views", path.resolve("./view"))
 
 // All Routes
 
-app.use("/user", userRoute)
 app.use("/", staticRouter)
+app.use("/user", userRoute)
 app.use("/sub", subjectRoute)
 app.use("/mark", marks)
 app.use("/co-po", coPoMapping)
@@ -65,6 +66,7 @@ app.use("/uploadAll", uploadAllSubjects)
 app.use("/rubrics", uploadRubrics)
 app.use("/file", downloadReport)
 app.use("/login", login)
+app.use("/forgot", forgotPassword)
 
 
 
