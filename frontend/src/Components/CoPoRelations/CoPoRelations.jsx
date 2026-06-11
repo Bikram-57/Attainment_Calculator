@@ -16,6 +16,7 @@ function CoPoRelations() {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedSubjectData, setSelectedSubjectData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [noData, setNoData] = useState(false);
 
     const fetchData = async (sub) => {
         try {
@@ -30,7 +31,8 @@ function CoPoRelations() {
         } catch (error) {
             console.log('Axios Error | ViewCoPoRelations | fetchData(): ', error);
             setSelectedSubjectData(null);
-            alert("Data not available!");
+            setNoData(true);
+            // alert("Data not available!");
         } finally {
             setLoading(false);
         }
@@ -117,7 +119,7 @@ function CoPoRelations() {
 
                 {/* Table */}
                 <div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
-                    {filteredSubjects?.length > 0 ? (
+                    {filteredSubjects?.length > 0 && !noData ? (
                         <table className="w-full text-md">
                             <thead>
                                 <tr

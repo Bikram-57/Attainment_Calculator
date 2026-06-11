@@ -4,6 +4,7 @@ import { MdOutlineCancelPresentation } from "react-icons/md";
 import { MdDone } from "react-icons/md";
 import { COLORS } from '../constants/theme';
 import ErrorSuccessMsg from './ErrorSuccessMsg';
+import Loading from './Loading';
 
 function UploadData() {
 	const [academicYear, setAcademicYear] = useState('')
@@ -16,6 +17,7 @@ function UploadData() {
 	const [allSubjects, setAllSubjects] = useState([]);
 	const [subjectList, setSubjectList] = useState([]);
 	const [isHovered, setIsHovered] = useState(false);
+	const [uploading, setUploading] = useState(false);
 
 	const fileInputRef = useRef(null);
 
@@ -91,6 +93,7 @@ function UploadData() {
 			return;
 		}
 
+		setUploading(true);
 		const formData = new FormData();
 		formData.append('excelFile', file);
 		formData.append('subjectId', subjectId);
@@ -110,6 +113,8 @@ function UploadData() {
 		} catch (err) {
 			setErrorMsg("Something went wrong! Format error!");
 			console.log("Error on handleUpload || ", err);
+		} finally {
+			setUploading(false);
 		}
 	}
 
@@ -208,9 +213,10 @@ function UploadData() {
 						</div>
 					)}
 				</div>
-				<div className='flex-1'>
+				{/* <div className='flex-1'> */}
+				<div className='flex w-4/5 items-center'>
 					<button
-						className='w-1/2 rounded-sm p-1 cursor-pointer duration-200'
+						className='w-1/3 rounded-sm p-1 cursor-pointer duration-200'
 						onMouseEnter={() => setIsHovered(true)}
 						onMouseLeave={() => setIsHovered(false)}
 						style={{
@@ -221,6 +227,7 @@ function UploadData() {
 					>
 						Upload
 					</button>
+					{uploading && <Loading type='upload' />}
 				</div>
 			</div>
 			<ErrorSuccessMsg
