@@ -16,6 +16,7 @@ import {
 	DownloadReports,
 	UnderDevelopment,
 	PageNotFound,
+	Profile,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -29,6 +30,11 @@ const router = createBrowserRouter([
 				path: '/',
 				element: <AssignSubjects />,
 				handle: { title: 'Assign Subjects' }
+			},
+			{
+				path: '/profile',
+				element: <Profile />,
+				handle: { title: 'Profile Page' }
 			},
 			{
 				path: 'users/',
