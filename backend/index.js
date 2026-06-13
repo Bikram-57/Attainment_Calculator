@@ -12,7 +12,7 @@ const verifyJWT = require('./middleware/verifyJWT');
 const login = require('./routes/login');       // Contains handleLogin
 const refresh = require('./routes/refresh'); // Contains handleRefreshToken
 const logout = require('./routes/logOut');   // Contains handleLogout
-// const forgotPassword = require('./routes/forgotPassword');
+const forgotPassword = require('./routes/forgotPassword');
 
 // Feature Routers (Your existing ones)
 const userRoute = require('./routes/user');
@@ -51,7 +51,7 @@ connectMongoDB(mongoUri)
 app.use("/login", login);
 app.use("/refresh", refresh);
 app.use("/logout", logout);
-// app.use("/forgot", forgotPassword);
+app.use("/", forgotPassword);
 
 // 2. JWT VERIFICATION GATEWAY
 
