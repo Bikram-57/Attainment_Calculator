@@ -13,7 +13,7 @@ function AssignSubjects() {
 	const [loading, setLoading] = useState(true);
 	const [filterYear, setFilterYear] = useState(new Date().getFullYear());
 	const currentYear = new Date().getFullYear();
-	const token = useSelector(state => state.auth.accessToken);
+	// const token = useSelector(state => state.auth.accessToken);
 
 	const filteredAssignedSubjectsData = assignedSubjectsData?.filter(sub => (
 		(sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase()) && Object.hasOwn(sub.assignments, filterYear))
@@ -22,11 +22,12 @@ function AssignSubjects() {
 	useEffect(() => {
 		const getAssignSubjects = async () => {
 			try {
-				const res = await axios.get('/assignSub/', {
-					headers: {
-						Authorization: `Bearer ${token}`
-					}
-				});
+				const res = await axios.get('/assignSub/');
+				// const res = await axios.get('/assignSub/', {
+				// 	headers: {
+				// 		Authorization: `Bearer ${token}`
+				// 	}
+				// });
 				setAssignedSubjectsData(res.data.data);
 				console.log(res.data.data);
 			} catch (error) {

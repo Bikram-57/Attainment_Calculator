@@ -17,11 +17,12 @@ function Login() {
 			const res = await axios.post('/login/', {
 				email,
 				password
-			},
-				// {
-				// 	withCredentials: true
-				// }
-			);
+			});
+
+			axios.defaults.headers.common[
+				'Authorization'
+			] = `Bearer ${res.data.accessToken}`;
+
 			dispatch(
 				login({
 					userData: res.data.user,
