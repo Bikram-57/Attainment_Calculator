@@ -16,7 +16,6 @@ import {
     POAttainment,
     POAttainTable,
 } from "./Attainment/index";
-import Login from "./Login";
 import AddFacultyForm from "./Faculty/AddFacultyForm";
 import FacultyViewModal from "./Faculty/modals/FacultyViewModal";
 import FacultyEditModal from "./Faculty/modals/FacultyEditModal";
@@ -43,6 +42,8 @@ import AddSubject from "./Subject/AddSubject";
 import ErrorSuccessMsg from "./ErrorSuccessMsg";
 import Loading from "./Loading";
 import Profile from "./Profile";
+import ProtectedRoute from "./ProtectedRoute";
+import Login from "./Login";
 
 export {
     NavBar,
@@ -61,7 +62,6 @@ export {
     FinalCOAttainTable,
     POAttainment,
     POAttainTable,
-    Login,
     AddFacultyForm,
     FacultyViewModal,
     FacultyEditModal,
@@ -88,4 +88,6 @@ export {
     ErrorSuccessMsg,
     Loading,
     Profile,
+    ProtectedRoute,
+    Login,
 }

@@ -10,6 +10,7 @@ export default defineConfig({
 	],
 	server: {
 		proxy: {
+			'/login/': 'http://localhost:8000',
 			'/user/': 'http://localhost:8000',
 			'/sub/': 'http://localhost:8000',
 			'/uploadAll/': 'http://localhost:8000',
