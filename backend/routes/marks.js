@@ -3,8 +3,8 @@ const router = express.Router();
 const multer = require('multer');
 
 // Import all middlewares for Varification And Validation
-const handleVerifyToken = require('../middleware/authVerifty');
-const handleAuthorizeRoles = require('../middleware/authAuthorize');
+// const handleVerifyToken = require('../middleware/authVerifty');
+// const handleAuthorizeRoles = require('../middleware/authAuthorize');
 
 
 

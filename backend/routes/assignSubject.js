@@ -1,7 +1,7 @@
 const express = require('express')
 
-const handleVerifyToken = require('../middleware/authVerifty');
-const handleAuthorizeRoles = require('../middleware/authAuthorize');
+// const handleVerifyToken = require('../middleware/authVerifty');
+// const handleAuthorizeRoles = require('../middleware/authAuthorize');
 
 
 const { 

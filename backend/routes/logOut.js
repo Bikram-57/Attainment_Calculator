@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { handleLogin } = require('../controllers/login');
+const { handleLogout } = require('../controllers/logOut');
 
-router.post('/', handleLogin);
+router.post('/', handleLogout);
 
 module.exports = router;

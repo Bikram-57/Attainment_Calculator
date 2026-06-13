@@ -4,8 +4,8 @@ const express = require('express');
 const upload = require('../middleware/upload'); 
 const passwordHash = require('../middleware/PasswordHash'); 
 
-const handleVerifyToken = require('../middleware/authVerifty');
-const handleAuthorizeRoles = require('../middleware/authAuthorize');
+// const handleVerifyToken = require('../middleware/authVerifty');
+// const handleAuthorizeRoles = require('../middleware/authAuthorize');
 
 // --- 2. IMPORT CONTROLLERS ---
 const {

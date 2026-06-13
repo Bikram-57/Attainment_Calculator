@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const handleVerifyToken = require('../middleware/authVerifty');
-const handleAuthorizeRoles = require('../middleware/authAuthorize');
+// const handleVerifyToken = require('../middleware/authVerifty');
+// const handleAuthorizeRoles = require('../middleware/authAuthorize');
 
 
 const { saveCoPoRelation } = require('../controllers/coPoMapping');
