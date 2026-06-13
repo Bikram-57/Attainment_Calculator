@@ -27,16 +27,16 @@ const router = express.Router();
 
 // @route   GET /api/users/profile/:id
 // @desc    User gets their own profile
-router.get('/profile/:id', handleGetMyProfile);
+router.get('/profile/:id', verifyRoles('admin', 'faculty'), handleGetMyProfile);
 
 // @route   PATCH /api/users/profile/:id
 // @desc    User updates their own profile (Name and Image only - locked email & ID)
-router.patch('/profile/:id', upload.single('profileImage'), handleUserSelfUpdate);
+router.patch('/profile/:id', verifyRoles('admin', 'faculty'), upload.single('profileImage'), handleUserSelfUpdate);
 
 // @route   DELETE /api/users/image/:id
 // @desc    Delete JUST their profile picture and reset to default
 // router.delete('/image/:id', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), handleDeleteProfileImage);
-router.delete('/image/:id', handleDeleteProfileImage);
+router.delete('/image/:id', verifyRoles('admin', 'faculty'), handleDeleteProfileImage);
 
 
 // ==========================================
@@ -49,19 +49,19 @@ router.post('/', verifyRoles('admin'), upload.single('profileImage'), passwordHa
 
 // @route   PUT /api/users/:id
 // @desc    Admin updates everything (Name, Email, Image)
-router.put('/:id', upload.single('profileImage'), handleEditUserByFacultyId);
+router.put('/:id', verifyRoles('admin'), upload.single('profileImage'), handleEditUserByFacultyId);
 
 // @route   GET /api/users/:id
 // @desc    Get a specific user's details
-router.get('/:id', handleGetUserByFacultyId);
+router.get('/:id', verifyRoles('admin'), handleGetUserByFacultyId);
 
 // @route   DELETE /api/users/:id
 // @desc    Delete the entire user account (and removes their image from the server)
-router.delete('/:id', handleDeleteUserByFacultyId);
+router.delete('/:id', verifyRoles('admin'), handleDeleteUserByFacultyId);
 
 // @route   GET /api/users/
 // @desc    Get a list of all users (excludes Super Admin)
-router.get('/', handleGetAllUsers);
+router.get('/', verifyRoles('admin'), handleGetAllUsers);
 
 // --- 3. EXPORT ROUTER ---
 module.exports = router;
