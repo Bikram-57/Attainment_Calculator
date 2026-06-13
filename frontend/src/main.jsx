@@ -17,99 +17,213 @@ import {
 	UnderDevelopment,
 	PageNotFound,
 	Profile,
+	ProtectedRoute,
+	Login,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
 
+
 const router = createBrowserRouter([
+	// Public Routes
 	{
-		path: '/',
-		element: <App />,
+		path: '/login',
+		element: <Login />,
+	},
+
+	// Protected Routes
+	{
+		element: (
+			<ProtectedRoute>
+				<App />
+			</ProtectedRoute>
+		),
 		children: [
 			{
-				path: '/',
+				index: true,
 				element: <AssignSubjects />,
-				handle: { title: 'Assign Subjects' }
+				handle: { title: 'Assign Subjects' },
 			},
 			{
-				path: '/profile',
+				path: 'profile',
 				element: <Profile />,
-				handle: { title: 'Profile Page' }
+				handle: { title: 'Profile Page' },
 			},
 			{
-				path: 'users/',
+				path: 'users',
 				element: <Faculty />,
-				handle: { title: 'Manage Faculty' }
+				handle: { title: 'Manage Faculty' },
 			},
 			{
-				path: 'subject/',
+				path: 'subject',
 				element: <Subject />,
-				handle: { title: 'Manage Subjects' }
+				handle: { title: 'Manage Subjects' },
 			},
 			{
-				path: 'upload-data/',
+				path: 'upload-data',
 				element: <UploadData />,
-				handle: { title: 'Upload Data' }
+				handle: { title: 'Upload Data' },
 			},
 			{
-				path: 'fetch-data/',
+				path: 'fetch-data',
 				element: <FetchData />,
-				handle: { title: 'Fetch Data' }
+				handle: { title: 'Fetch Data' },
 			},
 			{
-				path: 'co_po_relations/',
+				path: 'co_po_relations',
 				element: <CoPoRelations />,
-				handle: { title: 'CO PO Relations' }
+				handle: { title: 'CO PO Relations' },
 			},
 			{
-				path: 'direct-attainment/',
+				path: 'direct-attainment',
 				element: <UnderDevelopment />,
-				handle: { title: 'Direct Attainment' }
+				handle: { title: 'Direct Attainment' },
 			},
 			{
-				path: 'download-reports/',
+				path: 'download-reports',
 				element: <DownloadReports />,
-				handle: { title: 'Download Reports' }
+				handle: { title: 'Download Reports' },
 			},
 			{
-				path: 'subject-report/',
+				path: 'subject-report',
 				element: <UnderDevelopment />,
-				handle: { title: 'Subject Report' }
+				handle: { title: 'Subject Report' },
 			},
+
+			// Pages that still use App Layout
+			{
+				path: 'contact-us',
+				element: <ContactUs />,
+				handle: { title: 'Contact Us' },
+			},
+
 			{
 				path: '*',
-				element: <PageNotFound />
+				element: <PageNotFound />,
 			},
-			// {
-			// 	path: 'co-attainment/:academicYear/:course/:subjectId',
-			// 	element: <COAttainment />,
-			// 	handle: { title: 'CO Attainment'}
-			// },
-		]
+		],
 	},
+
+	// Full-screen routes (outside App layout)
 	{
 		path: 'co-attainment/:academicYear/:course/:subjectId',
-		element: <COAttainment />,
-		handle: { title: 'CO Attainment' }
+		element: (
+			<ProtectedRoute>
+				<COAttainment />
+			</ProtectedRoute>
+		),
+		handle: { title: 'CO Attainment' },
 	},
 	{
 		path: 'final-co-attainment/:academicYear/:course/:subjectId',
-		element: <FinalCOAttainment />,
-		handle: { title: 'Final CO Attainment' }
+		element: (
+			<ProtectedRoute>
+				<FinalCOAttainment />
+			</ProtectedRoute>
+		),
+		handle: { title: 'Final CO Attainment' },
 	},
 	{
 		path: 'po-attainment/:academicYear/:course/:subjectId',
-		// path: 'calpo/:academicYear/:course/:subjectId',
-		element: <POAttainment />,
-		handle: { title: 'PO Attainment' }
-	},
-	{
-		path: 'contact-us',
-		// path: 'calpo/:academicYear/:course/:subjectId',
-		element: <ContactUs />,
-		handle: { title: 'Contact Us' }
+		element: (
+			<ProtectedRoute>
+				<POAttainment />
+			</ProtectedRoute>
+		),
+		handle: { title: 'PO Attainment' },
 	},
 ])
+
+
+// const router = createBrowserRouter([
+// 	{
+// 		path: '/',
+// 		element: <App />,
+// 		children: [
+// 			{
+// 				path: '/',
+// 				element: <AssignSubjects />,
+// 				handle: { title: 'Assign Subjects' }
+// 			},
+// 			{
+// 				path: '/profile',
+// 				element: <Profile />,
+// 				handle: { title: 'Profile Page' }
+// 			},
+// 			{
+// 				path: 'users/',
+// 				element: <Faculty />,
+// 				handle: { title: 'Manage Faculty' }
+// 			},
+// 			{
+// 				path: 'subject/',
+// 				element: <Subject />,
+// 				handle: { title: 'Manage Subjects' }
+// 			},
+// 			{
+// 				path: 'upload-data/',
+// 				element: <UploadData />,
+// 				handle: { title: 'Upload Data' }
+// 			},
+// 			{
+// 				path: 'fetch-data/',
+// 				element: <FetchData />,
+// 				handle: { title: 'Fetch Data' }
+// 			},
+// 			{
+// 				path: 'co_po_relations/',
+// 				element: <CoPoRelations />,
+// 				handle: { title: 'CO PO Relations' }
+// 			},
+// 			{
+// 				path: 'direct-attainment/',
+// 				element: <UnderDevelopment />,
+// 				handle: { title: 'Direct Attainment' }
+// 			},
+// 			{
+// 				path: 'download-reports/',
+// 				element: <DownloadReports />,
+// 				handle: { title: 'Download Reports' }
+// 			},
+// 			{
+// 				path: 'subject-report/',
+// 				element: <UnderDevelopment />,
+// 				handle: { title: 'Subject Report' }
+// 			},
+// 			{
+// 				path: '*',
+// 				element: <PageNotFound />
+// 			},
+// 			// {
+// 			// 	path: 'co-attainment/:academicYear/:course/:subjectId',
+// 			// 	element: <COAttainment />,
+// 			// 	handle: { title: 'CO Attainment'}
+// 			// },
+// 		]
+// 	},
+// 	{
+// 		path: 'co-attainment/:academicYear/:course/:subjectId',
+// 		element: <COAttainment />,
+// 		handle: { title: 'CO Attainment' }
+// 	},
+// 	{
+// 		path: 'final-co-attainment/:academicYear/:course/:subjectId',
+// 		element: <FinalCOAttainment />,
+// 		handle: { title: 'Final CO Attainment' }
+// 	},
+// 	{
+// 		path: 'po-attainment/:academicYear/:course/:subjectId',
+// 		// path: 'calpo/:academicYear/:course/:subjectId',
+// 		element: <POAttainment />,
+// 		handle: { title: 'PO Attainment' }
+// 	},
+// 	{
+// 		path: 'contact-us',
+// 		// path: 'calpo/:academicYear/:course/:subjectId',
+// 		element: <ContactUs />,
+// 		handle: { title: 'Contact Us' }
+// 	},
+// ])
 
 createRoot(document.getElementById('root')).render(
 	<Provider store={store}>
