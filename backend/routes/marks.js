@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 
-// Import all middlewares for Varification And Validation
+// Import middlewares for Varification And Validation
 const verifyRoles = require('../middleware/verifyRoles');
 
 
