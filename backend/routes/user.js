@@ -35,7 +35,6 @@ router.patch('/profile/:id', verifyRoles('admin', 'faculty'), upload.single('pro
 
 // @route   DELETE /api/users/image/:id
 // @desc    Delete JUST their profile picture and reset to default
-// router.delete('/image/:id', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), handleDeleteProfileImage);
 router.delete('/image/:id', verifyRoles('admin', 'faculty'), handleDeleteProfileImage);
 
 
@@ -61,7 +60,7 @@ router.delete('/:id', verifyRoles('admin'), handleDeleteUserByFacultyId);
 
 // @route   GET /api/users/
 // @desc    Get a list of all users (excludes Super Admin)
-router.get('/', verifyRoles('admin'), handleGetAllUsers);
+router.get('/', verifyRoles('admin', 'faculty'), handleGetAllUsers);
 
 // --- 3. EXPORT ROUTER ---
 module.exports = router;

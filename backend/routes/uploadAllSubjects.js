@@ -4,7 +4,6 @@ const multer = require('multer');
 const { handleUploadAllSubject } = require("../controllers/uploadAllSubjects");
 const verifyRoles = require('../middleware/verifyRoles');
 
-// verifyRoles('admin', 'faculty')
 
 // Configure multer to store files temporarily in an 'uploads' folder
 const upload = multer({ dest: 'uploads/' }); 

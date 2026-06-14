@@ -3,7 +3,6 @@ const express = require('express')
 const verifyRoles = require('../middleware/verifyRoles');
 
 
-
 const {
     handleGenerateNewSubject,
     handleUpdateSubject,
@@ -24,7 +23,7 @@ router.put('/:id', verifyRoles('admin'), handleUpdateSubject)
 router.get('/:id', verifyRoles('admin'), handleGetSubjectBySubjectId)
 
 
-router.get('/', verifyRoles('admin'), handleGetAllSubject)
+router.get('/', verifyRoles('admin' , 'faculty'), handleGetAllSubject)
 
 
 router.delete('/:id', verifyRoles('admin'), handleDeleteSubject)

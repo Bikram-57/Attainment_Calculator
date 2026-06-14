@@ -1,8 +1,6 @@
 const express = require('express')
 
-// const handleVerifyToken = require('../middleware/authVerifty');
-// const handleAuthorizeRoles = require('../middleware/authAuthorize');
-
+const verifyRoles = require('../middleware/verifyRoles');
 
 const { 
     handleAssignSubject,
@@ -14,16 +12,12 @@ const {
 
 const router  = express.Router();
 
-// router.post('/', handleVerifyToken, handleAuthorizeRoles('admin'), handleAssignSubject);
-router.post('/', handleAssignSubject);
+router.post('/', verifyRoles('admin'), handleAssignSubject);
 
-// router.get('/:facultyId', handleVerifyToken, handleAuthorizeRoles('admin'), getAssignedSubjectsByFaculty);
-router.get('/:facultyId', getAssignedSubjectsByFaculty);
+router.get('/:facultyId', verifyRoles('admin'), getAssignedSubjectsByFaculty);
 
-// router.get('/', handleVerifyToken, handleAuthorizeRoles('admin'), getAllFacultyAssignments);
-router.get('/', getAllFacultyAssignments);
+router.get('/', verifyRoles('admin'), getAllFacultyAssignments);
 
-// router.delete('/', handleVerifyToken, handleAuthorizeRoles('admin'), removeSubjectFromFaculty);
-router.delete('/', removeSubjectFromFaculty);
+router.delete('/', verifyRoles('admin'), removeSubjectFromFaculty);
 
 module.exports = router;

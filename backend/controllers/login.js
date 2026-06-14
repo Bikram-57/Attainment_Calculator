@@ -13,7 +13,7 @@ const handleLogin = async (req, res) => {
         // IMPORTANT: Because password has `select: false` in your schema, 
         // we MUST use .select('+password') to pull it for the comparison.
         const foundUser = await User.findOne({ email }).select('+password').exec();
-        
+
         if (!foundUser) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
@@ -21,8 +21,8 @@ const handleLogin = async (req, res) => {
         // --- STATUS CHECK ---
         // Block login immediately if they aren't active
         if (foundUser.status !== 'active') {
-            return res.status(403).json({ 
-                message: `Access denied. Your account is currently ${foundUser.status}.` 
+            return res.status(403).json({
+                message: `Access denied. Your account is currently ${foundUser.status}.`
             });
         }
 
@@ -35,11 +35,11 @@ const handleLogin = async (req, res) => {
         // --- TOKEN GENERATION ---
         // Access Token: Short lifespan (e.g., 15m). Include facultyId and role.
         const accessToken = jwt.sign(
-            { 
+            {
                 "UserInfo": {
                     "userId": foundUser._id,
                     "facultyId": foundUser.facultyId,
-                    "role": foundUser.role 
+                    "role": foundUser.role
                 }
             },
             process.env.ACCESS_TOKEN_SECRET,
@@ -59,15 +59,25 @@ const handleLogin = async (req, res) => {
         await foundUser.save();
 
         // Send refresh token in a secure HttpOnly cookie
-        res.cookie('jwt', refreshToken, { 
-            httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production', 
-            sameSite: 'None', 
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        // res.cookie('jwt', refreshToken, { 
+        //     httpOnly: true, 
+        //     secure: process.env.NODE_ENV === 'production', 
+        //     sameSite: 'None', 
+        //     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        // });
+
+        res.cookie('jwt', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite:
+                process.env.NODE_ENV === 'production'
+                    ? 'None'
+                    : 'Lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
         // Send access token and user info to the frontend
-        res.json({ 
+        res.json({
             message: 'Login successful',
             accessToken,
             user: {

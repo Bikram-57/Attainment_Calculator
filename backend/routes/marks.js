@@ -3,8 +3,8 @@ const router = express.Router();
 const multer = require('multer');
 
 // Import all middlewares for Varification And Validation
-// const handleVerifyToken = require('../middleware/authVerifty');
-// const handleAuthorizeRoles = require('../middleware/authAuthorize');
+const verifyRoles = require('../middleware/verifyRoles');
+
 
 
 
@@ -34,7 +34,7 @@ const upload = multer({
  * @access  Public (or add your Auth Middleware here)
  */
 // router.post('/upload-raw', upload.single('excelFile'), handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), async (req, res) => {
-router.post('/upload-raw', upload.single('excelFile'), async (req, res) => {
+router.post('/upload-raw', verifyRoles('admin', 'faculty'), upload.single('excelFile'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ success: false, error: "No Excel file provided." });
@@ -75,12 +75,12 @@ router.post('/upload-raw', upload.single('excelFile'), async (req, res) => {
 
 
 // router.get('/raw-data', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), getRawMarksData);
-router.get('/raw-data', getRawMarksData);
+router.get('/raw-data',verifyRoles('admin', 'faculty'), getRawMarksData);
 
 // router.get('/get-calculations', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), getCalculatedWithStudentMarks);
-router.get('/get-calculations', getCalculatedWithStudentMarks);
+router.get('/get-calculations',verifyRoles('admin', 'faculty'), getCalculatedWithStudentMarks);
 
 // router.get('/get-final-attainment', handleVerifyToken, handleAuthorizeRoles('admin', 'faculty'), getFinalAttainmentData);
-router.get('/get-final-attainment', getFinalAttainmentData);
+router.get('/get-final-attainment',verifyRoles('admin', 'faculty'), getFinalAttainmentData);
 
 module.exports = router;

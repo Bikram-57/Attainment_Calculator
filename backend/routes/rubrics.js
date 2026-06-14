@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+
+const verifyRoles = require('../middleware/verifyRoles');
+
+
 const { 
     handleUploadrubrics,
     handleGetRubrics,
@@ -8,10 +12,10 @@ const {
 } = require('../controllers/rubrics');
 
 // POST route to handle form submission
-router.post('/upload',  handleUploadrubrics);
-router.get('/get', handleGetRubrics);
-router.get('/update', handleUpdateRubrics);
-router.get('/', handleFindAllRubrics);
+router.post('/upload', verifyRoles('admin'),  handleUploadrubrics);
+router.get('/get', verifyRoles('admin'), handleGetRubrics);
+router.get('/update', verifyRoles('admin'), handleUpdateRubrics);
+router.get('/', verifyRoles('admin'), handleFindAllRubrics);
 
 
 module.exports = router;
