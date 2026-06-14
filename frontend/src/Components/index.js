@@ -1,4 +1,4 @@
-import NavBar from "./NavBar";
+import NavBar from "./NavBar/NavBar";
 import SideBar from "./SideBar";
 import Faculty from "./Faculty/Faculty";
 import FacultyHeader from "./Faculty/FacultyHeader";
@@ -32,7 +32,6 @@ import ContactUs from "./ContactUs";
 import AddAllSubjectsForm from "./Subject/AddAllSubjectsForm";
 import AssignSubjects from "./AssignSubjects/AssignSubjects";
 import AssignSubjectForm from "./AssignSubjects/AssignSubjectForm";
-import DeleteAssignedSubject from "./AssignSubjects/DeleteAssignedSubject";
 import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
 import DownloadReports from "./DownloadReports/DownloadReports";
 import YearFilter from "./YearFilter";
@@ -44,6 +43,9 @@ import Loading from "./Loading";
 import Profile from "./Profile";
 import ProtectedRoute from "./ProtectedRoute";
 import Login from "./Login";
+import Logout from "./Logout";
+import NavBarMenu from "./NavBar/NavBarMenu";
+import ForgotPassword from "./ForgotPassword";
 
 export {
     NavBar,
@@ -78,7 +80,6 @@ export {
     AddAllSubjectsForm,
     AssignSubjects,
     AssignSubjectForm,
-    DeleteAssignedSubject,
     AssignSubjectsHeader,
     DownloadReports,
     YearFilter,
@@ -90,4 +91,7 @@ export {
     Profile,
     ProtectedRoute,
     Login,
+    Logout,
+    NavBarMenu,
+    ForgotPassword,
 }

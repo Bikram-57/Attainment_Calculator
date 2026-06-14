@@ -29,7 +29,6 @@ function AssignSubjects() {
 				// 	}
 				// });
 				setAssignedSubjectsData(res.data.data);
-				console.log(res.data.data);
 			} catch (error) {
 				if (error.status == 409) {
 					setErrorMsg('Subject already assigned!');

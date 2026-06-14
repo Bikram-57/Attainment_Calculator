@@ -79,7 +79,6 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 			});
 			setSuccessMsg('Subject successfully assigned!');
 			toggleUpdate();
-			console.log(res.data);
 		} catch (error) {
 			if (error.status == 409) {
 				setErrorMsg('Subject already assigned!');
