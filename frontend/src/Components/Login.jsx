@@ -19,9 +19,8 @@ function Login() {
 				password
 			});
 
-			axios.defaults.headers.common[
-				'Authorization'
-			] = `Bearer ${res.data.accessToken}`;
+			axios.defaults.headers.common.Authorization =
+				`Bearer ${res.data.accessToken}`;
 
 			dispatch(
 				login({
