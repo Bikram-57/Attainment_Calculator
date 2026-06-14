@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaUser, FaLock } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { login } from "../store/authSlice";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Login() {
@@ -49,7 +49,7 @@ function Login() {
 					{/* Left Section */}
 					<div className="flex items-center justify-center p-10">
 						<img
-							src="/images/login-illustration.png"
+							src="/education-vector.jpeg"
 							alt="Login Illustration"
 							className="max-h-72 w-auto object-contain"
 						/>
@@ -73,7 +73,7 @@ function Login() {
 										<input
 											type="text"
 											value={email}
-											placeholder="email"
+											placeholder="Email"
 											className="w-full px-4 py-3 outline-none"
 											onChange={(e) => setEmail(e.target.value)}
 										/>
@@ -126,12 +126,12 @@ function Login() {
 
 								{/* Forgot Password */}
 								<div className="text-center">
-									<button
-										type="button"
+									<NavLink
+										to='/forgot-password'
 										className="text-[#35558d] hover:underline"
 									>
 										Forgot password?
-									</button>
+									</NavLink>
 								</div>
 							</div>
 						</div>

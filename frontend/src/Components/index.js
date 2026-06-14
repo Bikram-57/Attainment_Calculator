@@ -45,6 +45,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Login from "./Login";
 import Logout from "./Logout";
 import NavBarMenu from "./NavBar/NavBarMenu";
+import ForgotPassword from "./ForgotPassword";
 
 export {
     NavBar,
@@ -92,4 +93,5 @@ export {
     Login,
     Logout,
     NavBarMenu,
+    ForgotPassword,
 }

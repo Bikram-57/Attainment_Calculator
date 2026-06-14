@@ -19,6 +19,7 @@ import {
 	Profile,
 	ProtectedRoute,
 	Login,
+	ForgotPassword,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
 	{
 		path: '/login',
 		element: <Login />,
+	},
+	{
+		path: '/forgot-password',
+		element: <ForgotPassword />,
 	},
 
 	// Protected Routes
