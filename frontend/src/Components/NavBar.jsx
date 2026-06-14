@@ -5,6 +5,7 @@ import { NavLink, useMatches } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { open, close } from '../store/sideBarSlice';
 import { COLORS } from '../constants/theme';
+import axios from 'axios';
 
 function NavBar() {
     const isOpen = useSelector(state => state.sideBar.isSideBarOpen);
@@ -15,6 +16,16 @@ function NavBar() {
 
     const handleClick = () => {
         dispatch(isOpen ? close() : open());
+    }
+
+    const handleLogOut = async () => {
+        try {
+            const res = await axios.post('/logout/');
+            console.log(res);
+            
+        } catch (error) {
+            console.log('ERROR || NavBar | handleLogout(): ', error);   
+        }
     }
 
     return (
@@ -44,6 +55,9 @@ function NavBar() {
                 <FaUserAlt className='h-full w-5' />
                 <div>Admin</div>
             </NavLink>
+            <button className='text-white border' onClick={handleLogOut}>
+                Logout
+            </button>
         </div>
     )
 }
