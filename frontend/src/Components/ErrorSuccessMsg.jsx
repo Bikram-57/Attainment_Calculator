@@ -7,7 +7,7 @@ function ErrorSuccessMsg({ errorMsg, successMsg, setSuccessMsg, setIsOpen }) {
 		const timer = setTimeout(() => {
 			setSuccessMsg("");
 			setIsOpen ? setIsOpen(false) : null;
-		}, 3000);
+		}, 2000);
 		return () => clearTimeout(timer);
 	}, [successMsg]);
 
