@@ -27,6 +27,8 @@ export default defineConfig({
 			'/co-po/save-relation': 'http://localhost:8000',
 			'/assignSub/': 'http://localhost:8000',
 			'/file/': 'http://localhost:8000',
+			// '/profile/': 'http://localhost:8000',
+			// '/image/': 'http://localhost:8000',
 		},
 	},
 })

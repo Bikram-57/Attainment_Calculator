@@ -27,7 +27,7 @@ function ProtectedRoute({ children }) {
                 // console.log(res);
                 // console.log(res.data);
                 dispatch(login({
-                    user: res.data.user,
+                    userData: res.data.user,
                     accessToken: res.data.accessToken
                 }));
 

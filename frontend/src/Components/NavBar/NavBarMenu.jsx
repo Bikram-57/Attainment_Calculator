@@ -46,7 +46,7 @@ function NavBarMenu() {
                 onClick={closeMenu}
                 >
                     <NavLink
-                        to='/profile/'
+                        to='/profile'
                         className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 transition hover:bg-gray-50"
                     >
                         <FiUser size={18} />
