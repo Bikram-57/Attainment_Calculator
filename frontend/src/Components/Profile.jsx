@@ -53,19 +53,19 @@ function Profile() {
             setIsEditing(false);
             setImageFile(null);
             // setPreviewImage();
-            getProfileImage();
+            // getProfileImage();
         }
     }
     
-    const getProfileImage = async () => {
-        try {
-            const res = await axios.get(`/user/profile${userData.facultyId}`);
-            console.log(res.data);
-        } catch (error) {
-            console.log(error?.response);
-            console.log('ERROR || Profile | getProfileImage(): ', error);
-        }
-    }
+    // const getProfileImage = async () => {
+    //     try {
+    //         const res = await axios.get(`/user/profile${userData.facultyId}`);
+    //         console.log(res.data);
+    //     } catch (error) {
+    //         console.log(error?.response);
+    //         console.log('ERROR || Profile | getProfileImage(): ', error);
+    //     }
+    // }
 
     return (
         <div className="min-h-full bg-slate-50 m-2">
