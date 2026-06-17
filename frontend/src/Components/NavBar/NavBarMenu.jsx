@@ -6,9 +6,12 @@ import Logout from "../Logout";
 import { NavLink } from "react-router-dom";
 import { useEffect } from "react";
 import { useRef } from "react";
+import { useSelector } from "react-redux";
 
 function NavBarMenu() {
     const [isOpen, setIsOpen] = useState(false);
+    const userData = useSelector(state => state.auth.userData);
+    const [image, setImage] = useState(`http://localhost:8000/${userData?.profileImage}`);
     const ref = useRef();
 
     const closeMenu = () => {
@@ -28,7 +31,12 @@ function NavBarMenu() {
     return (
         <div className="relative" ref={ref}>
             {/* User Icon */}
-            <button
+            <img
+                src={image}
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex h-10 w-10 items-center justify-center rounded-full transition cursor-pointer"
+            />
+            {/* <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex h-10 w-10 items-center justify-center rounded-full transition cursor-pointer"
                 style={{
@@ -37,13 +45,13 @@ function NavBarMenu() {
                 }}
             >
                 <FaUserAlt className='h-full w-5' />
-            </button>
+            </button> */}
 
             {/* Dropdown */}
             {isOpen && (
                 <div
                     className="absolute right-0 mt-2 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg"
-                onClick={closeMenu}
+                    onClick={closeMenu}
                 >
                     <NavLink
                         to='/profile'

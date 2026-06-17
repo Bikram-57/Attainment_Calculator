@@ -13,8 +13,6 @@ export default defineConfig({
 			'/login/': 'http://localhost:8000',
 			'/logout/': 'http://localhost:8000',
 			'/refresh/': 'http://localhost:8000',
-			// '/forgot-password/request/': 'http://localhost:8000',
-			// '/forgot-password/verify/': 'http://localhost:8000',
 			'/forgot-password/': 'http://localhost:8000',
 			'/user/': 'http://localhost:8000',
 			'/sub/': 'http://localhost:8000',
@@ -27,8 +25,6 @@ export default defineConfig({
 			'/co-po/save-relation': 'http://localhost:8000',
 			'/assignSub/': 'http://localhost:8000',
 			'/file/': 'http://localhost:8000',
-			// '/profile/': 'http://localhost:8000',
-			// '/image/': 'http://localhost:8000',
 		},
 	},
 })

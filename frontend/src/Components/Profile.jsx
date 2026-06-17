@@ -1,18 +1,16 @@
 import axios from "axios";
 import { useState } from "react";
-import {
-    FaUserEdit,
-    FaSave,
-    FaCamera,
-    FaTrash,
-} from "react-icons/fa";
+import { FaUserEdit, FaSave, FaCamera, FaTrash, } from "react-icons/fa";
 import { useSelector } from 'react-redux'
+import { ErrorSuccessMsg } from '../Components/index';
 
 function Profile() {
     const userData = useSelector((state) => state.auth.userData);
     const [isEditing, setIsEditing] = useState(false);
     const [previewImage, setPreviewImage] = useState(`http://localhost:8000/${userData?.profileImage}`);
     const [imageFile, setImageFile] = useState(null);
+    const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
 
     const handleImageUpload = (e) => {
         const file = e.target.files?.[0];
@@ -23,49 +21,51 @@ function Profile() {
     };
 
     const saveImage = async () => {
+        if (!imageFile) {
+            setErrorMsg("No image selected");
+            return;
+        }
         try {
-            if (!imageFile) {
-                console.log("No image selected");
-                return;
-            }
-
+            setErrorMsg('');
             const formData = new FormData();
             formData.append("profileImage", imageFile);
 
             const res = await axios.patch(`/user/profile/${userData.facultyId}`,
                 formData
             );
-            console.log(res.data);
+            setSuccessMsg(res.data.message);
         } catch (error) {
+            setErrorMsg(error?.response?.data?.message);
             console.log('ERROR || Profile | saveImage(): ', error);
         } finally {
             setIsEditing(false);
+            setErrorMsg('');
         }
     };
 
     const handleDeleteImage = async () => {
         try {
             const res = await axios.delete(`/user/image/${userData.facultyId}`);
-            console.log(res.data);
+            setSuccessMsg(res.data.message);
         } catch (error) {
+            setErrorMsg(error?.response?.data?.message);
             console.log('ERROR || Profile | deleteImage(): ', error);
         } finally {
             setIsEditing(false);
             setImageFile(null);
-            // setPreviewImage();
-            // getProfileImage();
+            getProfileImage();
         }
     }
-    
-    // const getProfileImage = async () => {
-    //     try {
-    //         const res = await axios.get(`/user/profile${userData.facultyId}`);
-    //         console.log(res.data);
-    //     } catch (error) {
-    //         console.log(error?.response);
-    //         console.log('ERROR || Profile | getProfileImage(): ', error);
-    //     }
-    // }
+
+    const getProfileImage = async () => {
+        try {
+            const res = await axios.get(`/user/profile/${userData.facultyId}`);
+            setPreviewImage(`http://localhost:8000/${res.data.data.profileImage}`);
+        } catch (error) {
+            console.log(error?.response);
+            console.log('ERROR || Profile | getProfileImage(): ', error);
+        }
+    }
 
     return (
         <div className="min-h-full bg-slate-50 m-2">
@@ -114,7 +114,7 @@ function Profile() {
                     </div>
 
                     {/* Form */}
-                    <div className="mt-8 space-y-5">
+                    <div className="mt-5 mb-1 space-y-5">
                         <div>
                             <label className="mb-2 block text-sm font-medium text-slate-700">
                                 Faculty ID
@@ -143,8 +143,14 @@ function Profile() {
                         </div>
                     </div>
 
+                    <ErrorSuccessMsg
+                        errorMsg={errorMsg}
+                        successMsg={successMsg}
+                        setSuccessMsg={setSuccessMsg}
+                    />
+
                     {/* Buttons */}
-                    <div className="mt-6 flex flex-wrap gap-3">
+                    <div className="mt-5 flex flex-wrap gap-3">
                         {!isEditing ? (
                             <button
                                 onClick={() => setIsEditing(true)}
