@@ -26,7 +26,7 @@ const subjectSchema = new mongoose.Schema({
   status: {
     type: String,
     required: [true, 'Subject status is mandatory'], // NEW: Makes the field mandatory
-    enum: ['Pending', 'Done'], 
+    enum: ['Pending', 'Uploaded'], 
     default: 'Pending',        
     index: true                
   }
