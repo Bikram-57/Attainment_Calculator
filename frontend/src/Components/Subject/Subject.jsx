@@ -13,6 +13,7 @@ function Subject() {
     const getSubjectData = async () => {
         try {
             const response = await axios.get('/sub/');
+            console.log(response.data.data);
             setSubjectData(response.data.data);
         } catch (error) {
             console.log('Axios Error | getSubjectData(): ', error);
@@ -48,7 +49,8 @@ function Subject() {
                                 <th className='px-5 py-2 w-[15%]'>Subject Code</th>
                                 <th className='px-5 py-2 w-[35%]'>Subject Name</th>
                                 <th className='px-5 py-2 w-[20%]'>Academic Year</th>
-                                <th className='px-5 py-2 w-[20%]'>Course</th>
+                                <th className='px-5 py-2 w-[10%]'>Course</th>
+                                <th className='px-5 py-2 w-[10%]'>Status</th>
                                 <th className='px-5 py-2 text-center w-[10%]'>Action</th>
                             </tr>
                         </thead>
@@ -59,7 +61,8 @@ function Subject() {
                                     <td className='px-5 py-2 w-[15%]'>{subject.subjectId}</td>
                                     <td className='px-5 py-2 w-[35%]'>{subject.subjectName}</td>
                                     <td className='px-5 py-2 w-[20%]'>{subject.academicYear}</td>
-                                    <td className='px-5 py-2 w-[20%]'>{subject.course}</td>
+                                    <td className='px-5 py-2 w-[10%]'>{subject.course}</td>
+                                    <td className='px-5 py-2 w-[10%]'>{subject.status}</td>
                                     <td className='px-5 py-2 flex items-center justify-center'>
                                         <ActionBtns
                                             data={subject}
