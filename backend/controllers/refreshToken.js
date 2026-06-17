@@ -48,6 +48,7 @@ const handleRefreshToken = async (req, res) => {
                     accessToken,
                     user: {
                         facultyId: foundUser.facultyId,
+                        email: foundUser.email,
                         name: foundUser.name,
                         role: foundUser.role,
                         profileImage: foundUser.profileImage
