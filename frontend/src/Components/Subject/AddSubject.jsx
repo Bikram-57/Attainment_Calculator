@@ -17,7 +17,7 @@ function AddSubject({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
             >
                 {/* Header */}
                 <div
-                    className="flex items-center justify-between px-5 py-4 border-b border-gray-200"
+                    className="flex items-center justify-between px-5 py-3 border-b border-gray-200"
                     style={{ backgroundColor: COLORS.mint }}
                 >
                     <h2
@@ -34,9 +34,9 @@ function AddSubject({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
                         <IoMdClose className='w-6 h-6' style={{ color: COLORS.font }} />
                     </button>
                 </div>
-                <div className="px-6 py-3 space-y-2">
+                <div className="px-6 py-2 space-y-2">
                     <div>
-                        <label className="block text-lg text-gray-700 mb-2 font-semibold">
+                        <label className="block text-md text-gray-700 mb-1 font-semibold">
                             Subjects to add
                         </label>
 
@@ -44,7 +44,7 @@ function AddSubject({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
                             <select
                                 value={addSingleSubject}
                                 onChange={(e) => setAddSingleSubject(e.target.value === 'true')}
-                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
+                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
                             >
                                 <option value='true'>Single subject</option>
                                 <option value='false'>Multiple subjects</option>

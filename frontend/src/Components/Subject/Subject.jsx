@@ -45,22 +45,24 @@ function Subject() {
                 {filteredSubjects?.length > 0 ?
                     (<table className='w-full'>
                         <thead>
-                            <tr className='text-left border-b border-gray-300'>
-                                <th className='px-5 py-2 w-[15%]'>Subject Code</th>
-                                <th className='px-5 py-2 w-[35%]'>Subject Name</th>
-                                <th className='px-5 py-2 w-[20%]'>Academic Year</th>
+                            <tr className='text-center border-b border-gray-300'>
+                                <th className='px-5 py-2 w-[15%] text-left'>Subject Code</th>
+                                <th className='px-5 py-2 w-[30%] text-left'>Subject Name</th>
+                                <th className='px-5 py-2 w-[15%]'>Academic Year</th>
+                                <th className='px-5 py-2 w-[10%]'>Semester</th>
                                 <th className='px-5 py-2 w-[10%]'>Course</th>
                                 <th className='px-5 py-2 w-[10%]'>Status</th>
-                                <th className='px-5 py-2 text-center w-[10%]'>Action</th>
+                                <th className='px-5 py-2 w-[10%]'>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {/* {subjectData?.map(subject => ( */}
                             {filteredSubjects?.map(subject => (
-                                <tr className='text-left border-b border-gray-300' key={subject._id}>
-                                    <td className='px-5 py-2 w-[15%]'>{subject.subjectId}</td>
-                                    <td className='px-5 py-2 w-[35%]'>{subject.subjectName}</td>
-                                    <td className='px-5 py-2 w-[20%]'>{subject.academicYear}</td>
+                                <tr className='text-center border-b border-gray-300' key={subject._id}>
+                                    <td className='px-5 py-2 w-[15%] text-left'>{subject.subjectId}</td>
+                                    <td className='px-5 py-2 w-[30%] text-left'>{subject.subjectName}</td>
+                                    <td className='px-5 py-2 w-[15%]'>{subject.academicYear}</td>
+                                    <td className='px-5 py-2 w-[10%]'>{subject.semester || '-'}</td>
                                     <td className='px-5 py-2 w-[10%]'>{subject.course}</td>
                                     <td className='px-5 py-2 w-[10%]'>{subject.status}</td>
                                     <td className='px-5 py-2 flex items-center justify-center'>
