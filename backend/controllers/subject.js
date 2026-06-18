@@ -436,10 +436,204 @@ async function handleDeleteSubject(req, res) {
     }
 }
 
+
+async function handleGetSubjectsByAcademicYear(req, res) {
+    try {
+        // Grab the academic year directly from the URL parameter
+        const { academicYear } = req.params; 
+
+        // Search the database for everything matching that year
+        const subjects = await Subject.find({ 
+            academicYear: Number(academicYear) 
+        });
+
+        // If nothing is found
+        if (subjects.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `No subjects found for academic year ${academicYear}.`
+            });
+        }
+
+        // Return the full list of subjects for that year
+        res.status(200).json({
+            success: true,
+            count: subjects.length,
+            data: subjects
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Server Error while fetching subjects by year",
+            error: error.message 
+        });
+    }
+}
+
+
+async function handleGetSubjectsByYearAndCourse(req, res) {
+    try {
+        // Grab BOTH parameters directly from the URL
+        const { academicYear, course } = req.params; 
+
+        // Search the database requiring both fields to match exactly
+        const subjects = await Subject.find({ 
+            academicYear: Number(academicYear),
+            // We use toUpperCase() and trim() to make sure "mca", "MCA ", and " MCA" all work
+            course: course.toUpperCase().trim()
+        });
+
+        // If nothing matches that specific combination
+        if (subjects.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `No subjects found for course ${course.toUpperCase()} in academic year ${academicYear}.`
+            });
+        }
+
+        // Return the filtered list of subjects
+        res.status(200).json({
+            success: true,
+            count: subjects.length,
+            data: subjects
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Server Error while fetching subjects by year and course",
+            error: error.message 
+        });
+    }
+}
+
+
+
+// @desc    Get subjects filtered by semester, course, and academic year
+// @route   GET /api/subjects
+// @access  Public/Private (Depending on your auth setup)
+// const getSubjectsBySemester = async (req, res) => {
+//   try {
+//     const { semester, course, academicYear } = req.query;
+
+//     // Build a dynamic query object
+//     const query = {};
+    
+//     if (semester) query.semester = semester;
+//     if (course) query.course = course;
+//     if (academicYear) query.academicYear = academicYear;
+
+//     // Optional: You can add validation here to ensure at least one filter is provided
+//     if (Object.keys(query).length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Please provide at least one filter parameter (semester, course, or academicYear)."
+//       });
+//     }
+
+//     const subjects = await Subject.find(query)
+//       .select('subjectName subjectCode semester course academicYear') // Select only the fields you need
+//       .sort({ subjectName: 1 }); // Sort alphabetically by subject name
+
+//     return res.status(200).json({
+//       success: true,
+//       count: subjects.length,
+//       data: subjects
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server Error fetching subjects",
+//       error: error.message
+//     });
+//   }
+// };
+
+// controllers/subject.controller.js
+
+// const handleGetSubjectsBySemester = async (req, res) => {
+//   try {
+//     const { semester, course, academicYear } = req.query;
+
+//     const query = {};
+    
+//     // Only build the query using the list filters
+//     if (semester) query.semester = semester;
+//     if (course) query.course = course;
+//     if (academicYear) query.academicYear = academicYear;
+
+//     // Ensure they pass at least one of the three filters
+//     if (Object.keys(query).length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Please provide semester, course, or academicYear."
+//       });
+//     }
+
+//     const subjects = await Subject.find(query)
+//       .select('subjectName subjectCode semester course academicYear')
+//       .sort({ subjectName: 1 });
+
+//     return res.status(200).json({
+//       success: true,
+//       count: subjects.length,
+//       data: subjects
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server Error fetching subjects",
+//       error: error.message
+//     });
+//   }
+// };
+
+
+
+
+
+const handleGetSubjectsBySemester = async (req, res) => {
+//  const getSubjects = async (req, res) => {
+ try {
+    const { semester, course, academicYear } = req.query;
+
+    const query = {
+      semester: Number(semester),
+      course: course,
+      academicYear: Number(academicYear)
+    };
+
+    const subjects = await Subject.find(query);
+
+    return res.status(200).json({
+      success: true,
+      count: subjects.length,
+      expressReceived: { semester, course, academicYear }, // Prints what the URL sent
+      mongoQuery: query,                                   // Prints what the Database is using
+      data: subjects
+    });
+    
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message
+    });
+  }
+};
+
+
+
+
+
 module.exports = {
     handleGenerateNewSubject,
     handleUpdateSubject,
     handleGetAllSubject,
     handleGetSubjectBySubjectId,
-    handleDeleteSubject
+    handleDeleteSubject,
+    handleGetSubjectsByAcademicYear,
+    handleGetSubjectsByYearAndCourse,
+    handleGetSubjectsBySemester,
 };

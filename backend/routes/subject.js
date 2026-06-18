@@ -8,7 +8,10 @@ const {
     handleUpdateSubject,
     handleGetSubjectBySubjectId,
     handleGetAllSubject,
-    handleDeleteSubject
+    handleDeleteSubject,
+    handleGetSubjectsByAcademicYear,
+    handleGetSubjectsByYearAndCourse,
+    handleGetSubjectsBySemester,
 } = require('../controllers/subject')
 
 const router = express.Router()
@@ -27,5 +30,13 @@ router.get('/', verifyRoles('admin' , 'faculty'), handleGetAllSubject)
 
 
 router.delete('/:id', verifyRoles('admin'), handleDeleteSubject)
+
+
+router.get('/year/:academicYear', verifyRoles('admin'), handleGetSubjectsByAcademicYear)
+
+
+router.get('/year/:academicYear/course/:course', verifyRoles('admin'), handleGetSubjectsByYearAndCourse);
+
+router.get('/sem', verifyRoles('admin' , 'faculty'), handleGetSubjectsBySemester);
 
 module.exports = router
