@@ -4,7 +4,7 @@ const Subject = require('../models/subject');
 
 
 
-
+//done
 async function handleGenerateNewSubject(req, res) {
     try {
         // 1. Added 'semester' to the destructured body
@@ -98,51 +98,37 @@ async function handleGenerateNewSubject(req, res) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+//done
 async function handleUpdateSubject(req, res) {
     try {
-        const { id } = req.params; // Get subjectId from URL
+        const { id } = req.params; // Get subjectId (subject code) from URL
         
-        // 1. Extract the coordinates needed to FIND the document
-        // 2. The rest operator (...) gathers all other incoming data into the 'updateFields' object
-        const { academicYear, semester, ...updateFields } = req.body; 
+        // Extract the possible fields from the request body
+        const { subjectName, course, academicYear, semester } = req.body; 
 
-        // Guard clause: Ensure we have the exact coordinates to find the subject
-        if (!academicYear || !semester) {
+        // 1. Build an object dynamically with ONLY the fields provided
+        const updateFields = {};
+        if (subjectName) updateFields.subjectName = subjectName;
+        if (course) updateFields.course = course;
+        if (academicYear) updateFields.academicYear = academicYear;
+        if (semester) updateFields.semester = semester;
+
+        // 2. Guard clause: Ensure they sent at least ONE thing to update
+        if (Object.keys(updateFields).length === 0) {
             return res.status(400).json({ 
                 success: false, 
-                message: "Both academicYear and semester are required to identify and update a subject." 
+                message: "Please provide at least one field to update (subjectName, course, academicYear, or semester)." 
             });
         }
 
-        // STRICT SECURITY: Actively reject the request if they attempt to modify the subject code
-        if (updateFields.subjectId) {
-            return res.status(400).json({
-                success: false,
-                message: "Security Error: Modifying the Subject ID is strictly prohibited."
-            });
-        }
-
-        // Find by subjectId AND academicYear AND semester
+        // 3. Search ONLY by the subject code, and use $set to update only the provided fields
         const updatedSubject = await Subject.findOneAndUpdate(
             { 
-                subjectId: id.toUpperCase(),
-                academicYear: academicYear,
-                semester: semester 
+                subjectId: id.toUpperCase() // Search by subjectcode
             }, 
-            { $set: updateFields }, // Dynamically applies any new fields passed in the body            
+            { 
+                $set: updateFields // Only updates what is inside this object
+            },            
             {
                 new: true,           
                 runValidators: true  
@@ -152,7 +138,7 @@ async function handleUpdateSubject(req, res) {
         if (!updatedSubject) {
             return res.status(404).json({
                 success: false,
-                message: `Subject with code ${id} for semester ${semester}, year ${academicYear} not found.`
+                message: `Subject with code ${id} not found.`
             });
         }
 
@@ -163,8 +149,8 @@ async function handleUpdateSubject(req, res) {
         });
 
     } catch (error) {
-        // Catch duplicate key errors if a user tries to change the academicYear/semester 
-        // to a combination where this subject already exists
+        // Catch duplicate key errors if the new academicYear/semester 
+        // conflicts with an existing record for this subject ID
         if (error.code === 11000) {
             return res.status(409).json({ 
                 success: false,
@@ -236,8 +222,8 @@ async function handleUpdateSubject(req, res) {
 // }
 
 
-// @desc    Get all subjects
-// @route   GET /api/subjects
+//@desc    Get all subjects
+//@route   GET /api/subjects
 // async function handleGetAllSubject(req, res) {
 //     try {
 //         const subjects = await Subject.find();
@@ -252,70 +238,118 @@ async function handleUpdateSubject(req, res) {
 // }
 
 
-
-
-
+//done
 async function handleGetAllSubject(req, res) {
     try {
-        // Extract optional query parameters from the request URL
-        const { academicYear, semester, course, status } = req.query;
-
-        // Build a dynamic filter object based on what the frontend requested
+        // Create an empty filter. If it stays empty, it gets ALL subjects.
         const filter = {};
         
-        if (academicYear) filter.academicYear = Number(academicYear);
-        if (semester) filter.semester = Number(semester);
-        if (course) filter.course = course.toUpperCase(); 
-        if (status) filter.status = status; // Handy if you want to filter by 'Pending' vs 'Uploaded'
+        // If your frontend asks for a specific semester (e.g., ?semester=3), it adds it to the filter.
+        if (req.query.semester) {
+            filter.semester = req.query.semester;
+        }
 
-        // Find subjects using the filter and sort them cleanly
-        // Sorts by newest academic year first, then semester ascending, then alphabetical by name
-        const subjects = await Subject.find(filter)
-            .sort({ academicYear: -1, semester: 1, subjectName: 1 });
-
+        // Find all subjects (or all subjects for the requested semester)
+        const subjects = await Subject.find(filter);
+        
         res.status(200).json({
             success: true,
             count: subjects.length,
             data: subjects
         });
-        
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            message: "Failed to fetch subjects",
-            error: error.message 
-        });
+        res.status(500).json({ success: false, error: error.message });
     }
 }
 
 
 
 
+// async function handleGetAllSubject(req, res) {
+//     try {
+//         // Extract optional query parameters from the request URL
+//         const { academicYear, semester, course, status } = req.query;
+
+//         // Build a dynamic filter object based on what the frontend requested
+//         const filter = {};
+        
+//         if (academicYear) filter.academicYear = Number(academicYear);
+//         if (semester) filter.semester = Number(semester);
+//         if (course) filter.course = course.toUpperCase(); 
+//         if (status) filter.status = status; // Handy if you want to filter by 'Pending' vs 'Uploaded'
+
+//         // Find subjects using the filter and sort them cleanly
+//         // Sorts by newest academic year first, then semester ascending, then alphabetical by name
+//         const subjects = await Subject.find(filter)
+//             .sort({ academicYear: -1, semester: 1, subjectName: 1 });
+
+//         res.status(200).json({
+//             success: true,
+//             count: subjects.length,
+//             data: subjects
+//         });
+        
+//     } catch (error) {
+//         res.status(500).json({ 
+//             success: false, 
+//             message: "Failed to fetch subjects",
+//             error: error.message 
+//         });
+//     }
+// }
+
+
+
+
 // @desc    Get a single subject by Subject Code and Year
 // @route   GET /api/subjects/:id?year=YYYY
+// async function handleGetSubjectBySubjectId(req, res) {
+//     try {
+//         const { id } = req.params;
+//         const { year } = req.query; // UPDATED: Grab year from query parameters
+
+//         // UPDATED: Guard clause
+//         if (!year) {
+//             return res.status(400).json({ 
+//                 success: false, 
+//                 message: "Please provide an academic year query parameter (e.g., ?year=2026)" 
+//             });
+//         }
+
+//         // We use .findOne because subjectId + academicYear is unique
+//         const subject = await Subject.findOne({
+//             subjectId: id.toUpperCase(),
+//             academicYear: Number(year) // UPDATED: Added to search criteria
+//         });
+
+//         if (!subject) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `Subject not found for code ${id} in year ${year}`
+//             });
+//         }
+
+//         res.status(200).json({ success: true, data: subject });
+//     } catch (error) {
+//         res.status(500).json({ success: false, error: error.message });
+//     }
+// }
+
+
+//done
 async function handleGetSubjectBySubjectId(req, res) {
     try {
-        const { id } = req.params;
-        const { year } = req.query; // UPDATED: Grab year from query parameters
+        const { id } = req.params; // Get subject code from the URL
 
-        // UPDATED: Guard clause
-        if (!year) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Please provide an academic year query parameter (e.g., ?year=2026)" 
-            });
-        }
-
-        // We use .findOne because subjectId + academicYear is unique
+        // Search ONLY by the subject code
         const subject = await Subject.findOne({
-            subjectId: id.toUpperCase(),
-            academicYear: Number(year) // UPDATED: Added to search criteria
+            subjectId: id.toUpperCase()
         });
 
         if (!subject) {
             return res.status(404).json({
                 success: false,
-                message: `Subject not found for code ${id} in year ${year}`
+                message: `Subject not found for code ${id}`
             });
         }
 
@@ -327,30 +361,63 @@ async function handleGetSubjectBySubjectId(req, res) {
 
 // @desc    Delete a subject
 // @route   DELETE /api/subjects/:id?year=YYYY
+// async function handleDeleteSubject(req, res) {
+//     try {
+//         const { id } = req.params;
+//         const { year } = req.query; // UPDATED: Grab year from query parameters
+
+//         // UPDATED: Guard clause
+//         if (!year) {
+//             return res.status(400).json({ 
+//                 success: false, 
+//                 message: "Please provide an academic year query parameter to delete." 
+//             });
+//         }
+
+//         // Find by subjectId AND academicYear, then delete
+//         const deletedSubject = await Subject.findOneAndDelete({ 
+//             subjectId: id.toUpperCase(),
+//             academicYear: Number(year) // UPDATED: Added to search criteria
+//         });
+
+//         // If the subject doesn't exist
+//         if (!deletedSubject) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `Subject with ID ${id} for year ${year} not found.`
+//             });
+//         }
+
+//         res.status(200).json({
+//             success: true,
+//             message: "Subject deleted successfully",
+//             data: deletedSubject 
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: "Server Error",
+//             error: error.message
+//         });
+//     }
+// }
+
+
 async function handleDeleteSubject(req, res) {
     try {
         const { id } = req.params;
-        const { year } = req.query; // UPDATED: Grab year from query parameters
 
-        // UPDATED: Guard clause
-        if (!year) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Please provide an academic year query parameter to delete." 
-            });
-        }
-
-        // Find by subjectId AND academicYear, then delete
+        // Find ONLY by subjectId and delete
         const deletedSubject = await Subject.findOneAndDelete({ 
-            subjectId: id.toUpperCase(),
-            academicYear: Number(year) // UPDATED: Added to search criteria
+            subjectId: id.toUpperCase()
         });
 
         // If the subject doesn't exist
         if (!deletedSubject) {
             return res.status(404).json({
                 success: false,
-                message: `Subject with ID ${id} for year ${year} not found.`
+                message: `Subject with ID ${id} not found.`
             });
         }
 
