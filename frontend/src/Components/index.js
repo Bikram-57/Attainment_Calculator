@@ -48,6 +48,7 @@ import NavBarMenu from "./NavBar/NavBarMenu";
 import ForgotPassword from "./ForgotPassword/ForgotPassword";
 import ResetPassword from "./ForgotPassword/ResetPassword";
 import VerifyOtp from "./ForgotPassword/VerifyOtp";
+import Rubrics from "./Rubrics/Rubrics";
 
 export {
     NavBar,
@@ -98,4 +99,5 @@ export {
     ForgotPassword,
     ResetPassword,
     VerifyOtp,
+    Rubrics,
 }

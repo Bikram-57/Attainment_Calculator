@@ -20,6 +20,7 @@ import {
 	ProtectedRoute,
 	Login,
 	ForgotPassword,
+	Rubrics,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -88,6 +89,11 @@ const router = createBrowserRouter([
 				path: 'download-reports',
 				element: <DownloadReports />,
 				handle: { title: 'Download Reports' },
+			},
+			{
+				path: 'rubrics',
+				element: <Rubrics />,
+				handle: { title: 'Rubrics' },
 			},
 			{
 				path: 'subject-report',
