@@ -9,29 +9,25 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
     const [subjectId, setSubjectId] = useState('');
     const [subjectName, setSubjectName] = useState('');
     const [academicYear, setAcademicYear] = useState('');
+    const [semester, setSemester] = useState('');
     const [course, setCourse] = useState('');
     const [isHovered, setIsHovered] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const academicYearList = [];
+    const semesterList = [];
     const d = new Date();
 
     for (let i = 2026; i <= d.getFullYear(); i++) {
         academicYearList.push(i)
     }
 
-    // Error/Success Message timer
-    // useEffect(() => {
-    //     if (!successMsg) return;
-    //     const timer = setTimeout(() => {
-    //         setSuccessMsg("");
-    //         setIsAddSubjectOpen(false);
-    //     }, 3000);
-    //     return () => clearTimeout(timer);
-    // }, [successMsg])
+    for (let i = 1; i <= 8; i++){
+        semesterList.push(i);
+    }
 
     const handleAddSubject = async () => {
-        if (subjectId.length === 0 || subjectName.length === 0 || academicYear.length === 0 || course.length === 0) {
+        if (subjectId.length === 0 || subjectName.length === 0 || academicYear.length === 0 || semester.length === 0 || course.length === 0) {
             setErrorMsg("Please fill all the fields!");
             return;
         }
@@ -41,7 +37,8 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 subjectId: subjectId,
                 subjectName: subjectName,
                 course: course,
-                academicYear: academicYear
+                academicYear: academicYear,
+                semester: semester
             });
             setSuccessMsg('Subject successfully added!');
             toggleUpdate();
@@ -57,7 +54,7 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
         <div>
             {/* Subject Code */}
             <div>
-                <label className="block text-lg text-gray-700 mb-2 font-semibold">
+                <label className="block text-md text-gray-700 mt-2 font-semibold">
                     Subject Code
                 </label>
                 <input
@@ -65,13 +62,13 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     placeholder="E.G. CA1603"
                     value={subjectId}
                     onChange={(e) => setSubjectId(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-1 text-lg outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-1 text-sm outline-none"
                 />
             </div>
 
             {/* Subject Name */}
             <div>
-                <label className="block text-lg text-gray-700 mb-2 font-semibold">
+                <label className="block text-md text-gray-700 mt-2 font-semibold">
                     Subject Name
                 </label>
                 <input
@@ -79,13 +76,13 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     placeholder="E.g. Software Engineering"
                     value={subjectName}
                     onChange={(e) => setSubjectName(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-1 text-lg outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-1 text-sm outline-none"
                 />
             </div>
 
             {/* Year */}
             <div>
-                <label className="block text-lg text-gray-700 mb-2 font-semibold">
+                <label className="block text-md text-gray-700 mt-2 font-semibold">
                     Academic Year
                 </label>
 
@@ -93,7 +90,7 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     <select
                         value={academicYear}
                         onChange={(e) => setAcademicYear(e.target.value)}
-                        className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
+                        className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
                     >
                         <option value="">Select academic year from list</option>
                         {academicYearList.map(year => (
@@ -107,9 +104,33 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 </div>
             </div>
 
+            {/* Semester */}
+            <div>
+                <label className="block text-md text-gray-700 mt-2 font-semibold">
+                    Semester
+                </label>
+
+                <div className="relative">
+                    <select
+                        value={semester}
+                        onChange={(e) => setSemester(e.target.value)}
+                        className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
+                    >
+                        <option value="">Select semester from list</option>
+                        {semesterList.map(sem => (
+                            <option key={sem} value={sem}>
+                                {sem}
+                            </option>
+                        ))}
+                    </select>
+
+                    <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                </div>
+            </div>
+
             {/* Course Name */}
             <div>
-                <label className="block text-lg text-gray-700 mb-2 font-semibold">
+                <label className="block text-md text-gray-700 mt-2 font-semibold">
                     Course Name
                 </label>
 
@@ -117,7 +138,7 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     <select
                         value={course}
                         onChange={(e) => setCourse(e.target.value)}
-                        className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
+                        className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
                     >
                         <option value="">Select course from list</option>
                         <option value="BCA">BCA</option>
