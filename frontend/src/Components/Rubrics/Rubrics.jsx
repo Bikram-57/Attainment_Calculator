@@ -4,10 +4,15 @@ import { useEffect } from 'react';
 import { useState } from 'react'
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import RubricsHeader from "./RubricsHeader";
+import ActionBtns from "../ActionBtns/ActionBtns";
+import Loading from "../Loading";
+import RubricsViewModal from "./modals/RubricsViewModal";
 
 export default function Rubrics() {
     const [data, setData] = useState(null);
     const [openItem, setOpenItem] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getData = async () => {
@@ -16,125 +21,57 @@ export default function Rubrics() {
                 setData(res.data.data);
             } catch (error) {
                 console.log('Axios Error | Rubcrics | getData(): ', error);
+            } finally {
+                setLoading(false);
             }
         }
         getData();
     }, []);
 
+    const toggleUpdate = () => { }
+    const SubjectViewModal = () => { }
+    const SubjectEditModal = () => { }
+    const SubjectDeleteModal = () => { }
 
-    if (!data?.length) {
-        return (
-            <div className="flex h-64 items-center justify-center">
-                <p className="text-slate-500">
-                    No threshold configurations found.
-                </p>
+    return !loading ? (
+        <div className="h-full flex flex-col">
+            <RubricsHeader />
+            <div className="flex-1 overflow-y-auto">
+                {data?.length > 0 ?
+                    (<table className='w-full'>
+                        <thead>
+                            <tr className='text-center border-b border-gray-300'>
+                                <th className='px-5 py-2 w- [10%]'>Course</th>
+                                <th className='px-5 py-2 w- [15%]'>Academic Year</th>
+                                <th className='px-5 py-2 w- [10%]'>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {/* {subjectData?.map(subject => ( */}
+                            {data?.map(rubric => (
+                                <tr className='text-center border-b border-gray-300' key={rubric._id}>
+                                    <td className='px-5 py-2 w- [10%]'>{rubric.course}</td>
+                                    <td className='px-5 py-2 w- [15%]'>{rubric.year}</td>
+                                    <td className='px-5 py-2 flex items-center justify-center'>
+                                        <ActionBtns
+                                            data={rubric}
+                                            toggleUpdate={toggleUpdate}
+                                            ViewModal={RubricsViewModal}
+                                            EditModal={SubjectEditModal}
+                                            DeleteModal={SubjectDeleteModal}
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>) :
+                    (
+                        <div className='text-center text-lg'>No data available</div>
+                    )
+                }
             </div>
-        );
-    }
-
-    const toggleAccordion = (id) => {
-        setOpenItem(openItem === id ? null : id);
-    };
-
-    return (
-        <div className="space-y-4 p-6">
-            <h1 className="text-2xl font-bold text-slate-800">
-                Threshold Configurations
-            </h1>
-
-            {data.map((config) => (
-                <div
-                    key={config._id}
-                    className="overflow-hidden rounded-xl bg-white shadow-sm"
-                >
-                    {/* Accordion Header */}
-                    <button
-                        onClick={() => toggleAccordion(config._id)}
-                        className="flex w-full items-center justify-between p-5 text-left transition hover:bg-slate-50"
-                    >
-                        <div className="flex flex-wrap items-center gap-6">
-                            <div className="flex items-center gap-2">
-                                <FaGraduationCap className="text-blue-600" />
-                                <span className="font-semibold">
-                                    {config.course}
-                                </span>
-                            </div>
-
-                            <div className="flex items-center gap-2 text-slate-600">
-                                <FaCalendarAlt className="text-blue-600" />
-                                <span>{config.year}</span>
-                            </div>
-                        </div>
-
-                        {openItem === config._id ? (
-                            <FaChevronDown className="text-slate-500" />
-                        ) : (
-                            <FaChevronRight className="text-slate-500" />
-                        )}
-                    </button>
-
-                    {/* Accordion Content */}
-                    {openItem === config._id && (
-                        <div className="border-t">
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
-                                    <thead className="bg-blue-600 text-white">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left">
-                                                Level
-                                            </th>
-                                            <th className="px-6 py-3 text-left">
-                                                Min %
-                                            </th>
-                                            <th className="px-6 py-3 text-left">
-                                                Max %
-                                            </th>
-                                            <th className="px-6 py-3 text-left">
-                                                Range
-                                            </th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        {config.thresholds.map((threshold) => (
-                                            <tr
-                                                key={threshold.level}
-                                                className="border-b hover:bg-slate-50"
-                                            >
-                                                <td className="px-6 py-4 font-medium">
-                                                    Level {threshold.level}
-                                                </td>
-
-                                                <td className="px-6 py-4">
-                                                    {threshold.minPercent}%
-                                                </td>
-
-                                                <td className="px-6 py-4">
-                                                    {threshold.maxPercent}%
-                                                </td>
-
-                                                <td className="px-6 py-4 text-slate-600">
-                                                    {threshold.minPercent}% -{" "}
-                                                    {threshold.maxPercent}%
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div className="bg-slate-50 px-6 py-3 text-sm text-slate-500">
-                                Last Updated:{" "}
-                                {new Date(
-                                    config.updatedAt
-                                ).toLocaleDateString()}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            ))}
         </div>
-    );
+    ) : <Loading />
 }
 
 //     if (!data?.length) {

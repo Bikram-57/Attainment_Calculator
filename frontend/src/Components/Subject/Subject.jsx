@@ -64,7 +64,12 @@ function Subject() {
                                     <td className='px-5 py-2 w-[15%]'>{subject.academicYear}</td>
                                     <td className='px-5 py-2 w-[10%]'>{subject.semester || '-'}</td>
                                     <td className='px-5 py-2 w-[10%]'>{subject.course}</td>
-                                    <td className='px-5 py-2 w-[10%]'>{subject.status}</td>
+                                    <td className='px-5 py-2 w-[10%]'>
+                                        <div className='flex gap-1 items-center justify-center'>
+                                            <div className={` ${subject.status === 'Pending' ? 'bg-red-500' : 'bg-green-500'} w-5 h-5 rounded-full`} />
+                                            <div>{subject.status}</div>
+                                        </div>
+                                    </td>
                                     <td className='px-5 py-2 flex items-center justify-center'>
                                         <ActionBtns
                                             data={subject}
