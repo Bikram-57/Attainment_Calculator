@@ -593,38 +593,70 @@ async function handleGetSubjectsByYearAndCourse(req, res) {
 
 
 
-const handleGetSubjectsBySemester = async (req, res) => {
-//  const getSubjects = async (req, res) => {
- try {
-    const { semester, course, academicYear } = req.query;
 
-    const query = {
-      semester: Number(semester),
-      course: course,
-      academicYear: Number(academicYear)
-    };
+/**
+ * @desc    Get a list of subjects filtered by course, academicYear, and/or semester
+ * @route   GET /api/subjects/filter
+ * @access  Private/Admin (Adjust based on your auth)
+ */
+
+
+const handleGetSubjectsBySemester = async (req, res) => {
+  try {
+    const { course, academicYear, semester } = req.query;
+
+    const query = {};
+
+    if (course) {
+      query.course = course.trim().toUpperCase();
+    }
+
+    if (academicYear) {
+      const year = Number(academicYear);
+
+      if (isNaN(year)) {
+        return res.status(400).json({
+          success: false,
+          message: "academicYear must be a number"
+        });
+      }
+
+      query.academicYear = year;
+    }
+
+    if (semester) {
+      const sem = Number(semester);
+
+      if (isNaN(sem)) {
+        return res.status(400).json({
+          success: false,
+          message: "semester must be a number"
+        });
+      }
+
+      query.semester = sem;
+    }
+
+    console.log("Received Query:", req.query);
+    console.log("Mongo Query:", query);
 
     const subjects = await Subject.find(query);
 
     return res.status(200).json({
       success: true,
       count: subjects.length,
-      expressReceived: { semester, course, academicYear }, // Prints what the URL sent
-      mongoQuery: query,                                   // Prints what the Database is using
       data: subjects
     });
-    
+
   } catch (error) {
+    console.error("Error:", error);
+
     return res.status(500).json({
       success: false,
-      message: "Server Error",
-      error: error.message
+      message: error.message
     });
   }
 };
-
-
-
 
 
 module.exports = {

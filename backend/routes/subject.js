@@ -17,26 +17,20 @@ const {
 const router = express.Router()
 
 
-router.post('/', verifyRoles('admin'), handleGenerateNewSubject)
+router.post('/', verifyRoles('admin'), handleGenerateNewSubject);
 
-
-router.put('/:id', verifyRoles('admin'), handleUpdateSubject)
-
-
-router.get('/:id', verifyRoles('admin'), handleGetSubjectBySubjectId)
-
-
-router.get('/', verifyRoles('admin' , 'faculty'), handleGetAllSubject)
-
-
-router.delete('/:id', verifyRoles('admin'), handleDeleteSubject)
-
-
-router.get('/year/:academicYear', verifyRoles('admin'), handleGetSubjectsByAcademicYear)
-
+router.get('/sem', verifyRoles('admin', 'faculty'), handleGetSubjectsBySemester);
 
 router.get('/year/:academicYear/course/:course', verifyRoles('admin'), handleGetSubjectsByYearAndCourse);
 
-router.get('/sem', verifyRoles('admin' , 'faculty'), handleGetSubjectsBySemester);
+router.get('/year/:academicYear', verifyRoles('admin'), handleGetSubjectsByAcademicYear);
+
+router.get('/', verifyRoles('admin', 'faculty'), handleGetAllSubject);
+
+router.get('/:id', verifyRoles('admin'), handleGetSubjectBySubjectId);
+
+router.put('/:id', verifyRoles('admin'), handleUpdateSubject);
+
+router.delete('/:id', verifyRoles('admin'), handleDeleteSubject);
 
 module.exports = router
