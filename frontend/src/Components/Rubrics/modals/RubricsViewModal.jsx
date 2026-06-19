@@ -39,16 +39,16 @@ function RubricsViewModal({ data, closeMenu }) {
 					<table className="w-full">
 						<thead className="bg-blue-600 text-white">
 							<tr>
-								<th className="px-6 py-3 text-left">
+								<th className="px-6 py-3">
 									Level
 								</th>
-								<th className="px-6 py-3 text-left">
+								<th className="px-6 py-3">
 									Min %
 								</th>
-								<th className="px-6 py-3 text-left">
+								<th className="px-6 py-3">
 									Max %
 								</th>
-								<th className="px-6 py-3 text-left">
+								<th className="px-6 py-3">
 									Range
 								</th>
 							</tr>

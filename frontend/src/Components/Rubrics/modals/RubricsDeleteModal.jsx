@@ -4,14 +4,17 @@ import { IoWarning } from "react-icons/io5";
 import { COLORS } from '../../../constants/theme';
 
 function RubricsDeleteModal({ data, toggleUpdate, closeMenu }) {
-    const deleteSubject = async () => {
+    const deleteRubrics = async () => {
         try {
-            const res = await axios.delete(`/sub/${data.subjectId}`)
+            const res = await axios.delete('/rubrics/delete', {
+                course: data.course,
+                year: data.year
+            });
             closeMenu();
             toggleUpdate();
-            alert('Subject deleted successfully!');
+            alert('Rubrics deleted successfully!');
         } catch (error) {
-            console.log('Axios Error | RubricsDeleteModal | deleteSubject(): ', error);
+            console.log('Axios Error | RubricsDeleteModal | deleteRubrics(): ', error);
         }
     }
     return (
@@ -21,7 +24,7 @@ function RubricsDeleteModal({ data, toggleUpdate, closeMenu }) {
         >
             <div
                 className="w-[90%] max-w-lg rounded-lg p-4 shadow-2xl text-center relative"
-                style={{backgroundColor: COLORS.latte}}
+                style={{ backgroundColor: COLORS.latte }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Warning Icon */}
@@ -32,14 +35,16 @@ function RubricsDeleteModal({ data, toggleUpdate, closeMenu }) {
                 {/* Title */}
                 <h2
                     className="text-2xl font-semibold mb-2"
-                    style={{color: COLORS.mintDark}}
+                    style={{ color: COLORS.mintDark }}
                 >
-                    Delete Subject
+                    Delete Rubrics
                 </h2>
 
                 {/* Message */}
                 <p className="text-red-600 text-xl leading-relaxed mb-4">
-                    Are you sure you want to delete this subject?
+                    Are you sure you want to delete rubrics for
+                    <br />
+                    {data.course} - {data.year}?
                     <br />
                     This action cannot be undone !
                 </p>
@@ -54,7 +59,7 @@ function RubricsDeleteModal({ data, toggleUpdate, closeMenu }) {
                     </button>
 
                     <button
-                        onClick={deleteSubject}
+                        onClick={deleteRubrics}
                         className="px-4 py-1 rounded-md bg-red-600 text-white text-lg font-medium hover:bg-red-700 transition cursor-pointer"
                     >
                         Yes, Delete !

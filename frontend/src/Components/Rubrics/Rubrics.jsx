@@ -8,34 +8,39 @@ import RubricsHeader from "./RubricsHeader";
 import ActionBtns from "../ActionBtns/ActionBtns";
 import Loading from "../Loading";
 import RubricsViewModal from "./modals/RubricsViewModal";
+import RubricsEditModal from "./modals/RubricsEditModal";
+import RubricsDeleteModal from "./modals/RubricsDeleteModal";
 
 export default function Rubrics() {
     const [data, setData] = useState(null);
     const [openItem, setOpenItem] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [toggleRubrics, setToggleRubrics] = useState(false);
+
+    const getData = async () => {
+        try {
+            const res = await axios.get('/rubrics/');
+            setData(res.data.data);
+        } catch (error) {
+            console.log('Axios Error | Rubcrics | getData(): ', error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
-        const getData = async () => {
-            try {
-                const res = await axios.get('/rubrics/');
-                setData(res.data.data);
-            } catch (error) {
-                console.log('Axios Error | Rubcrics | getData(): ', error);
-            } finally {
-                setLoading(false);
-            }
-        }
         getData();
-    }, []);
+    }, [toggleRubrics]);
 
-    const toggleUpdate = () => { }
-    const SubjectViewModal = () => { }
-    const SubjectEditModal = () => { }
-    const SubjectDeleteModal = () => { }
+    const toggleUpdate = () => {
+        setToggleRubrics(prev => !prev)
+    }
 
     return !loading ? (
         <div className="h-full flex flex-col">
-            <RubricsHeader />
+            <RubricsHeader
+                toggleUpdate={toggleUpdate}
+            />
             <div className="flex-1 overflow-y-auto">
                 {data?.length > 0 ?
                     (<table className='w-full'>
@@ -57,8 +62,8 @@ export default function Rubrics() {
                                             data={rubric}
                                             toggleUpdate={toggleUpdate}
                                             ViewModal={RubricsViewModal}
-                                            EditModal={SubjectEditModal}
-                                            DeleteModal={SubjectDeleteModal}
+                                            EditModal={RubricsEditModal}
+                                            DeleteModal={RubricsDeleteModal}
                                         />
                                     </td>
                                 </tr>

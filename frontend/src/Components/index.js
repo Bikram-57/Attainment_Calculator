@@ -51,6 +51,9 @@ import VerifyOtp from "./ForgotPassword/VerifyOtp";
 import Rubrics from "./Rubrics/Rubrics";
 import RubricsHeader from "./Rubrics/RubricsHeader";
 import RubricsViewModal from "./Rubrics/modals/RubricsViewModal";
+import RubricsEditModal from "./Rubrics/modals/RubricsEditModal"
+import RubricsDeleteModal from "./Rubrics/modals/RubricsDeleteModal"
+import AddRubricsForm from "./Rubrics/AddRubricsForm";
 
 export {
     NavBar,
@@ -104,4 +107,7 @@ export {
     Rubrics,
     RubricsHeader,
     RubricsViewModal,
+    RubricsEditModal,
+    RubricsDeleteModal,
+    AddRubricsForm,
 }
