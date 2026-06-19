@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { MdDone } from "react-icons/md";
 
-function ErrorSuccessMsg({ errorMsg, successMsg, setSuccessMsg, setIsOpen }) {
+function ErrorSuccessMsg({ errorMsg, successMsg, setSuccessMsg, setIsOpen, close }) {
 	useEffect(() => {
 		if (!successMsg) return;
 		const timer = setTimeout(() => {
 			setSuccessMsg("");
-			setIsOpen ? setIsOpen(false) : null;
+			if (setIsOpen) {
+				setIsOpen(false)
+			} else if (close) {
+				close();
+			} else {
+				null;
+			}
 		}, 2000);
 		return () => clearTimeout(timer);
 	}, [successMsg]);

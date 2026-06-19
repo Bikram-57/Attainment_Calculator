@@ -1,220 +1,191 @@
+import React, { useState } from 'react';
 import axios from 'axios';
-import React, { useState } from 'react'
 import { IoMdClose } from "react-icons/io";
 import { COLORS } from '../../../constants/theme';
-import { FaChevronDown } from "react-icons/fa";
 import ErrorSuccessMsg from '../../ErrorSuccessMsg';
 
-function RubricsEditModal({ data, toggleUpdate, closeMenu }) {
-    const [subjectName, setSubjectName] = useState(data.subjectName);
-    const [course, setCourse] = useState(data.course);
-    const [isHovered, setIsHovered] = useState(false);
-    const [academicYear, setAcademicYear] = useState(data.academicYear);
-    const [semester, setSemester] = useState(data.semester || '');
-    // const [course, setCourse] = useState('');
-    const [successMsg, setSuccessMsg] = useState('');
+function RubricsEditModal({ data, closeMenu, toggleUpdate }) {
+
+    const [thresholds, setThresholds] = useState(data.thresholds);
+    const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
 
-    const academicYearList = [];
-    const semesterList = [];
-    const d = new Date();
+    const handleChange = (index, field, value) => {
+        const updated = [...thresholds];
 
-    for (let i = 2026; i <= d.getFullYear(); i++) {
-        academicYearList.push(i)
-    }
+        updated[index] = {
+            ...updated[index],
+            [field]: Number(value)
+            // [field]: value
+        };
 
-    for (let i = 1; i <= 8; i++) {
-        semesterList.push(i);
-    }
+        setThresholds(updated);
+    };
 
-    const updateSubject = async () => {
-        if (subjectName.length === 0 || academicYear.length === 0 || semester.length === 0 || course.length === 0) {
-            setErrorMsg("Please fill all the fields!");
-            return;
-        }
-        setErrorMsg('');
+    const handleUpdate = async () => {
         try {
-            const res = await axios.put(`/sub/${data.subjectId}`, {
-                subjectName,
-                course,
-                academicYear,
-                semester
+            setLoading(true);
+            const res = await axios.put('/rubrics/update', {
+                course: data.course,
+                year: data.year,
+                thresholds
             });
-            setSuccessMsg('Subject updated successfully!');
+            setSuccessMsg(res.data.message);
             toggleUpdate();
+
         } catch (error) {
-            console.log('Axios Error | RubricsEditModal | updateSubject(): ', error);
+            setErrorMsg(error?.response?.data?.message);
+            console.error(
+                'Axios Error | RubricsEditModal | handleUpdate(): ',
+                error
+            );
+        } finally {
+            setErrorMsg('');
+            setLoading(false);
         }
-    }
+    };
+
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-auto"
             onClick={closeMenu}
         >
             <div
-                className="w-[90%] max-w-xl rounded-lg shadow-2xl overflow-hidden"
+                className="w-[90%] max-w-2xl rounded-lg bg-white shadow-2xl overflow-hidden"
                 style={{ backgroundColor: COLORS.latte }}
                 onClick={(e) => e.stopPropagation()}
             >
+
                 {/* Header */}
                 <div
-                    className="flex items-center justify-between px-4 py-2 border-b border-gray-300"
+                    className="flex items-center justify-between px-6 py-5 border-b border-gray-300"
                     style={{ backgroundColor: COLORS.mint }}
                 >
                     <h2
-                        className="text-xl font-semibold"
+                        className="text-2xl font-semibold"
                         style={{ color: COLORS.font }}
                     >
-                        Subject Details
+                        {`Edit Rubrics: ${data.course} - ${data.year}`}
                     </h2>
 
                     <button
                         onClick={closeMenu}
                         className="cursor-pointer"
                     >
-                        <IoMdClose className='w-8 h-8' style={{ color: COLORS.font }} />
+                        <IoMdClose
+                            className="w-8 h-8"
+                            style={{ color: COLORS.font }}
+                        />
                     </button>
                 </div>
 
                 {/* Body */}
-                <div className="p-4 space-y-3">
+                <div className="p-6">
 
-                    {/* Subject ID */}
-                    <div>
-                        <label className="block text-lg text-gray-700 mb-1">
-                            Subject Id
-                        </label>
-                        <input
-                            type="text"
-                            value={data.subjectId}
-                            readOnly
-                            className="w-full border border-gray-400 rounded-lg px-4 py-1 text-md bg-gray-50 outline-none cursor-not-allowed"
-                            style={{ backgroundColor: COLORS.latteDark }}
+                    <table className="w-full border-collapse">
+                        <thead className="bg-blue-600 text-white">
+                            <tr>
+                                <th className="px-4 py-3">Level</th>
+                                <th className="px-4 py-3">Min %</th>
+                                <th className="px-4 py-3">Max %</th>
+                                <th className="px-4 py-3">Range</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {thresholds.map((threshold, index) => (
+                                <tr
+                                    key={threshold.level}
+                                    className="border-b"
+                                >
+                                    <td className="px-4 py-4 font-medium text-center">
+                                        Level {threshold.level}
+                                    </td>
+
+                                    <td className="px-4 py-4 w-1/5">
+                                        <input
+                                            // type="text"
+                                            type="number"
+                                            step="0.01"
+                                            min={0}
+                                            max={100}
+                                            value={threshold.minPercent}
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    index,
+                                                    'minPercent',
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="hover:bg-slate-50 w-full border rounded px-3 py-2"
+                                        />
+                                    </td>
+
+                                    <td className="px-4 py-4 w-1/5">
+                                        <input
+                                            // type="text"
+                                            type="number"
+                                            step="0.01"
+                                            min={0}
+                                            max={100}
+                                            value={threshold.maxPercent}
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    index,
+                                                    'maxPercent',
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="hover:bg-slate-50 w-full border rounded px-3 py-2"
+                                        />
+                                    </td>
+
+                                    <td className="px-2 py-4 text-center text-slate-600">
+                                        {threshold.minPercent}% - {threshold.maxPercent}%
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <div className='mt-3'>
+                        <ErrorSuccessMsg
+                            errorMsg={errorMsg}
+                            successMsg={successMsg}
+                            setSuccessMsg={setSuccessMsg}
+                            close={closeMenu}
                         />
                     </div>
 
-                    {/* Subject Name */}
-                    <div>
-                        <label className="block text-lg text-gray-700 my-1">
-                            Subject Name
-                        </label>
-                        <input
-                            type="text"
-                            value={subjectName}
-                            onChange={(e) => setSubjectName(e.target.value)}
-                            className="w-full border border-gray-400 rounded-lg px-4 py-1 text-md bg-gray-50 outline-none"
-                        // style={{backgroundColor: COLORS.latteDark}}
-                        />
-                    </div>
-
-                    {/* Year */}
-                    <div>
-                        <label className="block text-lg text-gray-700 my-1">
-                            Academic Year
-                        </label>
-
-                        <div className="relative">
-                            <select
-                                value={academicYear}
-                                onChange={(e) => setAcademicYear(e.target.value)}
-                                className="w-full appearance-none border border-gray-400 bg-gray-50 rounded-lg px-4 py-1 text-md cursor-pointer outline-none"
-                            >
-                                <option value="">Select academic year from list</option>
-                                {academicYearList.map(year => (
-                                    <option key={year} value={year}>
-                                        {year}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                        </div>
-                    </div>
-
-                    {/* Semester */}
-                    <div>
-                        <label className="block text-lg text-gray-700 my-1">
-                            Semester
-                        </label>
-
-                        <div className="relative">
-                            <select
-                                value={semester}
-                                onChange={(e) => setSemester(e.target.value)}
-                                className="w-full appearance-none border border-gray-400 bg-gray-50 rounded-lg px-4 py-1 text-md cursor-pointer outline-none"
-                            >
-                                <option value="">Select semester from list</option>
-                                {semesterList.map(sem => (
-                                    <option key={sem} value={sem}>
-                                        {sem}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                        </div>
-                    </div>
-
-                    {/* Course Name */}
-
-                    <div>
-                        <label className="block text-lg text-gray-700 my-1">
-                            Course
-                        </label>
-                        <input
-                            type="text"
-                            value={course}
-                            onChange={(e) => setCourse(e.target.value)}
-                            className="w-full border border-gray-400 rounded-lg px-4 py-1 text-md bg-gray-50 outline-none"
-                        />
-                    </div>
-                    {/* <div>
-                        <label className="block text-md text-gray-700 mt-2 font-semibold">
-                            Course Name
-                        </label>
-
-                        <div className="relative">
-                            <select
-                                value={course}
-                                onChange={(e) => setCourse(e.target.value)}
-                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
-                            >
-                                <option value="">Select course from list</option>
-                                <option value="BCA">BCA</option>
-                                <option value="MCA">MCA</option>
-                            </select>
-
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                        </div>
+                    {/* <div className="mt-4 text-sm text-gray-600">
+                        Edit the percentage ranges and click Update to save changes.
                     </div> */}
-                </div>
 
-                {/* Error/Success Message */}
-                <ErrorSuccessMsg
-                    errorMsg={errorMsg}
-                    successMsg={successMsg}
-                    setSuccessMsg={setSuccessMsg}
-                    setIsOpen={closeMenu}
-                />
+                </div>
 
                 {/* Footer */}
-                <div className="px-4 py-4 border-t border-gray-300 flex justify-end">
+                <div className="flex justify-end gap-3 px-6 py-4 border-t bg-gray-50">
+
                     <button
-                        onClick={updateSubject}
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                        className="px-4 py-1 rounded-lg text-lg font-medium shadow cursor-pointer"
-                        style={{
-                            backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint,
-                            color: COLORS.font
-                        }}
+                        onClick={closeMenu}
+                        className="px-5 py-2 rounded border border-gray-300 hover:bg-gray-100 cursor-pointer"
                     >
-                        Update
+                        Cancel
                     </button>
+
+                    <button
+                        onClick={handleUpdate}
+                        disabled={loading}
+                        className="px-5 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+                    >
+                        {loading ? 'Updating...' : 'Update'}
+                    </button>
+
                 </div>
+
             </div>
         </div>
     );
-};
+}
 
-export default RubricsEditModal
+export default RubricsEditModal;

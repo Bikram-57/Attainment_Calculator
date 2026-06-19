@@ -77,7 +77,7 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                 </div>
 
                 {/* Body */}
-                <div className="p-4 space-y-3">
+                <div className="p-4 space-y-3 text-left">
 
                     {/* Subject ID */}
                     <div>
