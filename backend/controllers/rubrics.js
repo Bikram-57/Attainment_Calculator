@@ -197,9 +197,57 @@ async function handleFindAllRubrics (req, res){
 };
 
 
+const handleDeleteRubricByCourseYear = async (req, res) => {
+  try {
+    // 1. Grab course and year from the request body
+    const { course, year } = req.body;
+
+    // 2. Basic validation
+    if (!course || !year) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide both the course and the year to delete the rubric.'
+      });
+    }
+
+    // 3. Find and delete the exact rubric matching that course and year
+    const deletedRubric = await Rubric.findOneAndDelete({
+      course: course.toUpperCase(), // Ensures 'bca' matches 'BCA'
+      year: parseInt(year)
+    });
+
+    // 4. If it returns null, it couldn't find a match
+    if (!deletedRubric) {
+      return res.status(404).json({
+        success: false,
+        message: `No rubric found for ${course.toUpperCase()} in ${year}. It may have already been deleted.`
+      });
+    }
+
+    // 5. Success response
+    return res.status(200).json({
+      success: true,
+      message: `Rubric for ${deletedRubric.course} (${deletedRubric.year}) was successfully deleted!`,
+      data: {
+        course: deletedRubric.course,
+        year: deletedRubric.year
+      }
+    });
+
+  } catch (error) {
+    console.error('Error deleting rubric by course and year:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Server Error while attempting to delete the rubric.' 
+    });
+  }
+};
+
+
 module.exports = { 
     handleUploadrubrics,
     handleGetRubrics,
     handleUpdateRubrics,
     handleFindAllRubrics,
+    handleDeleteRubricByCourseYear
  };
