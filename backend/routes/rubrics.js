@@ -15,7 +15,7 @@ const {
 // POST route to handle form submission
 router.post('/upload', verifyRoles('admin'),  handleUploadrubrics);
 router.get('/get', verifyRoles('admin'), handleGetRubrics);
-router.get('/update', verifyRoles('admin'), handleUpdateRubrics);
+router.put('/update', verifyRoles('admin'), handleUpdateRubrics);
 router.get('/', verifyRoles('admin'), handleFindAllRubrics);
 router.delete('/delete', verifyRoles('admin'), handleDeleteRubricByCourseYear);
 

@@ -1,159 +1,160 @@
-// // Assuming your Mongoose model is named FinalAttainment
-// const FinalAttainment = require('../models/finalAttainment');
-
-// const extractAttainmentLevels = async (req, res) => {
-//    try {
-//         // Falling back to "MCA" and "2026" if req.body is empty for easy testing
-//         const targetCourse = req.body.course || "MCA";       
-//         const targetYear = req.body.academicYear || "2026";   
-
-//         console.log(`\n=== 🔎 SEARCHING DB FOR BATCH: ${targetCourse} - ${targetYear} ===`);
-
-//         // 1. The Magic Word: .lean()
-//         // This tells Mongoose to step back and give us the raw JSON exactly as it is in the DB
-//         const allSubjects = await FinalAttainment.find({
-//             course: targetCourse,
-//             academicYear: targetYear
-//         }).lean(); 
-
-//         if (!allSubjects || allSubjects.length === 0) {
-//             console.log("❌ No subjects found for this batch.");
-//             return res.status(404).json({ message: "No data found." });
-//         }
-
-//         console.log(`✅ Found ${allSubjects.length} subjects! Extracting grand totals...\n`);
-
-//         // 2. Loop through every subject and safely extract the levels
-//         const extractedBatchData = allSubjects.map(doc => {
-//             const table = doc.attainmentTable;
-//             let extractedLevels = {};
-
-//             // Ensure the attainmentTable actually exists in this document before looping
-//             if (table) {
-//                 // Loop through "CO1", "CO2", "CO3", etc.
-//                 Object.keys(table).forEach(coKey => {
-//                     // Safety check to ensure grandTotal exists for that specific CO
-//                     if (table[coKey] && table[coKey].grandTotal !== undefined) {
-//                         extractedLevels[coKey] = table[coKey].grandTotal; 
-//                     }
-//                 });
-//             }
-
-//             return {
-//                 subjectId: doc.subjectId, 
-//                 levels: extractedLevels
-//             };
-//         });
-
-//         // 3. Print the final formatted array to the console
-//         console.log("=== FINAL EXTRACTED BATCH DATA ===");
-//         console.log(JSON.stringify(extractedBatchData, null, 2));
-//         console.log("==================================\n");
-
-//         // Send it to the frontend or Postman!
-//         return res.status(200).json({ 
-//             success: true, 
-//             count: extractedBatchData.length,
-//             data: extractedBatchData 
-//         });
-
-//     } catch (error) {
-//         console.error("Crash Error:", error);
-//         return res.status(500).json({ error: error.message });
-//     }
-// };
-
-// module.exports = {
-//     extractAttainmentLevels,
-// }
-
-
-
-
-// Assuming your Mongoose models are named like this (adjust paths if needed)
 const FinalAttainment = require('../models/finalAttainment');
-const CoPoMatrix = require('../models/coPoMapping'); 
+const CoPoMatrix = require('../models/coPoMapping');
 
 const extractAttainmentLevels = async (req, res) => {
     try {
-        // Falling back to "MCA" and "2026" if req.body is empty for easy testing
-        const targetCourse = req.body.course || "MCA";       
-        const targetYear = req.body.academicYear || "2026";   
+        const targetCourse = req.body.course || "MCA";
+        const targetYear = req.body.academicYear || "2026";
 
-        console.log(`\n=== 🔎 SEARCHING DB FOR BATCH: ${targetCourse} - ${targetYear} ===`);
+        console.log(`\n=== 🧮 CALCULATING 8-PO ATTAINMENT: ${targetCourse} - ${targetYear} ===`);
 
-        // 1. EXTRACT ATTAINMENT LEVELS
+        // 1. FETCH ALL SUBJECTS
         const allSubjects = await FinalAttainment.find({
             course: targetCourse,
             academicYear: targetYear
-        }).lean(); 
+        }).lean();
 
         if (!allSubjects || allSubjects.length === 0) {
-            console.log("❌ No subjects found for this batch.");
-            return res.status(404).json({ message: "No data found." });
+            return res.status(404).json({
+                success: false,
+                message: "No subjects found."
+            });
         }
 
-        // Grab all the subject IDs into an array (e.g., ["CA2301", "CA2302"])
+        // 2. FETCH CO-PO MAPPINGS
         const subjectIdsArray = allSubjects.map(doc => doc.subjectId);
-        console.log(`✅ Found ${subjectIdsArray.length} subjects! Fetching CO-PO matrices...\n`);
 
-        // 2. EXTRACT CO-PO MATRICES (The "Same Way")
-        // Use $in to find the matrices for ONLY the subjects we just found
         const allMatrices = await CoPoMatrix.find({
             subjectId: { $in: subjectIdsArray }
         }).lean();
 
-        // Create a fast lookup dictionary for the matrices 
-        // Example: matrixDict["CA2301"] = { CO1: { PO1: 3... } }
+        // 3. BUILD LOOKUP OBJECT
         const matrixDict = {};
+
         allMatrices.forEach(matDoc => {
-            // Note: Use whatever field holds your matrix (matDoc.matrix, matDoc.mapping, etc.)
-            matrixDict[matDoc.subjectId] = matDoc.matrix || matDoc.copoMapping || matDoc;
+            matrixDict[matDoc.subjectId] =
+                matDoc.mappingData ||
+                matDoc.matrix ||
+                matDoc.copoMapping ||
+                {};
         });
 
-        // 3. MERGE EVERYTHING TOGETHER
-        const extractedBatchData = allSubjects.map(doc => {
-            const table = doc.attainmentTable;
-            let extractedLevels = {};
+        const standardPOs = [
+            'PO1',
+            'PO2',
+            'PO3',
+            'PO4',
+            'PO5',
+            'PO6',
+            'PO7',
+            'PO8'
+        ];
 
-            // Ensure the attainmentTable actually exists in this document before looping
-            if (table) {
-                // Loop through "CO1", "CO2", "CO3", etc.
-                Object.keys(table).forEach(coKey => {
-                    // Safety check to ensure grandTotal exists for that specific CO
-                    if (table[coKey] && table[coKey].grandTotal !== undefined) {
-                        extractedLevels[coKey] = table[coKey].grandTotal; 
+        // 4. PROCESS EACH SUBJECT
+        const calculatedBatchData = allSubjects.map(doc => {
+
+            const table = doc.attainmentTable || {};
+            const extractedLevels = {};
+
+            // Extract CO attainment levels
+            Object.keys(table).forEach(coKey => {
+                if (
+                    table[coKey] &&
+                    table[coKey].grandTotal !== undefined
+                ) {
+                    extractedLevels[coKey] = table[coKey].grandTotal;
+                }
+            });
+
+            const rawMatrix = matrixDict[doc.subjectId] || {};
+
+            const formattedTable = [];
+
+            const poTotals = {};
+            const poWeightCounts = {};
+
+            standardPOs.forEach(po => {
+                poTotals[po] = 0;
+                poWeightCounts[po] = 0;
+            });
+
+            // Build CO rows
+            Object.keys(extractedLevels).forEach((coKey, index) => {
+
+                const coLevel = Number(extractedLevels[coKey]) || 0;
+
+                // Get mapping for current CO
+                const mappings = rawMatrix?.[coKey] || {};
+
+                const row = {
+                    course: index === 0 ? doc.subjectId : "",
+                    co: coKey,
+                    attainmentLevel: coLevel
+                };
+
+                standardPOs.forEach(po => {
+
+                    const weight =
+                        mappings[po] === "" ||
+                        mappings[po] === undefined ||
+                        mappings[po] === null
+                            ? null
+                            : Number(mappings[po]);
+
+                    row[po] = weight;
+
+                    if (weight !== null) {
+                        poTotals[po] += coLevel * weight;
+                        poWeightCounts[po] += weight;
                     }
                 });
-            }
 
-            // Grab the matching matrix from our dictionary
-            const matchedMatrix = matrixDict[doc.subjectId] || null;
+                formattedTable.push(row);
+            });
+
+            // 5. DIRECT PO ATTAINMENT ROW
+            const finalRow = {
+                course: "Direct PO Attainment",
+                co: "",
+                attainmentLevel: ""
+            };
+
+            standardPOs.forEach(po => {
+                finalRow[po] =
+                    poWeightCounts[po] > 0
+                        ? Number(
+                              (
+                                  poTotals[po] /
+                                  poWeightCounts[po]
+                              ).toFixed(2)
+                          )
+                        : null;
+            });
+
+            formattedTable.push(finalRow);
 
             return {
-                subjectId: doc.subjectId, 
-                levels: extractedLevels,
-                copoMapping: matchedMatrix // Added the mapping to the final object!
+                subjectId: doc.subjectId,
+                tableData: formattedTable
             };
         });
 
-        // 4. PRINT AND RETURN
-        console.log("=== FINAL EXTRACTED BATCH DATA ===");
-        console.log(JSON.stringify(extractedBatchData, null, 2));
-        console.log("==================================\n");
-
-        return res.status(200).json({ 
-            success: true, 
-            count: extractedBatchData.length,
-            data: extractedBatchData 
+        return res.status(200).json({
+            success: true,
+            count: calculatedBatchData.length,
+            data: calculatedBatchData
         });
 
     } catch (error) {
         console.error("Crash Error:", error);
-        return res.status(500).json({ error: error.message });
+
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 };
 
 module.exports = {
-    extractAttainmentLevels,
-}
+    extractAttainmentLevels
+};
