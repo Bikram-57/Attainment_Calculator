@@ -26,6 +26,8 @@ const uploadAllSubjects = require('./routes/uploadAllSubjects');
 const uploadRubrics = require('./routes/rubrics');
 const downloadReport = require('./routes/downloadReport');
 
+const directAttainemt2 = require('./routes/directAttainemt2');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
@@ -71,6 +73,10 @@ app.use("/directpo", directPoAttain);
 app.use("/uploadAll", uploadAllSubjects);
 app.use("/rubrics", uploadRubrics);
 app.use("/file", downloadReport);
+
+
+app.use("/dir", directAttainemt2);
+
 
 app.listen(PORT, () => {
     console.log(`Server Started at PORT: ${PORT}`);

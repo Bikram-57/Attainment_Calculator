@@ -43,7 +43,8 @@ const handleLogin = async (req, res) => {
                 }
             },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '15m' }
+            // { expiresIn: '15m' }
+            { expiresIn: '7d' }
         );
 
         // Refresh Token: Long lifespan (e.g., 7d).
