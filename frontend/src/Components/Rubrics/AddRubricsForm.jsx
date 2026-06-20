@@ -88,7 +88,7 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
 
                     <button onClick={() => setIsAddRubricsOpen(false)}>
                         <IoMdClose
-                            className="w-8 h-8"
+                            className="w-8 h-8 cursor-pointer"
                             style={{ color: COLORS.font }}
                         />
                     </button>
@@ -110,7 +110,7 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
                                 onChange={(e) =>
                                     setFormData(prev => ({
                                         ...prev,
-                                        course: e.target.value
+                                        course: e.target.value.toUpperCase()
                                     }))
                                 }
                                 className="w-full border rounded px-3 py-2"
@@ -222,7 +222,7 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                            className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
                         >
                             {loading ? "Saving..." : "Save"}
                         </button>
