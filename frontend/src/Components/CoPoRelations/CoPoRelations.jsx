@@ -59,8 +59,9 @@ function CoPoRelations() {
     }
 
     const filteredSubjects = subjects?.filter(sub => (
-        sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase()) || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase())
-    )) || subjects;
+        sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase().trim())
+        || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase().trim())
+    ));
 
     useEffect(() => {
         const fetchSubjects = async () => {

@@ -13,7 +13,7 @@ function Subject() {
     const getSubjectData = async () => {
         try {
             const response = await axios.get('/sub/');
-            console.log(response.data.data);
+            // console.log(response.data.data);
             setSubjectData(response.data.data);
         } catch (error) {
             console.log('Axios Error | getSubjectData(): ', error);
@@ -27,9 +27,14 @@ function Subject() {
     }
 
     const filteredSubjects = subjectData.filter(sub => (
-        (sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase()) || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase()))
-        && (filterYear.length > 0 ? sub.academicYear == filterYear : true)
-    )) || subjectData;
+        (
+            sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase().trim())
+            || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase().trim())
+        )
+        && (
+            filterYear.length > 0 ? sub.academicYear == filterYear : true
+        )
+    ))
 
     useEffect(() => {
         getSubjectData();
