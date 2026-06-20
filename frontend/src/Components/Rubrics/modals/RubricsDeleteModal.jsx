@@ -7,8 +7,10 @@ function RubricsDeleteModal({ data, toggleUpdate, closeMenu }) {
     const deleteRubrics = async () => {
         try {
             const res = await axios.delete('/rubrics/delete', {
-                course: data.course,
-                year: data.year
+                data: {
+                    course: data.course,
+                    year: data.year
+                }
             });
             closeMenu();
             toggleUpdate();
