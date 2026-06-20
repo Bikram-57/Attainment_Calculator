@@ -3,8 +3,18 @@ import { BsSearch } from 'react-icons/bs'
 import { COLORS } from '../../constants/theme';
 import AddRubricsForm from './AddRubricsForm';
 
-function RubricsHeader({ toggleUpdate}) {
-    const [isAddRubricsOpen, setIsAddRubricsOpen ] = useState(false);
+function RubricsHeader({ toggleUpdate, setSearchQuery }) {
+    const [isAddRubricsOpen, setIsAddRubricsOpen] = useState(false);
+    const [search, setSearch] = useState('');
+
+    const handleChange = (e) => {
+        if (e.target.value == '') {
+            setSearchQuery('');
+        }
+        setSearch(e.target.value);
+        setSearchQuery(e.target.value);
+    }
+
     return (
         <div className='flex justify-between p-4'>
             <div
@@ -21,16 +31,16 @@ function RubricsHeader({ toggleUpdate}) {
                     <input
                         type='text'
                         placeholder='Search by course name or academic year'
-                        // value={search}
+                        value={search}
                         className='border-r px-3 py-1 w-87.5 outline-none'
                         style={{
                             color: COLORS.mintDark
                         }}
-                        // onChange={(e) => handleChange(e)}
+                        onChange={(e) => handleChange(e)}
                     />
                     <div
                         className='px-3 py-1 cursor-pointer'
-                        // onClick={() => setSearchQuery(search)}
+                        onClick={() => setSearchQuery(search)}
                     >
                         <BsSearch style={{ color: COLORS.mintDark }} />
                     </div>

@@ -12,10 +12,10 @@ import RubricsEditModal from "./modals/RubricsEditModal";
 import RubricsDeleteModal from "./modals/RubricsDeleteModal";
 
 export default function Rubrics() {
-    const [data, setData] = useState(null);
-    const [openItem, setOpenItem] = useState(null);
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [toggleRubrics, setToggleRubrics] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const getData = async () => {
         try {
@@ -27,6 +27,12 @@ export default function Rubrics() {
             setLoading(false);
         }
     }
+
+    const filteredData = data.filter(rubric =>
+        rubric.course.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
+        String(rubric.year).toLowerCase().includes(searchQuery.toLowerCase().trim())
+    );
+
 
     useEffect(() => {
         getData();
@@ -40,9 +46,10 @@ export default function Rubrics() {
         <div className="h-full flex flex-col">
             <RubricsHeader
                 toggleUpdate={toggleUpdate}
+                setSearchQuery={setSearchQuery}
             />
             <div className="flex-1 overflow-y-auto">
-                {data?.length > 0 ?
+                {filteredData?.length > 0 ?
                     (<table className='w-full'>
                         <thead>
                             <tr className='text-center border-b border-gray-300'>
@@ -53,7 +60,7 @@ export default function Rubrics() {
                         </thead>
                         <tbody>
                             {/* {subjectData?.map(subject => ( */}
-                            {data?.map(rubric => (
+                            {filteredData?.map(rubric => (
                                 <tr className='text-center border-b border-gray-300' key={rubric._id}>
                                     <td className='px-5 py-2 w- [10%]'>{rubric.course}</td>
                                     <td className='px-5 py-2 w- [15%]'>{rubric.year}</td>
