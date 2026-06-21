@@ -54,6 +54,8 @@ import RubricsViewModal from "./Rubrics/modals/RubricsViewModal";
 import RubricsEditModal from "./Rubrics/modals/RubricsEditModal"
 import RubricsDeleteModal from "./Rubrics/modals/RubricsDeleteModal"
 import AddRubricsForm from "./Rubrics/AddRubricsForm";
+import DirectAttainment from "./DirectAttainment/DirectAttainment";
+import DirectAttainmentTable from "./DirectAttainment/DirectAttainmentTable";
 
 export {
     NavBar,
@@ -110,4 +112,6 @@ export {
     RubricsEditModal,
     RubricsDeleteModal,
     AddRubricsForm,
+    DirectAttainment,
+    DirectAttainmentTable,
 }

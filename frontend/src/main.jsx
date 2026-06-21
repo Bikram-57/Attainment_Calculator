@@ -21,6 +21,7 @@ import {
 	Login,
 	ForgotPassword,
 	Rubrics,
+	DirectAttainment,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -82,7 +83,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: 'direct-attainment',
-				element: <UnderDevelopment />,
+				element: <DirectAttainment />,
 				handle: { title: 'Direct Attainment' },
 			},
 			{
