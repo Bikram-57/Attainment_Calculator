@@ -1,9 +1,8 @@
-const express = require('express')
+const express = require('express');
+const { extractAttainmentLevels } = require('../controllers/directAttainment2');
 
-const {extractAttainmentLevels} = require('../controllers/directAttainment2')
+const router = express.Router();
 
-const router = express.Router()
+router.post('/', extractAttainmentLevels);
 
-router.get('/', extractAttainmentLevels)
-
-module.exports = router
+module.exports = router;

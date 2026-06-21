@@ -1,326 +1,223 @@
-// const FinalAttainment = require('../models/finalAttainment');
-// const CoPoMatrix = require('../models/coPoMapping');
-
-
-// const extractAttainmentLevels = async (req, res) => {
-//     try {
-//         const targetCourse = req.body.course || "MCA";
-//         const targetYear = req.body.academicYear || "2026";
-
-//         console.log(`\n=== 🧮 CALCULATING 8-PO ATTAINMENT: ${targetCourse} - ${targetYear} ===`);
-
-//         // 1. FETCH ALL SUBJECTS
-//         const allSubjects = await FinalAttainment.find({
-//             course: targetCourse,
-//             academicYear: targetYear
-//         }).lean();
-
-//         if (!allSubjects || allSubjects.length === 0) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "No subjects found."
-//             });
-//         }
-
-//         // 2. FETCH CO-PO MAPPINGS
-//         const subjectIdsArray = allSubjects.map(doc => doc.subjectId);
-
-//         const allMatrices = await CoPoMatrix.find({
-//             subjectId: { $in: subjectIdsArray }
-//         }).lean();
-
-//         // 3. BUILD LOOKUP OBJECT
-//         const matrixDict = {};
-
-//         allMatrices.forEach(matDoc => {
-//             matrixDict[matDoc.subjectId] =
-//                 matDoc.mappingData ||
-//                 matDoc.matrix ||
-//                 matDoc.copoMapping ||
-//                 {};
-//         });
-
-//         const standardPOs = [
-//             'PO1',
-//             'PO2',
-//             'PO3',
-//             'PO4',
-//             'PO5',
-//             'PO6',
-//             'PO7',
-//             'PO8'
-//         ];
-
-//         // 4. PROCESS EACH SUBJECT
-//         const calculatedBatchData = allSubjects.map(doc => {
-
-//             const table = doc.attainmentTable || {};
-//             const extractedLevels = {};
-
-//             // Extract CO attainment levels
-//             Object.keys(table).forEach(coKey => {
-//                 if (
-//                     table[coKey] &&
-//                     table[coKey].grandTotal !== undefined
-//                 ) {
-//                     extractedLevels[coKey] = table[coKey].grandTotal;
-//                 }
-//             });
-
-//             const rawMatrix = matrixDict[doc.subjectId] || {};
-
-//             const formattedTable = [];
-
-//             const poTotals = {};
-//             const poWeightCounts = {};
-
-//             standardPOs.forEach(po => {
-//                 poTotals[po] = 0;
-//                 poWeightCounts[po] = 0;
-//             });
-
-//             // Build CO rows
-//             Object.keys(extractedLevels).forEach((coKey, index) => {
-
-//                 const coLevel = Number(extractedLevels[coKey]) || 0;
-
-//                 // Get mapping for current CO
-//                 const mappings = rawMatrix?.[coKey] || {};
-
-//                 const row = {
-//                     course: index === 0 ? doc.subjectId : "",
-//                     co: coKey,
-//                     attainmentLevel: coLevel
-//                 };
-
-//                 standardPOs.forEach(po => {
-
-//                     const weight =
-//                         mappings[po] === "" ||
-//                         mappings[po] === undefined ||
-//                         mappings[po] === null
-//                             ? null
-//                             : Number(mappings[po]);
-
-//                     row[po] = weight;
-
-//                     if (weight !== null) {
-//                         poTotals[po] += coLevel * weight;
-//                         poWeightCounts[po] += weight;
-//                     }
-//                 });
-
-//                 formattedTable.push(row);
-//             });
-
-//             // 5. DIRECT PO ATTAINMENT ROW
-//             const finalRow = {
-//                 course: "Direct PO Attainment",
-//                 co: "",
-//                 attainmentLevel: ""
-//             };
-
-//             standardPOs.forEach(po => {
-//                 finalRow[po] =
-//                     poWeightCounts[po] > 0
-//                         ? Number(
-//                               (
-//                                   poTotals[po] /
-//                                   poWeightCounts[po]
-//                               ).toFixed(2)
-//                           )
-//                         : null;
-//             });
-
-//             formattedTable.push(finalRow);
-
-//             return {
-//                 subjectId: doc.subjectId,
-//                 tableData: formattedTable
-//             };
-//         });
-
-//         return res.status(200).json({
-//             success: true,
-//             count: calculatedBatchData.length,
-//             data: calculatedBatchData
-//         });
-
-//     } catch (error) {
-//         console.error("Crash Error:", error);
-
-//         return res.status(500).json({
-//             success: false,
-//             error: error.message
-//         });
-//     }
-// };
-
-// module.exports = {
-//     extractAttainmentLevels
-// };
-
-
-
 const FinalAttainment = require('../models/finalAttainment');
 const CoPoMatrix = require('../models/coPoMapping');
-const DirectPoAttainment = require('../models/directPoAttainment'); // Your new schema
+const DirectPoAttainment = require('../models/directAttainment2');
+
+const STANDARD_POS = [
+    'PO1',
+    'PO2',
+    'PO3',
+    'PO4',
+    'PO5',
+    'PO6',
+    'PO7',
+    'PO8'
+];
 
 const extractAttainmentLevels = async (req, res) => {
     try {
-        const targetCourse = req.body.course || "MCA";
-        const targetYear = req.body.academicYear || "2026";
 
-        console.log(`\n=== 🧮 CALCULATING 8-PO ATTAINMENT: ${targetCourse} - ${targetYear} ===`);
+        const targetCourse = req.body?.course || 'MCA';
+        const targetYear = req.body?.academicYear || '2026';
 
-        // 1. FETCH ALL SUBJECTS
-        const allSubjects = await FinalAttainment.find({
-            course: targetCourse,
-            academicYear: targetYear
-        }).lean();
+        console.log(
+            `Calculating Direct PO Attainment: ${targetCourse} - ${targetYear}`
+        );
 
-        if (!allSubjects || allSubjects.length === 0) {
+        // Fetch only required fields
+        const allSubjects = await FinalAttainment.find(
+            {
+                course: targetCourse,
+                academicYear: targetYear
+            },
+            {
+                subjectId: 1,
+                attainmentTable: 1,
+                _id: 0
+            }
+        ).lean();
+
+        if (!allSubjects.length) {
             return res.status(404).json({
                 success: false,
-                message: "No subjects found."
+                message: 'No subjects found.'
             });
         }
 
-        // 2. FETCH CO-PO MAPPINGS
-        const subjectIdsArray = allSubjects.map(doc => doc.subjectId);
+        const subjectIds = allSubjects.map(
+            subject => subject.subjectId
+        );
 
-        const allMatrices = await CoPoMatrix.find({
-            subjectId: { $in: subjectIdsArray }
-        }).lean();
+        // Fetch mappings
+        const allMatrices = await CoPoMatrix.find(
+            {
+                subjectId: { $in: subjectIds }
+            },
+            {
+                subjectId: 1,
+                mappingData: 1,
+                matrix: 1,
+                copoMapping: 1,
+                _id: 0
+            }
+        ).lean();
 
-        // 3. BUILD LOOKUP OBJECT
-        const matrixDict = {};
+        // Create lookup map
+        const matrixLookup = new Map();
 
-        allMatrices.forEach(matDoc => {
-            matrixDict[matDoc.subjectId] =
-                matDoc.mappingData ||
-                matDoc.matrix ||
-                matDoc.copoMapping ||
-                {};
+        allMatrices.forEach(matrix => {
+            matrixLookup.set(
+                matrix.subjectId,
+                matrix.mappingData ||
+                matrix.matrix ||
+                matrix.copoMapping ||
+                {}
+            );
         });
 
-        const standardPOs = [
-            'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8'
-        ];
+        const calculatedBatchData = allSubjects.map(subject => {
 
-        // 4. PROCESS EACH SUBJECT
-        const calculatedBatchData = allSubjects.map(doc => {
+            const attainmentTable =
+                subject.attainmentTable || {};
 
-            const table = doc.attainmentTable || {};
+            const rawMatrix =
+                matrixLookup.get(subject.subjectId) || {};
+
+            const tableData = [];
+
+            const poTotals = Object.fromEntries(
+                STANDARD_POS.map(po => [po, 0])
+            );
+
+            const poWeights = Object.fromEntries(
+                STANDARD_POS.map(po => [po, 0])
+            );
+
             const extractedLevels = {};
 
-            // Extract CO attainment levels
-            Object.keys(table).forEach(coKey => {
+            Object.keys(attainmentTable).forEach(coKey => {
+
                 if (
-                    table[coKey] &&
-                    table[coKey].grandTotal !== undefined
+                    attainmentTable[coKey] &&
+                    attainmentTable[coKey].grandTotal !== undefined
                 ) {
-                    extractedLevels[coKey] = table[coKey].grandTotal;
+                    extractedLevels[coKey] =
+                        Number(
+                            attainmentTable[coKey].grandTotal
+                        ) || 0;
                 }
             });
 
-            const rawMatrix = matrixDict[doc.subjectId] || {};
+            const sortedCOs = Object.keys(
+                extractedLevels
+            ).sort(
+                (a, b) =>
+                    Number(a.replace('CO', '')) -
+                    Number(b.replace('CO', ''))
+            );
 
-            const formattedTable = [];
+            sortedCOs.forEach((coKey, index) => {
 
-            const poTotals = {};
-            const poWeightCounts = {};
+                const attainmentLevel =
+                    extractedLevels[coKey];
 
-            standardPOs.forEach(po => {
-                poTotals[po] = 0;
-                poWeightCounts[po] = 0;
-            });
-
-            // Build CO rows
-            Object.keys(extractedLevels).forEach((coKey, index) => {
-
-                const coLevel = Number(extractedLevels[coKey]) || 0;
-
-                // Get mapping for current CO
-                const mappings = rawMatrix?.[coKey] || {};
+                const mappings =
+                    rawMatrix?.[coKey] || {};
 
                 const row = {
-                    course: index === 0 ? doc.subjectId : "",
+                    course:
+                        index === 0
+                            ? subject.subjectId
+                            : '',
                     co: coKey,
-                    attainmentLevel: coLevel
+                    attainmentLevel
                 };
 
-                standardPOs.forEach(po => {
+                STANDARD_POS.forEach(po => {
 
                     const weight =
-                        mappings[po] === "" ||
-                        mappings[po] === undefined ||
-                        mappings[po] === null
+                        mappings[po] === '' ||
+                        mappings[po] === null ||
+                        mappings[po] === undefined
                             ? null
                             : Number(mappings[po]);
 
                     row[po] = weight;
 
                     if (weight !== null) {
-                        poTotals[po] += coLevel * weight;
-                        poWeightCounts[po] += weight;
+                        poTotals[po] +=
+                            attainmentLevel * weight;
+
+                        poWeights[po] += weight;
                     }
                 });
 
-                formattedTable.push(row);
+                tableData.push(row);
             });
 
-            // 5. DIRECT PO ATTAINMENT ROW
-            const finalRow = {
-                course: "Direct PO Attainment",
-                co: "",
-                attainmentLevel: ""
+            // Final Direct PO row
+            const directPoRow = {
+                course: 'Direct PO Attainment',
+                co: '',
+                attainmentLevel: ''
             };
 
-            standardPOs.forEach(po => {
-                finalRow[po] =
-                    poWeightCounts[po] > 0
+            STANDARD_POS.forEach(po => {
+
+                directPoRow[po] =
+                    poWeights[po] > 0
                         ? Number(
                               (
                                   poTotals[po] /
-                                  poWeightCounts[po]
+                                  poWeights[po]
                               ).toFixed(2)
                           )
                         : null;
             });
 
-            formattedTable.push(finalRow);
+            tableData.push(directPoRow);
 
             return {
-                subjectId: doc.subjectId,
-                tableData: formattedTable
+                subjectId: subject.subjectId,
+                tableData
             };
         });
 
-        // 6. 💾 SAVE TO THE DATABASE 
-        // This leverages the exact schema you have open in the Canvas
-        await DirectPoAttainment.findOneAndUpdate(
-            { course: targetCourse, academicYear: targetYear },
-            { 
-                $set: { 
-                    subjects: calculatedBatchData, // This saves the entire JSON array perfectly
-                    calculatedAt: new Date()
-                } 
-            },
-            { new: true, upsert: true } // Creates it if it doesn't exist, updates it if it does
-        );
-        
-        console.log("=== ✅ SAVED SUCCESSFULLY TO DB ===");
+        // Save result
+        const savedDocument =
+            await DirectPoAttainment.findOneAndUpdate(
+                {
+                    course: targetCourse,
+                    academicYear: targetYear
+                },
+                {
+                    $set: {
+                        course: targetCourse,
+                        academicYear: targetYear,
+                        subjects: calculatedBatchData,
+                        calculatedAt: new Date()
+                    }
+                },
+                {
+                    new: true,
+                    upsert: true,
+                    runValidators: true,
+                    setDefaultsOnInsert: true
+                }
+            ).lean();
 
-        // 7. RETURN JSON TO FRONTEND
         return res.status(200).json({
             success: true,
             count: calculatedBatchData.length,
-            data: calculatedBatchData
+            data: calculatedBatchData,
+            documentId: savedDocument._id
         });
 
     } catch (error) {
-        console.error("Crash Error:", error);
+
+        console.error(
+            'Direct PO Attainment Error:',
+            error
+        );
 
         return res.status(500).json({
             success: false,
