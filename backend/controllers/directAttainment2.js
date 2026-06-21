@@ -226,6 +226,59 @@ const extractAttainmentLevels = async (req, res) => {
     }
 };
 
+
+
+
+
+const handleGetDirectAttainment = async (req, res) => {
+    try {
+
+        const course = req.query.course || 'MCA';
+        const academicYear = req.query.academicYear || '2026';
+
+        const document = await DirectPoAttainment.findOne(
+            {
+                course,
+                academicYear
+            },
+            {
+                _id: 0,
+                createdAt: 0,
+                updatedAt: 0
+            }
+        ).lean();
+
+        if (!document) {
+            return res.status(404).json({
+                success: false,
+                message: 'Direct PO Attainment data not found'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            count: document.subjects.length,
+            data: document
+        });
+
+    } catch (error) {
+
+        console.error(
+            'Get Direct PO Attainment Error:',
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+
+
+
 module.exports = {
-    extractAttainmentLevels
+    extractAttainmentLevels,
+    handleGetDirectAttainment
 };
