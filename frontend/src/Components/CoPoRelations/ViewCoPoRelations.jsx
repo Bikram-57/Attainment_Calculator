@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { COLORS } from '../../constants/theme'
 
 function ViewCoPoRelations({ data, setOpenView }) {
-    const rows = Object.entries(data.mappingData);
-    const poColumns = Object.keys(rows[0][1]);
+    const rows = data.mappingData ? Object.entries(data?.mappingData) : [];
+    const poColumns = rows[0] ? Object.keys(rows[0][1]) : [];
 
     return (
         <div className='px-3 py-4'>
@@ -15,7 +15,7 @@ function ViewCoPoRelations({ data, setOpenView }) {
             </div>
             <div>
                 <div className="overflow-auto shadow">
-                    <table className="min-w-full text-xs text-center border-collapse whitespace-nowrap">
+                    {data.mappingData ? (<table className="min-w-full text-xs text-center border-collapse whitespace-nowrap">
                         <thead
                             className="sticky top-0 z-10"
                             style={{ backgroundColor: COLORS.latteDark }}
@@ -45,7 +45,11 @@ function ViewCoPoRelations({ data, setOpenView }) {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table>) :
+                        (
+                            <div className='text-center text-lg'>No data available</div>
+                        )
+                    }
                 </div>
             </div>
             <div className='flex justify-end'>

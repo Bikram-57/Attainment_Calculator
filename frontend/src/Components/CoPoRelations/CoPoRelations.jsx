@@ -16,9 +16,13 @@ function CoPoRelations() {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedSubjectData, setSelectedSubjectData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [noData, setNoData] = useState(false);
 
     const fetchData = async (sub) => {
+        setSelectedSubjectData({
+            subjectId: sub.subjectId,
+            academicYear: sub.academicYear,
+            course: sub.course
+        });
         try {
             const res = await axios.get('/co-po/relation', {
                 params: {
@@ -30,9 +34,6 @@ function CoPoRelations() {
             setSelectedSubjectData(res.data);
         } catch (error) {
             console.log('Axios Error | ViewCoPoRelations | fetchData(): ', error);
-            setSelectedSubjectData(null);
-            setNoData(true);
-            // alert("Data not available!");
         } finally {
             setLoading(false);
         }
@@ -120,7 +121,7 @@ function CoPoRelations() {
 
                 {/* Table */}
                 <div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
-                    {filteredSubjects?.length > 0 && !noData ? (
+                    {filteredSubjects?.length > 0 ? (
                         <table className="w-full text-md">
                             <thead>
                                 <tr
@@ -207,7 +208,8 @@ function CoPoRelations() {
             />
         )
     }
-    else if (openEdit && selectedSubjectData) {
+    // else if (openEdit && selectedSubjectData) {
+    else if (openEdit) {
         return (
             <EditCoPoRelations
                 data={selectedSubjectData}

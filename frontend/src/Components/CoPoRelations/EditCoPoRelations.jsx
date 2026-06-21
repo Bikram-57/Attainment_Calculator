@@ -2,15 +2,31 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { COLORS } from '../../constants/theme';
 import Loading from '../Loading';
+import ErrorSuccessMsg from '../ErrorSuccessMsg';
 
 function EditCoPoRelations({ data, setOpenEdit }) {
-    const [tableData, setTableData] = useState(data.mappingData);
+    // const [tableData, setTableData] = useState(data?.mappingData);
     const [isHovered, setIsHovered] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [successMsg, setSuccessMsg] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
 
-    const rows = Object.entries(tableData);
-    const poColumns = Object.keys(rows[0][1]);
-    const prevData = data.mappingData;
+    // const rows = Object.entries(tableData);
+    // const poColumns = Object.keys(rows[0][1]);
+
+    const defaultMappingData = {
+        CO1: { PO1: '', PO2: '', PO3: '', PO4: '', PO5: '', PO6: '', PO7: '', PO8: '' },
+        CO2: { PO1: '', PO2: '', PO3: '', PO4: '', PO5: '', PO6: '', PO7: '', PO8: '' },
+        CO3: { PO1: '', PO2: '', PO3: '', PO4: '', PO5: '', PO6: '', PO7: '', PO8: '' },
+        CO4: { PO1: '', PO2: '', PO3: '', PO4: '', PO5: '', PO6: '', PO7: '', PO8: '' },
+        CO5: { PO1: '', PO2: '', PO3: '', PO4: '', PO5: '', PO6: '', PO7: '', PO8: '' }
+    };
+
+    const [tableData, setTableData] = useState(data?.mappingData || defaultMappingData);
+
+    const prevData = data?.mappingData || defaultMappingData;
+    const coRows = ['CO1', 'CO2', 'CO3', 'CO4', 'CO5'];
+    const poColumns = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8'];
 
     const handleChange = (co, po, val) => {
         if (val !== '' && !['1', '2', '3'].includes(val)) return;
@@ -25,9 +41,10 @@ function EditCoPoRelations({ data, setOpenEdit }) {
     }
     const handleUpdate = async () => {
         if (prevData === tableData) {
-            setOpenEdit(false);
+            setErrorMsg("Please edit atleast one field before updating!");
             return;
         }
+        setErrorMsg('');
         setLoading(true);
         try {
             const res = await axios.post('/co-po/save-relation', {
@@ -36,8 +53,8 @@ function EditCoPoRelations({ data, setOpenEdit }) {
                 course: data.course,
                 mappingData: tableData
             })
-            setOpenEdit(false);
-            alert('Updated successfully!')
+            // setOpenEdit(false);
+            setSuccessMsg('Updated successfully!');
         } catch (error) {
             console.log('Axios Error | EditCoPoRelations | handleUpdate(): ', error);
         } finally {
@@ -72,7 +89,28 @@ function EditCoPoRelations({ data, setOpenEdit }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {rows.map(([co, val]) => (
+
+                            {coRows.map(co => (
+                                <tr key={co} className="bg-gray-200 hover:bg-gray-300">
+                                    <td className="border p-2 font-bold bg-gray-300">
+                                        {co}
+                                    </td>
+
+                                    {poColumns.map(po => (
+                                        <td key={po} className="border p-2 font-semibold">
+                                            <input
+                                                value={tableData[co][po]}
+                                                onChange={(e) =>
+                                                    handleChange(co, po, e.target.value)
+                                                }
+                                                className="w-20 h-8 text-center border border-gray-400 bg-white outline-none"
+                                            />
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+
+                            {/* {rows.map(([co, val]) => (
                                 <tr key={co} className="bg-gray-200 hover:bg-gray-300">
                                     <td className="border p-2 font-bold bg-gray-300">
                                         {co}
@@ -88,7 +126,7 @@ function EditCoPoRelations({ data, setOpenEdit }) {
                                         </td>
                                     ))}
                                 </tr>
-                            ))}
+                            ))} */}
                         </tbody>
                     </table>
                 </div>
@@ -119,6 +157,12 @@ function EditCoPoRelations({ data, setOpenEdit }) {
                     Close
                 </button>
             </div>
+            <ErrorSuccessMsg
+                errorMsg={errorMsg}
+                successMsg={successMsg}
+                setSuccessMsg={setSuccessMsg}
+                setIsOpen={setOpenEdit}
+            />
         </div>
     )
 }
