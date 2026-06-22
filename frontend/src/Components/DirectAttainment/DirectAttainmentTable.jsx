@@ -1,13 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { open, close } from '../../store/sideBarSlice';
 import { useEffect } from 'react';
+import axios from 'axios';
 
 function DirectPOAttainmentTable({ data, setIsOpen }) {
     const dispatch = useDispatch();
     const subjects = data?.subjects || [];
 
-    const handleDownload = () => { }
+    const [downloading, setDownloading] = useState(false);
+
+    const handleDownload = async () => {
+        try {
+            setDownloading(true);
+            const response = await axios.post('/report/direct-po',
+                {
+                    course: data.course,
+                    academicYear: data.academicYear
+                },
+                {
+                    responseType: 'blob'
+                }
+            );
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Direct_PO_${data.course}_${data.academicYear}.xlsx`;
+            document.body.appendChild(link);
+
+            link.click();
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Direct PO Report Download Failed:',error);
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     useEffect(() => {
         dispatch(close());
