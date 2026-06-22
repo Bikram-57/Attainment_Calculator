@@ -4,6 +4,7 @@ import { open, close } from '../../store/sideBarSlice';
 import { useEffect } from 'react';
 
 function DirectAttainmentTable({ data, setIsOpen }) {
+    console.log(data)
     const dispatch = useDispatch();
     const subject = data?.subjects?.[0];
 
@@ -62,9 +63,16 @@ function DirectAttainmentTable({ data, setIsOpen }) {
                                 {index === 0 && (
                                     <td
                                         rowSpan={coRows.length}
-                                        className="border p-2 font-semibold align-top bg-white"
+                                        className="border p-2 font-semibold align-top bg-white w-1/5"
                                     >
-                                        {row.course}
+                                        <div>
+                                            <div>
+                                                {subject.subjectName}
+                                            </div>
+                                            <div>
+                                                ({subject.subjectId})
+                                            </div>
+                                        </div>
                                     </td>
                                 )}
 

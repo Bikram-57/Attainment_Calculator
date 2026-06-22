@@ -56,6 +56,8 @@ import RubricsDeleteModal from "./Rubrics/modals/RubricsDeleteModal"
 import AddRubricsForm from "./Rubrics/AddRubricsForm";
 import DirectAttainment from "./DirectAttainment/DirectAttainment";
 import DirectAttainmentTable from "./DirectAttainment/DirectAttainmentTable";
+import DirectAttainmentHeader from "./DirectAttainment/DirectAttainmentHeader";
+import GenerateAttainmentForm from "./DirectAttainment/GenerateAttainmentForm";
 
 export {
     NavBar,
@@ -114,4 +116,6 @@ export {
     AddRubricsForm,
     DirectAttainment,
     DirectAttainmentTable,
+    DirectAttainmentHeader,
+    GenerateAttainmentForm,
 }
