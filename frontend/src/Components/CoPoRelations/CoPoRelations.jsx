@@ -100,7 +100,7 @@ function CoPoRelations() {
                     >
                         <input
                             type="text"
-                            placeholder="Search by id or name"
+                            placeholder="Search by subject Id or name"
                             value={search}
                             onChange={(e) => handleChange(e)}
                             className="w-full border-r px-3 py-1 text-sm outline-none"
