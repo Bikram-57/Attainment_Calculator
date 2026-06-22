@@ -16,6 +16,7 @@
 //             });
 //         }
 
+//         // Find Report
 //         const report = await DirectPoAttainment.findOne({
 //             course,
 //             academicYear
@@ -32,7 +33,7 @@
 //         const reportFolder = path.join(
 //             process.cwd(),
 //             'downloads',
-//             'direct-po-reports'
+//             'Direct_Attainment_Download'
 //         );
 
 //         if (!fs.existsSync(reportFolder)) {
@@ -41,29 +42,33 @@
 //             });
 //         }
 
-//         // Timestamp
-//         const now = new Date();
-
-//         const timestamp =
-//             now.getFullYear() +
-//             String(now.getMonth() + 1).padStart(2, '0') +
-//             String(now.getDate()).padStart(2, '0') +
-//             '_' +
-//             String(now.getHours()).padStart(2, '0') +
-//             String(now.getMinutes()).padStart(2, '0') +
-//             String(now.getSeconds()).padStart(2, '0');
-
+//         // Fixed filename
 //         const fileName =
-//             `Direct_PO_${course}_${academicYear}_${timestamp}.xlsx`;
+//             `Direct_PO_${course}_${academicYear}.xlsx`;
 
 //         const filePath = path.join(
 //             reportFolder,
 //             fileName
 //         );
 
+//         // If file already exists
+//         if (fs.existsSync(filePath)) {
+
+//             console.log(
+//                 `Using existing report: ${fileName}`
+//             );
+
+//             return res.download(
+//                 filePath,
+//                 fileName
+//             );
+//         }
+
 //         const workbook = new ExcelJS.Workbook();
 
-//         workbook.creator = 'Attainment Calculator';
+//         workbook.creator =
+//             'Attainment Calculator';
+
 //         workbook.created = new Date();
 
 //         const sheet = workbook.addWorksheet(
@@ -72,9 +77,9 @@
 
 //         report.subjects.forEach(subject => {
 
-//             // Subject Title
+//             // Subject Heading
 //             const titleRow = sheet.addRow([
-//                 `${subject.subjectId} - ${subject.subjectName}`
+//                 `${subject.subjectId} - ${subject.subjectName || ''}`
 //             ]);
 
 //             titleRow.font = {
@@ -109,37 +114,37 @@
 //             subject.tableData.forEach(row => {
 
 //                 sheet.addRow([
-//                     row.course,
-//                     row.co,
-//                     row.attainmentLevel,
-//                     row.PO1,
-//                     row.PO2,
-//                     row.PO3,
-//                     row.PO4,
-//                     row.PO5,
-//                     row.PO6,
-//                     row.PO7,
-//                     row.PO8
+//                     row.course || '',
+//                     row.co || '',
+//                     row.attainmentLevel ?? '',
+//                     row.PO1 ?? '',
+//                     row.PO2 ?? '',
+//                     row.PO3 ?? '',
+//                     row.PO4 ?? '',
+//                     row.PO5 ?? '',
+//                     row.PO6 ?? '',
+//                     row.PO7 ?? '',
+//                     row.PO8 ?? ''
 //                 ]);
 //             });
 
-//             // Blank Lines Between Subjects
+//             // Empty Rows Between Subjects
 //             sheet.addRow([]);
 //             sheet.addRow([]);
 //         });
 
-//         // Auto Column Width
+//         // Auto Width
 //         sheet.columns.forEach(column => {
 
-//             let maxLength = 15;
+//             // let maxLength = 15;
+//             let maxLength = 1;
 
 //             column.eachCell(
 //                 { includeEmpty: true },
 //                 cell => {
 
-//                     const value = cell.value
-//                         ? cell.value.toString()
-//                         : '';
+//                     const value =
+//                         cell.value?.toString() || '';
 
 //                     maxLength = Math.max(
 //                         maxLength,
@@ -148,7 +153,8 @@
 //                 }
 //             );
 
-//             column.width = maxLength + 3;
+//             // column.width = maxLength + 3;
+//             column.width = maxLength + 1;
 //         });
 
 //         // Save File
@@ -157,10 +163,9 @@
 //         );
 
 //         console.log(
-//             `Report Saved: ${filePath}`
+//             `Report Generated: ${filePath}`
 //         );
 
-//         // Download File
 //         return res.download(
 //             filePath,
 //             fileName
@@ -184,6 +189,8 @@
 //     downloadDirectPoReport
 // };
 
+
+
 const ExcelJS = require('exceljs');
 const fs = require('fs');
 const path = require('path');
@@ -202,7 +209,7 @@ const downloadDirectPoReport = async (req, res) => {
             });
         }
 
-        // Find Report
+        // Fetch report
         const report = await DirectPoAttainment.findOne({
             course,
             academicYear
@@ -215,11 +222,11 @@ const downloadDirectPoReport = async (req, res) => {
             });
         }
 
-        // Create Folder
+        // Create download folder
         const reportFolder = path.join(
             process.cwd(),
             'downloads',
-            'direct-po-reports'
+            'Direct_Attainment_Download'
         );
 
         if (!fs.existsSync(reportFolder)) {
@@ -228,7 +235,6 @@ const downloadDirectPoReport = async (req, res) => {
             });
         }
 
-        // Fixed filename
         const fileName =
             `Direct_PO_${course}_${academicYear}.xlsx`;
 
@@ -237,11 +243,11 @@ const downloadDirectPoReport = async (req, res) => {
             fileName
         );
 
-        // If file already exists
+        // Return existing file if present
         if (fs.existsSync(filePath)) {
 
             console.log(
-                `Using existing report: ${fileName}`
+                `Using existing file: ${fileName}`
             );
 
             return res.download(
@@ -261,16 +267,35 @@ const downloadDirectPoReport = async (req, res) => {
             'Direct PO Attainment'
         );
 
+        // Fixed widths
+        sheet.columns = [
+            { width: 20 }, // Course
+            { width: 8 },  // CO
+            { width: 16 }, // Attainment
+            { width: 8 },  // PO1
+            { width: 8 },  // PO2
+            { width: 8 },  // PO3
+            { width: 8 },  // PO4
+            { width: 8 },  // PO5
+            { width: 8 },  // PO6
+            { width: 8 },  // PO7
+            { width: 8 }   // PO8
+        ];
+
         report.subjects.forEach(subject => {
 
             // Subject Heading
             const titleRow = sheet.addRow([
-                `${subject.subjectId} - ${subject.subjectName || ''}`
+                `${subject.subjectId} - ${subject.subjectName || 'Unknown Subject'}`
             ]);
 
             titleRow.font = {
                 bold: true,
                 size: 14
+            };
+
+            titleRow.alignment = {
+                horizontal: 'center'
             };
 
             sheet.mergeCells(
@@ -296,13 +321,28 @@ const downloadDirectPoReport = async (req, res) => {
                 bold: true
             };
 
-            // Data Rows
-            subject.tableData.forEach(row => {
+            headerRow.alignment = {
+                horizontal: 'center',
+                vertical: 'middle'
+            };
+
+            // Get CO rows only
+            const coRows = subject.tableData.filter(
+                row => row.co
+            );
+
+            const firstDataRow =
+                sheet.rowCount + 1;
+
+            // Add CO rows
+            coRows.forEach((row, index) => {
 
                 sheet.addRow([
-                    row.course || '',
-                    row.co || '',
-                    row.attainmentLevel ?? '',
+                    index === 0
+                        ? subject.subjectId
+                        : '',
+                    row.co,
+                    row.attainmentLevel,
                     row.PO1 ?? '',
                     row.PO2 ?? '',
                     row.PO3 ?? '',
@@ -314,34 +354,88 @@ const downloadDirectPoReport = async (req, res) => {
                 ]);
             });
 
-            // Empty Rows Between Subjects
+            const lastDataRow =
+                sheet.rowCount;
+
+            // Merge Course Column
+            if (
+                lastDataRow >
+                firstDataRow
+            ) {
+                sheet.mergeCells(
+                    firstDataRow,
+                    1,
+                    lastDataRow,
+                    1
+                );
+            }
+
+            // Center merged cell
+            sheet.getCell(
+                `A${firstDataRow}`
+            ).alignment = {
+                horizontal: 'center',
+                vertical: 'middle'
+            };
+
+            // Direct PO Row
+            const directPoRow =
+                subject.tableData.find(
+                    row =>
+                        row.course ===
+                        'Direct PO Attainment'
+                );
+
+            if (directPoRow) {
+
+                sheet.addRow([
+                    'Direct PO Attainment',
+                    '',
+                    '',
+                    directPoRow.PO1 ?? '',
+                    directPoRow.PO2 ?? '',
+                    directPoRow.PO3 ?? '',
+                    directPoRow.PO4 ?? '',
+                    directPoRow.PO5 ?? '',
+                    directPoRow.PO6 ?? '',
+                    directPoRow.PO7 ?? '',
+                    directPoRow.PO8 ?? ''
+                ]);
+            }
+
+            // Empty rows between subjects
             sheet.addRow([]);
             sheet.addRow([]);
         });
 
-        // Auto Width
-        sheet.columns.forEach(column => {
+        // Apply borders and alignment
+        sheet.eachRow(row => {
 
-            let maxLength = 15;
+            row.eachCell(cell => {
 
-            column.eachCell(
-                { includeEmpty: true },
-                cell => {
+                cell.alignment = {
+                    horizontal: 'center',
+                    vertical: 'middle'
+                };
 
-                    const value =
-                        cell.value?.toString() || '';
-
-                    maxLength = Math.max(
-                        maxLength,
-                        value.length
-                    );
-                }
-            );
-
-            column.width = maxLength + 3;
+                cell.border = {
+                    top: {
+                        style: 'thin'
+                    },
+                    left: {
+                        style: 'thin'
+                    },
+                    bottom: {
+                        style: 'thin'
+                    },
+                    right: {
+                        style: 'thin'
+                    }
+                };
+            });
         });
 
-        // Save File
+        // Save workbook
         await workbook.xlsx.writeFile(
             filePath
         );
