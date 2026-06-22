@@ -277,8 +277,108 @@ const handleGetDirectAttainment = async (req, res) => {
 
 
 
+const handleGetAllReports = async (req, res) => {
+    try {
+
+        const reports = await DirectPoAttainment.find(
+            {},
+            {
+                course: 1,
+                academicYear: 1,
+                calculatedAt: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                subjects: 1
+            }
+        )
+        .sort({ calculatedAt: -1 })
+        .lean();
+
+        const formattedReports = reports.map(report => ({
+            id: report._id,
+            course: report.course,
+            academicYear: report.academicYear,
+            subjectCount: report.subjects?.length || 0,
+            calculatedAt: report.calculatedAt,
+            createdAt: report.createdAt
+        }));
+
+        return res.status(200).json({
+            success: true,
+            count: formattedReports.length,
+            data: formattedReports
+        });
+
+    } catch (error) {
+
+        console.error(
+            'Get Reports Error:',
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+
+
+
+
+const handleGetReportByYear = async (req, res) => {
+    try {
+
+        const { academicYear } = req.body;
+
+        if (!academicYear) {
+            return res.status(400).json({
+                success: false,
+                message: 'academicYear is required'
+            });
+        }
+
+        const reports = await DirectPoAttainment.find(
+            {
+                academicYear
+            },
+            {
+                course: 1,
+                academicYear: 1,
+                calculatedAt: 1,
+                createdAt: 1
+            }
+        )
+        .sort({ calculatedAt: -1 })
+        .lean();
+
+        return res.status(200).json({
+            success: true,
+            count: reports.length,
+            data: reports
+        });
+
+    } catch (error) {
+
+        console.error(
+            'Get Reports By Year Error:',
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+
+
 
 module.exports = {
     extractAttainmentLevels,
-    handleGetDirectAttainment
+    handleGetDirectAttainment,
+    handleGetAllReports,
+    handleGetReportByYear
 };
