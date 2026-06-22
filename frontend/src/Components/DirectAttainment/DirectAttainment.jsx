@@ -29,10 +29,17 @@ function DirectAttainment() {
         }
     }
 
-    const filteredAllData = allData.filter(directAttain =>
-        directAttain.course.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-        String(directAttain.academicYear).toLowerCase().includes(searchQuery.toLowerCase().trim())
-    );
+    // const filteredAllData = allData.filter(directAttain =>
+    //     directAttain.course.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
+    //     String(directAttain.academicYear).toLowerCase().includes(searchQuery.toLowerCase().trim())
+    // );
+
+    const filteredAllData = allData.filter(directAttain => {
+        const searchText = `${directAttain.course} ${directAttain.academicYear}`
+            .toLowerCase();
+
+        return searchText.includes(searchQuery.toLowerCase().trim());
+    });
 
     const handleView = async (course, academicYear) => {
         setLoadingView(true);
