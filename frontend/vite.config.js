@@ -26,6 +26,7 @@ export default defineConfig({
 			'/assignSub/': 'http://localhost:8000',
 			'/file/': 'http://localhost:8000',
 			'/rubrics/': 'http://localhost:8000',
+			'/dir/': 'http://localhost:8000',
 		},
 	},
 })
