@@ -7,6 +7,8 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
     const dispatch = useDispatch();
     const subjects = data?.subjects || [];
 
+    const handleDownload = () => { }
+
     useEffect(() => {
         dispatch(close());
         return () => {
@@ -16,8 +18,16 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
     return (
         <div className="bg-white p-4">
             <div className='font-semibold text-lg pb-3 flex justify-between items-center'>
-                <div>
-                    Direct Attainment: {data.course} - {data.academicYear}
+                <div className='flex items-center gap-5'>
+                    <div>
+                        Direct Attainment: {data.course} - {data.academicYear}
+                    </div>
+                    <button
+                        className='border px-2 py-1 rounded-md cursor-pointer text-sm'
+                        onClick={handleDownload}
+                    >
+                        Download
+                    </button>
                 </div>
                 <button
                     className='px-3 py-1 rounded-md bg-red-500 hover:bg-red-600 text-white font-semibold cursor-pointer'
