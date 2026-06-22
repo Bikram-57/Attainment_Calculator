@@ -21,12 +21,12 @@ const marks = require('./routes/marks');
 const coPoMapping = require('./routes/coPoMapping');
 const assignSubject = require('./routes/assignSubject');
 const calculatedPo = require('./routes/calculatedPo');
-const directPoAttain = require('./routes/directPoAttainment');
+const directAttainemt = require('./routes/directAttainemt');
 const uploadAllSubjects = require('./routes/uploadAllSubjects');
 const uploadRubrics = require('./routes/rubrics');
 const downloadReport = require('./routes/downloadReport');
+const downloadDirectAttainmentReport = require('./routes/downloadDirectAttainmentReport');
 
-const directAttainemt2 = require('./routes/directAttainemt2');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -69,13 +69,11 @@ app.use("/mark", marks);
 app.use("/co-po", coPoMapping);
 app.use("/assignSub", assignSubject);
 app.use("/calpo", calculatedPo);
-app.use("/directpo", directPoAttain);
+app.use("/dir", directAttainemt);
 app.use("/uploadAll", uploadAllSubjects);
 app.use("/rubrics", uploadRubrics);
 app.use("/file", downloadReport);
-
-
-app.use("/dir", directAttainemt2);
+app.use("/report", downloadDirectAttainmentReport);
 
 
 app.listen(PORT, () => {

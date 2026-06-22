@@ -4,7 +4,7 @@ const {
     handleGetDirectAttainment,
     handleGetAllReports,
     handleGetReportByYear
- } = require('../controllers/directAttainment2');
+ } = require('../controllers/directAttainment');
 
 const router = express.Router();
 
