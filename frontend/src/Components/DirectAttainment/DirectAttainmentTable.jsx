@@ -27,7 +27,7 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
 
             const link = document.createElement('a');
             link.href = url;
-            link.download = `Direct_PO_${data.course}_${data.academicYear}.xlsx`;
+            link.download = `Direct_PO_${data.course}_${data.academicYear.replace(/\//g, '-')}.xlsx`;
             document.body.appendChild(link);
 
             link.click();
@@ -55,10 +55,11 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
                         Direct Attainment: {data.course} - {data.academicYear}
                     </div>
                     <button
-                        className='border px-2 py-1 rounded-md cursor-pointer text-sm'
+                        className='border px-2 py-1 rounded-md cursor-pointer text-sm disabled:cursor-not-allowed'
                         onClick={handleDownload}
+                        disabled={downloading}
                     >
-                        Download
+                        {!downloading ? 'Download' : 'Downloading...'}
                     </button>
                 </div>
                 <button
