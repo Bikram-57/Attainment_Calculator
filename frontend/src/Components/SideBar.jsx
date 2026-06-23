@@ -10,6 +10,9 @@ import { ImStatsBars2 } from "react-icons/im";
 import { BsCardChecklist } from "react-icons/bs";
 import { HiMiniUsers } from "react-icons/hi2";
 import { FaGraduationCap } from "react-icons/fa6";
+import { IoMdDownload } from "react-icons/io";
+import { SiGoogleclassroom } from "react-icons/si";
+import { MdTopic } from "react-icons/md";
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { COLORS } from "../constants/theme";
@@ -22,22 +25,13 @@ function SideBar() {
     const latteDarkShade = '#e4ddd3';
     const fontShade = '#ffffff';
     return (
-        // <div className={`h-screen bg-gray-50 ${isOpen ? 'w-[20%] translate-x-0' : 'w-0 -translate-x-full'} transition-all duration-300 ease-in-out overflow-hidden`}>
-        // <div
-        //     className={`
-        //         fixed top-0 left-0 h-screen w-[17%] bg-gray-50
-        //         transform transition-transform duration-300 ease-in-out
-        //         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        //     `}
-        // >
         <div
             className={`
-                fixed top-0 left-0 h-screen w-[17%] transform transition-transform duration-300 ease-in-out
+                fixed top-0 left-0 h-screen overflow-y-auto w-[17%] transform transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}
             style={{ backgroundColor: COLORS.mint }}
         >
-            {/* <div className='h-15 w-full p-2 flex gap-2 justify-between items-center text-blue-900 bg-white'> */}
             <div
                 className='h-15 w-full p-2 flex gap-2 justify-between items-center'
                 style={{
@@ -49,29 +43,25 @@ function SideBar() {
                 <div className='text-xs font-bold'>Student Performance Assessment for Outcome Based Education</div>
             </div>
             <div
-                className='p-3 font-semibold text-lg'
+                className='p-3 font-semibold text-md'
                 style={{ color: COLORS.font }}
             >
                 <div className='flex items-center gap-1'>
                     <IoOptionsOutline />
                     <div>Dashboard</div>
                 </div>
-                <div className='my-4'>
-                    <div className='flex items-center gap-1'>
+
+                <div className='my-2'>
+                    {/* Menu */}
+                    <div className='flex items-center gap-1 text-lg'>
                         <CiMenuKebab />
                         <div>Menu</div>
                     </div>
                     <div className=''>
                         <NavLink
                             to='/upload-data'
-                            // className={({ isActive }) => (
-                            //     `${isActive ? 'bg-blue-100 text-blue-900' : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
-                            // )}
-                            // className={({ isActive }) => (
-                            //     `${isActive ? `bg-[${latteShade}] text-[${mintDarkShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
-                            // )}
                             className={({ isActive }) => (
-                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-2 px-6`
                             )}
                             style={({ isActive }) => ({
                                 backgroundColor: isActive ? COLORS.mintDark : 'transparent',
@@ -83,11 +73,8 @@ function SideBar() {
                         </NavLink>
                         <NavLink
                             to='/fetch-data'
-                            // className={({ isActive }) => (
-                            //     `${isActive ? `bg-[${latteShade}] text-[${mintDarkShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
-                            // )}
                             className={({ isActive }) => (
-                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-2 px-6`
                             )}
                             style={({ isActive }) => ({
                                 backgroundColor: isActive ? COLORS.mintDark : 'transparent',
@@ -101,7 +88,7 @@ function SideBar() {
                         <NavLink
                             to='/co_po_relations'
                             className={({ isActive }) => (
-                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-2 px-6`
                             )}
                             style={({ isActive }) => ({
                                 backgroundColor: isActive ? COLORS.mintDark : 'transparent',
@@ -114,7 +101,7 @@ function SideBar() {
                         <NavLink
                             to='/direct-attainment'
                             className={({ isActive }) => (
-                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-2 px-6`
                             )}
                             style={({ isActive }) => ({
                                 backgroundColor: isActive ? COLORS.mintDark : 'transparent',
@@ -125,62 +112,66 @@ function SideBar() {
                             <div>Direct Attainment</div>
                         </NavLink>
                     </div>
-                    <div className='flex items-center gap-1 my-4 w-full'>
-                        <BiSolidReport />
-                        {/* <div> */}
+                    {/* Downloads */}
+                    <div className="flex items-center gap-1 my-2 text-lg">
+                        <IoMdDownload />
+                        <div>Downloads</div>
+                    </div>
+                    <div>
                         <NavLink
-                            to='/download-reports'
-                            // className={({ isActive }) => (
-                            //     `${isActive ? `bg-[${latteShade}] text-[${mintDarkShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
-                            // )}
+                            to='/download-subject-report'
                             className={({ isActive }) => (
-                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 w-full`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 px-6`
                             )}
-                            // className={({ isActive }) => (
-                            //     `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
-                            // )}
                             style={({ isActive }) => ({
                                 backgroundColor: isActive ? COLORS.mintDark : 'transparent',
                                 color: COLORS.font
                             })}
                         >
-                            {/* <FaFileDownload /> */}
-                            <div>Download Reports</div>
+                            <MdTopic />
+                            <div>Subject Report</div>
                         </NavLink>
-                        {/* </div> */}
+                        <NavLink
+                            to='/download-batch-report'
+                            className={({ isActive }) => (
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-2 px-6`
+                            )}
+                            style={({ isActive }) => ({
+                                backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                                color: COLORS.font
+                            })}
+                        >
+                            <SiGoogleclassroom />
+                            <div>Batch Report</div>
+                        </NavLink>
                     </div>
-                    <div className='flex items-center gap-1 my-4 w-full'>
+
+                    {/* Rubrics */}
+                    <div className='flex items-center gap-1 my-2 text-lg w-full'>
                         <BiSolidReport />
-                        {/* <div> */}
                         <NavLink
                             to='/rubrics'
-                            // className={({ isActive }) => (
-                            //     `${isActive ? `bg-[${latteShade}] text-[${mintDarkShade}] font-bold` : 'bg-transparent'} flex items-center gap-1 mt-4 px-6`
-                            // )}
                             className={({ isActive }) => (
                                 `${isActive ? 'font-bold' : ''} flex items-center gap-1 w-full`
                             )}
-                            // className={({ isActive }) => (
-                            //     `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
-                            // )}
                             style={({ isActive }) => ({
                                 backgroundColor: isActive ? COLORS.mintDark : 'transparent',
                                 color: COLORS.font
                             })}
                         >
-                            {/* <FaFileDownload /> */}
                             <div>Rubrics</div>
                         </NavLink>
-                        {/* </div> */}
                     </div>
-                    <div className='flex items-center gap-1 my-4'>
+
+                    {/* Analysis */}
+                    <div className='flex items-center gap-1 my-2 text-lg'>
                         <BiSolidReport />
                         <div>Analysis</div>
                     </div>
                     <NavLink
                         to='/subject-report'
                         className={({ isActive }) => (
-                            `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-4 px-6`
+                            `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-2 px-6`
                         )}
                         style={({ isActive }) => ({
                             backgroundColor: isActive ? COLORS.mintDark : 'transparent',
@@ -190,15 +181,13 @@ function SideBar() {
                         <LiaChartBarSolid />
                         <div>Subject Report</div>
                     </NavLink>
-                    <div className='flex items-center gap-1 my-4 '>
+                    
+                    {/* Subjects */}
+                    <div className='flex items-center gap-1 my-2 text-lg'>
                         <LuNotebookText />
                         <div>Subjects</div>
                     </div>
                     <div>
-                        {/* <div className='flex items-center gap-1 px-6'>
-                            <ImStatsBars2 />
-                            <div>Manage Subjects</div>
-                        </div> */}
                         <NavLink
                             to='/subject'
                             className={({ isActive }) => (
@@ -212,15 +201,10 @@ function SideBar() {
                             <ImStatsBars2 />
                             <div>Manage Subjects</div>
                         </NavLink>
-                        {/* <div className='flex items-center gap-1 px-6 my-4'>
-                            <BsCardChecklist />
-                            <div>Assign Subjects</div>
-                        </div> */}
                         <NavLink
                             to='/'
                             className={({ isActive }) => (
-                                `${isActive ? 'font-bold' : ''}
-                            flex items-center gap-1 mt-4 px-6 cursor-pointer`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 mt-2 px-6 cursor-pointer`
                             )}
                             style={({ isActive }) => ({
                                 backgroundColor: isActive ? COLORS.mintDark : 'transparent',
@@ -231,7 +215,9 @@ function SideBar() {
                             <div>Assign Subjects</div>
                         </NavLink>
                     </div>
-                    <div className='flex items-center gap-1 my-4'>
+
+                    {/* Faculty */}
+                    <div className='flex items-center gap-1 my-2 text-lg'>
                         <CiMenuKebab />
                         <div>Faculty</div>
                     </div>

@@ -13,7 +13,6 @@ import {
 	CoPoRelations,
 	ContactUs,
 	AssignSubjects,
-	DownloadReports,
 	UnderDevelopment,
 	PageNotFound,
 	Profile,
@@ -22,9 +21,11 @@ import {
 	ForgotPassword,
 	Rubrics,
 	DirectAttainment,
+	DownloadBatchReport,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
+import DownloadSubjectReport from './Components/DownloadReports/DownloadSubjectReport.jsx'
 
 
 const router = createBrowserRouter([
@@ -87,8 +88,13 @@ const router = createBrowserRouter([
 				handle: { title: 'Direct Attainment' },
 			},
 			{
-				path: 'download-reports',
-				element: <DownloadReports />,
+				path: 'download-subject-report',
+				element: <DownloadSubjectReport />,
+				handle: { title: 'Download Reports' },
+			},
+			{
+				path: 'download-batch-report',
+				element: <DownloadBatchReport />,
 				handle: { title: 'Download Reports' },
 			},
 			{

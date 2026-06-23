@@ -33,7 +33,6 @@ import AddAllSubjectsForm from "./Subject/AddAllSubjectsForm";
 import AssignSubjects from "./AssignSubjects/AssignSubjects";
 import AssignSubjectForm from "./AssignSubjects/AssignSubjectForm";
 import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
-import DownloadReports from "./DownloadReports/DownloadReports";
 import YearFilter from "./YearFilter";
 import UnderDevelopment from "./UnderDevelopment";
 import PageNotFound from "./PageNotFound";
@@ -58,6 +57,8 @@ import DirectAttainment from "./DirectAttainment/DirectAttainment";
 import DirectAttainmentTable from "./DirectAttainment/DirectAttainmentTable";
 import DirectAttainmentHeader from "./DirectAttainment/DirectAttainmentHeader";
 import GenerateAttainmentForm from "./DirectAttainment/GenerateAttainmentForm";
+import DownloadBatchReport from "./DownloadReports/DownloadBatchReport";
+import DownloadSubjectReport from "./DownloadReports/DownloadSubjectReport";
 
 export {
     NavBar,
@@ -93,7 +94,6 @@ export {
     AssignSubjects,
     AssignSubjectForm,
     AssignSubjectsHeader,
-    DownloadReports,
     YearFilter,
     UnderDevelopment,
     PageNotFound,
@@ -118,4 +118,6 @@ export {
     DirectAttainmentTable,
     DirectAttainmentHeader,
     GenerateAttainmentForm,
+    DownloadBatchReport,
+    DownloadSubjectReport,
 }
