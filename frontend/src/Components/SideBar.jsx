@@ -147,19 +147,23 @@ function SideBar() {
                     </div>
 
                     {/* Rubrics */}
-                    <div className='flex items-center gap-1 my-2 text-lg w-full'>
+                    <div className="flex items-center gap-1 my-2 text-lg">
                         <BiSolidReport />
+                        <div>Rubrics</div>
+                    </div>
+                    <div>
                         <NavLink
                             to='/rubrics'
                             className={({ isActive }) => (
-                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 w-full`
+                                `${isActive ? 'font-bold' : ''} flex items-center gap-1 px-6`
                             )}
                             style={({ isActive }) => ({
                                 backgroundColor: isActive ? COLORS.mintDark : 'transparent',
                                 color: COLORS.font
                             })}
                         >
-                            <div>Rubrics</div>
+                            <BiSolidReport />
+                            <div>Manage Rubrics</div>
                         </NavLink>
                     </div>
 
@@ -181,7 +185,7 @@ function SideBar() {
                         <LiaChartBarSolid />
                         <div>Subject Report</div>
                     </NavLink>
-                    
+
                     {/* Subjects */}
                     <div className='flex items-center gap-1 my-2 text-lg'>
                         <LuNotebookText />

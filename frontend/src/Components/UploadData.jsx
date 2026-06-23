@@ -100,10 +100,10 @@ function UploadData() {
 		formData.append('academicYear', academicYear);
 		formData.append('course', course);
 
+		setErrorMsg('');
 		try {
 			const res = await axios.post('/mark/upload-raw', formData);
 			setSuccessMsg(res.data.message);
-			setErrorMsg('');
 			setFile(null);
 			setAcademicYear('');
 			setCourse('');
@@ -115,6 +115,9 @@ function UploadData() {
 			console.log("Error on handleUpload || ", err);
 		} finally {
 			setUploading(false);
+			if (fileInputRef.current) {
+				fileInputRef.current.value = '';
+			}
 		}
 	}
 
@@ -168,7 +171,7 @@ function UploadData() {
 				{/* TODO: FIX MAX HEIGHT OF THE DROPDOWN MENU */}
 				<select
 					className={`${isDisabled ? 'cursor-not-allowed text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none h-8`}
-					style={{backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font}}
+					style={{ backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font }}
 					value={subjectId}
 					onChange={(e) => setSubjectId(e.target.value)}
 					disabled={isDisabled}
