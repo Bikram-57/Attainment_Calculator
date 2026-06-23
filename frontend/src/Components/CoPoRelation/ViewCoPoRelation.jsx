@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { COLORS } from '../../constants/theme'
 
-function ViewCoPoRelations({ data, setOpenView }) {
+function ViewCoPoRelation({ data, setOpenView }) {
     const rows = data.mappingData ? Object.entries(data?.mappingData) : [];
     const poColumns = rows[0] ? Object.keys(rows[0][1]) : [];
 
@@ -64,4 +64,4 @@ function ViewCoPoRelations({ data, setOpenView }) {
     )
 }
 
-export default ViewCoPoRelations
+export default ViewCoPoRelation

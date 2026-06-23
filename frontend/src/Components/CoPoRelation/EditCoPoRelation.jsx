@@ -4,7 +4,7 @@ import { COLORS } from '../../constants/theme';
 import Loading from '../Loading';
 import ErrorSuccessMsg from '../ErrorSuccessMsg';
 
-function EditCoPoRelations({ data, setOpenEdit }) {
+function EditCoPoRelation({ data, setOpenEdit }) {
     // const [tableData, setTableData] = useState(data?.mappingData);
     const [isHovered, setIsHovered] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -56,7 +56,7 @@ function EditCoPoRelations({ data, setOpenEdit }) {
             // setOpenEdit(false);
             setSuccessMsg('Updated successfully!');
         } catch (error) {
-            console.log('Axios Error | EditCoPoRelations | handleUpdate(): ', error);
+            console.log('Axios Error | EditCoPoRelation | handleUpdate(): ', error);
         } finally {
             setLoading(false);
         }
@@ -167,4 +167,4 @@ function EditCoPoRelations({ data, setOpenEdit }) {
     )
 }
 
-export default EditCoPoRelations
+export default EditCoPoRelation

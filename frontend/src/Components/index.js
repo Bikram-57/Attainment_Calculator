@@ -1,5 +1,4 @@
 import NavBar from "./NavBar/NavBar";
-import SideBar from "./SideBar";
 import Faculty from "./Faculty/Faculty";
 import FacultyHeader from "./Faculty/FacultyHeader";
 import Subject from "./Subject/Subject";
@@ -24,9 +23,9 @@ import SubjectViewModal from "./Subject/modals/SubjectViewModal";
 import SubjectEditModal from "./Subject/modals/SubjectEditModal";
 import SubjectDeleteModal from "./Subject/modals/SubjectDeleteModal";
 import AddSubjectForm from "./Subject/AddSubjectForm";
-import CoPoRelations from "./CoPoRelations/CoPoRelations";
-import ViewCoPoRelations from "./CoPoRelations/ViewCoPoRelations";
-import EditCoPoRelations from "./CoPoRelations/EditCoPoRelations";
+import CoPoRelation from "./CoPoRelation/CoPoRelation";
+import ViewCoPoRelation from "./CoPoRelation/ViewCoPoRelation";
+import EditCoPoRelation from "./CoPoRelation/EditCoPoRelation";
 import Footer from "./Footer";
 import ContactUs from "./ContactUs";
 import AddAllSubjectsForm from "./Subject/AddAllSubjectsForm";
@@ -59,6 +58,9 @@ import DirectAttainmentHeader from "./DirectAttainment/DirectAttainmentHeader";
 import GenerateAttainmentForm from "./DirectAttainment/GenerateAttainmentForm";
 import DownloadBatchReport from "./DownloadReports/DownloadBatchReport";
 import DownloadSubjectReport from "./DownloadReports/DownloadSubjectReport";
+import SideBar from "./SideBar/SideBar";
+import SideBarSection from "./SideBar/SideBarSection";
+import SideBarTab from "./SideBar/SideBarTab";
 
 export {
     NavBar,
@@ -85,9 +87,9 @@ export {
     SubjectEditModal,
     SubjectDeleteModal,
     AddSubjectForm,
-    CoPoRelations,
-    ViewCoPoRelations,
-    EditCoPoRelations,
+    CoPoRelation,
+    ViewCoPoRelation,
+    EditCoPoRelation,
     Footer,
     ContactUs,
     AddAllSubjectsForm,
@@ -120,4 +122,6 @@ export {
     GenerateAttainmentForm,
     DownloadBatchReport,
     DownloadSubjectReport,
+    SideBarSection,
+    SideBarTab,
 }

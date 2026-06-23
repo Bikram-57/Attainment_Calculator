@@ -10,7 +10,7 @@ import {
 	COAttainment,
 	FinalCOAttainment,
 	POAttainment,
-	CoPoRelations,
+	CoPoRelation,
 	ContactUs,
 	AssignSubjects,
 	UnderDevelopment,
@@ -78,8 +78,8 @@ const router = createBrowserRouter([
 				handle: { title: 'Fetch Data' },
 			},
 			{
-				path: 'co_po_relations',
-				element: <CoPoRelations />,
+				path: 'co_po_relation',
+				element: <CoPoRelation />,
 				handle: { title: 'CO PO Relations' },
 			},
 			{

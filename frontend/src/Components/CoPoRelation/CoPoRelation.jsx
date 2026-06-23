@@ -3,12 +3,12 @@ import { MdRemoveRedEye } from "react-icons/md";
 import { GrEdit } from "react-icons/gr";
 import axios from 'axios';
 import { BsSearch } from "react-icons/bs";
-import ViewCoPoRelations from './ViewCoPoRelations';
-import EditCoPoRelations from './EditCoPoRelations';
+import ViewCoPoRelation from './ViewCoPoRelation';
+import EditCoPoRelation from './EditCoPoRelation';
 import { COLORS } from '../../constants/theme'
 import Loading from '../Loading';
 
-function CoPoRelations() {
+function CoPoRelation() {
     const [subjects, setSubjects] = useState(null);
     const [search, setSearch] = useState("");
     const [searchQuery, setSearchQuery] = useState('');
@@ -33,7 +33,7 @@ function CoPoRelations() {
             });
             setSelectedSubjectData(res.data);
         } catch (error) {
-            console.log('Axios Error | ViewCoPoRelations | fetchData(): ', error);
+            console.log('Axios Error | ViewCoPoRelation | fetchData(): ', error);
         } finally {
             setLoading(false);
         }
@@ -70,7 +70,7 @@ function CoPoRelations() {
                 const res = await axios.get('/sub/');
                 setSubjects(res.data.data);
             } catch (error) {
-                console.log('Axios Error | CoPoRelations | fetchSubjects(): ', error);
+                console.log('Axios Error | CoPoRelation | fetchSubjects(): ', error);
             } finally {
                 setLoading(false);
             }
@@ -202,7 +202,7 @@ function CoPoRelations() {
     }
     else if (openView && selectedSubjectData) {
         return (
-            <ViewCoPoRelations
+            <ViewCoPoRelation
                 data={selectedSubjectData}
                 setOpenView={setOpenView}
             />
@@ -211,7 +211,7 @@ function CoPoRelations() {
     // else if (openEdit && selectedSubjectData) {
     else if (openEdit) {
         return (
-            <EditCoPoRelations
+            <EditCoPoRelation
                 data={selectedSubjectData}
                 setOpenEdit={setOpenEdit}
             />
@@ -223,4 +223,4 @@ function CoPoRelations() {
     }
 }
 
-export default CoPoRelations
+export default CoPoRelation

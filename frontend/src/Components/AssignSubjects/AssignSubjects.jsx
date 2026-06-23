@@ -4,9 +4,15 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import axios from 'axios';
 import { COLORS } from '../../constants/theme';
 import Loading from '../Loading';
+
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 function AssignSubjects() {
+	const userData = useSelector(state => state.auth.userData);
+	const navigate = useNavigate();
+	if (userData.role !== 'admin') navigate('/upload-data');
+		
 	const [searchQuery, setSearchQuery] = useState('');
 	const [assignedSubjectsData, setAssignedSubjectsData] = useState([]);
 	const [updateData, setUpdateData] = useState(false);
