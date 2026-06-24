@@ -69,6 +69,7 @@ function CoPoRelation() {
             try {
                 const res = await axios.get('/sub/');
                 setSubjects(res.data.data);
+                // console.log(res.data.data);
             } catch (error) {
                 console.log('Axios Error | CoPoRelation | fetchSubjects(): ', error);
             } finally {
@@ -138,6 +139,10 @@ function CoPoRelation() {
                                         Subject Name
                                     </th>
 
+                                    <th className="px-2 py-1 text-left font-semibold">
+                                        Status
+                                    </th>
+
                                     <th className="px-2 py-1 text-center font-semibold w-35">
                                         Action
                                     </th>
@@ -159,6 +164,13 @@ function CoPoRelation() {
 
                                         <td className="px-2 py-1 text-gray-700">
                                             {subject.subjectName}
+                                        </td>
+
+                                        <td className='px-5 py-2 w-[10%]'>
+                                            <div className='flex gap-1 items-center justify-center'>
+                                                <div className={` ${subject.status === 'Pending' ? 'bg-red-500' : 'bg-green-500'} w-5 h-5 rounded-full`} />
+                                                <div>{subject.status}</div>
+                                            </div>
                                         </td>
 
                                         <td className="px-2 py-1">
