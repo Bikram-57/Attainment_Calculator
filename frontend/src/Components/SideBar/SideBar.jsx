@@ -22,7 +22,6 @@ import SideBarTab from "./SideBarTab";
 function SideBar() {
     const isOpen = useSelector(state => state.sideBar.isSideBarOpen);
     const userData = useSelector(state => state.auth.userData);
-    console.log(userData.role)
     const menuList = [
         {
             role: 'faculty',
