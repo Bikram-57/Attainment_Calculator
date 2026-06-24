@@ -1,6 +1,69 @@
 const CoPoMapping = require('../models/coPoMapping');
 
 
+// const saveCoPoRelation = async (req, res) => {
+//     try {
+//         const { subjectId, academicYear, course, mappingData } = req.body;
+
+//         // 1. Safety Check
+//         if (!subjectId || !mappingData) {
+//             return res.status(400).send("Subject ID or Mapping Data is missing.");
+//         }
+
+//         // --- STRICT 8-PO VALIDATION LOGIC ---
+//         const coKeys = Object.keys(mappingData);
+
+//         for (const co of coKeys) {
+//             const poKeys = Object.keys(mappingData[co]);
+
+//             // Check if count exceeds 8
+//             if (poKeys.length > 8) {
+//                 return res.status(400).json({
+//                     success: false,
+//                     message: `Logic Error: ${co} contains ${poKeys.length} POs. As per latest rules, a maximum of 8 POs are allowed.`
+//                 });
+//             }
+
+//             // Check if any PO key is outside the PO1-PO8 range
+//             const invalidPOs = poKeys.filter(po => {
+//                 const poNumber = parseInt(po.replace('PO', ''));
+//                 return poNumber > 8 || isNaN(poNumber);
+//             });
+
+//             if (invalidPOs.length > 0) {
+//                 return res.status(400).json({
+//                     success: false,
+//                     message: `Invalid POs detected in ${co}: [${invalidPOs.join(', ')}]. Only PO1 to PO8 are permitted.`
+//                 });
+//             }
+//         }
+//         // --- END OF VALIDATION ---
+
+//         // 2. Database Update
+//         await CoPoMapping.findOneAndUpdate(
+//             { 
+//                 subjectId: subjectId.toUpperCase(), 
+//                 academicYear, 
+//                 course: (course || "BCA").toUpperCase() 
+//             },
+//             { $set: { mappingData, updatedAt: new Date() } },
+//             { upsert: true }
+//         );
+
+//         // 3. Success Response
+//         return res.status(200).json({
+//             success: true,
+//             message: "Data saved successfully to MongoDB!",
+//             receivedData: { subjectId, academicYear }
+//         });
+
+//     } catch (error) {
+//         console.error("Save Error:", error.message);
+//         res.status(500).send("Server Error: " + error.message);
+//     }
+// };
+
+
 const saveCoPoRelation = async (req, res) => {
     try {
         const { subjectId, academicYear, course, mappingData } = req.body;
@@ -46,14 +109,20 @@ const saveCoPoRelation = async (req, res) => {
                 academicYear, 
                 course: (course || "BCA").toUpperCase() 
             },
-            { $set: { mappingData, updatedAt: new Date() } },
+            { 
+                $set: { 
+                    mappingData, 
+                    status: 'uploaded', // <-- Updates the status here
+                    updatedAt: new Date() 
+                } 
+            },
             { upsert: true }
         );
 
         // 3. Success Response
         return res.status(200).json({
             success: true,
-            message: "Data saved successfully to MongoDB!",
+            message: "Data saved successfully and status updated to uploaded!",
             receivedData: { subjectId, academicYear }
         });
 
