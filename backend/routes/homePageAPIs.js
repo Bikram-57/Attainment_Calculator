@@ -1,8 +1,9 @@
 const express = require('express')
-const {handleGetCurrentYearSubjectForBcaMcaCount} = require('../controllers/homePageAPIs')
+const {handleGetCurrentYearSubjectForBcaMcaCount, handleGetPendingCopoMappingStatus} = require('../controllers/homePageAPIs')
 
 const router = express.Router()
 
 router.get('/count', handleGetCurrentYearSubjectForBcaMcaCount)
+router.get('/copo-count', handleGetPendingCopoMappingStatus)
 
 module.exports = router;
