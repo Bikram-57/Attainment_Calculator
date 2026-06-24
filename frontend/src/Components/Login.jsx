@@ -4,15 +4,23 @@ import { useDispatch } from "react-redux";
 import { login } from "../store/authSlice";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ErrorSuccessMsg } from './index'
 
 function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [errorMsg, setErrorMsg] = useState('');
+
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
 	const handleLogin = async () => {
+		if (!email || !password) {
+			setErrorMsg('Please fill all the credentials!');
+			return;
+		}
+		setErrorMsg('');
 		try {
 			const res = await axios.post('/login/', {
 				email,
@@ -30,6 +38,7 @@ function Login() {
 			);
 			navigate('/');
 		} catch (error) {
+			setErrorMsg(error?.response?.data?.message);
 			console.log('ERROR || Login | handleLogin(): ', error);
 		}
 	}
@@ -62,11 +71,17 @@ function Login() {
 								Welcome Back!
 							</h2>
 
-							<p className="mb-8 text-gray-500">
+							<p className="mb-4 text-gray-500">
 								Login to your account to continue
 							</p>
 
-							<div className="space-y-6">
+
+							{/* Error Message */}
+							<ErrorSuccessMsg
+								errorMsg={errorMsg}
+							/>
+
+							<div className="mt-1 space-y-6">
 								{/* email */}
 								<div>
 									<div className="flex overflow-hidden rounded-lg border border-gray-300">
