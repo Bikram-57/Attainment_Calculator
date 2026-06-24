@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { MdRemoveRedEye } from "react-icons/md";
+import { FaCheckCircle, FaClock } from "react-icons/fa";
 import { GrEdit } from "react-icons/gr";
 import axios from 'axios';
 import { BsSearch } from "react-icons/bs";
@@ -166,10 +167,21 @@ function CoPoRelation() {
                                             {subject.subjectName}
                                         </td>
 
-                                        <td className='px-5 py-2'>
-                                            <div className='flex gap-1 items-center justify-center'>
-                                                <div className={` ${subject.copoMappingStatus === 'Pending' ? 'bg-red-500' : 'bg-green-500'} w-5 h-5 rounded-full`} />
-                                                <div>{subject.copoMappingStatus}</div>
+                                        <td className='px-5 py-2 m-auto flex justify-center w-1/2'>
+                                            <div
+                                                className={`flex items-center gap-2 rounded-full w-full px-3 py-1 text-sm font-medium
+                                                ${subject.copoMappingStatus === 'Uploaded'
+                                                        ? "bg-green-100 text-green-700"
+                                                        : "bg-amber-100 text-amber-700"
+                                                    }`}
+                                            >
+                                                {subject.copoMappingStatus === 'Uploaded' ? (
+                                                    <FaCheckCircle />
+                                                ) : (
+                                                    <FaClock />
+                                                )}
+
+                                                {subject.copoMappingStatus}
                                             </div>
                                         </td>
 
