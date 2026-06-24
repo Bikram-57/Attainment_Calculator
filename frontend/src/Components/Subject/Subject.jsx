@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import SubjectHeader from './SubjectHeader';
+import { FaCheckCircle, FaClock } from "react-icons/fa";
 import { ActionBtns, Loading, SubjectDeleteModal, SubjectEditModal, SubjectViewModal } from '../index'
 
 function Subject() {
@@ -69,9 +70,20 @@ function Subject() {
                                     <td className='px-5 py-2 w-[10%]'>{subject.semester || '-'}</td>
                                     <td className='px-5 py-2 w-[10%]'>{subject.course}</td>
                                     <td className='px-5 py-2 w-[10%]'>
-                                        <div className='flex gap-1 items-center justify-center'>
-                                            <div className={` ${subject.status === 'Pending' ? 'bg-red-500' : 'bg-green-500'} w-5 h-5 rounded-full`} />
-                                            <div>{subject.status}</div>
+                                        <div
+                                            className={`flex items-center gap-2 rounded-full w-full px-3 py-1 text-sm font-medium
+                                                                                    ${subject.status === 'Uploaded'
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-amber-100 text-amber-700"
+                                                }`}
+                                        >
+                                            {subject.status === 'Uploaded' ? (
+                                                <FaCheckCircle />
+                                            ) : (
+                                                <FaClock />
+                                            )}
+
+                                            {subject.status}
                                         </div>
                                     </td>
                                     <td className='px-5 py-2 flex items-center justify-center'>
