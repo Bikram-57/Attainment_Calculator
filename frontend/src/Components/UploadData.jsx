@@ -121,6 +121,10 @@ function UploadData() {
 		}
 	}
 
+	const handleDownloadFormat = () => {
+
+	}
+	
 	useEffect(() => {
 		const fetchSubjects = async () => {
 			try {
@@ -143,6 +147,12 @@ function UploadData() {
 				>
 					Upload Data
 				</div>
+				<button
+					className='text-md border rounded-md px-2 font-semibold cursor-pointer'
+					onClick={handleDownloadFormat}
+				>
+					Download Format
+				</button>
 			</div>
 			<div className='w-full flex gap-4'>
 				<select
