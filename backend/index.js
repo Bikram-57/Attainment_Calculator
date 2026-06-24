@@ -26,6 +26,7 @@ const uploadAllSubjects = require('./routes/uploadAllSubjects');
 const uploadRubrics = require('./routes/rubrics');
 const downloadReport = require('./routes/downloadReport');
 const downloadDirectAttainmentReport = require('./routes/downloadDirectAttainmentReport');
+const formatDownload = require('./routes/formatDownload');
 
 
 const app = express();
@@ -74,6 +75,7 @@ app.use("/uploadAll", uploadAllSubjects);
 app.use("/rubrics", uploadRubrics);
 app.use("/file", downloadReport);
 app.use("/report", downloadDirectAttainmentReport);
+app.use("/download-format", formatDownload);
 
 
 app.listen(PORT, () => {
