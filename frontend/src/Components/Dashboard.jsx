@@ -1,14 +1,16 @@
+import { useEffect } from "react";
 import { FaBookOpen, FaTasks, FaFileAlt, FaCheckCircle, FaClock } from "react-icons/fa";
+import axios from 'axios';
+import { useState } from "react";
 
 function Dashboard() {
+    const [courseCount, setCourseCount] = useState([]);
+    
     const stats = [
         {
             title: "Active Subjects",
             type: "subjects",
-            subjects: [
-                { course: "BCA", count: 7 },
-                { course: "MCA", count: 5 },
-            ],
+            subjects: courseCount,
             icon: <FaBookOpen size={24} />,
             topBar: "bg-blue-500",
             bg: "bg-blue-50",
@@ -56,6 +58,18 @@ function Dashboard() {
         },
     ];
 
+    useEffect(() => {
+        const getCourseUploadCount = async () => {
+            try {
+                const res = await axios.get('/home/count');
+                setCourseCount(res.data.data);
+            } catch (error) {
+                console.log('ERROR || Dashboard || useEffect || getCourseUploadCount || ', error);
+            }
+        }
+        getCourseUploadCount();
+    }, []);
+
     return (
         <div className="min-h-screen bg-slate-100 p-4">
             <div className="mx-auto max-w-7xl">
@@ -98,7 +112,7 @@ function Dashboard() {
                                                 </span>
 
                                                 <span className="text-xl font-bold text-slate-900">
-                                                    {subject.count}
+                                                    {subject.uploadedCount}
                                                 </span>
                                             </div>
                                         ))}

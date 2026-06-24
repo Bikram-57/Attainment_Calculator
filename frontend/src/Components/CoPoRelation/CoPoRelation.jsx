@@ -168,8 +168,8 @@ function CoPoRelation() {
 
                                         <td className='px-5 py-2'>
                                             <div className='flex gap-1 items-center justify-center'>
-                                                <div className={` ${subject.status === 'Pending' ? 'bg-red-500' : 'bg-green-500'} w-5 h-5 rounded-full`} />
-                                                <div>{subject.status}</div>
+                                                <div className={` ${subject.copoMappingStatus === 'Pending' ? 'bg-red-500' : 'bg-green-500'} w-5 h-5 rounded-full`} />
+                                                <div>{subject.copoMappingStatus}</div>
                                             </div>
                                         </td>
 
