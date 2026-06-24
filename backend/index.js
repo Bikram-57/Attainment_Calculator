@@ -15,6 +15,7 @@ const logout = require('./routes/logOut');   // Contains handleLogout
 const forgotPassword = require('./routes/forgotPassword');
 
 // Feature Routers (Your existing ones)
+const home = require('./routes/homePageAPIs');
 const user = require('./routes/user');
 const subject = require('./routes/subject');
 const marks = require('./routes/marks');
@@ -64,6 +65,7 @@ app.use(verifyJWT);
 
 // 3. PROTECTED ROUTES (Requires valid login)
 
+app.use("/home", home);
 app.use("/user", user);
 app.use("/sub", subject);
 app.use("/mark", marks);
