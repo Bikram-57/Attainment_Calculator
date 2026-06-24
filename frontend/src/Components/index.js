@@ -61,6 +61,7 @@ import DownloadSubjectReport from "./DownloadReports/DownloadSubjectReport";
 import SideBar from "./SideBar/SideBar";
 import SideBarSection from "./SideBar/SideBarSection";
 import SideBarTab from "./SideBar/SideBarTab";
+import Dashboard from "./Dashboard";
 
 export {
     NavBar,
@@ -124,4 +125,5 @@ export {
     DownloadSubjectReport,
     SideBarSection,
     SideBarTab,
+    Dashboard,
 }

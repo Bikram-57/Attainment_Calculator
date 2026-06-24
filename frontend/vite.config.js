@@ -28,6 +28,7 @@ export default defineConfig({
 			'/rubrics/': 'http://localhost:8000',
 			'/dir/': 'http://localhost:8000',
 			'/report/': 'http://localhost:8000',
+			'/download-format/': 'http://localhost:8000',
 		},
 	},
 })

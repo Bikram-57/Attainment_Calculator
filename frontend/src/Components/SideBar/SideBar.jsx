@@ -93,7 +93,7 @@ function SideBar() {
         {
             role: 'admin',
             text: 'Assign Subjects',
-            to: '/',
+            to: '/assign-subjects',
             icon: BsCardChecklist,
         },
     ];
@@ -129,15 +129,16 @@ function SideBar() {
                 className='p-3 font-semibold text-md'
                 style={{ color: COLORS.font }}
             >
-                <div className='flex items-center gap-1'>
-                    <IoOptionsOutline />
-                    <div>Dashboard</div>
-                </div>
+                <SideBarTab
+                    icon={IoOptionsOutline}
+                    to={'/'}
+                    text='Dashboard'
+                    tabClassNames='flex items-center gap-1 mt-2'
+                />
 
                 <div className='my-2'>
 
                     {/* Menu */}
-
                     <SideBarSection
                         icon={CiMenuKebab}
                         text='Menu'
@@ -157,7 +158,6 @@ function SideBar() {
                     </div>
 
                     {/* Downloads */}
-
                     <SideBarSection
                         icon={IoMdDownload}
                         text='Downloads'
@@ -199,6 +199,7 @@ function SideBar() {
                         ))}
                     </div>
 
+                    {/* Analysis */}
                     {userData.role === 'admin' &&
                         (
                             <SideBarSection
@@ -220,6 +221,7 @@ function SideBar() {
                         ))}
                     </div>
 
+                    {/* Subjects */}
                     {userData.role === 'admin' &&
                         (
                             <SideBarSection
@@ -241,6 +243,7 @@ function SideBar() {
                         ))}
                     </div>
 
+                    {/* Faculty */}
                     {userData.role === 'admin' &&
                         (
                             <SideBarSection

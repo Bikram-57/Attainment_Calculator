@@ -121,10 +121,32 @@ function UploadData() {
 		}
 	}
 
-	const handleDownloadFormat = () => {
+	const handleDownloadFormat = async () => {
+		try {
+			const response = await axios.get('/download-format/',
+				{
+					responseType: 'blob',
+				}
+			);
 
+			const blob = new Blob([response.data]);
+			const url = window.URL.createObjectURL(blob);
+
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'Format.xlsx';
+
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			window.URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error('Download failed:', error);
+			setErrorMsg('Failed to download report.');
+		}
 	}
-	
+
+
 	useEffect(() => {
 		const fetchSubjects = async () => {
 			try {

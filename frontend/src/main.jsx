@@ -22,6 +22,7 @@ import {
 	Rubrics,
 	DirectAttainment,
 	DownloadBatchReport,
+	Dashboard,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -49,6 +50,11 @@ const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
+				element: <Dashboard />,
+				handle: { title: 'Dashboard' },
+			},
+			{
+				path: 'assign-subjects',
 				element: <AssignSubjects />,
 				handle: { title: 'Assign Subjects' },
 			},
