@@ -5,7 +5,8 @@ import { useState } from "react";
 
 function Dashboard() {
     const [courseCount, setCourseCount] = useState([]);
-    
+    const [coPoCount, setCoPoCount] = useState([]);
+
     const stats = [
         {
             title: "Active Subjects",
@@ -18,7 +19,8 @@ function Dashboard() {
         },
         {
             title: "Pending Mappings",
-            value: 3,
+            type: "mappings",
+            value: coPoCount,
             subtitle: "Requires PO validation",
             icon: <FaTasks size={24} />,
             topBar: "bg-amber-500",
@@ -67,7 +69,17 @@ function Dashboard() {
                 console.log('ERROR || Dashboard || useEffect || getCourseUploadCount || ', error);
             }
         }
+
+        const getCoPoCount = async () => {
+            try {
+                const res = await axios.get('/home/copo-count');
+                setCoPoCount(res.data.data);
+            } catch (error) {
+                console.log('ERROR || Dashboard || useEffect || getCoPoCount || ', error);
+            }
+        }
         getCourseUploadCount();
+        getCoPoCount();
     }, []);
 
     return (
@@ -117,6 +129,23 @@ function Dashboard() {
                                             </div>
                                         ))}
                                     </div>
+                                ) : (item.type === "mappings" ? (
+                                    <div className="space-y-3">
+                                        {item.value.map((val) => (
+                                            <div
+                                                key={val.course}
+                                                className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+                                            >
+                                                <span className="font-medium text-slate-700">
+                                                    {val.course}
+                                                </span>
+
+                                                <span className="text-xl font-bold text-slate-900">
+                                                    {val.count}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 ) : (
                                     <>
                                         <p className="text-4xl p-3 font-bold text-slate-900">
@@ -129,7 +158,7 @@ function Dashboard() {
                                             </p>
                                         )}
                                     </>
-                                )}
+                                ))}
                             </div>
                         </div>
                     ))}
