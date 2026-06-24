@@ -43,15 +43,14 @@ const handleLogin = async (req, res) => {
                 }
             },
             process.env.ACCESS_TOKEN_SECRET,
-            // { expiresIn: '15m' }
-            { expiresIn: '7d' }
+            { expiresIn: '15m' }
         );
 
         // Refresh Token: Long lifespan (e.g., 7d).
         const refreshToken = jwt.sign(
             { "userId": foundUser._id },
             process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '1d' }
         );
 
         // --- SAVE REFRESH TOKEN ---
@@ -74,7 +73,7 @@ const handleLogin = async (req, res) => {
                 process.env.NODE_ENV === 'production'
                     ? 'None'
                     : 'Lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge: 1 * 24 * 60 * 60 * 1000
         });
 
         // Send access token and user info to the frontend
