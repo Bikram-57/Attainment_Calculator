@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { FaBookOpen, FaTasks, FaFileAlt, FaCheckCircle, FaClock } from "react-icons/fa";
 import axios from 'axios';
 import { useState } from "react";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 function Dashboard() {
     const [activeSubjectCount, setActiveSubjectCount] = useState([]);
@@ -59,6 +60,11 @@ function Dashboard() {
             status: "Parsed",
             success: true,
         },
+    ];
+
+    const reportData = [
+        { name: "BCA", value: 8 },
+        { name: "MCA", value: 3 },
     ];
 
     useEffect(() => {
@@ -144,66 +150,83 @@ function Dashboard() {
                                         </div>
                                     ))}
                                 </div>
-
-                                {/* {item.type === "subjects" ? (
-                                    <div className="space-y-3">
-                                        {item.value.map((val) => (
-                                            <div
-                                                key={val.course}
-                                                className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
-                                            >
-                                                <span className="font-medium text-slate-700">
-                                                    {val.course}
-                                                </span>
-
-                                                <span className="text-xl font-bold text-slate-900">
-                                                    {val.totalSubjects}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (item.type === "mappings" ? (
-                                    <div className="space-y-3">
-                                        {item.value.map((val) => (
-                                            <div
-                                                key={val.course}
-                                                className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
-                                            >
-                                                <span className="font-medium text-slate-700">
-                                                    {val.course}
-                                                </span>
-
-                                                <span className="text-xl font-bold text-slate-900">
-                                                    {val.count}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        {item.value.map((val) => (
-                                            <div
-                                                key={val.course}
-                                                className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
-                                            >
-                                                <span className="font-medium text-slate-700">
-                                                    {val.course}
-                                                </span>
-
-                                                <span className="text-xl font-bold text-slate-900">
-                                                    {val.uploadedCount}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ))} */}
                             </div>
                         </div>
                     ))}
                 </div>
 
                 {/* Recent Activity */}
-                <div className="rounded-xl bg-white shadow-sm">
+                <div className="grid gap-6 lg:grid-cols-3">
+                    {/* Recent Activity */}
+                    <div className="rounded-xl bg-white shadow-sm lg:col-span-2">
+                        <div className="border-b px-4 py-2">
+                            <h2 className="text-xl font-semibold text-slate-800">
+                                Recent Activity
+                            </h2>
+                        </div>
+
+                        <div className="divide-y">
+                            {recentUploads.map((upload) => (
+                                <div
+                                    key={upload.file}
+                                    className="flex items-center justify-between p-4"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <FaFileAlt className="text-slate-500" />
+
+                                        <span className="font-medium text-slate-700">
+                                            {upload.file}
+                                        </span>
+                                    </div>
+
+                                    <span
+                                        className={`flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${upload.success
+                                            ? "bg-green-100 text-green-700"
+                                            : "bg-amber-100 text-amber-700"
+                                            }`}
+                                    >
+                                        {upload.success ? (
+                                            <FaCheckCircle />
+                                        ) : (
+                                            <FaClock />
+                                        )}
+
+                                        {upload.status}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Pie Chart */}
+                    <div className="rounded-xl bg-white px-4 py-2 shadow-sm">
+                        <h2 className="text-xl font-semibold text-slate-800">
+                            Reports by Course
+                        </h2>
+
+                        <ResponsiveContainer width="100%" height={280}>
+                            <PieChart>
+                                <Pie
+                                    data={reportData}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={90}
+                                    dataKey="value"
+                                    label
+                                >
+                                    <Cell fill="#3b82f6" />
+                                    <Cell fill="#22c55e" />
+                                </Pie>
+
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+
+                {/* <div className="rounded-xl bg-white shadow-sm">
                     <div className="border-b p-4">
                         <h2 className="text-2xl font-semibold text-slate-800">
                             Recent Activity
@@ -242,9 +265,9 @@ function Dashboard() {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div> */}
             </div>
-        </div >
+        </div>
     );
 }
 

@@ -62,6 +62,7 @@ import SideBar from "./SideBar/SideBar";
 import SideBarSection from "./SideBar/SideBarSection";
 import SideBarTab from "./SideBar/SideBarTab";
 import Dashboard from "./Dashboard";
+import SubjectAnalysis from "./SubjectAnalysis";
 
 export {
     NavBar,
@@ -126,4 +127,5 @@ export {
     SideBarSection,
     SideBarTab,
     Dashboard,
+    SubjectAnalysis,
 }

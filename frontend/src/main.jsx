@@ -23,6 +23,7 @@ import {
 	DirectAttainment,
 	DownloadBatchReport,
 	Dashboard,
+	SubjectAnalysis,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -109,9 +110,9 @@ const router = createBrowserRouter([
 				handle: { title: 'Rubrics' },
 			},
 			{
-				path: 'subject-report',
-				element: <UnderDevelopment />,
-				handle: { title: 'Subject Report' },
+				path: 'subject-analysis',
+				element: <SubjectAnalysis />,
+				handle: { title: 'Subject Analysis' },
 			},
 
 			// Pages that still use App Layout

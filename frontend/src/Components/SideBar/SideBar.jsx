@@ -76,8 +76,8 @@ function SideBar() {
     const analysisList = [
         {
             role: 'admin',
-            text: 'Subject Report',
-            to: '/subject-report',
+            text: 'Subject Analysis',
+            to: '/subject-analysis',
             icon: LiaChartBarSolid,
         },
     ];
