@@ -5,6 +5,7 @@ import { MdDone } from "react-icons/md";
 import { COLORS } from '../constants/theme';
 import ErrorSuccessMsg from './ErrorSuccessMsg';
 import Loading from './Loading';
+import Select from "react-select";
 
 function UploadData() {
 	const [academicYear, setAcademicYear] = useState('')
@@ -27,36 +28,33 @@ function UploadData() {
 		yearList.push(year);
 	}
 
-	const handleCourse = async (e) => {
-		const selectedCourse = e.target.value;
-		setCourse(selectedCourse);
-		if (!selectedCourse) {
-			setSubjectList([]);
-			setIsDisabled(true);
-			return;
+	const yearOptions = yearList.map((year) => (
+		{
+			value: year,
+			label: year,
 		}
-		const filteredSubjects = allSubjects.filter(sub => (
-			sub.course === selectedCourse && sub.academicYear == academicYear
-		));
+	));
 
-		setSubjectList(filteredSubjects);
-		(selectedCourse === '' || academicYear == '') ? setIsDisabled(true) : setIsDisabled(false);
+	const courseOptions = [
+		{ value: "BCA", label: "BCA" },
+		{ value: "MCA", label: "MCA" },
+	];
+
+	const subjectOptions = subjectList.map((sub) => (
+		{
+			value: sub.subjectId,
+			label: `${sub.subjectId} - ${sub.subjectName}`,
+		}
+	));
+
+	const handleCourse = (selectedCourse) => {
+		setCourse(selectedCourse);
+		setSubjectId('');
 	}
 
-	const handleYear = (e) => {
-		const selectedYear = e.target.value;
+	const handleYear = (selectedYear) => {
 		setAcademicYear(selectedYear);
-		if (!selectedYear) {
-			setAcademicYear('');
-			setIsDisabled(true);
-			return;
-		}
-		const filteredSubjects = allSubjects.filter(sub => (
-			sub.academicYear == selectedYear && sub.course == course
-		));
-
-		setSubjectList(filteredSubjects);
-		(selectedYear === '' || course == '') ? setIsDisabled(true) : setIsDisabled(false);
+		setSubjectId('');
 	}
 
 	const handleFileChange = (e) => {
@@ -92,7 +90,6 @@ function UploadData() {
 			setErrorMsg("Please choose a file!");
 			return;
 		}
-
 		setUploading(true);
 		const formData = new FormData();
 		formData.append('excelFile', file);
@@ -146,6 +143,20 @@ function UploadData() {
 		}
 	}
 
+	useEffect(() => {
+		if (!course || !academicYear) {
+			setSubjectList([]);
+			setIsDisabled(true);
+			return;
+		}
+
+		const filteredSubjects = allSubjects.filter(sub => (
+			sub.course === course && sub.academicYear === academicYear
+		));
+
+		setSubjectList(filteredSubjects);
+		setIsDisabled(false);
+	}, [academicYear, course, allSubjects]);
 
 	useEffect(() => {
 		const fetchSubjects = async () => {
@@ -177,7 +188,7 @@ function UploadData() {
 				</button>
 			</div>
 			<div className='w-full flex gap-4'>
-				<select
+				{/* <select
 					className='border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none'
 					style={{ backgroundColor: COLORS.font }}
 					value={academicYear}
@@ -199,9 +210,45 @@ function UploadData() {
 					<option value=''>Select a course</option>
 					<option value='BCA'>BCA</option>
 					<option value='MCA'>MCA</option>
-				</select>
-				{/* TODO: FIX MAX HEIGHT OF THE DROPDOWN MENU */}
-				<select
+				</select> */}
+
+				<div className='flex-1'>
+					<Select
+						options={yearOptions}
+						placeholder='Select a year'
+						value={yearList.find(option => (
+							option.value === academicYear
+						))}
+						onChange={selected => handleYear(selected?.value || '')}
+						maxMenuHeight={300}
+					/>
+				</div>
+				<div className='flex-1'>
+					<Select
+						options={courseOptions}
+						placeholder='Select a course'
+						value={courseOptions.find(option => (
+							option.value === course
+						))}
+						onChange={selected => handleCourse(selected?.value || '')}
+						maxMenuHeight={300}
+					/>
+				</div>
+
+				<div className="flex-1">
+					<Select
+						options={subjectOptions}
+						placeholder='Select a subject'
+						value={subjectOptions.find((option) => (
+							option.value === subjectId
+						))}
+						onChange={(selected) => setSubjectId(selected?.value || "")}
+						isDisabled={isDisabled}
+						maxMenuHeight={300}
+					/>``
+				</div>
+
+				{/* <select
 					className={`${isDisabled ? 'cursor-not-allowed text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none h-8`}
 					style={{ backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font }}
 					value={subjectId}
@@ -214,7 +261,7 @@ function UploadData() {
 							{sub.subjectId} - {sub.subjectName}
 						</option>
 					))}
-				</select>
+				</select> */}
 
 			</div>
 
@@ -224,7 +271,7 @@ function UploadData() {
 					style={{ backgroundColor: COLORS.font }}
 				>
 					<label className='bg-gray-200 border-gray-300 px-3 border-r-2 cursor-pointer'>
-						Choose File
+						Select File
 						<input
 							ref={fileInputRef}
 							type='file'
@@ -237,7 +284,7 @@ function UploadData() {
 						className='w-2/3 mx-2'
 						style={{ backgroundColor: COLORS.font }}
 					>
-						{!file ? 'No file choose' : file.name}
+						{!file ? 'No file selected' : file.name}
 					</div>
 					{file && (
 						<div

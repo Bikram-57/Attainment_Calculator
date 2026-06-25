@@ -4,6 +4,7 @@ import ErrorSuccessMsg from '../ErrorSuccessMsg';
 import { FaChevronDown } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { COLORS } from '../../constants/theme';
+import Select from 'react-select';
 
 function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
     const [course, setCourse] = useState('');
@@ -18,6 +19,18 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
     for (let i = 2026; i <= d.getFullYear(); i++) {
         academicYearList.push(i)
     }
+
+    const yearOptions = academicYearList.map(year => (
+        {
+            value: year,
+            label: year
+        }
+    ));
+
+    const courseOptions = [
+        { value: 'BCA', label: 'BCA' },
+        { value: 'MCA', label: 'MCA' }
+    ];
 
     const handleGenerate = async () => {
         if (course.length === 0 || academicYear.length === 0) {
@@ -41,7 +54,7 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div
-                className="w-[92%] max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+                className="w-[92%] max-w-lg max-h-1/2 pb-4 rounded-2xl shadow-2xl overflow-hidden"
                 style={{ backgroundColor: COLORS.latte }}
             >
                 {/* Header */}
@@ -64,8 +77,37 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
                     </button>
                 </div>
                 <div className="px-6 py-2 space-y-2">
+                    <label className="block text-lg text-gray-700 mt-2 font-semibold">
+                        Academic Year
+                    </label>
+                    <div className='flex-1'>
+                        <Select
+                            options={yearOptions}
+                            placeholder='Select a year'
+                            value={yearOptions.find(option => (
+                                option.value === academicYear
+                            ))}
+                            onChange={selected => setAcademicYear(selected?.value || '')}
+                            maxMenuHeight={100}
+                        />
+                    </div>
+                    <label className="block text-lg text-gray-700 mt-5 font-semibold">
+                        Course Name
+                    </label>
+                    <div className='flex-1'>
+                        <Select
+                            options={courseOptions}
+                            placeholder='Select a course'
+                            value={courseOptions.find(option => (
+                                option.value === course
+                            ))}
+                            onChange={selected => setCourse(selected?.value || '')}
+                            maxMenuHeight={100}
+                        />
+                    </div>
+
                     {/* Academic Year */}
-                    <div>
+                    {/* <div>
                         <label className="block text-lg text-gray-700 mt-2 font-semibold">
                             Academic Year
                         </label>
@@ -86,10 +128,10 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
 
                             <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Course Name */}
-                    <div>
+                    {/* <div>
                         <label className="block text-lg text-gray-700 mt-2 font-semibold">
                             Course Name
                         </label>
@@ -107,10 +149,10 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
 
                             <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Buttons */}
-                    <div className="flex justify-end gap-3 pt-2">
+                    <div className="flex justify-end gap-3 mt-8 pt-2">
                         <button
                             onClick={() => setIsGenerateOpen(false)}
                             className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
