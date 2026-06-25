@@ -99,7 +99,62 @@ const handleGetPendingCopoMappingStatus = async (req, res) => {
   }
 };
 
+
+// @desc    Get total subjects count for current year (BCA & MCA)
+// @route   GET /api/reports/current-year-total-subjects
+// @access  Protect/Faculty
+const handleGetCurrentYearTotalSubjectsByCourse = async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear();
+
+    const report = await Subject.aggregate([
+      {
+        $match: {
+          academicYear: currentYear,
+          course: { $in: ['BCA', 'MCA'] }
+        }
+      },
+      {
+        $group: {
+          _id: { $toUpper: '$course' },
+          totalSubjects: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const data = [
+      {
+        course: 'BCA',
+        totalSubjects:
+          report.find(item => item._id === 'BCA')?.totalSubjects || 0
+      },
+      {
+        course: 'MCA',
+        totalSubjects:
+          report.find(item => item._id === 'MCA')?.totalSubjects || 0
+      }
+    ];
+
+    return res.status(200).json({
+      success: true,
+      year: currentYear,
+      data
+    });
+  } catch (error) {
+    console.error('Total Subjects Report Error:', error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Server Error fetching total subjects count',
+      error: error.message
+    });
+  }
+};
+
+
+
 module.exports = {
   handleGetCurrentYearSubjectForBcaMcaCount,
   handleGetPendingCopoMappingStatus,
+  handleGetCurrentYearTotalSubjectsByCourse,
 };
