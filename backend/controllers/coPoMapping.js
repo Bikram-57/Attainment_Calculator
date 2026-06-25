@@ -1,5 +1,6 @@
 const CoPoMapping = require('../models/coPoMapping');
 const Subject = require('../models/subject');
+const logActivity = require('../utils/activityLogger');
 
 // ============================================================================
 // 1. Fetch Subjects Pending CO-PO Mapping
@@ -11,7 +12,7 @@ const getPendingSubjects = async (req, res) => {
 
         // Build the search query looking specifically for 'Pending' status
         const query = { copoMappingStatus: 'Pending' };
-        
+
         if (academicYear) query.academicYear = Number(academicYear);
         if (semester) query.semester = Number(semester);
 
@@ -28,9 +29,9 @@ const getPendingSubjects = async (req, res) => {
 
     } catch (error) {
         console.error("Error fetching pending subjects:", error.message);
-        res.status(500).json({ 
-            success: false, 
-            message: "Server Error: " + error.message 
+        res.status(500).json({
+            success: false,
+            message: "Server Error: " + error.message
         });
     }
 };
@@ -75,10 +76,10 @@ const saveCoPoRelation = async (req, res) => {
 
         // Database Update: Save the Mapping
         await CoPoMapping.findOneAndUpdate(
-            { 
-                subjectId: subjectId.toUpperCase(), 
-                academicYear, 
-                course: (course || "BCA" || "MCA").toUpperCase() 
+            {
+                subjectId: subjectId.toUpperCase(),
+                academicYear,
+                course: (course || "BCA" || "MCA").toUpperCase()
             },
             { $set: { mappingData, updatedAt: new Date() } },
             { upsert: true }
@@ -89,7 +90,7 @@ const saveCoPoRelation = async (req, res) => {
             subjectId: subjectId.toUpperCase(),
             academicYear: academicYear
         };
-        
+
         if (semester) {
             subjectQuery.semester = semester;
         }
@@ -97,6 +98,15 @@ const saveCoPoRelation = async (req, res) => {
         await Subject.findOneAndUpdate(
             subjectQuery,
             { $set: { copoMappingStatus: 'Uploaded' } }
+        );
+
+        // ---> ADD THE TRIGGER HERE <---
+      await logActivity(
+            req.user, 
+            // 'MAPPED_CO_PO', 
+            'CO-PO Mapping uploaded!', 
+            `${subjectId.toUpperCase()} (${academicYear})`, 
+            [] 
         );
 
         return res.status(200).json({
@@ -111,10 +121,10 @@ const saveCoPoRelation = async (req, res) => {
     }
 };
 
-module.exports = { 
-    getPendingSubjects,
-    saveCoPoRelation 
-};
+// module.exports = {
+//     getPendingSubjects,
+//     saveCoPoRelation
+// };
 
 
 // const CoPoMapping = require('../models/coPoMapping');
@@ -281,7 +291,7 @@ const getCoPoRelation = async (req, res) => {
         // If your database contains legacy 12-PO data, we should verify 
         // that we are only sending 8 POs to keep the frontend UI consistent.
         const filteredMapping = {};
-        
+
         Object.keys(record.mappingData).forEach(co => {
             filteredMapping[co] = {};
             // Strictly fetch only PO1 to PO8
@@ -310,7 +320,7 @@ const getCoPoRelation = async (req, res) => {
 };
 
 
-module.exports = { 
+module.exports = {
     saveCoPoRelation,
     getCoPoRelation
- };
+};

@@ -28,7 +28,7 @@ const uploadRubrics = require('./routes/rubrics');
 const downloadReport = require('./routes/downloadReport');
 const downloadDirectAttainmentReport = require('./routes/downloadDirectAttainmentReport');
 const formatDownload = require('./routes/formatDownload');
-// const activity = require('./routes/activity');
+const activity = require('./routes/activities');
 
 
 const app = express();
@@ -79,7 +79,7 @@ app.use("/rubrics", uploadRubrics);
 app.use("/file", downloadReport);
 app.use("/report", downloadDirectAttainmentReport);
 app.use("/download-format", formatDownload);
-// app.use("/activity", activity);
+app.use("/activity", activity);
 
 
 app.listen(PORT, () => {
