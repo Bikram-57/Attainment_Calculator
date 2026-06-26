@@ -4,6 +4,7 @@ import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 import { COLORS } from '../../constants/theme'
 import ErrorSuccessMsg from "../ErrorSuccessMsg";
+import Select from 'react-select';
 
 function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggleUpdate }) {
 	const [facultyId, setFacultyId] = useState('');
@@ -21,47 +22,42 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 	// const d = new Date();
 	const yearList = [2024, 2025, 2026];
 
-	useEffect(() => {
-		setFilteredSubjects(
-			subjectData?.filter(sub => (sub.academicYear == year))
-		)
-	}, [year]);
-
-	useEffect(() => {
-		const getSubjects = async () => {
-			try {
-				const response = await axios.get('/sub/');
-				setSubjectData(response.data.data);
-			} catch (error) {
-				console.log('Axios Error | AssignSubjectForm | useEffect() | getSubjects(): ', error);
-			}
+	const yearOptions = yearList.map((year) => (
+		{
+			value: year,
+			label: year,
 		}
-		const getFaculties = async () => {
-			try {
-				const response = await axios.get('/user/');
-				setFacultyData(response.data.data);
-			} catch (error) {
-				console.log('Axios Error | AssignSubjectForm | useEffect() | getFacultyData(): ', error);
-			}
+	));
+
+	const facultyOptions = facultyData.map((faculty) => (
+		{
+			value: faculty.facultyId,
+			label: `${faculty.facultyId} - ${faculty.name}`,
 		}
+	));
 
-		getSubjects();
-		getFaculties();
-	}, []);
+	const subjectOptions = filteredSubjects.map((sub) => (
+		{
+			value: sub.subjectId,
+			label: `${sub.subjectId} - ${sub.subjectName}`,
+		}
+	));
 
-	const handleFaculty = (e) => {
-		setFacultyId(e.target.value);
-		setFacultyName((facultyData.find(faculty => faculty.facultyId === e.target.value)).name);
+	const handleFaculty = (selected) => {
+		setFacultyId(selected);
+		setFacultyName((facultyData.find(faculty => faculty.facultyId === selected))?.name || '');
 	}
 
-	const handleYear = (e) => {
-		setYear(e.target.value)
-		setIsDisabled(false);
+	const handleYear = (selected) => {
+		setYear(selected)
+		setSubjectId('');
+		setSubjectName('');
+		setIsDisabled(!selected);
 	}
 
-	const handleSubject = (e) => {
-		setSubjectId(e.target.value);
-		setSubjectName((filteredSubjects.find(sub => sub.subjectId === e.target.value)).subjectName);
+	const handleSubject = (selected) => {
+		setSubjectId(selected);
+		setSubjectName((filteredSubjects.find(sub => sub.subjectId === selected))?.subjectName || '');
 	}
 
 	const handleAssignSubject = async () => {
@@ -88,6 +84,34 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 			}
 		}
 	}
+
+	useEffect(() => {
+		setFilteredSubjects(
+			subjectData?.filter(sub => (sub.academicYear == year))
+		)
+	}, [year, subjectData]);
+
+	useEffect(() => {
+		const getSubjects = async () => {
+			try {
+				const response = await axios.get('/sub/');
+				setSubjectData(response.data.data);
+			} catch (error) {
+				console.log('Axios Error | AssignSubjectForm | useEffect() | getSubjects(): ', error);
+			}
+		}
+		const getFaculties = async () => {
+			try {
+				const response = await axios.get('/user/');
+				setFacultyData(response.data.data);
+			} catch (error) {
+				console.log('Axios Error | AssignSubjectForm | useEffect() | getFacultyData(): ', error);
+			}
+		}
+
+		getSubjects();
+		getFaculties();
+	}, []);
 
 	if (!isAssignSubjectOpen) return null;
 
@@ -119,28 +143,21 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 
 				{/* Body */}
 				<div className="px-6 py-3 space-y-2">
-
 					{/* Faculty Name */}
 					<div>
 						<label className="block text-lg text-gray-700 mb-2 font-semibold">
 							Faculty
 						</label>
-						<div className="relative">
-							<select
-								value={facultyId}
-								onChange={(e) => handleFaculty(e)}
-								className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
-							>
-								<option value="">Select faculty from list</option>
-								{facultyData.map(faculty => (
-									<option key={faculty.facultyId} value={faculty.facultyId}>
-										{faculty.name} - {faculty.facultyId}
-									</option>
-								))}
-							</select>
-
-							<FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-						</div>
+						<Select
+							options={facultyOptions}
+							placeholder='Select a faculty'
+							value={facultyOptions.find(option => (
+								option.value === facultyId
+							))}
+							onChange={selected => handleFaculty(selected?.value || '')}
+							maxMenuHeight={150}
+							isClearable
+						/>
 					</div>
 
 					{/* Year */}
@@ -148,24 +165,16 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 						<label className="block text-lg text-gray-700 mb-2 font-semibold">
 							Year
 						</label>
-
-						<div className="relative">
-							<select
-								value={year}
-								onChange={(e) => handleYear(e)}
-								className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg cursor-pointer outline-none"
-							// disabled={subjectData.length > 0 ? false : true}
-							>
-								<option value="">Select year from list</option>
-								{yearList.map(y => (
-									<option key={y} value={y}>
-										{y}
-									</option>
-								))}
-							</select>
-
-							<FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-						</div>
+						<Select
+							options={yearOptions}
+							placeholder='Select a year'
+							value={yearOptions.find(option => (
+								option.value === year
+							))}
+							onChange={selected => handleYear(selected?.value || '')}
+							maxMenuHeight={150}
+							isClearable
+						/>
 					</div>
 
 					{/* Subject Name */}
@@ -173,24 +182,17 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 						<label className="block text-lg text-gray-700 mb-2 font-semibold">
 							Subject Name
 						</label>
-						<div className="relative">
-							<select
-								value={subjectId}
-								onChange={(e) => handleSubject(e)}
-								className={`${isDisabled ? 'cursor-not-allowed text-gray-400' : 'cursor-pointer'} w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-lg outline-none`}
-								style={{ backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font }}
-								disabled={isDisabled}
-							>
-								<option value="">Select subject from list</option>
-								{filteredSubjects?.map(sub => (
-									<option key={sub.subjectId} value={sub.subjectId}>
-										{sub.subjectName}
-									</option>
-								))}
-							</select>
-
-							<FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-						</div>
+						<Select
+							options={subjectOptions}
+							placeholder='Select a subject'
+							value={subjectOptions.find(option => (
+								option.value === subjectId
+							)) || null}
+							onChange={selected => handleSubject(selected?.value || '')}
+							isDisabled={isDisabled}
+							maxMenuHeight={150}
+							isClearable
+						/>
 					</div>
 
 					{/* Buttons */}

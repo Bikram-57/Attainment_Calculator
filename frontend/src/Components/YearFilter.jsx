@@ -1,16 +1,23 @@
 import React, { useState } from 'react'
 import { FaFilter } from "react-icons/fa";
 import { COLORS } from '../constants/theme';
+import Select from 'react-select';
 
 function YearFilter({ defaultYear = '', setFilterYear }) {
-    const [year, setYear] = useState('');
+    const [academicYear, setAcademicYear] = useState(defaultYear);
     const currentYear = defaultYear !== '' ? defaultYear : new Date().getFullYear();
-    const yearList = [currentYear, 2025, 2024];
-    
+    const academicYearList = [currentYear, 2025, 2024];
 
-    const handleYear = (e) => {
-        setYear(e.target.value);
-        setFilterYear(e.target.value);
+    const yearOptions = academicYearList.map(year => (
+        {
+            value: year,
+            label: year
+        }
+    ));
+
+    const handleYear = (selected) => {
+        setAcademicYear(selected);
+        setFilterYear(selected);
     }
 
     return (
@@ -24,22 +31,16 @@ function YearFilter({ defaultYear = '', setFilterYear }) {
                     Academic Year:
                 </div>
             </div>
-            <div className='w-1/3'>
-                <select
-                    value={year}
-                    onChange={(e) => handleYear(e)}
-                    className="w-full border border-gray-400 text-center rounded-lg px-1 text-md cursor-pointer outline-none"
-                >
-                    <option value={defaultYear}>
-                        {defaultYear !== '' ? defaultYear : 'Select year'}
-                    </option>
-                    {yearList.map(y => (
-                        y != defaultYear ? (<option key={y} value={y}>
-                            {y}
-                        </option>) : null
-                    ))}
-                </select>
-            </div>
+            <Select
+                options={yearOptions}
+                placeholder='Select a year'
+                value={yearOptions.find(option => (
+                    option.value === academicYear
+                ))}
+                onChange={selected => handleYear(selected?.value || '')}
+                maxMenuHeight={200}
+                isClearable
+            />
         </div>
     )
 }

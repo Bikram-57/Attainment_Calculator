@@ -4,6 +4,7 @@ import { IoMdClose } from "react-icons/io";
 import { COLORS } from '../../../constants/theme';
 import { FaChevronDown } from "react-icons/fa";
 import ErrorSuccessMsg from '../../ErrorSuccessMsg';
+import Select from 'react-select';
 
 function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
     const [subjectName, setSubjectName] = useState(data.subjectName);
@@ -11,7 +12,6 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
     const [isHovered, setIsHovered] = useState(false);
     const [academicYear, setAcademicYear] = useState(data.academicYear);
     const [semester, setSemester] = useState(data.semester || '');
-    // const [course, setCourse] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
 
@@ -26,6 +26,25 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
     for (let i = 1; i <= 8; i++) {
         semesterList.push(i);
     }
+
+    const yearOptions = academicYearList.map(year => (
+        {
+            value: year,
+            label: year
+        }
+    ));
+
+    const semesterOptions = semesterList.map(sem => (
+        {
+            value: sem,
+            label: sem
+        }
+    ));
+
+    const courseOptions = [
+        { value: 'BCA', label: 'BCA' },
+        { value: 'MCA', label: 'MCA' }
+    ];
 
     const updateSubject = async () => {
         if (subjectName.length === 0 || academicYear.length === 0 || semester.length === 0 || course.length === 0) {
@@ -77,7 +96,7 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                 </div>
 
                 {/* Body */}
-                <div className="p-4 space-y-3 text-left">
+                <div className="p-5 space-y-3 text-left">
 
                     {/* Subject ID */}
                     <div>
@@ -103,7 +122,6 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                             value={subjectName}
                             onChange={(e) => setSubjectName(e.target.value)}
                             className="w-full border border-gray-400 rounded-lg px-4 py-1 text-md bg-gray-50 outline-none"
-                        // style={{backgroundColor: COLORS.latteDark}}
                         />
                     </div>
 
@@ -113,22 +131,15 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                             Academic Year
                         </label>
 
-                        <div className="relative">
-                            <select
-                                value={academicYear}
-                                onChange={(e) => setAcademicYear(e.target.value)}
-                                className="w-full appearance-none border border-gray-400 bg-gray-50 rounded-lg px-4 py-1 text-md cursor-pointer outline-none"
-                            >
-                                <option value="">Select academic year from list</option>
-                                {academicYearList.map(year => (
-                                    <option key={year} value={year}>
-                                        {year}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                        </div>
+                        <Select
+                            options={yearOptions}
+                            placeholder='Select a year'
+                            value={yearOptions.find(option => (
+                                option.value === academicYear
+                            ))}
+                            onChange={selected => setAcademicYear(selected?.value || '')}
+                            maxMenuHeight={120}
+                        />
                     </div>
 
                     {/* Semester */}
@@ -137,56 +148,33 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                             Semester
                         </label>
 
-                        <div className="relative">
-                            <select
-                                value={semester}
-                                onChange={(e) => setSemester(e.target.value)}
-                                className="w-full appearance-none border border-gray-400 bg-gray-50 rounded-lg px-4 py-1 text-md cursor-pointer outline-none"
-                            >
-                                <option value="">Select semester from list</option>
-                                {semesterList.map(sem => (
-                                    <option key={sem} value={sem}>
-                                        {sem}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                        </div>
+                        <Select
+                            options={semesterOptions}
+                            placeholder='Select a semester'
+                            value={semesterOptions.find(option => (
+                                option.value === semester
+                            ))}
+                            onChange={selected => setSemester(selected?.value || '')}
+                            maxMenuHeight={120}
+                        />
                     </div>
 
                     {/* Course Name */}
-
                     <div>
                         <label className="block text-lg text-gray-700 my-1">
                             Course
                         </label>
-                        <input
-                            type="text"
-                            value={course}
-                            onChange={(e) => setCourse(e.target.value)}
-                            className="w-full border border-gray-400 rounded-lg px-4 py-1 text-md bg-gray-50 outline-none"
+
+                        <Select
+                            options={courseOptions}
+                            placeholder='Select a course'
+                            value={courseOptions.find(option => (
+                                option.value === course
+                            ))}
+                            onChange={selected => setCourse(selected?.value || '')}
+                            maxMenuHeight={100}
                         />
                     </div>
-                    {/* <div>
-                        <label className="block text-md text-gray-700 mt-2 font-semibold">
-                            Course Name
-                        </label>
-
-                        <div className="relative">
-                            <select
-                                value={course}
-                                onChange={(e) => setCourse(e.target.value)}
-                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
-                            >
-                                <option value="">Select course from list</option>
-                                <option value="BCA">BCA</option>
-                                <option value="MCA">MCA</option>
-                            </select>
-
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                        </div>
-                    </div> */}
                 </div>
 
                 {/* Error/Success Message */}
@@ -198,7 +186,7 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                 />
 
                 {/* Footer */}
-                <div className="px-4 py-4 border-t border-gray-300 flex justify-end">
+                <div className="px-4 py-5 border-t border-gray-300 flex justify-end">
                     <button
                         onClick={updateSubject}
                         onMouseEnter={() => setIsHovered(true)}

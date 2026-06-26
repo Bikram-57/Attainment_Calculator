@@ -106,51 +106,6 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
                         />
                     </div>
 
-                    {/* Academic Year */}
-                    {/* <div>
-                        <label className="block text-lg text-gray-700 mt-2 font-semibold">
-                            Academic Year
-                        </label>
-
-                        <div className="relative">
-                            <select
-                                value={academicYear}
-                                onChange={(e) => setAcademicYear(e.target.value)}
-                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-md cursor-pointer outline-none"
-                            >
-                                <option value="">Select academic year from list</option>
-                                {academicYearList.map(year => (
-                                    <option key={year} value={year}>
-                                        {year}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                        </div>
-                    </div> */}
-
-                    {/* Course Name */}
-                    {/* <div>
-                        <label className="block text-lg text-gray-700 mt-2 font-semibold">
-                            Course Name
-                        </label>
-
-                        <div className="relative">
-                            <select
-                                value={course}
-                                onChange={(e) => setCourse(e.target.value)}
-                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-md cursor-pointer outline-none"
-                            >
-                                <option value="">Select course from list</option>
-                                <option value="BCA">BCA</option>
-                                <option value="MCA">MCA</option>
-                            </select>
-
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                        </div>
-                    </div> */}
-
                     {/* Buttons */}
                     <div className="flex justify-end gap-3 mt-8 pt-2">
                         <button

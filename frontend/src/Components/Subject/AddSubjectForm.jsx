@@ -4,6 +4,7 @@ import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 import { COLORS } from '../../constants/theme'
 import ErrorSuccessMsg from "../ErrorSuccessMsg";
+import Select from 'react-select';
 
 function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
     const [subjectId, setSubjectId] = useState('');
@@ -22,9 +23,29 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
         academicYearList.push(i)
     }
 
-    for (let i = 1; i <= 8; i++){
+
+    for (let i = 1; i <= 8; i++) {
         semesterList.push(i);
     }
+
+    const yearOptions = academicYearList.map(year => (
+        {
+            value: year,
+            label: year
+        }
+    ));
+
+    const semesterOptions = semesterList.map(sem => (
+        {
+            value: sem,
+            label: sem
+        }
+    ));
+
+    const courseOptions = [
+        { value: 'BCA', label: 'BCA' },
+        { value: 'MCA', label: 'MCA' }
+    ];
 
     const handleAddSubject = async () => {
         if (subjectId.length === 0 || subjectName.length === 0 || academicYear.length === 0 || semester.length === 0 || course.length === 0) {
@@ -86,22 +107,15 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     Academic Year
                 </label>
 
-                <div className="relative">
-                    <select
-                        value={academicYear}
-                        onChange={(e) => setAcademicYear(e.target.value)}
-                        className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
-                    >
-                        <option value="">Select academic year from list</option>
-                        {academicYearList.map(year => (
-                            <option key={year} value={year}>
-                                {year}
-                            </option>
-                        ))}
-                    </select>
-
-                    <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                </div>
+                <Select
+                    options={yearOptions}
+                    placeholder='Select a year'
+                    value={yearOptions.find(option => (
+                        option.value === academicYear
+                    ))}
+                    onChange={selected => setAcademicYear(selected?.value || '')}
+                    maxMenuHeight={120}
+                />
             </div>
 
             {/* Semester */}
@@ -110,22 +124,15 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     Semester
                 </label>
 
-                <div className="relative">
-                    <select
-                        value={semester}
-                        onChange={(e) => setSemester(e.target.value)}
-                        className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
-                    >
-                        <option value="">Select semester from list</option>
-                        {semesterList.map(sem => (
-                            <option key={sem} value={sem}>
-                                {sem}
-                            </option>
-                        ))}
-                    </select>
-
-                    <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                </div>
+                <Select
+                    options={semesterOptions}
+                    placeholder='Select a semester'
+                    value={semesterOptions.find(option => (
+                        option.value === semester
+                    ))}
+                    onChange={selected => setSemester(selected?.value || '')}
+                    maxMenuHeight={120}
+                />
             </div>
 
             {/* Course Name */}
@@ -134,19 +141,15 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     Course Name
                 </label>
 
-                <div className="relative">
-                    <select
-                        value={course}
-                        onChange={(e) => setCourse(e.target.value)}
-                        className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
-                    >
-                        <option value="">Select course from list</option>
-                        <option value="BCA">BCA</option>
-                        <option value="MCA">MCA</option>
-                    </select>
-
-                    <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                </div>
+                <Select
+                    options={courseOptions}
+                    placeholder='Select a course'
+                    value={courseOptions.find(option => (
+                        option.value === course
+                    ))}
+                    onChange={selected => setCourse(selected?.value || '')}
+                    maxMenuHeight={100}
+                />
             </div>
 
             {/* Buttons */}
@@ -180,20 +183,6 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 setSuccessMsg={setSuccessMsg}
                 setIsOpen={setIsAddSubjectOpen}
             />
-            
-            {/* <div>
-                {errorMsg && (
-                    <p className="text-red-500 text-sm ml-2">
-                        {errorMsg}
-                    </p>
-                )}
-                {successMsg && (
-                    <p className="text-sm ml-2 flex">
-                        <MdDone className='text-green-500 h-full w-5 mx-1 order rounded-full' />
-                        {successMsg}
-                    </p>
-                )}
-            </div> */}
 
             {/* Divider */}
             <div className="border-t border-gray-300 mt-2 pt-2">

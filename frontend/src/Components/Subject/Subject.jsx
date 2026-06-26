@@ -32,7 +32,7 @@ function Subject() {
             || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase().trim())
         )
         && (
-            filterYear.length > 0 ? sub.academicYear == filterYear : true
+            filterYear ? sub.academicYear == filterYear : true
         )
     ))
 
@@ -61,7 +61,6 @@ function Subject() {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* {subjectData?.map(subject => ( */}
                             {filteredSubjects?.map(subject => (
                                 <tr className='text-center border-b border-gray-300' key={subject._id}>
                                     <td className='px-5 py-2 w-[15%] text-left'>{subject.subjectId}</td>
