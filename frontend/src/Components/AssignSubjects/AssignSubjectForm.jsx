@@ -142,7 +142,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 				</div>
 
 				{/* Body */}
-				<div className="px-6 py-3 space-y-2">
+				<div className="px-6 py-4 space-y-2">
 					{/* Faculty Name */}
 					<div>
 						<label className="block text-lg text-gray-700 mb-2 font-semibold">
@@ -190,13 +190,13 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 							)) || null}
 							onChange={selected => handleSubject(selected?.value || '')}
 							isDisabled={isDisabled}
-							maxMenuHeight={150}
+							maxMenuHeight={90}
 							isClearable
 						/>
 					</div>
 
 					{/* Buttons */}
-					<div className="flex justify-end gap-3 pt-2">
+					<div className="flex justify-end gap-3 pt-10">
 						<button
 							onClick={() => setIsAssignSubjectOpen(false)}
 							className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"

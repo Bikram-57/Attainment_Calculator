@@ -30,6 +30,7 @@ export default defineConfig({
 			'/report/': 'http://localhost:8000',
 			'/download-format/': 'http://localhost:8000',
 			'/home/': 'http://localhost:8000',
+			'/activity/': 'http://localhost:8000',
 		},
 	},
 })
