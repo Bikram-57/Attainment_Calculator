@@ -65,13 +65,55 @@
 
 
 
+// const mongoose = require('mongoose');
+
+// const assignedSubjectDetailSchema = new mongoose.Schema({
+//     subjectId: { type: String, required: true, trim: true },
+//     subjectName: { type: String, required: true, trim: true }
+// }, { _id: false });
+
+// const assignSubjectSchema = new mongoose.Schema({
+//     facultyId: { 
+//         type: String, 
+//         required: [true, 'Faculty ID is required'],
+//         unique: true,
+//         trim: true,
+//         uppercase: true
+//     },
+//     // NEW: Save the name directly in this document
+//     facultyName: {
+//         type: String,
+//         required: true,
+//         trim: true
+//     },
+//     // NEW: Keep a running count of the years
+//     totalYearsRecorded: {
+//         type: Number,
+//         default: 1
+//     },
+//     assignments: {
+//         type: Map,
+//         of: [assignedSubjectDetailSchema], 
+//         default: {}
+//     }
+// }, { timestamps: true });
+
+// module.exports = mongoose.model('assignSubject', assignSubjectSchema);
+
+
+
+
+
 const mongoose = require('mongoose');
 
+// 1. Define the subject details (Now including 'course')
 const assignedSubjectDetailSchema = new mongoose.Schema({
     subjectId: { type: String, required: true, trim: true },
-    subjectName: { type: String, required: true, trim: true }
+    subjectName: { type: String, required: true, trim: true },
+    course: { type: String, required: true, trim: true } // <-- Added to support your multi-stage filter
 }, { _id: false });
 
+// 2. Define the main assignment schema
 const assignSubjectSchema = new mongoose.Schema({
     facultyId: { 
         type: String, 
@@ -80,20 +122,18 @@ const assignSubjectSchema = new mongoose.Schema({
         trim: true,
         uppercase: true
     },
-    // NEW: Save the name directly in this document
     facultyName: {
         type: String,
         required: true,
         trim: true
     },
-    // NEW: Keep a running count of the years
     totalYearsRecorded: {
         type: Number,
         default: 1
     },
     assignments: {
         type: Map,
-        of: [assignedSubjectDetailSchema], 
+        of: [assignedSubjectDetailSchema], // Uses the schema defined above
         default: {}
     }
 }, { timestamps: true });

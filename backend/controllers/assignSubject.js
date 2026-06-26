@@ -10,20 +10,107 @@ const logActivity = require('../utils/activityLogger');
 // 1. Assign Subject
 
 
+// async function handleAssignSubject(req, res) {
+//     try {
+//         const { facultyId, subjectId, subjectName, academicYear } = req.body;
+
+//         if (!facultyId || !subjectId || !subjectName || academicYear === undefined) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'facultyId, subjectId, subjectName, and academicYear are strictly required.'
+//             });
+//         }
+
+//         const cleanFacultyId = facultyId.trim();
+//         const cleanSubjectId = subjectId.trim();
+//         const cleanSubjectName = subjectName.trim().replace(/\s+/g, ' '); 
+//         const academicYearStr = academicYear.toString().trim();
+
+//         // Global Conflict Check
+//         const queryKey = `assignments.${academicYearStr}`;
+//         const existingAssignment = await assignSubject.findOne({
+//             [queryKey]: { $elemMatch: { subjectId: cleanSubjectId } }
+//         });
+
+//         if (existingAssignment) {
+//             return res.status(409).json({
+//                 success: false,
+//                 message: `Conflict: Subject ${cleanSubjectId} is already assigned to faculty ${existingAssignment.facultyId} for the year ${academicYearStr}.`
+//             });
+//         }
+
+//         let teacherDoc = await assignSubject.findOne({ facultyId: cleanFacultyId });
+
+//         if (!teacherDoc) {
+//             // Fetch name for the BRAND NEW document
+//             const facultyDetails = await Faculty.findOne({ facultyId: cleanFacultyId }).lean();
+//             const fetchedName = facultyDetails ? facultyDetails.name : "Unknown Faculty";
+
+//             teacherDoc = new assignSubject({
+//                 facultyId: cleanFacultyId,
+//                 facultyName: fetchedName,
+//                 totalYearsRecorded: 1,
+//                 assignments: {} 
+//             });
+//             teacherDoc.assignments.set(academicYearStr, [{ subjectId: cleanSubjectId, subjectName: cleanSubjectName }]);
+//         } else {
+//             const yearSubjects = teacherDoc.assignments.get(academicYearStr) || [];
+//             const alreadyExists = yearSubjects.some(sub => sub.subjectId === cleanSubjectId);
+            
+//             if (!alreadyExists) {
+//                 yearSubjects.push({ subjectId: cleanSubjectId, subjectName: cleanSubjectName });
+//                 teacherDoc.assignments.set(academicYearStr, yearSubjects);
+//             }
+            
+//             // Update the total years count
+//             teacherDoc.totalYearsRecorded = teacherDoc.assignments.size;
+//         }
+
+//         await teacherDoc.save();
+
+//         // ---> NEW ACTIVITY LOGGING TRIGGER <---
+//         await logActivity(
+//             req.user, // The ID from your verifyJWT middleware
+//             'ASSIGNED_SUBJECT', 
+//             `${cleanSubjectId} - ${cleanSubjectName} assigned to ${teacherDoc.facultyName}`, 
+//             [] // Empty array keeps this notification private to the actor and admins
+//         );
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Subject assigned successfully.',
+//             data: teacherDoc
+//         });
+
+//     } catch (error) {
+//         console.error('Full Error Detail:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Server error while assigning subject.',
+//             actualError: error.message
+//         });
+//     }
+// }
+
+
+
 async function handleAssignSubject(req, res) {
     try {
-        const { facultyId, subjectId, subjectName, academicYear } = req.body;
+        // 1. Added 'course' to destructuring
+        const { facultyId, subjectId, subjectName, course, academicYear } = req.body;
 
-        if (!facultyId || !subjectId || !subjectName || academicYear === undefined) {
+        // 2. Added 'course' to the validation check
+        if (!facultyId || !subjectId || !subjectName || !course || academicYear === undefined) {
             return res.status(400).json({
                 success: false,
-                message: 'facultyId, subjectId, subjectName, and academicYear are strictly required.'
+                message: 'facultyId, subjectId, subjectName, course, and academicYear are strictly required.'
             });
         }
 
         const cleanFacultyId = facultyId.trim();
         const cleanSubjectId = subjectId.trim();
         const cleanSubjectName = subjectName.trim().replace(/\s+/g, ' '); 
+        const cleanCourse = course.trim(); // 3. Clean the course input
         const academicYearStr = academicYear.toString().trim();
 
         // Global Conflict Check
@@ -52,13 +139,24 @@ async function handleAssignSubject(req, res) {
                 totalYearsRecorded: 1,
                 assignments: {} 
             });
-            teacherDoc.assignments.set(academicYearStr, [{ subjectId: cleanSubjectId, subjectName: cleanSubjectName }]);
+            
+            // 4. Added 'course' to the newly created map entry
+            teacherDoc.assignments.set(academicYearStr, [{ 
+                subjectId: cleanSubjectId, 
+                subjectName: cleanSubjectName,
+                course: cleanCourse
+            }]);
         } else {
             const yearSubjects = teacherDoc.assignments.get(academicYearStr) || [];
             const alreadyExists = yearSubjects.some(sub => sub.subjectId === cleanSubjectId);
             
             if (!alreadyExists) {
-                yearSubjects.push({ subjectId: cleanSubjectId, subjectName: cleanSubjectName });
+                // 5. Added 'course' to the pushed object
+                yearSubjects.push({ 
+                    subjectId: cleanSubjectId, 
+                    subjectName: cleanSubjectName,
+                    course: cleanCourse
+                });
                 teacherDoc.assignments.set(academicYearStr, yearSubjects);
             }
             
@@ -68,12 +166,12 @@ async function handleAssignSubject(req, res) {
 
         await teacherDoc.save();
 
-        // ---> NEW ACTIVITY LOGGING TRIGGER <---
+        // Activity Logging Trigger
         await logActivity(
-            req.user, // The ID from your verifyJWT middleware
+            req.user, 
             'ASSIGNED_SUBJECT', 
-            `${cleanSubjectId} - ${cleanSubjectName} assigned to ${teacherDoc.facultyName}`, 
-            [] // Empty array keeps this notification private to the actor and admins
+            `${cleanSubjectId} - ${cleanSubjectName} (${cleanCourse}) assigned to ${teacherDoc.facultyName}`, // Added course to log for better audit trails
+            [] 
         );
 
         return res.status(200).json({
@@ -91,6 +189,8 @@ async function handleAssignSubject(req, res) {
         });
     }
 }
+
+
 
 
 // async function handleAssignSubject(req, res) {
