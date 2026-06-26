@@ -152,9 +152,172 @@ const handleGetCurrentYearTotalSubjectsByCourse = async (req, res) => {
 };
 
 
+const handleGetProgressOfMCA = async (req, res) => {
+  try {
+    const stats = await Subject.aggregate([
+      // 1. Filter only for MCA department
+      { $match: { course: 'MCA' } },
+      
+      // 2. Group by status to get counts for each
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 3. Format the response
+    const uploadedCount = stats.find(item => item._id === 'Uploaded')?.count || 0;
+    const pendingCount = stats.find(item => item._id === 'Pending')?.count || 0;
+    const totalCount = uploadedCount + pendingCount;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        course: 'MCA',
+        totalSubjects: totalCount,
+        uploadedSubjects: uploadedCount,
+        pendingSubjects: pendingCount,
+        // Optional: include progress percentage
+        progressPercentage: totalCount > 0 
+          ? ((uploadedCount / totalCount) * 100).toFixed(2) 
+          : 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+
+const handleGetProgressOfBCA = async (req, res) => {
+  try {
+    const stats = await Subject.aggregate([
+      // 1. Filter only for MCA department
+      { $match: { course: 'BCA' } },
+      
+      // 2. Group by status to get counts for each
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 3. Format the response
+    const uploadedCount = stats.find(item => item._id === 'Uploaded')?.count || 0;
+    const pendingCount = stats.find(item => item._id === 'Pending')?.count || 0;
+    const totalCount = uploadedCount + pendingCount;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        course: 'BCA',
+        totalSubjects: totalCount,
+        uploadedSubjects: uploadedCount,
+        pendingSubjects: pendingCount,
+        // Optional: include progress percentage
+        progressPercentage: totalCount > 0 
+          ? ((uploadedCount / totalCount) * 100).toFixed(2) 
+          : 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+const handleGetProgressOfCoPoMappingForMCA = async (req, res) => {
+  try {
+    const stats = await Subject.aggregate([
+      // 1. Filter only for MCA department
+      { $match: { course: 'MCA' } },
+      
+      // 2. Group by status to get counts for each
+      {
+        $group: {
+          _id: "$copoMappingStatus",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 3. Format the response
+    const uploadedCount = stats.find(item => item._id === 'Uploaded')?.count || 0;
+    const pendingCount = stats.find(item => item._id === 'Pending')?.count || 0;
+    const totalCount = uploadedCount + pendingCount;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        course: 'MCA',
+        totalSubjects: totalCount,
+        uploadedSubjects: uploadedCount,
+        pendingSubjects: pendingCount,
+        // Optional: include progress percentage
+        progressPercentage: totalCount > 0 
+          ? ((uploadedCount / totalCount) * 100).toFixed(2) 
+          : 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+const handleGetProgressOfCoPoMappingForBCA = async (req, res) => {
+  try {
+    const stats = await Subject.aggregate([
+      // 1. Filter only for MCA department
+      { $match: { course: 'BCA' } },
+      
+      // 2. Group by status to get counts for each
+      {
+        $group: {
+          _id: "$copoMappingStatus",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 3. Format the response
+    const uploadedCount = stats.find(item => item._id === 'Uploaded')?.count || 0;
+    const pendingCount = stats.find(item => item._id === 'Pending')?.count || 0;
+    const totalCount = uploadedCount + pendingCount;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        course: 'BCA',
+        totalSubjects: totalCount,
+        uploadedSubjects: uploadedCount,
+        pendingSubjects: pendingCount,
+        // Optional: include progress percentage
+        progressPercentage: totalCount > 0 
+          ? ((uploadedCount / totalCount) * 100).toFixed(2) 
+          : 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
 
 module.exports = {
   handleGetCurrentYearSubjectForBcaMcaCount,
   handleGetPendingCopoMappingStatus,
   handleGetCurrentYearTotalSubjectsByCourse,
+  handleGetProgressOfMCA,
+  handleGetProgressOfBCA,
+  handleGetProgressOfCoPoMappingForMCA,
+  handleGetProgressOfCoPoMappingForBCA,
 };
