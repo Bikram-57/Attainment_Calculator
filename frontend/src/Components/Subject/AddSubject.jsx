@@ -4,9 +4,15 @@ import { FaChevronDown } from "react-icons/fa";
 import { COLORS } from '../../constants/theme';
 import AddSubjectForm from './AddSubjectForm';
 import AddAllSubjectsForm from './AddAllSubjectsForm';
+import Select from 'react-select';
 
 function AddSubject({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
     const [addSingleSubject, setAddSingleSubject] = useState(true);
+
+    const subjectAddOptions = [
+        { value: true, label: 'Single subject' },
+        { value: false, label: 'Multiple subjects' }
+    ];
 
     if (!isAddSubjectOpen) return null;
     return (
@@ -34,24 +40,23 @@ function AddSubject({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
                         <IoMdClose className='w-6 h-6' style={{ color: COLORS.font }} />
                     </button>
                 </div>
+                
+                {/* Body */}
                 <div className="px-6 py-2 space-y-2">
                     <div>
                         <label className="block text-md text-gray-700 mb-1 font-semibold">
                             Subjects to add
                         </label>
 
-                        <div className="relative">
-                            <select
-                                value={addSingleSubject}
-                                onChange={(e) => setAddSingleSubject(e.target.value === 'true')}
-                                className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-1 text-sm cursor-pointer outline-none"
-                            >
-                                <option value='true'>Single subject</option>
-                                <option value='false'>Multiple subjects</option>
-                            </select>
-
-                            <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                        </div>
+                        <Select
+                            options={subjectAddOptions}
+                            placeholder='Select a year'
+                            value={subjectAddOptions.find(option => (
+                                option.value === addSingleSubject
+                            ))}
+                            onChange={selected => setAddSingleSubject(selected?.value)}
+                            maxMenuHeight={100}
+                        />
                     </div>
 
                     {addSingleSubject &&

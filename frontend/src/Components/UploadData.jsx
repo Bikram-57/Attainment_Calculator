@@ -188,30 +188,6 @@ function UploadData() {
 				</button>
 			</div>
 			<div className='w-full flex gap-4'>
-				{/* <select
-					className='border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none'
-					style={{ backgroundColor: COLORS.font }}
-					value={academicYear}
-					onChange={handleYear}
-				>
-					<option value=''>Select a year</option>
-					{yearList.map(year => (
-						<option key={year} value={year}>
-							{year}
-						</option>
-					))}
-				</select>
-				<select
-					className='border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none'
-					style={{ backgroundColor: COLORS.font }}
-					value={course}
-					onChange={handleCourse}
-				>
-					<option value=''>Select a course</option>
-					<option value='BCA'>BCA</option>
-					<option value='MCA'>MCA</option>
-				</select> */}
-
 				<div className='flex-1'>
 					<Select
 						options={yearOptions}
@@ -245,24 +221,8 @@ function UploadData() {
 						onChange={(selected) => setSubjectId(selected?.value || "")}
 						isDisabled={isDisabled}
 						maxMenuHeight={300}
-					/>``
+					/>
 				</div>
-
-				{/* <select
-					className={`${isDisabled ? 'cursor-not-allowed text-gray-400' : null} border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none h-8`}
-					style={{ backgroundColor: isDisabled ? COLORS.latteDark : COLORS.font }}
-					value={subjectId}
-					onChange={(e) => setSubjectId(e.target.value)}
-					disabled={isDisabled}
-				>
-					<option value=''>Select a subject</option>
-					{subjectList.map(sub => (
-						<option key={sub.subjectId} value={sub.subjectId}>
-							{sub.subjectId} - {sub.subjectName}
-						</option>
-					))}
-				</select> */}
-
 			</div>
 
 			<div className='flex gap-5 my-7'>
@@ -295,7 +255,6 @@ function UploadData() {
 						</div>
 					)}
 				</div>
-				{/* <div className='flex-1'> */}
 				<div className='flex w-4/5 items-center'>
 					<button
 						className='w-1/3 rounded-sm p-1 cursor-pointer duration-200'

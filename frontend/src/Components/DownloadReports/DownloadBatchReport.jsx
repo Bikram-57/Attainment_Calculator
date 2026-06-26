@@ -105,30 +105,6 @@ function DownloadBatchReport() {
                         maxMenuHeight={300}
                     />
                 </div>
-
-                {/* <select
-                    className='border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none'
-                    style={{ backgroundColor: COLORS.font }}
-                    value={academicYear}
-                    onChange={handleYear}
-                >
-                    <option value=''>Select a year</option>
-                    {yearList.map(year => (
-                        <option key={year} value={year}>
-                            {year}
-                        </option>
-                    ))}
-                </select>
-                <select
-                    className='border border-gray-300 rounded-sm flex-1 px-2 py-1 outline-none'
-                    style={{ backgroundColor: COLORS.font }}
-                    value={course}
-                    onChange={handleCourse}
-                >
-                    <option value=''>Select a course</option>
-                    <option value='BCA'>BCA</option>
-                    <option value='MCA'>MCA</option>
-                </select> */}
             </div>
 
             <div className='flex gap-5 my-7'>

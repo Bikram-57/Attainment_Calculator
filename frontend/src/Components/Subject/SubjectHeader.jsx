@@ -29,20 +29,15 @@ function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear }) {
             <YearFilter setFilterYear={setFilterYear} />
 
             <div className='flex gap-5 mx-10'>
-                {/* <div className='border border-gray-300 rounded-md flex items-center'> */}
                 <div
                     className='border rounded-md flex items-center'
-                // style={{ borderColor: COLORS.mintDark }}
                 >
                     <input
                         type='text'
                         placeholder='Search by subject code or name'
                         value={search}
-                        // className='border-r border-gray-300 px-3 py-1 w-87.5'
-                        // className='border-r-4 border-r-red-200 px-3 py-1 w-87.5'
                         className='border-r px-3 py-1 w-87.5 outline-none'
                         style={{
-                            // borderRightColor: COLORS.mintDark,
                             color: COLORS.mintDark
                         }}
                         onChange={(e) => handleChange(e)}
@@ -56,7 +51,6 @@ function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear }) {
                 </div>
                 <div>
                     <button
-                        // className='bg-blue-900 text-white px-3 py-1 rounded-lg cursor-pointer'
                         className='px-3 py-1 rounded-lg cursor-pointer'
                         style={{
                             backgroundColor: COLORS.mint,
