@@ -29,6 +29,8 @@ const downloadReport = require('./routes/downloadReport');
 const downloadDirectAttainmentReport = require('./routes/downloadDirectAttainmentReport');
 const formatDownload = require('./routes/formatDownload');
 const activity = require('./routes/activities');
+const subjectAnalysis = require('./routes/subjectAnalysis');
+
 
 
 const app = express();
@@ -80,6 +82,7 @@ app.use("/file", downloadReport);
 app.use("/report", downloadDirectAttainmentReport);
 app.use("/download-format", formatDownload);
 app.use("/activity", activity);
+app.use("/subject-analysis", subjectAnalysis);
 
 
 app.listen(PORT, () => {
