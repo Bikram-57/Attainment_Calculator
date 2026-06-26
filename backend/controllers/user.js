@@ -260,9 +260,66 @@
 
 const User = require('../models/user');
 const { deleteUploadedImage } = require('../utils/fileHelper');
+const logActivity = require('../utils/activityLogger');
 
 // @desc    Admin creates a new Faculty (With optional image)
 // @route   POST /api/users/
+// async function handleGenerateNewUser(req, res) {
+//     try {
+//         const { facultyId, name, email, password } = req.body;
+
+//         // 1. Determine the profile image path
+//         // It defaults to the placeholder unless a file was uploaded
+//         let profileImage = '/images/profilePlaceholder.jpg';
+//         if (req.file) {
+//             profileImage = `/uploads/${req.file.filename}`;
+//         }
+
+//         // 2. Create the user
+//         const newUser = await User.create({
+//             facultyId,
+//             name,
+//             email,
+//             password,
+//             role: 'faculty', // Force role to 'faculty'
+//             profileImage
+//         });
+
+//         res.status(201).json({
+//             success: true,
+//             message: "Faculty account created successfully",
+//             data: {
+//                 id: newUser._id,
+//                 facultyId: newUser.facultyId,
+//                 name: newUser.name,
+//                 email: newUser.email,
+//                 profileImage: newUser.profileImage
+//             }
+//         });
+
+//     } catch (error) {
+//         // Handle MongoDB Duplicate Key Error (code 11000)
+//         if (error.code === 11000) {
+//             const duplicateField = Object.keys(error.keyPattern)[0];
+//             const message = duplicateField === 'facultyId' 
+//                 ? "This Faculty ID is already registered." 
+//                 : "This Email address is already in use.";
+            
+//             return res.status(400).json({ success: false, message: message });
+//         }
+
+//         // Handle Mongoose Validation Errors
+//         if (error.name === 'ValidationError') {
+//             const messages = Object.values(error.errors).map(val => val.message);
+//             return res.status(400).json({ success: false, message: messages[0] });
+//         }
+
+//         res.status(500).json({ success: false, message: "Server Error", error: error.message });
+//     }
+// };
+
+
+//done
 async function handleGenerateNewUser(req, res) {
     try {
         const { facultyId, name, email, password } = req.body;
@@ -284,7 +341,30 @@ async function handleGenerateNewUser(req, res) {
             profileImage
         });
 
-        res.status(201).json({
+        // ---> 🔔 THE BELL RINGER (Placed BEFORE the return!) <---
+        try {
+            // Smart Check: Are they signing themselves up, or did an Admin do it?
+            const userId = req.user ? (req.user._id || req.user.id || req.user) : newUser._id;
+            
+            let actorName = newUser.name; // Default to self-registration
+            
+            if (req.user) {
+                const currentUser = await User.findById(userId).select('name').lean();
+                actorName = currentUser ? currentUser.name : "an Administrator";
+            }
+
+            await logActivity(
+                userId,
+                'CREATED_FACULTY_ACCOUNT', 
+                `Faculty account created for ${newUser.name} (${newUser.facultyId}) by ${actorName}`, 
+                []
+            );
+        } catch (logError) {
+            console.error("⚠️ Activity Logger Failed:", logError.message);
+        }
+        // ---------------------------------------------------------
+
+        return res.status(201).json({
             success: true,
             message: "Faculty account created successfully",
             data: {
@@ -313,13 +393,69 @@ async function handleGenerateNewUser(req, res) {
             return res.status(400).json({ success: false, message: messages[0] });
         }
 
-        res.status(500).json({ success: false, message: "Server Error", error: error.message });
+        return res.status(500).json({ success: false, message: "Server Error", error: error.message });
     }
-};
+}
+
 
 
 // @desc    Update Faculty Info & Profile Image (Admin Only)
 // @route   PUT /api/users/:id
+// async function handleEditUserByFacultyId(req, res) {
+//     try {
+//         const { id } = req.params; 
+//         const { name, email } = req.body;
+
+//         // 1. SECURITY: Prevent changes to the Super Admin
+//         if (id.toUpperCase() === 'CA1718') {
+//             return res.status(403).json({
+//                 success: false,
+//                 message: "System Protection: The Super Admin account cannot be modified."
+//             });
+//         }
+
+//         // 2. Find the user FIRST so we can check if they have an old image to delete
+//         const user = await User.findOne({ facultyId: id.toUpperCase() });
+//         if (!user) {
+//             return res.status(404).json({ success: false, message: "Faculty member not found" });
+//         }
+
+//         // 3. Prepare the data to update
+//         let updateData = { name, email };
+
+//         // 4. If a new image was uploaded, handle the file replacement
+//         if (req.file) {
+//             // Delete the old image from the server (if it was an uploaded file)
+//             await deleteUploadedImage(user.profileImage);
+            
+//             // Set the new image path to save in the database
+//             updateData.profileImage = `/uploads/${req.file.filename}`;
+//         }
+
+//         // 5. Update the database
+//         const updatedUser = await User.findOneAndUpdate(
+//             { facultyId: id.toUpperCase() },
+//             updateData,
+//             { new: true, runValidators: true }
+//         );
+
+//         res.status(200).json({
+//             success: true,
+//             message: "Faculty information updated successfully",
+//             data: updatedUser
+//         });
+
+//     } catch (error) {
+//         if (error.code === 11000) {
+//             return res.status(400).json({ success: false, message: "This email is already assigned to another user." });
+//         }
+//         res.status(500).json({ success: false, message: error.message });
+//     }
+// };
+
+
+
+//done
 async function handleEditUserByFacultyId(req, res) {
     try {
         const { id } = req.params; 
@@ -358,7 +494,27 @@ async function handleEditUserByFacultyId(req, res) {
             { new: true, runValidators: true }
         );
 
-        res.status(200).json({
+        // ---> 🔔 THE BELL RINGER (Placed BEFORE the return!) <---
+        try {
+            const userId = req.user?._id || req.user?.id || req.user;
+            const currentUser = await User.findById(userId).select('name').lean();
+            
+            // If an admin is doing this, we get their name. If not, it defaults to "an Administrator"
+            const actorName = currentUser ? currentUser.name : "an Administrator";
+
+            await logActivity(
+                userId,
+                'UPDATED_FACULTY_ACCOUNT', 
+                `Faculty profile for ${updatedUser.name} (${updatedUser.facultyId}) was updated by ${actorName}`, 
+                []
+            );
+        } catch (logError) {
+            console.error("⚠️ Activity Logger Failed:", logError.message);
+        }
+        // ---------------------------------------------------------
+
+        // 6. Return success response
+        return res.status(200).json({
             success: true,
             message: "Faculty information updated successfully",
             data: updatedUser
@@ -368,9 +524,10 @@ async function handleEditUserByFacultyId(req, res) {
         if (error.code === 11000) {
             return res.status(400).json({ success: false, message: "This email is already assigned to another user." });
         }
-        res.status(500).json({ success: false, message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
+
 
 
 // @desc    Delete just the Profile Image (Reset to default)
@@ -429,10 +586,44 @@ async function handleGetUserByFacultyId(req, res) {
 
 // @desc    Delete Faculty
 // @route   DELETE /api/users/:id
+// async function handleDeleteUserByFacultyId(req, res) {
+//     try {
+//         const targetId = req.params.id.toUpperCase();
+
+//         if (targetId === 'CA1718') {
+//             return res.status(403).json({
+//                 success: false,
+//                 message: "System Protection: The Super Admin account is permanent and cannot be deleted."
+//             });
+//         }
+
+//         // Find and delete the user
+//         const deletedUser = await User.findOneAndDelete({ facultyId: targetId });
+
+//         if (!deletedUser) {
+//             return res.status(404).json({ success: false, message: `No faculty member found with ID: ${targetId}` });
+//         }
+
+//         // ⚠️ NEW ADDITION: If the user is deleted, also delete their uploaded profile image from the server!
+//         await deleteUploadedImage(deletedUser.profileImage);
+
+//         res.status(200).json({
+//             success: true,
+//             message: `Faculty member ${targetId} (${deletedUser.name}) has been deleted.`
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({ success: false, message: "Server Error", error: error.message });
+//     }
+// };
+
+
+
 async function handleDeleteUserByFacultyId(req, res) {
     try {
         const targetId = req.params.id.toUpperCase();
 
+        // 1. SECURITY: Protect the Super Admin
         if (targetId === 'CA1718') {
             return res.status(403).json({
                 success: false,
@@ -440,23 +631,43 @@ async function handleDeleteUserByFacultyId(req, res) {
             });
         }
 
-        // Find and delete the user
+        // 2. Find and delete the user
         const deletedUser = await User.findOneAndDelete({ facultyId: targetId });
 
         if (!deletedUser) {
             return res.status(404).json({ success: false, message: `No faculty member found with ID: ${targetId}` });
         }
 
-        // ⚠️ NEW ADDITION: If the user is deleted, also delete their uploaded profile image from the server!
+        // 3. Cleanup: Delete their uploaded profile image
         await deleteUploadedImage(deletedUser.profileImage);
 
-        res.status(200).json({
+        // ---> 🔔 THE BELL RINGER (Placed BEFORE the return!) <---
+        try {
+            const userId = req.user?._id || req.user?.id || req.user;
+            const currentUser = await User.findById(userId).select('name').lean();
+            
+            // If an admin is doing this, we get their name.
+            const actorName = currentUser ? currentUser.name : "an Administrator";
+
+            await logActivity(
+                userId,
+                'DELETED_FACULTY_ACCOUNT', 
+                `Faculty account for ${deletedUser.name} (${deletedUser.facultyId}) was deleted by ${actorName}`, 
+                []
+            );
+        } catch (logError) {
+            console.error("⚠️ Activity Logger Failed:", logError.message);
+        }
+        // ---------------------------------------------------------
+
+        // 4. Success response
+        return res.status(200).json({
             success: true,
             message: `Faculty member ${targetId} (${deletedUser.name}) has been deleted.`
         });
 
     } catch (error) {
-        res.status(500).json({ success: false, message: "Server Error", error: error.message });
+        return res.status(500).json({ success: false, message: "Server Error", error: error.message });
     }
 };
 

@@ -2,6 +2,8 @@ const FinalAttainment = require('../models/finalAttainment');
 const Subject = require('../models/subject');
 const CoPoMatrix = require('../models/coPoMapping');
 const DirectPoAttainment = require('../models/directAttainment');
+const User = require('../models/user'); 
+const logActivity = require('../utils/activityLogger');
 
 const STANDARD_POS = [
     'PO1',
@@ -13,6 +15,307 @@ const STANDARD_POS = [
     'PO7',
     'PO8'
 ];
+
+// const extractAttainmentLevels = async (req, res) => {
+//     try {
+
+//         const targetCourse = req.body?.course || 'MCA';
+//         const targetYear = req.body?.academicYear || '2026';
+
+//         console.log(
+//             `Calculating Direct PO Attainment: ${targetCourse} - ${targetYear}`
+//         );
+
+//         // ==========================
+//         // FETCH FINAL ATTAINMENT DATA
+//         // ==========================
+//         const allSubjects = await FinalAttainment.find(
+//             {
+//                 course: targetCourse,
+//                 academicYear: targetYear
+//             },
+//             {
+//                 subjectId: 1,
+//                 attainmentTable: 1,
+//                 _id: 0
+//             }
+//         ).lean();
+
+//         if (!allSubjects.length) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'No subjects found.'
+//             });
+//         }
+
+//         const subjectIds = allSubjects.map(
+//             subject => subject.subjectId
+//         );
+
+//         console.log('Subject IDs:', subjectIds);
+
+//         // ==========================
+//         // FETCH SUBJECT NAMES
+//         // ==========================
+//         const subjectRecords = await Subject.find(
+//             {
+//                 subjectId: { $in: subjectIds },
+//                 course: targetCourse,
+//                 academicYear: Number(targetYear)
+//             },
+//             {
+//                 subjectId: 1,
+//                 subjectName: 1,
+//                 _id: 0
+//             }
+//         ).lean();
+
+//         console.log('Subject Records:', subjectRecords);
+
+//         const subjectLookup = new Map();
+
+//         subjectRecords.forEach(subject => {
+//             subjectLookup.set(
+//                 subject.subjectId,
+//                 subject.subjectName
+//             );
+//         });
+
+//         console.log(
+//             'Subject Lookup:',
+//             Object.fromEntries(subjectLookup)
+//         );
+
+//         // ==========================
+//         // FETCH CO-PO MAPPINGS
+//         // ==========================
+//         const allMatrices = await CoPoMatrix.find(
+//             {
+//                 subjectId: { $in: subjectIds }
+//             },
+//             {
+//                 subjectId: 1,
+//                 mappingData: 1,
+//                 matrix: 1,
+//                 copoMapping: 1,
+//                 _id: 0
+//             }
+//         ).lean();
+
+//         const matrixLookup = new Map();
+
+//         allMatrices.forEach(matrix => {
+//             matrixLookup.set(
+//                 matrix.subjectId,
+//                 matrix.mappingData ||
+//                 matrix.matrix ||
+//                 matrix.copoMapping ||
+//                 {}
+//             );
+//         });
+
+//         // ==========================
+//         // CALCULATE DIRECT PO
+//         // ==========================
+//         const calculatedBatchData = allSubjects.map(subject => {
+
+//             const attainmentTable =
+//                 subject.attainmentTable || {};
+
+//             const rawMatrix =
+//                 matrixLookup.get(subject.subjectId) || {};
+
+//             const tableData = [];
+
+//             const poTotals = Object.fromEntries(
+//                 STANDARD_POS.map(po => [po, 0])
+//             );
+
+//             const poWeights = Object.fromEntries(
+//                 STANDARD_POS.map(po => [po, 0])
+//             );
+
+//             const extractedLevels = {};
+
+//             Object.keys(attainmentTable).forEach(coKey => {
+
+//                 if (
+//                     attainmentTable[coKey] &&
+//                     attainmentTable[coKey].grandTotal !== undefined
+//                 ) {
+//                     extractedLevels[coKey] =
+//                         Number(
+//                             attainmentTable[coKey].grandTotal
+//                         ) || 0;
+//                 }
+//             });
+
+//             const sortedCOs = Object.keys(
+//                 extractedLevels
+//             ).sort(
+//                 (a, b) =>
+//                     Number(a.replace('CO', '')) -
+//                     Number(b.replace('CO', ''))
+//             );
+
+//             sortedCOs.forEach((coKey, index) => {
+
+//                 const attainmentLevel =
+//                     extractedLevels[coKey];
+
+//                 const mappings =
+//                     rawMatrix?.[coKey] || {};
+
+//                 const row = {
+//                     course:
+//                         index === 0
+//                             ? subject.subjectId
+//                             : '',
+//                     co: coKey,
+//                     attainmentLevel
+//                 };
+
+//                 STANDARD_POS.forEach(po => {
+
+//                     const weight =
+//                         mappings[po] === '' ||
+//                         mappings[po] === null ||
+//                         mappings[po] === undefined
+//                             ? null
+//                             : Number(mappings[po]);
+
+//                     row[po] = weight;
+
+//                     if (weight !== null) {
+//                         poTotals[po] +=
+//                             attainmentLevel * weight;
+
+//                         poWeights[po] += weight;
+//                     }
+//                 });
+
+//                 tableData.push(row);
+//             });
+
+//             const directPoRow = {
+//                 course: 'Direct PO Attainment',
+//                 co: '',
+//                 attainmentLevel: ''
+//             };
+
+//             STANDARD_POS.forEach(po => {
+
+//                 directPoRow[po] =
+//                     poWeights[po] > 0
+//                         ? Number(
+//                               (
+//                                   poTotals[po] /
+//                                   poWeights[po]
+//                               ).toFixed(2)
+//                           )
+//                         : null;
+//             });
+
+//             tableData.push(directPoRow);
+
+//             return {
+//                 subjectId: subject.subjectId,
+//                 subjectName:
+//                     subjectLookup.get(subject.subjectId) ||
+//                     'Unknown Subject',
+//                 tableData
+//             };
+//         });
+
+//         // ==========================
+//         // SAVE REPORT
+//         // ==========================
+//         const savedDocument =
+//             await DirectPoAttainment.findOneAndUpdate(
+//                 {
+//                     course: targetCourse,
+//                     academicYear: targetYear
+//                 },
+//                 {
+//                     $set: {
+//                         course: targetCourse,
+//                         academicYear: targetYear,
+//                         subjects: calculatedBatchData,
+//                         calculatedAt: new Date()
+//                     }
+//                 },
+//                 {
+//                     new: true,
+//                     upsert: true,
+//                     runValidators: true,
+//                     setDefaultsOnInsert: true
+//                 }
+//             ).lean();
+
+//         return res.status(200).json({
+//             success: true,
+//             count: calculatedBatchData.length,
+//             data: calculatedBatchData,
+//             documentId: savedDocument._id
+//         });
+
+//     } catch (error) {
+
+//         console.error(
+//             'Direct PO Attainment Error:',
+//             error
+//         );
+
+//         return res.status(500).json({
+//             success: false,
+//             error: error.message
+//         });
+//     }
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const extractAttainmentLevels = async (req, res) => {
     try {
@@ -250,6 +553,18 @@ const extractAttainmentLevels = async (req, res) => {
                 }
             ).lean();
 
+        // ---> 🔔 THE BELL RINGER (ACTIVITY LOGGER) 🔔 <---
+        // Grab the user name and fire the notification!
+        const currentUser = await User.findById(req.user).select('name').lean();
+        const actorName = currentUser ? currentUser.name : "a Faculty Member";
+
+        await logActivity(
+            req.user,
+            'GENERATED_DIRECT_ATTAINMENT_FOR_BATCH', 
+            `Successfully Direct Attainment report generated for ${targetCourse.toUpperCase()} (Batch: ${targetYear}) by ${actorName}`, 
+            []
+        );
+
         return res.status(200).json({
             success: true,
             count: calculatedBatchData.length,
@@ -270,6 +585,13 @@ const extractAttainmentLevels = async (req, res) => {
         });
     }
 };
+
+
+
+
+
+
+
 
 
 

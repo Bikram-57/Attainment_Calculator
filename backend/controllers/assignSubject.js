@@ -1,12 +1,15 @@
 const assignSubject = require('../models/assignSubject'); 
 const Faculty = require('../models/user'); 
 const Subject = require('../models/subject'); 
+const logActivity = require('../utils/activityLogger');
 
 
 
 
 
 // 1. Assign Subject
+
+
 async function handleAssignSubject(req, res) {
     try {
         const { facultyId, subjectId, subjectName, academicYear } = req.body;
@@ -65,6 +68,14 @@ async function handleAssignSubject(req, res) {
 
         await teacherDoc.save();
 
+        // ---> NEW ACTIVITY LOGGING TRIGGER <---
+        await logActivity(
+            req.user, // The ID from your verifyJWT middleware
+            'ASSIGNED_SUBJECT', 
+            `${cleanSubjectId} - ${cleanSubjectName} assigned to ${teacherDoc.facultyName}`, 
+            [] // Empty array keeps this notification private to the actor and admins
+        );
+
         return res.status(200).json({
             success: true,
             message: 'Subject assigned successfully.',
@@ -80,6 +91,81 @@ async function handleAssignSubject(req, res) {
         });
     }
 }
+
+
+// async function handleAssignSubject(req, res) {
+//     try {
+//         const { facultyId, subjectId, subjectName, academicYear } = req.body;
+
+//         if (!facultyId || !subjectId || !subjectName || academicYear === undefined) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'facultyId, subjectId, subjectName, and academicYear are strictly required.'
+//             });
+//         }
+
+//         const cleanFacultyId = facultyId.trim();
+//         const cleanSubjectId = subjectId.trim();
+//         const cleanSubjectName = subjectName.trim().replace(/\s+/g, ' '); 
+//         const academicYearStr = academicYear.toString().trim();
+
+//         // Global Conflict Check
+//         const queryKey = `assignments.${academicYearStr}`;
+//         const existingAssignment = await assignSubject.findOne({
+//             [queryKey]: { $elemMatch: { subjectId: cleanSubjectId } }
+//         });
+
+//         if (existingAssignment) {
+//             return res.status(409).json({
+//                 success: false,
+//                 message: `Conflict: Subject ${cleanSubjectId} is already assigned to faculty ${existingAssignment.facultyId} for the year ${academicYearStr}.`
+//             });
+//         }
+
+//         let teacherDoc = await assignSubject.findOne({ facultyId: cleanFacultyId });
+
+//         if (!teacherDoc) {
+//             // Fetch name for the BRAND NEW document
+//             const facultyDetails = await Faculty.findOne({ facultyId: cleanFacultyId }).lean();
+//             const fetchedName = facultyDetails ? facultyDetails.name : "Unknown Faculty";
+
+//             teacherDoc = new assignSubject({
+//                 facultyId: cleanFacultyId,
+//                 facultyName: fetchedName,
+//                 totalYearsRecorded: 1,
+//                 assignments: {} 
+//             });
+//             teacherDoc.assignments.set(academicYearStr, [{ subjectId: cleanSubjectId, subjectName: cleanSubjectName }]);
+//         } else {
+//             const yearSubjects = teacherDoc.assignments.get(academicYearStr) || [];
+//             const alreadyExists = yearSubjects.some(sub => sub.subjectId === cleanSubjectId);
+            
+//             if (!alreadyExists) {
+//                 yearSubjects.push({ subjectId: cleanSubjectId, subjectName: cleanSubjectName });
+//                 teacherDoc.assignments.set(academicYearStr, yearSubjects);
+//             }
+            
+//             // Update the total years count
+//             teacherDoc.totalYearsRecorded = teacherDoc.assignments.size;
+//         }
+
+//         await teacherDoc.save();
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Subject assigned successfully.',
+//             data: teacherDoc
+//         });
+
+//     } catch (error) {
+//         console.error('Full Error Detail:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Server error while assigning subject.',
+//             actualError: error.message
+//         });
+//     }
+// }
 
 
 
@@ -223,6 +309,9 @@ async function getAssignedSubjectsByFaculty(req, res) {
 
 
 // 4. Delete a Specific Assignment Document
+
+
+
 async function removeSubjectFromFaculty(req, res) {
     try {
         const { facultyId, subjectId, academicYear } = req.body;
@@ -256,15 +345,20 @@ async function removeSubjectFromFaculty(req, res) {
 
         let yearSubjects = facultyRecord.assignments.get(academicYearStr);
 
-        // Filter through array of objects to find match
-        const subjectExists = yearSubjects.some(sub => sub.subjectId === cleanSubjectId);
+        // ---> THE CRUCIAL FIX IS HERE <---
+        // Instead of .some(), we use .find() to grab the actual object so we can read its name
+        const subjectToRemove = yearSubjects.find(sub => sub.subjectId === cleanSubjectId);
         
-        if (!subjectExists) {
+        if (!subjectToRemove) {
             return res.status(404).json({
                 success: false,
                 message: `Subject ${cleanSubjectId} is not assigned to this faculty for the year ${academicYearStr}.`
             });
         }
+
+        // Now we safely define the variable for the logger!
+        const removedSubjectName = subjectToRemove.subjectName;
+        // ---------------------------------
 
         // Filter the object OUT of the array
         yearSubjects = yearSubjects.filter(sub => sub.subjectId !== cleanSubjectId);
@@ -279,6 +373,14 @@ async function removeSubjectFromFaculty(req, res) {
         facultyRecord.totalYearsRecorded = facultyRecord.assignments.size;
 
         await facultyRecord.save();
+
+        // ---> THE TRIGGER <---
+        await logActivity(
+            req.user, 
+            'REMOVED_SUBJECT', 
+            `${cleanSubjectId} - ${removedSubjectName} removed from ${facultyRecord.facultyName}`, 
+            [] 
+        );
 
         return res.status(200).json({
             success: true,
@@ -295,6 +397,80 @@ async function removeSubjectFromFaculty(req, res) {
         });
     }
 }
+
+
+// async function removeSubjectFromFaculty(req, res) {
+//     try {
+//         const { facultyId, subjectId, academicYear } = req.body;
+
+//         if (!facultyId || !subjectId || academicYear === undefined) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Please provide facultyId, subjectId, and academicYear."
+//             });
+//         }
+
+//         const cleanFacultyId = facultyId.trim();
+//         const cleanSubjectId = subjectId.trim();
+//         const academicYearStr = academicYear.toString().trim();
+
+//         const facultyRecord = await assignSubject.findOne({ facultyId: cleanFacultyId });
+
+//         if (!facultyRecord) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `Could not find faculty with ID: ${cleanFacultyId}`
+//             });
+//         }
+
+//         if (!facultyRecord.assignments.has(academicYearStr)) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `No assignments found for the year ${academicYearStr}.`
+//             });
+//         }
+
+//         let yearSubjects = facultyRecord.assignments.get(academicYearStr);
+
+//         // Filter through array of objects to find match
+//         const subjectExists = yearSubjects.some(sub => sub.subjectId === cleanSubjectId);
+        
+//         if (!subjectExists) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `Subject ${cleanSubjectId} is not assigned to this faculty for the year ${academicYearStr}.`
+//             });
+//         }
+
+//         // Filter the object OUT of the array
+//         yearSubjects = yearSubjects.filter(sub => sub.subjectId !== cleanSubjectId);
+
+//         if (yearSubjects.length === 0) {
+//             facultyRecord.assignments.delete(academicYearStr);
+//         } else {
+//             facultyRecord.assignments.set(academicYearStr, yearSubjects);
+//         }
+
+//         // Keep the total years count accurate after deletion
+//         facultyRecord.totalYearsRecorded = facultyRecord.assignments.size;
+
+//         await facultyRecord.save();
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Subject removed successfully.",
+//             data: facultyRecord
+//         });
+
+//     } catch (error) {
+//         console.error('Full Error Detail:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Server error while deleting assignment",
+//             actualError: error.message
+//         });
+//     }
+// }
 
 module.exports = {
     handleAssignSubject,

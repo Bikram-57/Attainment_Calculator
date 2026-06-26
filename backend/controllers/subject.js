@@ -1,21 +1,70 @@
 const Subject = require('../models/subject');
-
+const User = require('../models/user');
+const logActivity = require('../utils/activityLogger');
 
 
 
 
 //done
+// async function handleGenerateNewSubject(req, res) {
+//     try {
+//         // 1. Added 'semester' to the destructured body
+//         const { subjectId, subjectName, course, academicYear, semester } = req.body;
+
+//         // Optional but recommended: Check if required fields exist before hitting the database
+//         if (!subjectId || !subjectName || !course || !academicYear || !semester) {
+//              return res.status(400).json({
+//                  success: false,
+//                  message: "Please provide subjectId, subjectName, course, academicYear, and semester."
+//              });
+//         }
+
+//         // Status is automatically set to 'Pending' by the schema default
+//         const newSubject = await Subject.create({
+//             subjectId,
+//             subjectName,
+//             course,
+//             academicYear,
+//             semester // 2. Added 'semester' to the creation payload
+//         });
+
+//         res.status(201).json({
+//             success: true,
+//             data: newSubject
+//         });
+
+//     } catch (error) {
+//         // This catches the '11000' error so the NODE SERVER DOES NOT CRASH
+//         if (error.code === 11000) {
+//             return res.status(400).json({
+//                 success: false,
+//                 // 3. UPDATED: Error message now mentions both academic year and semester
+//                 message: `The Subject ID '${req.body.subjectId}' already exists for semester ${req.body.semester} in the academic year ${req.body.academicYear}.`
+//             });
+//         }
+
+//         res.status(500).json({
+//             success: false,
+//             message: "Server Error",
+//             error: error.message
+//         });
+//     }
+// }
+
+
+
+//new
 async function handleGenerateNewSubject(req, res) {
     try {
         // 1. Added 'semester' to the destructured body
         const { subjectId, subjectName, course, academicYear, semester } = req.body;
-        
+
         // Optional but recommended: Check if required fields exist before hitting the database
         if (!subjectId || !subjectName || !course || !academicYear || !semester) {
-             return res.status(400).json({
-                 success: false,
-                 message: "Please provide subjectId, subjectName, course, academicYear, and semester."
-             });
+            return res.status(400).json({
+                success: false,
+                message: "Please provide subjectId, subjectName, course, academicYear, and semester."
+            });
         }
 
         // Status is automatically set to 'Pending' by the schema default
@@ -27,7 +76,24 @@ async function handleGenerateNewSubject(req, res) {
             semester // 2. Added 'semester' to the creation payload
         });
 
-        res.status(201).json({
+        // ---> 🔔 THE BELL RINGER (Placed BEFORE the return!) <---
+        try {
+            const userId = req.user?._id || req.user?.id || req.user;
+            const currentUser = await User.findById(userId).select('name').lean();
+            const actorName = currentUser ? currentUser.name : "a Faculty Member";
+
+            await logActivity(
+                userId,
+                'CREATED_SUBJECT',
+                `New subject ${subjectId.toUpperCase()} - ${subjectName} created for ${course.toUpperCase()} (Year: ${academicYear}, Sem: ${semester}) by ${actorName}`,
+                []
+            );
+        } catch (logError) {
+            console.error("⚠️ Activity Logger Failed:", logError.message);
+        }
+        // ---------------------------------------------------------
+
+        return res.status(201).json({
             success: true,
             data: newSubject
         });
@@ -54,17 +120,12 @@ async function handleGenerateNewSubject(req, res) {
 
 
 
-
-
-
-
-
 // @desc    Create a new subject
 // @route   POST /api/subjects
 // async function handleGenerateNewSubject(req, res) {
 //     try {
 //         const { subjectId, subjectName, course, academicYear } = req.body;
-        
+
 //         // Status is automatically set to 'Pending' by the schema default
 //         const newSubject = await Subject.create({
 //             subjectId,
@@ -99,12 +160,84 @@ async function handleGenerateNewSubject(req, res) {
 
 
 //done
+// async function handleUpdateSubject(req, res) {
+//     try {
+//         const { id } = req.params; // Get subjectId (subject code) from URL
+
+//         // Extract the possible fields from the request body
+//         const { subjectName, course, academicYear, semester } = req.body; 
+
+//         // 1. Build an object dynamically with ONLY the fields provided
+//         const updateFields = {};
+//         if (subjectName) updateFields.subjectName = subjectName;
+//         if (course) updateFields.course = course;
+//         if (academicYear) updateFields.academicYear = academicYear;
+//         if (semester) updateFields.semester = semester;
+
+//         // 2. Guard clause: Ensure they sent at least ONE thing to update
+//         if (Object.keys(updateFields).length === 0) {
+//             return res.status(400).json({ 
+//                 success: false, 
+//                 message: "Please provide at least one field to update (subjectName, course, academicYear, or semester)." 
+//             });
+//         }
+
+//         // 3. Search ONLY by the subject code, and use $set to update only the provided fields
+//         const updatedSubject = await Subject.findOneAndUpdate(
+//             { 
+//                 subjectId: id.toUpperCase() // Search by subjectcode
+//             }, 
+//             { 
+//                 $set: updateFields // Only updates what is inside this object
+//             },            
+//             {
+//                 new: true,           
+//                 runValidators: true  
+//             }
+//         );
+
+//         if (!updatedSubject) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `Subject with code ${id} not found.`
+//             });
+//         }
+
+//         res.status(200).json({
+//             success: true,
+//             message: "Subject updated successfully",
+//             data: updatedSubject
+//         });
+
+//     } catch (error) {
+//         // Catch duplicate key errors if the new academicYear/semester 
+//         // conflicts with an existing record for this subject ID
+//         if (error.code === 11000) {
+//             return res.status(409).json({ 
+//                 success: false,
+//                 message: "Cannot update: This subject already exists in the target academic year and semester." 
+//             });
+//         }
+
+//         res.status(500).json({
+//             success: false,
+//             error: error.message
+//         });
+//     }
+// }
+
+
+
+
+
+
+//new
 async function handleUpdateSubject(req, res) {
     try {
         const { id } = req.params; // Get subjectId (subject code) from URL
-        
+
         // Extract the possible fields from the request body
-        const { subjectName, course, academicYear, semester } = req.body; 
+        const { subjectName, course, academicYear, semester } = req.body;
 
         // 1. Build an object dynamically with ONLY the fields provided
         const updateFields = {};
@@ -115,23 +248,23 @@ async function handleUpdateSubject(req, res) {
 
         // 2. Guard clause: Ensure they sent at least ONE thing to update
         if (Object.keys(updateFields).length === 0) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Please provide at least one field to update (subjectName, course, academicYear, or semester)." 
+            return res.status(400).json({
+                success: false,
+                message: "Please provide at least one field to update (subjectName, course, academicYear, or semester)."
             });
         }
 
         // 3. Search ONLY by the subject code, and use $set to update only the provided fields
         const updatedSubject = await Subject.findOneAndUpdate(
-            { 
-                subjectId: id.toUpperCase() // Search by subjectcode
-            }, 
-            { 
-                $set: updateFields // Only updates what is inside this object
-            },            
             {
-                new: true,           
-                runValidators: true  
+                subjectId: id.toUpperCase() // Search by subjectcode
+            },
+            {
+                $set: updateFields // Only updates what is inside this object
+            },
+            {
+                new: true,
+                runValidators: true
             }
         );
 
@@ -142,7 +275,45 @@ async function handleUpdateSubject(req, res) {
             });
         }
 
-        res.status(200).json({
+        // ---> 🔔 THE BELL RINGER (Placed BEFORE the return!) <---
+        // try {
+        //     const userId = req.user?._id || req.user?.id || req.user;
+        //     const currentUser = await User.findById(userId).select('name').lean();
+        //     const actorName = currentUser ? currentUser.name : "a Faculty Member";
+
+        //     await logActivity(
+        //         userId,
+        //         'UPDATED_SUBJECT', 
+        //         `Subject details updated for ${updatedSubject.subjectId.toUpperCase()} - ${updatedSubject.subjectName} by ${actorName}`, 
+        //         []
+        //     );
+        // } catch (logError) {
+        //     console.error("⚠️ Activity Logger Failed:", logError.message);
+        // }
+
+
+        // ---> 🔔 THE BELL RINGER (Placed BEFORE the return!) <---
+        try {
+            const userId = req.user?._id || req.user?.id || req.user;
+            const currentUser = await User.findById(userId).select('name').lean();
+            const actorName = currentUser ? currentUser.name : "a Faculty Member";
+
+            // Grab the safe course name just in case it's missing for some reason
+            const safeCourse = updatedSubject.course ? updatedSubject.course.toUpperCase() : "UNKNOWN COURSE";
+
+            await logActivity(
+                userId,
+                'UPDATED_SUBJECT',
+                `Subject details updated for ${updatedSubject.subjectId.toUpperCase()} - ${updatedSubject.subjectName} (${safeCourse}, Year: ${updatedSubject.academicYear}, Sem: ${updatedSubject.semester}) by ${actorName}`,
+                []
+            );
+        } catch (logError) {
+            console.error("⚠️ Activity Logger Failed:", logError.message);
+        }
+        // ---------------------------------------------------------
+
+
+        return res.status(200).json({
             success: true,
             message: "Subject updated successfully",
             data: updatedSubject
@@ -152,9 +323,9 @@ async function handleUpdateSubject(req, res) {
         // Catch duplicate key errors if the new academicYear/semester 
         // conflicts with an existing record for this subject ID
         if (error.code === 11000) {
-            return res.status(409).json({ 
+            return res.status(409).json({
                 success: false,
-                message: "Cannot update: This subject already exists in the target academic year and semester." 
+                message: "Cannot update: This subject already exists in the target academic year and semester."
             });
         }
 
@@ -164,9 +335,6 @@ async function handleUpdateSubject(req, res) {
         });
     }
 }
-
-
-
 
 
 
@@ -243,7 +411,7 @@ async function handleGetAllSubject(req, res) {
     try {
         // Create an empty filter. If it stays empty, it gets ALL subjects.
         const filter = {};
-        
+
         // If your frontend asks for a specific semester (e.g., ?semester=3), it adds it to the filter.
         if (req.query.semester) {
             filter.semester = req.query.semester;
@@ -251,7 +419,7 @@ async function handleGetAllSubject(req, res) {
 
         // Find all subjects (or all subjects for the requested semester)
         const subjects = await Subject.find(filter);
-        
+
         res.status(200).json({
             success: true,
             count: subjects.length,
@@ -272,7 +440,7 @@ async function handleGetAllSubject(req, res) {
 
 //         // Build a dynamic filter object based on what the frontend requested
 //         const filter = {};
-        
+
 //         if (academicYear) filter.academicYear = Number(academicYear);
 //         if (semester) filter.semester = Number(semester);
 //         if (course) filter.course = course.toUpperCase(); 
@@ -288,7 +456,7 @@ async function handleGetAllSubject(req, res) {
 //             count: subjects.length,
 //             data: subjects
 //         });
-        
+
 //     } catch (error) {
 //         res.status(500).json({ 
 //             success: false, 
@@ -404,16 +572,50 @@ async function handleGetSubjectBySubjectId(req, res) {
 // }
 
 
+// async function handleDeleteSubject(req, res) {
+//     try {
+//         const { id } = req.params;
+
+//         // Find ONLY by subjectId and delete
+//         const deletedSubject = await Subject.findOneAndDelete({
+//             subjectId: id.toUpperCase()
+//         });
+
+//         // If the subject doesn't exist
+//         if (!deletedSubject) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `Subject with ID ${id} not found.`
+//             });
+//         }
+
+//         res.status(200).json({
+//             success: true,
+//             message: "Subject deleted successfully",
+//             data: deletedSubject
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: "Server Error",
+//             error: error.message
+//         });
+//     }
+// }
+
+
+//new
 async function handleDeleteSubject(req, res) {
     try {
         const { id } = req.params;
 
-        // Find ONLY by subjectId and delete
-        const deletedSubject = await Subject.findOneAndDelete({ 
+        // 1. Find ONLY by subjectId and delete
+        const deletedSubject = await Subject.findOneAndDelete({
             subjectId: id.toUpperCase()
         });
 
-        // If the subject doesn't exist
+        // 2. If the subject doesn't exist
         if (!deletedSubject) {
             return res.status(404).json({
                 success: false,
@@ -421,14 +623,34 @@ async function handleDeleteSubject(req, res) {
             });
         }
 
-        res.status(200).json({
+        // ---> 🔔 THE BELL RINGER (Placed BEFORE the response!) <---
+        try {
+            const userId = req.user?._id || req.user?.id || req.user;
+            const currentUser = await User.findById(userId).select('name').lean();
+            const actorName = currentUser ? currentUser.name : "a Faculty Member";
+
+            const safeCourse = deletedSubject.course ? deletedSubject.course.toUpperCase() : "UNKNOWN COURSE";
+
+            await logActivity(
+                userId,
+                'DELETED_SUBJECT', 
+                `Subject ${deletedSubject.subjectId.toUpperCase()} - ${deletedSubject.subjectName} (${safeCourse}, Year: ${deletedSubject.academicYear}, Sem: ${deletedSubject.semester}) was deleted by ${actorName}`, 
+                []
+            );
+        } catch (logError) {
+            console.error("⚠️ Activity Logger Failed:", logError.message);
+        }
+        // ---------------------------------------------------------
+
+        // 3. Success response
+        return res.status(200).json({
             success: true,
             message: "Subject deleted successfully",
-            data: deletedSubject 
+            data: deletedSubject
         });
 
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Server Error",
             error: error.message
@@ -440,11 +662,11 @@ async function handleDeleteSubject(req, res) {
 async function handleGetSubjectsByAcademicYear(req, res) {
     try {
         // Grab the academic year directly from the URL parameter
-        const { academicYear } = req.params; 
+        const { academicYear } = req.params;
 
         // Search the database for everything matching that year
-        const subjects = await Subject.find({ 
-            academicYear: Number(academicYear) 
+        const subjects = await Subject.find({
+            academicYear: Number(academicYear)
         });
 
         // If nothing is found
@@ -466,7 +688,7 @@ async function handleGetSubjectsByAcademicYear(req, res) {
         res.status(500).json({
             success: false,
             message: "Server Error while fetching subjects by year",
-            error: error.message 
+            error: error.message
         });
     }
 }
@@ -475,10 +697,10 @@ async function handleGetSubjectsByAcademicYear(req, res) {
 async function handleGetSubjectsByYearAndCourse(req, res) {
     try {
         // Grab BOTH parameters directly from the URL
-        const { academicYear, course } = req.params; 
+        const { academicYear, course } = req.params;
 
         // Search the database requiring both fields to match exactly
-        const subjects = await Subject.find({ 
+        const subjects = await Subject.find({
             academicYear: Number(academicYear),
             // We use toUpperCase() and trim() to make sure "mca", "MCA ", and " MCA" all work
             course: course.toUpperCase().trim()
@@ -503,7 +725,7 @@ async function handleGetSubjectsByYearAndCourse(req, res) {
         res.status(500).json({
             success: false,
             message: "Server Error while fetching subjects by year and course",
-            error: error.message 
+            error: error.message
         });
     }
 }
@@ -519,7 +741,7 @@ async function handleGetSubjectsByYearAndCourse(req, res) {
 
 //     // Build a dynamic query object
 //     const query = {};
-    
+
 //     if (semester) query.semester = semester;
 //     if (course) query.course = course;
 //     if (academicYear) query.academicYear = academicYear;
@@ -557,7 +779,7 @@ async function handleGetSubjectsByYearAndCourse(req, res) {
 //     const { semester, course, academicYear } = req.query;
 
 //     const query = {};
-    
+
 //     // Only build the query using the list filters
 //     if (semester) query.semester = semester;
 //     if (course) query.course = course;
@@ -602,69 +824,69 @@ async function handleGetSubjectsByYearAndCourse(req, res) {
 
 
 const handleGetSubjectsBySemester = async (req, res) => {
-  try {
-    const { course, academicYear, semester } = req.query;
+    try {
+        const { course, academicYear, semester } = req.query;
 
-    const query = {};
+        const query = {};
 
-    if (course) {
-      query.course = course.trim().toUpperCase();
-    }
+        if (course) {
+            query.course = course.trim().toUpperCase();
+        }
 
-    if (academicYear) {
-      const year = Number(academicYear);
+        if (academicYear) {
+            const year = Number(academicYear);
 
-      if (isNaN(year)) {
-        return res.status(400).json({
-          success: false,
-          message: "academicYear must be a number"
+            if (isNaN(year)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "academicYear must be a number"
+                });
+            }
+
+            query.academicYear = year;
+        }
+
+        if (semester) {
+            const sem = Number(semester);
+
+            if (isNaN(sem)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "semester must be a number"
+                });
+            }
+
+            query.semester = sem;
+        }
+
+        console.log("Received Query:", req.query);
+        console.log("Mongo Query:", query);
+
+        const subjects = await Subject.find(query);
+
+        return res.status(200).json({
+            success: true,
+            count: subjects.length,
+            data: subjects
         });
-      }
 
-      query.academicYear = year;
-    }
+    } catch (error) {
+        console.error("Error:", error);
 
-    if (semester) {
-      const sem = Number(semester);
-
-      if (isNaN(sem)) {
-        return res.status(400).json({
-          success: false,
-          message: "semester must be a number"
+        return res.status(500).json({
+            success: false,
+            message: error.message
         });
-      }
-
-      query.semester = sem;
     }
-
-    console.log("Received Query:", req.query);
-    console.log("Mongo Query:", query);
-
-    const subjects = await Subject.find(query);
-
-    return res.status(200).json({
-      success: true,
-      count: subjects.length,
-      data: subjects
-    });
-
-  } catch (error) {
-    console.error("Error:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
 };
 
 
 module.exports = {
-    handleGenerateNewSubject,
-    handleUpdateSubject,
+    handleGenerateNewSubject,   //activity Added
+    handleUpdateSubject,         //activity Added
     handleGetAllSubject,
     handleGetSubjectBySubjectId,
-    handleDeleteSubject,
+    handleDeleteSubject,          //activity Added
     handleGetSubjectsByAcademicYear,
     handleGetSubjectsByYearAndCourse,
     handleGetSubjectsBySemester,
