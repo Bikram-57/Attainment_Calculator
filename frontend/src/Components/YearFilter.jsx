@@ -3,7 +3,7 @@ import { FaFilter } from "react-icons/fa";
 import { COLORS } from '../constants/theme';
 import Select from 'react-select';
 
-function YearFilter({ defaultYear = '', setFilterYear }) {
+function YearFilter({ defaultYear = '', setFilterYear, isClearable = true }) {
     const [academicYear, setAcademicYear] = useState(defaultYear);
     const currentYear = defaultYear !== '' ? defaultYear : new Date().getFullYear();
     const academicYearList = [currentYear, 2025, 2024];
@@ -39,7 +39,7 @@ function YearFilter({ defaultYear = '', setFilterYear }) {
                 ))}
                 onChange={selected => handleYear(selected?.value || '')}
                 maxMenuHeight={200}
-                isClearable
+                isClearable = {isClearable}
             />
         </div>
     )

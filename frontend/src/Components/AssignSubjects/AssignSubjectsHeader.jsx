@@ -36,7 +36,11 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                 Assigned Subjects
             </div>
 
-            <YearFilter defaultYear={defaultYear} setFilterYear={setFilterYear} />
+            <YearFilter
+                defaultYear={defaultYear}
+                setFilterYear={setFilterYear}
+                isClearable={false}
+            />
             
             {/* <div className="w-1/4 flex items-center gap-2">
                 <div
