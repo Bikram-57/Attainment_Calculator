@@ -36,21 +36,10 @@ function NavBarMenu() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex h-10 w-10 items-center justify-center rounded-full transition cursor-pointer"
             />
-            {/* <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex h-10 w-10 items-center justify-center rounded-full transition cursor-pointer"
-                style={{
-                    backgroundColor: COLORS.mintDark,
-                    color: COLORS.font
-                }}
-            >
-                <FaUserAlt className='h-full w-5' />
-            </button> */}
-
             {/* Dropdown */}
             {isOpen && (
                 <div
-                    className="absolute right-0 mt-2 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg"
+                    className="absolute right-0 mt-2 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg z-10"
                     onClick={closeMenu}
                 >
                     <NavLink

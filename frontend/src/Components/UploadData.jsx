@@ -192,9 +192,9 @@ function UploadData() {
 					<Select
 						options={yearOptions}
 						placeholder='Select a year'
-						value={yearList.find(option => (
+						value={yearOptions.find(option => (
 							option.value === academicYear
-						))}
+						)) || null}
 						onChange={selected => handleYear(selected?.value || '')}
 						maxMenuHeight={300}
 					/>
@@ -205,7 +205,7 @@ function UploadData() {
 						placeholder='Select a course'
 						value={courseOptions.find(option => (
 							option.value === course
-						))}
+						)) || null}
 						onChange={selected => handleCourse(selected?.value || '')}
 						maxMenuHeight={300}
 					/>
@@ -217,7 +217,7 @@ function UploadData() {
 						placeholder='Select a subject'
 						value={subjectOptions.find((option) => (
 							option.value === subjectId
-						))}
+						)) || null}
 						onChange={(selected) => setSubjectId(selected?.value || "")}
 						isDisabled={isDisabled}
 						maxMenuHeight={300}

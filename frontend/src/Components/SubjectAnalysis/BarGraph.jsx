@@ -8,15 +8,21 @@ import {
     Tooltip,
 } from "recharts";
 
-function BarGraph({ data = [] }) {
+function BarGraph({ data = [], setIsOpen }) {
     const chartData = data.slice(0, 7);
 
     return (
         <div className="rounded-xl bg-white shadow-sm">
-            <div className="border-b px-4 py-3">
+            <div className="border-b px-4 py-3 flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-slate-800">
                     Subject Attainment Analysis
                 </h2>
+                <button
+                    className='mt-4 px-3 py-1 rounded-md bg-red-500 hover:bg-red-600 text-white font-semibold cursor-pointer'
+                    onClick={() => setIsOpen(false)}
+                >
+                    Close
+                </button>
             </div>
 
             <div className="p-4">

@@ -148,6 +148,7 @@ function SubjectAnalysis() {
     ) : (
         <BarGraph
             data={graphData}
+            setIsOpen={setIsOpen}
         />
     )
 }

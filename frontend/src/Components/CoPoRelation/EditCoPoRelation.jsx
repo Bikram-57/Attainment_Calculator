@@ -29,7 +29,7 @@ function EditCoPoRelation({ data, setOpenEdit }) {
     const poColumns = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8'];
 
     const handleChange = (co, po, val) => {
-        if (val !== '' && !['1', '2', '3'].includes(val)) return;
+        if (val !== '' && !['0', '1', '2', '3'].includes(val)) return;
 
         setTableData(prev => ({
             ...prev,
