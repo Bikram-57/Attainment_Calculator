@@ -98,7 +98,6 @@ function CoPoRelation() {
                     {/* Search */}
                     <div
                         className="flex w-105 overflow-hidden rounded-md border"
-                    // style={{ borderColor: COLORS.mintDark }}
                     >
                         <input
                             type="text"
@@ -107,7 +106,6 @@ function CoPoRelation() {
                             onChange={(e) => handleChange(e)}
                             className="w-full border-r px-3 py-1 text-sm outline-none"
                             style={{
-                                // borderRightColor: COLORS.mintDark,
                                 color: COLORS.mintDark
                             }}
                         />
@@ -127,26 +125,19 @@ function CoPoRelation() {
                         <table className="w-full text-md">
                             <thead>
                                 <tr
+                                    className='text-center border-b border-gray-300'
                                     style={{
                                         backgroundColor: COLORS.mint,
                                         color: COLORS.font
                                     }}
                                 >
-                                    <th className="px-2 py-1 text-left font-semibold w-[20%]">
-                                        Subject Code
-                                    </th>
-
-                                    <th className="px-2 py-1 text-left font-semibold w-[40%]">
-                                        Subject Name
-                                    </th>
-
-                                    <th className="px-2 py-1 text-center font-semibold w-[25%]">
-                                        Status
-                                    </th>
-
-                                    <th className="px-2 py-1 text-center font-semibold w-[15%]">
-                                        Action
-                                    </th>
+                                    <th className='px-3 py-2 w-[15%] text-left'>Subject Code</th>
+                                    <th className='px-3 py-2 w-[30%] text-left'>Subject Name</th>
+                                    <th className='px-3 py-2 w-[15%]'>Academic Year</th>
+                                    <th className='px-3 py-2 w-[10%]'>Semester</th>
+                                    <th className='px-3 py-2 w-[10%]'>Course</th>
+                                    <th className='px-3 py-2 w-[10%]'>Status</th>
+                                    <th className='px-3 py-2 w-[10%]'>Action</th>
                                 </tr>
                             </thead>
 
@@ -154,20 +145,17 @@ function CoPoRelation() {
                                 {filteredSubjects?.map((subject, index) => (
                                     <tr
                                         key={index}
-                                        className={`border-b border-gray-200 ${index % 2 === 0
+                                        className={`border-b border-gray-200 text-center ${index % 2 === 0
                                             ? "bg-[#f1f1f1]"
                                             : "bg-[#fafafa]"
                                             }`}
                                     >
-                                        <td className="px-2 py-1 text-gray-700">
-                                            {subject.subjectId}
-                                        </td>
-
-                                        <td className="px-2 py-1 text-gray-700">
-                                            {subject.subjectName}
-                                        </td>
-
-                                        <td className='px-5 py-2 m-auto flex justify-center w-1/2'>
+                                        <td className="px-2 py-1 w-[15%] text-left">{subject.subjectId}</td>
+                                        <td className="px-2 py-1 w-[30%] text-left">{subject.subjectName}</td>
+                                        <td className='px-5 py-2 w-[15%]'>{subject.academicYear}</td>
+                                        <td className='px-5 py-2 w-[10%]'>{subject.semester || '-'}</td>
+                                        <td className='px-5 py-2 w-[10%]'>{subject.course}</td>
+                                        <td className='px-5 py-2 w-[10%]'>
                                             <div
                                                 className={`flex items-center gap-2 rounded-full w-full px-3 py-1 text-sm font-medium
                                                 ${subject.copoMappingStatus === 'Uploaded'
@@ -232,7 +220,6 @@ function CoPoRelation() {
             />
         )
     }
-    // else if (openEdit && selectedSubjectData) {
     else if (openEdit) {
         return (
             <EditCoPoRelation

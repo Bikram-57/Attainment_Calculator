@@ -15,7 +15,6 @@ function UploadData() {
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [errorMsg, setErrorMsg] = useState('');
 	const [successMsg, setSuccessMsg] = useState('');
-	const [allSubjects, setAllSubjects] = useState([]);
 	const [subjectList, setSubjectList] = useState([]);
 	const [isHovered, setIsHovered] = useState(false);
 	const [uploading, setUploading] = useState(false);
@@ -149,27 +148,21 @@ function UploadData() {
 			setIsDisabled(true);
 			return;
 		}
-
-		const filteredSubjects = allSubjects.filter(sub => (
-			sub.course === course && sub.academicYear === academicYear
-		));
-
-		setSubjectList(filteredSubjects);
-		setIsDisabled(false);
-	}, [academicYear, course, allSubjects]);
-
-	useEffect(() => {
 		const fetchSubjects = async () => {
 			try {
-				const res = await axios.get('/sub/');
-				setAllSubjects(res.data.data);
+				const res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
+				setSubjectList(res.data.data);
+				setIsDisabled(false);
+				setErrorMsg('');
 			} catch (err) {
 				console.log('Error fetching subjects || ', err);
+				setErrorMsg(err?.response?.data?.message);
+				setSubjectList([]);
+				setIsDisabled(true);
 			}
 		};
-
 		fetchSubjects();
-	}, []);
+	}, [academicYear, course]);
 
 	return (
 		<div className='h-full flex flex-col p-4'>
