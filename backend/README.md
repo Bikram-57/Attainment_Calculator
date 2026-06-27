@@ -1,145 +1,105 @@
-# Academic Attainment Calculation API
+# Academic Attainment Calculator - Backend API
 
-A robust Node.js and Express backend designed to manage academic subjects, assign faculty, and automate the complex calculations required for Direct Attainment (CO-PO mapping) reporting for university batches.
+A robust, modular Node.js and Express backend designed to streamline academic management, automate student performance tracking, and handle complex Course Outcome (CO) and Program Outcome (PO) mapping. 
 
-## Features
+This API serves as the data-processing powerhouse for the full-stack academic management system, featuring automated Excel batch uploads, secure faculty profile management, and dynamic calculation engines.
 
-* **Subject Management:** Create, update, and track academic subjects across different courses and academic years using compound indexing.
-* **Faculty Assignment:** Assign multiple subjects to faculty members across various academic years while maintaining a clean, single-document-per-faculty database structure.
-* **Direct Attainment Calculation:** Automatically process Course Outcome (CO) levels against Program Outcome (PO) mappings to generate a comprehensive, Excel-style final batch row report.
+---
 
-## Tech Stack
+## 🚀 Key Features
+
+* **Dynamic Attainment Calculations:** Processes student marks to calculate attainment percentages and levels on a standardized 0-3 scale.
+* **CO/PO Mapping Engine:** Maps Course Outcomes to specific examination types (quizzes, mid-terms) and includes a "4-row math" reporting algorithm that dynamically calculates students scoring above target marks for specific CO keys.
+* **Strict PO Validation:** Implements strict data validation for Program Outcomes, limiting mapping inputs to a maximum of 8 specific outcomes to ensure data integrity.
+* **Automated Batch Processing:** Integrates `xlsx` and `fs` modules to seamlessly parse, normalize, and upload bulk student records and subject data directly from Excel spreadsheets into the database.
+* **Faculty Profile Management:** Handles secure user self-updates (via the `handleUserSelfUpdate` controller) with profile image processing using `multer`, including automated server-side file cleanup (`fs.unlinkSync`) for outdated files.
+
+---
+
+## 🛠️ Tech Stack
 
 * **Runtime:** Node.js
 * **Framework:** Express.js
-* **Database:** MongoDB
-* **ODM:** Mongoose
+* **Database:** MongoDB & Mongoose
+* **Authentication:** JSON Web Tokens (JWT)
+* **File Uploads:** Multer
+* **Data Parsing:** SheetJS (`xlsx`) for Excel file processing
 
-## Prerequisites
+---
 
-Before running this project, ensure you have the following installed:
-* [Node.js](https://nodejs.org/) (v14 or higher)
-* [MongoDB](https://www.mongodb.com/) (Local server or MongoDB Atlas URI)
+## 📂 Project Architecture
 
-## Installation & Setup
+The backend follows a strict modular architecture to separate concerns, making the API scalable and easy to maintain. 
 
-1. **Clone the repository**
-   ```bash
-   git clone <your-repository-url>
-   cd <your-project-folder>
+📦 backend
+ ┣ 📂 controllers
+ ┃ ┣ 📂 assignSubject      # Logic for subject management and mapping
+ ┃ ┣ 📂 directAttainment   # Calculation logic for 0-3 scale metrics
+ ┃ ┗ 📂 users              # Faculty profile management & auth
+ ┣ 📂 models               # Mongoose schema definitions
+ ┣ 📂 routes               # Express API route endpoints
+ ┣ 📂 middleware           # JWT auth, Multer upload config, PO validators
+ ┣ 📂 uploads              # Temporary directory for images & Excel files
+ ┣ 📜 .env                 # Environment variables
+ ┣ 📜 server.js            # Entry point
+ ┗ 📜 package.json
 
+---
 
+## ⚙️ Prerequisites & Setup
 
+### 1. Install Dependencies
+Make sure you have Node.js and MongoDB installed on your system. Run the following command in the backend directory to install the required packages:
 
+npm install
 
-2. Install dependencies
+### 2. Environment Variables
+Create a `.env` file in the root directory. You can use the provided `.env.example` as a template:
 
-    npm install
+# Server Configuration
+PORT=5000
+NODE_ENV=development
 
-3. Environment Variables
+# Database
+MONGO_URI=your_mongodb_connection_string_here
 
-    Create a .env file in the root directory and add the following:
+# Authentication
+JWT_SECRET=your_super_secret_jwt_key
+JWT_EXPIRES_IN=1d
 
-    PORT=8000
-    MONGO_URI=your_mongodb_connection_string_here
+# Frontend Connection
+CLIENT_URL=http://localhost:3000
 
-4. Start the development server
+# File Uploads
+UPLOAD_DIR=./uploads
+MAX_FILE_SIZE=5242880 # 5MB
 
-    npm run dev
-    # or
-    npx nodemon index.js
-API Documentation
-1. Subject Management
-    i. Create a New Subject
+# Email Services
+EMAIL_USERNAME=your_email@example.com
+EMAIL_PASSWORD=your_16_letter_app_password
 
-        URL: /sub/add
-        Method: POST
-        Body:
+### 3. Start the Server
 
-            JSON
-            {
-                "subjectId": "JAVA101",
-                "subjectName": "Java Programming",
-                "course": "BCA",
-                "year": 2025
+For Development (using nodemon):
+npm run dev
 
-            }
-    ii. Update an Existing Subject
+For Production:
+npm start
 
-        URL: /sub/:id (e.g., /sub/JAVA101)
-        Method: PUT
-        Body:
+---
 
-        JSON
-        {
-            "subjectName": "Advanced Java Programming",
-            "course": "BCA",
-            "year": 2026
-        }
-2. Faculty Assignments
-    i. Assign a Subject to Faculty
+## 🧩 Core Modules & Workflows
 
-        URL: /sub/assign
-        Method: POST
-        Description: Adds a subject and year to a faculty member's master assignment list.
-        Body:
+### Subject Management (`assignSubject`)
+Handles the creation and allocation of academic subjects. This module validates that only a maximum of 8 POs can be assigned to a specific subject to maintain strict curricular standards.
 
-        JSON
-        {
-            "facultyId": "CA1718",
-            "subjectId": "JAVA101",
-            "year": 2025
-        }
-3. Direct Attainment Module
-    i. Calculate Batch Attainment
+### Direct Attainment (`directAttainment`)
+The calculation core of the API. It takes batch data (ingested via Excel uploads), parses the raw student marks, groups them by exam type, and generates the final CO attainment report based on the configured target thresholds.
 
-        URL: /directAttainment/calculate-batch
-        Method: POST
-        Description: Fetches all subjects for the given academic year, cross-references CO-PO mappings and final CO attainments, and generates the final average calculation.
-        Body:
+### User Management & Uploads
+Faculty members can update their own details securely. The system uses Multer to accept image files, saves them locally, and automatically deletes old profile pictures from the server using the `fs` module to save storage space.
 
-        JSON
-        {
-            "academicYear": "2025",
-            "course": "BCA"
-        }
-    ii. Success Response (Abridged):
+---
 
-        JSON
-        {
-        "success": true,
-        "data": {
-            "academicYear": "2025",
-            "course": "BCA",
-            "subjectAverages": [
-            {
-                "subjectId": "JAVA101",
-                "poAverages": { "PO1": 2.15, "PO2": 2.20 }
-            }
-            ],
-            "finalBatchRow": {
-            "PO1": 2.13,
-            "PO2": 2.08,
-            "PO3": 2.03
-            }
-        }
-        }
-Project Structure
-Plaintext
-├── controllers/
-│   ├── assignSubject.js
-│   ├── directAttainment.js
-│   └── subject.js
-├── models/
-│   ├── academicYearAttainment.js
-│   ├── assignSubject.js
-│   ├── coPoMapping.js
-│   ├── finalCoAttainment.js
-│   └── subject.js
-├── routes/
-│   ├── assignSubjectRoutes.js
-│   ├── directAttainmentRoutes.js
-│   └── subjectRoutes.js
-├── index.js
-├── package.json
-└── .env
+## ✍️ Author
+**Bikram Das** Backend Software Developer 
