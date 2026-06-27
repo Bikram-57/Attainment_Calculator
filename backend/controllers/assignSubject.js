@@ -2,7 +2,8 @@ const assignSubject = require('../models/assignSubject');
 const Faculty = require('../models/user'); 
 const Subject = require('../models/subject'); 
 const logActivity = require('../utils/activityLogger');
-
+    // controllers/assignmentController.js
+// const FacultyAssignment = require('../models/FacultyAssignment'); 
 
 
 
@@ -96,10 +97,8 @@ const logActivity = require('../utils/activityLogger');
 
 async function handleAssignSubject(req, res) {
     try {
-        // 1. Added 'course' to destructuring
         const { facultyId, subjectId, subjectName, course, academicYear } = req.body;
 
-        // 2. Added 'course' to the validation check
         if (!facultyId || !subjectId || !subjectName || !course || academicYear === undefined) {
             return res.status(400).json({
                 success: false,
@@ -110,11 +109,12 @@ async function handleAssignSubject(req, res) {
         const cleanFacultyId = facultyId.trim();
         const cleanSubjectId = subjectId.trim();
         const cleanSubjectName = subjectName.trim().replace(/\s+/g, ' '); 
-        const cleanCourse = course.trim(); // 3. Clean the course input
+        const cleanCourse = course.trim(); 
         const academicYearStr = academicYear.toString().trim();
 
-        // Global Conflict Check
-        const queryKey = `assignments.${academicYearStr}`;
+        // 1. Updated Global Conflict Check for Nested Map
+        // The path in DB is now: assignments.2026.MCA
+        const queryKey = `assignments.${academicYearStr}.${cleanCourse}`;
         const existingAssignment = await assignSubject.findOne({
             [queryKey]: { $elemMatch: { subjectId: cleanSubjectId } }
         });
@@ -122,7 +122,7 @@ async function handleAssignSubject(req, res) {
         if (existingAssignment) {
             return res.status(409).json({
                 success: false,
-                message: `Conflict: Subject ${cleanSubjectId} is already assigned to faculty ${existingAssignment.facultyId} for the year ${academicYearStr}.`
+                message: `Conflict: Subject ${cleanSubjectId} is already assigned to faculty ${existingAssignment.facultyId} for the year ${academicYearStr} in course ${cleanCourse}.`
             });
         }
 
@@ -140,24 +140,44 @@ async function handleAssignSubject(req, res) {
                 assignments: {} 
             });
             
-            // 4. Added 'course' to the newly created map entry
-            teacherDoc.assignments.set(academicYearStr, [{ 
+            // 2. Create the inner map for the new document
+            const courseMap = new Map();
+            courseMap.set(cleanCourse, [{ 
                 subjectId: cleanSubjectId, 
-                subjectName: cleanSubjectName,
-                course: cleanCourse
+                subjectName: cleanSubjectName 
             }]);
+            
+            // Set the outer map
+            teacherDoc.assignments.set(academicYearStr, courseMap);
+            
         } else {
-            const yearSubjects = teacherDoc.assignments.get(academicYearStr) || [];
-            const alreadyExists = yearSubjects.some(sub => sub.subjectId === cleanSubjectId);
+            // 3. Document exists: Handle Nested Map Logic
+            
+            // Ensure the year exists in the outer map
+            if (!teacherDoc.assignments.has(academicYearStr)) {
+                teacherDoc.assignments.set(academicYearStr, new Map());
+            }
+            
+            // Get the inner map for this specific year
+            const yearMap = teacherDoc.assignments.get(academicYearStr);
+            
+            // Get the array of subjects for this course (or default to empty array)
+            const courseSubjects = yearMap.get(cleanCourse) || [];
+            
+            // Prevent duplicate subjects within this specific course
+            const alreadyExists = courseSubjects.some(sub => sub.subjectId === cleanSubjectId);
             
             if (!alreadyExists) {
-                // 5. Added 'course' to the pushed object
-                yearSubjects.push({ 
+                courseSubjects.push({ 
                     subjectId: cleanSubjectId, 
-                    subjectName: cleanSubjectName,
-                    course: cleanCourse
+                    subjectName: cleanSubjectName 
                 });
-                teacherDoc.assignments.set(academicYearStr, yearSubjects);
+                
+                // Update the inner map
+                yearMap.set(cleanCourse, courseSubjects);
+                
+                // CRITICAL: Tell Mongoose the nested map was modified, otherwise it won't save
+                teacherDoc.markModified(`assignments.${academicYearStr}`);
             }
             
             // Update the total years count
@@ -170,7 +190,7 @@ async function handleAssignSubject(req, res) {
         await logActivity(
             req.user, 
             'ASSIGNED_SUBJECT', 
-            `${cleanSubjectId} - ${cleanSubjectName} (${cleanCourse}) assigned to ${teacherDoc.facultyName}`, // Added course to log for better audit trails
+            `${cleanSubjectId} - ${cleanSubjectName} (${cleanCourse}) assigned to ${teacherDoc.facultyName}`,
             [] 
         );
 
@@ -572,9 +592,106 @@ async function removeSubjectFromFaculty(req, res) {
 //     }
 // }
 
+
+
+
+// const getDropdownData = async (req, res) => {
+//   try {
+//     // 1. Grab the ID exactly as your verifyJWT middleware attached it
+//     const currentFacultyId = req.facultyId; 
+    
+//     // 2. Extract query parameters for the cascading logic
+//     const { year, course } = req.query;
+
+//     // 3. Find the assigned subjects specifically for this faculty member
+//     // const record = await FacultyAssignment.findOne({ facultyId: currentFacultyId });
+
+//     const record = await assignSubject.findOne({ facultyId: currentFacultyId });
+
+//     if (!record || !record.assignments) {
+//       return res.status(200).json({ success: true, data: [] });
+//     }
+
+//     // SCENARIO A: Fetch Subjects (Requires year & course)
+//     // Used for the 3rd dropdown -> /api/assignments/dropdown?year=2026&course=MCA
+//     if (year && course) {
+//       const subjects = record.assignments[year]?.[course] || [];
+//       return res.status(200).json({ success: true, type: 'subjects', data: subjects });
+//     }
+
+//     // SCENARIO B: Fetch Courses (Requires only year)
+//     // Used for the 2nd dropdown -> /api/assignments/dropdown?year=2026
+//     if (year && !course) {
+//       const courses = record.assignments[year] ? Object.keys(record.assignments[year]) : [];
+//       return res.status(200).json({ success: true, type: 'courses', data: courses });
+//     }
+
+//     // SCENARIO C: Fetch Years (No queries)
+//     // Used for the 1st dropdown -> /api/assignments/dropdown
+//     const years = Object.keys(record.assignments);
+//     return res.status(200).json({ success: true, type: 'years', data: years });
+
+//   } catch (error) {
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// };
+
+
+// controllers/assignSubject.js
+
+const getDropdownData = async (req, res) => {
+  try {
+    const currentFacultyId = req.facultyId; 
+    const { year, course } = req.query;
+
+    // Use .lean() to get a POJO (Plain Old JavaScript Object)
+    const record = await assignSubject.findOne({ facultyId: currentFacultyId }).lean();
+
+    // If record doesn't exist, return empty
+    if (!record || !record.assignments) {
+      return res.status(200).json({ success: true, type: 'empty', data: [] });
+    }
+
+    // 1. SCENARIO A: Requesting Subjects
+    if (year && course) {
+      const targetYear = String(year).trim();
+      const targetCourse = String(course).toUpperCase().trim();
+
+      // WITH .lean(), Mongoose maps are converted to plain objects.
+      // So assignments[targetYear] IS correct, but ONLY if record.assignments is an object.
+      // If it is a Map, you need to be careful.
+      const yearData = record.assignments[targetYear];
+      const subjects = yearData ? yearData[targetCourse] : [];
+      
+      return res.status(200).json({ success: true, type: 'subjects', data: subjects || [] });
+    }
+
+    // 2. SCENARIO B: Requesting Courses
+    if (year && !course) {
+      const targetYear = String(year).trim();
+      const yearData = record.assignments[targetYear];
+      
+      // Get keys from the inner object
+      const courses = yearData ? Object.keys(yearData) : [];
+      
+      return res.status(200).json({ success: true, type: 'courses', data: courses });
+    }
+
+    // 3. SCENARIO C: Requesting Years
+    const years = Object.keys(record.assignments);
+    
+    return res.status(200).json({ success: true, type: 'years', data: years });
+
+  } catch (error) {
+    console.error("Dropdown Error:", error);
+    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+  }
+};
+
 module.exports = {
     handleAssignSubject,
     getAllFacultyAssignments,
     getAssignedSubjectsByFaculty,
     removeSubjectFromFaculty,
+    getDropdownData
 };

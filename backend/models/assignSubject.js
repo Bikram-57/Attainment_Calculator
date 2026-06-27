@@ -106,14 +106,22 @@
 
 const mongoose = require('mongoose');
 
-// 1. Define the subject details (Now including 'course')
+// 1. The innermost structure: The Subject Object
+// Note: _id: false prevents Mongoose from adding an ObjectId to every single subject
 const assignedSubjectDetailSchema = new mongoose.Schema({
-    subjectId: { type: String, required: true, trim: true },
-    subjectName: { type: String, required: true, trim: true },
-    course: { type: String, required: true, trim: true } // <-- Added to support your multi-stage filter
+    subjectId: { 
+        type: String, 
+        required: true, 
+        trim: true 
+    },
+    subjectName: { 
+        type: String, 
+        required: true, 
+        trim: true 
+    }
 }, { _id: false });
 
-// 2. Define the main assignment schema
+// 2. The main Document Schema
 const assignSubjectSchema = new mongoose.Schema({
     facultyId: { 
         type: String, 
@@ -131,11 +139,15 @@ const assignSubjectSchema = new mongoose.Schema({
         type: Number,
         default: 1
     },
+    // 3. The Nested Map for dynamic Years and Courses
     assignments: {
         type: Map,
-        of: [assignedSubjectDetailSchema], // Uses the schema defined above
+        of: {
+            type: Map,
+            of: [assignedSubjectDetailSchema] // Array of subjects
+        },
         default: {}
     }
-}, { timestamps: true });
+}, { timestamps: true }); // Automatically handles createdAt and updatedAt
 
 module.exports = mongoose.model('assignSubject', assignSubjectSchema);
