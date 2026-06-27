@@ -94,7 +94,7 @@ const logActivity = require('../utils/activityLogger');
 // }
 
 
-
+//done
 async function handleAssignSubject(req, res) {
     try {
         const { facultyId, subjectId, subjectName, course, academicYear } = req.body;
@@ -288,19 +288,15 @@ async function handleAssignSubject(req, res) {
 // }
 
 
-
-
-
-
-
-
-// 2. Get ALL Assignments
+//done
 async function getAllFacultyAssignments(req, res) {
     try {
-        const { academicYear } = req.query;
+        // Added 'course' parameter support
+        const { academicYear, course } = req.query;
 
-        // .lean() makes mapping extremely fast and converts Map to standard Object
-        const allRecords = await assignSubject.find({}).lean();
+        // 🔥 THE BYPASS: .collection.find({}).toArray() 
+        // This guarantees Mongoose does not strip out your nested course Maps.
+        const allRecords = await assignSubject.collection.find({}).toArray();
 
         if (!allRecords || allRecords.length === 0) {
             return res.status(404).json({
@@ -312,27 +308,50 @@ async function getAllFacultyAssignments(req, res) {
         let dataToSend = [];
 
         if (academicYear) {
-            const academicYearStr = academicYear.toString().trim();
+            const yearStr = academicYear.toString().trim();
+            const courseStr = course ? course.toString().toUpperCase().trim() : null;
 
             dataToSend = allRecords.reduce((filteredRecords, faculty) => {
-                if (faculty.assignments && faculty.assignments[academicYearStr]) {
-                    filteredRecords.push({
-                        _id: faculty._id,
-                        facultyId: faculty.facultyId,
-                        facultyName: faculty.facultyName,
-                        totalYearsRecorded: faculty.totalYearsRecorded,
-                        assignments: {
-                            [academicYearStr]: faculty.assignments[academicYearStr]
-                        },
-                        createdAt: faculty.createdAt,
-                        updatedAt: faculty.updatedAt,
-                        __v: faculty.__v
-                    });
+                // Ensure the faculty has assignments for this specific year
+                if (faculty.assignments && faculty.assignments[yearStr]) {
+                    
+                    // SCENARIO 1: Filter by Year AND Course
+                    if (courseStr) {
+                        if (faculty.assignments[yearStr][courseStr]) {
+                            filteredRecords.push({
+                                _id: faculty._id,
+                                facultyId: faculty.facultyId,
+                                facultyName: faculty.facultyName,
+                                totalYearsRecorded: faculty.totalYearsRecorded,
+                                assignments: {
+                                    [yearStr]: {
+                                        [courseStr]: faculty.assignments[yearStr][courseStr]
+                                    }
+                                },
+                                createdAt: faculty.createdAt,
+                                updatedAt: faculty.updatedAt
+                            });
+                        }
+                    } 
+                    // SCENARIO 2: Filter by Year only (returns all courses for that year)
+                    else {
+                        filteredRecords.push({
+                            _id: faculty._id,
+                            facultyId: faculty.facultyId,
+                            facultyName: faculty.facultyName,
+                            totalYearsRecorded: faculty.totalYearsRecorded,
+                            assignments: {
+                                [yearStr]: faculty.assignments[yearStr]
+                            },
+                            createdAt: faculty.createdAt,
+                            updatedAt: faculty.updatedAt
+                        });
+                    }
                 }
                 return filteredRecords;
             }, []);
         } else {
-            // Already perfectly formatted by the DB!
+            // SCENARIO 3: No filters, return everything exactly as it is in DB
             dataToSend = allRecords;
         }
 
@@ -351,6 +370,67 @@ async function getAllFacultyAssignments(req, res) {
         });
     }
 }
+
+
+
+
+// 2. Get ALL Assignments
+// async function getAllFacultyAssignments(req, res) {
+//     try {
+//         const { academicYear } = req.query;
+
+//         // .lean() makes mapping extremely fast and converts Map to standard Object
+//         const allRecords = await assignSubject.find({}).lean();
+
+//         if (!allRecords || allRecords.length === 0) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "No assigned subjects found in the database."
+//             });
+//         }
+
+//         let dataToSend = [];
+
+//         if (academicYear) {
+//             const academicYearStr = academicYear.toString().trim();
+
+//             dataToSend = allRecords.reduce((filteredRecords, faculty) => {
+//                 if (faculty.assignments && faculty.assignments[academicYearStr]) {
+//                     filteredRecords.push({
+//                         _id: faculty._id,
+//                         facultyId: faculty.facultyId,
+//                         facultyName: faculty.facultyName,
+//                         totalYearsRecorded: faculty.totalYearsRecorded,
+//                         assignments: {
+//                             [academicYearStr]: faculty.assignments[academicYearStr]
+//                         },
+//                         createdAt: faculty.createdAt,
+//                         updatedAt: faculty.updatedAt,
+//                         __v: faculty.__v
+//                     });
+//                 }
+//                 return filteredRecords;
+//             }, []);
+//         } else {
+//             // Already perfectly formatted by the DB!
+//             dataToSend = allRecords;
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             count: dataToSend.length,
+//             data: dataToSend
+//         });
+
+//     } catch (error) {
+//         console.error('Full Error Detail:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Server error while fetching assignments",
+//             actualError: error.message
+//         });
+//     }
+// }
 
 
 
