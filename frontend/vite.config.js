@@ -31,6 +31,7 @@ export default defineConfig({
 			'/download-format/': 'http://localhost:8000',
 			'/home/': 'http://localhost:8000',
 			'/activity/': 'http://localhost:8000',
+			'/subject-analysis/': 'http://localhost:8000',
 		},
 	},
 })

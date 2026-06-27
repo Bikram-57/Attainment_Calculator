@@ -61,11 +61,12 @@ import DownloadSubjectReport from "./DownloadReports/DownloadSubjectReport";
 import SideBar from "./SideBar/SideBar";
 import SideBarSection from "./SideBar/SideBarSection";
 import SideBarTab from "./SideBar/SideBarTab";
-import SubjectAnalysis from "./SubjectAnalysis";
+import SubjectAnalysis from "./SubjectAnalysis/SubjectAnalysis";
 import Dashboard from "./Dashboard/Dashboard";
 import Overview from "./Dashboard/Overview";
 import RecentActivity from "./Dashboard/RecentActivity";
 import ProgressCharts from "./Dashboard/ProgressCharts";
+import BarGraph from "./SubjectAnalysis/BarGraph";
 
 export {
     NavBar,
@@ -134,4 +135,5 @@ export {
     Overview,
     RecentActivity,
     ProgressCharts,
+    BarGraph,
 }

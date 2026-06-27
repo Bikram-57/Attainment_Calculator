@@ -205,7 +205,7 @@ function RecentActivity({ activeSubjectCount }) {
                                 nameKey="course"
                                 cx="50%"
                                 cy="50%"
-                                outerRadius={90}
+                                outerRadius={85}
                                 label={({ course, percent }) =>
                                     `${course} ${(percent * 100).toFixed(0)}%`
                                 }
