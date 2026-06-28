@@ -3,7 +3,7 @@ import { BsSearch } from 'react-icons/bs'
 import AssignSubjectForm from './AssignSubjectForm';
 import { COLORS } from '../../constants/theme';
 import { FaFilter } from "react-icons/fa";
-import { YearFilter } from '../index';
+import { Filters } from '../index';
 
 function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFilterYear }) {
     const [isAssignSubjectOpen, setIsAssignSubjectOpen] = useState(false);
@@ -36,7 +36,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                 Assigned Subjects
             </div>
 
-            <YearFilter
+            <Filters
                 defaultYear={defaultYear}
                 setFilterYear={setFilterYear}
                 isClearable={false}

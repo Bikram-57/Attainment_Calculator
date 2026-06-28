@@ -9,6 +9,8 @@ function Subject() {
     const [toggleNewSubject, setToggleNewSubject] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterYear, setFilterYear] = useState('');
+    const [filterCourse, setFilterCourse] = useState('');
+    const [filterSemester, setFilterSemester] = useState('');
     const [loading, setLoading] = useState(true);
 
     const getSubjectData = async () => {
@@ -34,6 +36,12 @@ function Subject() {
         && (
             filterYear ? sub.academicYear == filterYear : true
         )
+        && (
+            filterCourse ? sub.course == filterCourse : true
+        )
+        && (
+            filterSemester ? sub.semester == filterSemester : true
+        )
     ))
 
     useEffect(() => {
@@ -45,6 +53,8 @@ function Subject() {
                 toggleUpdate={toggleUpdate}
                 setSearchQuery={setSearchQuery}
                 setFilterYear={setFilterYear}
+                setFilterCourse={setFilterCourse}
+                setFilterSemester={setFilterSemester}
             />
             <div className="flex-1 overflow-y-auto">
                 {filteredSubjects?.length > 0 ?

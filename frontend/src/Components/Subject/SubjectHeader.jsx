@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
 import { FaFilter } from "react-icons/fa";
 import { COLORS } from '../../constants/theme';
-import { YearFilter } from '../index';
+import { Filters } from '../index';
 import AddSubject from './AddSubject';
 
-function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear }) {
+function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear, setFilterCourse, setFilterSemester }) {
     const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
 
@@ -26,7 +26,14 @@ function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear }) {
                 All Subjects
             </div>
 
-            <YearFilter setFilterYear={setFilterYear} />
+            <Filters
+                showYear
+                showCourse
+                showSemester
+                onYearChange={setFilterYear}
+                onCourseChange={setFilterCourse}
+                onSemesterChange={setFilterSemester}
+            />
 
             <div className='flex gap-5 mx-10'>
                 <div

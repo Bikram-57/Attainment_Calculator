@@ -32,7 +32,7 @@ import AddMultipleSubjectsForm from "./Subject/AddMultipleSubjectsForm";
 import AssignSubjects from "./AssignSubjects/AssignSubjects";
 import AssignSubjectForm from "./AssignSubjects/AssignSubjectForm";
 import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
-import YearFilter from "../utils/YearFilter";
+import Filters from "../utils/Filters";
 import UnderDevelopment from "../utils/UnderDevelopment";
 import PageNotFound from "./PageNotFound";
 import AddSubject from "./Subject/AddSubject";
@@ -104,7 +104,7 @@ export {
     AssignSubjects,
     AssignSubjectForm,
     AssignSubjectsHeader,
-    YearFilter,
+    Filters,
     UnderDevelopment,
     PageNotFound,
     AddSubject,
