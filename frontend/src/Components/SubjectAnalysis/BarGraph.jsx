@@ -25,56 +25,60 @@ function BarGraph({ data = [], setIsOpen }) {
                 </button>
             </div>
 
-            <div className="p-4">
-                <ResponsiveContainer width="100%" height={350}>
-                    <BarChart
-                        data={chartData}
-                        margin={{
-                            top: 20,
-                            right: 20,
-                            left: 10,
-                            bottom: 20,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-
-                        <XAxis
-                            dataKey="subjectId"
-                            tick={{ fontSize: 12 }}
-                        />
-
-                        <YAxis
-                            domain={[0, 3]}
-                            ticks={[0, 1, 2, 3]}
-                            label={{
-                                value: "Attainment Level",
-                                angle: -90,
-                                position: "insideLeft",
+            {data.length > 0 ? (
+                <div className="p-4">
+                    <ResponsiveContainer width="100%" height={350}>
+                        <BarChart
+                            data={chartData}
+                            margin={{
+                                top: 20,
+                                right: 20,
+                                left: 10,
+                                bottom: 20,
                             }}
-                        />
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
 
-                        <Tooltip
-                            formatter={(value) => [
-                                value.toFixed(2),
-                                "Attainment",
-                            ]}
-                            labelFormatter={(label) => {
-                                const subject = chartData.find(
-                                    (s) => s.subjectId === label
-                                );
+                            <XAxis
+                                dataKey="subjectId"
+                                tick={{ fontSize: 12 }}
+                            />
 
-                                return `${label} - ${subject?.subjectName || ""}`;
-                            }}
-                        />
+                            <YAxis
+                                domain={[0, 3]}
+                                ticks={[0, 1, 2, 3]}
+                                label={{
+                                    value: "Attainment Level",
+                                    angle: -90,
+                                    position: "insideLeft",
+                                }}
+                            />
 
-                        <Bar
-                            dataKey="finalSubjectAttainment"
-                            radius={[6, 6, 0, 0]}
-                            fill="#3b82f6"
-                        />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
+                            <Tooltip
+                                formatter={(value) => [
+                                    value.toFixed(2),
+                                    "Attainment",
+                                ]}
+                                labelFormatter={(label) => {
+                                    const subject = chartData.find(
+                                        (s) => s.subjectId === label
+                                    );
+
+                                    return `${label} - ${subject?.subjectName || ""}`;
+                                }}
+                            />
+
+                            <Bar
+                                dataKey="finalSubjectAttainment"
+                                radius={[6, 6, 0, 0]}
+                                fill="#3b82f6"
+                            />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            ) : (
+                <div className='text-center text-lg'>No data available</div>
+            )}
         </div>
     );
 }

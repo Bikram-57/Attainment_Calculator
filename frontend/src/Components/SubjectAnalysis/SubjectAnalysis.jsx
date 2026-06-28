@@ -72,7 +72,7 @@ function SubjectAnalysis() {
             setSemester('');
             console.log(res);
         } catch (err) {
-            setErrorMsg("Something went wrong! Format error!");
+            setErrorMsg(err?.response?.data?.message || 'Something went wrong!');
             console.log("Error on handleSubmit || ", err);
         }
     }
@@ -112,7 +112,7 @@ function SubjectAnalysis() {
                 <div className="flex-1">
                     <Select
                         options={semesterOptions}
-                        placeholder='Select a subject'
+                        placeholder='Select a semester'
                         value={semesterOptions.find((option) => (
                             option.value === semester
                         ))}
