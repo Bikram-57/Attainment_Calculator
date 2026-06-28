@@ -18,7 +18,7 @@ function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen
         }
         setErrorMsg('');
         const formData = new FormData();
-        formData.append('excelFile', file);
+        formData.append('file', file);
 
         try {
             const res = await axios.post('/sub-upload/upload-excel', formData);
@@ -26,6 +26,7 @@ function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen
             toggleUpdate();
             console.log(res.data);
         } catch (error) {
+            setErrorMsg(error?.response?.data?.message || 'Something went wrong!');
             console.log('ERROR || AssignMultipleSubjectForm || handleAssignMultipleSubjects(): ', error);
         }
     }
