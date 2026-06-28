@@ -6,8 +6,10 @@ import { COLORS } from '../constants/theme';
 import ErrorSuccessMsg from './ErrorSuccessMsg';
 import Loading from './Loading';
 import Select from "react-select";
+import { useSelector } from 'react-redux';
 
 function UploadData() {
+	const userData = useSelector(state => state.auth.userData);
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
 	const [subjectId, setSubjectId] = useState('')
@@ -107,7 +109,8 @@ function UploadData() {
 			setIsDisabled(true);
 			console.log(res);
 		} catch (err) {
-			setErrorMsg("Something went wrong! Format error!");
+			// setErrorMsg("Something went wrong! Format error!");
+			setErrorMsg(err?.response?.data?.message || 'Something went wrong!');
 			console.log("Error on handleUpload || ", err);
 		} finally {
 			setUploading(false);
@@ -150,7 +153,23 @@ function UploadData() {
 		}
 		const fetchSubjects = async () => {
 			try {
-				const res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
+				let res;
+				if (userData.role === 'admin') {
+					res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
+				} else {
+					res = await axios.get('/assignSub/sub', {
+						params: {
+							year: academicYear,
+							course
+						}
+					});
+				}
+				if (res.data.data.length === 0) {
+					setErrorMsg('No data for the selected year and course!');
+					setSubjectList([]);
+					setIsDisabled(true);
+					return;
+				}
 				setSubjectList(res.data.data);
 				setIsDisabled(false);
 				setErrorMsg('');

@@ -5,14 +5,7 @@ import axios from 'axios';
 import { COLORS } from '../../constants/theme';
 import Loading from '../Loading';
 
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-
 function AssignSubjects() {
-	const userData = useSelector(state => state.auth.userData);
-	const navigate = useNavigate();
-	if (userData.role !== 'admin') navigate('/upload-data');
-		
 	const [searchQuery, setSearchQuery] = useState('');
 	const [assignedSubjectsData, setAssignedSubjectsData] = useState([]);
 	const [updateData, setUpdateData] = useState(false);
@@ -50,13 +43,14 @@ function AssignSubjects() {
 		setUpdateData(prev => !prev);
 	}
 
-	const deAssignSubject = async (subjectId, facultyId, academicYear) => {
+	const deAssignSubject = async (subjectId, facultyId, course, academicYear) => {
 		try {
 			const res = await axios.delete('/assignSub/', {
 				data: {
-					subjectId: subjectId,
-					facultyId: facultyId,
-					academicYear: academicYear
+					facultyId,
+					subjectId,
+					course,
+					academicYear
 				}
 			});
 			toggleUpdate();
@@ -103,14 +97,70 @@ function AssignSubjects() {
 									<td className="w-1/3 px-3 py-3 text-md">
 										{data.facultyId} - {data.facultyName}
 										<span
-											className='ml-2 rounded px-2 py-0.5 text-xs'
+											className="ml-2 rounded px-2 py-0.5 text-xs"
 											style={{ backgroundColor: COLORS.latteDark }}
 										>
-											{(data.assignments[filterYear] || []).length} Subjects
+											{
+												Object.values(data.assignments?.[filterYear] || {})
+													.flat()
+													.length
+											} Subjects
 										</span>
 									</td>
-
 									<td className="px-3 py-3">
+										{Object.entries(data.assignments).map(([year, courses]) =>
+											year == filterYear ? (
+												<details key={year}>
+													<summary className="cursor-pointer font-semibold">
+														Assigned Subject List
+													</summary>
+
+													<div className="mt-2 space-y-3">
+														{Object.entries(courses).map(([course, subjects]) => (
+															<div key={course}>
+																<h4
+																	className="mb-1 rounded px-2 py-1 text-sm font-semibold"
+																	style={{ backgroundColor: COLORS.latteDark }}
+																>
+																	{course}
+																</h4>
+
+																<ul className="space-y-1">
+																	{subjects.map((subject) => (
+																		<li
+																			key={subject.subjectId}
+																			className="flex items-center justify-between rounded border-b border-gray-300 px-2 py-1 hover:bg-gray-100"
+																		>
+																			<span>
+																				{subject.subjectId} - {subject.subjectName}
+																			</span>
+
+																			<button
+																				className="cursor-pointer rounded p-1 text-red-500 transition hover:bg-red-50 hover:text-red-600"
+																				title="De-assign Subject"
+																				onClick={() =>
+																					deAssignSubject(
+																						subject.subjectId,
+																						data.facultyId,
+																						course,
+																						year
+																					)
+																				}
+																			>
+																				<RiDeleteBin6Line size={18} />
+																			</button>
+																		</li>
+																	))}
+																</ul>
+															</div>
+														))}
+													</div>
+												</details>
+											) : null
+										)}
+									</td>
+
+									{/* <td className="px-3 py-3">
 										{Object.entries(data.assignments).map(([year, subjects]) =>
 											year == filterYear ? (
 												<details key={year}>
@@ -139,7 +189,7 @@ function AssignSubjects() {
 												</details>
 											) : null
 										)}
-									</td>
+									</td> */}
 
 									{/* <td>
 										<div className="p-2">

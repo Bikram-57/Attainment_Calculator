@@ -7,15 +7,17 @@ import ErrorSuccessMsg from "../ErrorSuccessMsg";
 import Select from 'react-select';
 
 function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggleUpdate }) {
-	const [facultyId, setFacultyId] = useState('');
-	const [facultyName, setFacultyName] = useState('');
-	const [year, setYear] = useState('');
-	const [subjectId, setSubjectId] = useState('');
-	const [subjectName, setSubjectName] = useState('');
+	const [facultyData, setFacultyData] = useState('');
+	// const [facultyId, setFacultyId] = useState('');
+	// const [facultyName, setFacultyName] = useState('');
+	const [academicYear, setAcademicYear] = useState('');
+	const [subjectData, setSubjectData] = useState('');
+	// const [subjectId, setSubjectId] = useState('');
+	// const [subjectName, setSubjectName] = useState('');
+	const [course, setCourse] = useState('');
 	const [isHovered, setIsHovered] = useState(false);
-	const [subjectData, setSubjectData] = useState([]);
-	const [facultyData, setFacultyData] = useState([]);
-	const [filteredSubjects, setFilteredSubjects] = useState([]);
+	const [subjectList, setSubjectList] = useState([]);
+	const [facultyList, setFacultyList] = useState([]);
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [successMsg, setSuccessMsg] = useState('');
 	const [errorMsg, setErrorMsg] = useState('');
@@ -29,49 +31,71 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 		}
 	));
 
-	const facultyOptions = facultyData.map((faculty) => (
+	const facultyOptions = facultyList.map((faculty) => (
 		{
-			value: faculty.facultyId,
+			// value: faculty.facultyId,
+			value: faculty,
 			label: `${faculty.facultyId} - ${faculty.name}`,
 		}
 	));
 
-	const subjectOptions = filteredSubjects.map((sub) => (
+	const courseOptions = [
+		{ value: "BCA", label: "BCA" },
+		{ value: "MCA", label: "MCA" },
+	];
+
+	const subjectOptions = subjectList.map((sub) => (
 		{
-			value: sub.subjectId,
+			// value: sub.subjectId,
+			value: sub,
 			label: `${sub.subjectId} - ${sub.subjectName}`,
 		}
 	));
 
 	const handleFaculty = (selected) => {
-		setFacultyId(selected);
-		setFacultyName((facultyData.find(faculty => faculty.facultyId === selected))?.name || '');
+		setFacultyData(selected);
+		// setFacultyId(selected);
+		// setFacultyName((facultyData.find(faculty => faculty.facultyId === selected))?.name || '');
 	}
 
 	const handleYear = (selected) => {
-		setYear(selected)
-		setSubjectId('');
-		setSubjectName('');
-		setIsDisabled(!selected);
+		setAcademicYear(selected)
+		setSubjectData('');
+		// setSubjectId('');
+		// setSubjectName('');
+	}
+
+	const handleCourse = (selectedCourse) => {
+		setCourse(selectedCourse);
+		setSubjectData('');
+		// setSubjectId('');
+		// setSubjectName('');
 	}
 
 	const handleSubject = (selected) => {
-		setSubjectId(selected);
-		setSubjectName((filteredSubjects.find(sub => sub.subjectId === selected))?.subjectName || '');
+		setSubjectData(selected);
+		// setSubjectId(selected);
+		// setSubjectName((filteredSubjects.find(sub => sub.subjectId === selected))?.subjectName || '');
 	}
 
 	const handleAssignSubject = async () => {
-		if (facultyName.length === 0 || year.length === 0 || subjectName.length === 0) {
+		// if (!facultyName || !year || !subjectName) {
+		if (!facultyData || !academicYear || !course || !subjectData) {
 			setErrorMsg("Please fill all the fields!");
 			return;
 		}
 		setErrorMsg('');
 		try {
 			const res = await axios.post('/assignSub/', {
-				subjectId: subjectId,
-				subjectName: subjectName,
-				facultyId: facultyId,
-				academicYear: year
+				facultyId: facultyData.facultyId,
+				subjectId: subjectData.subjectId,
+				subjectName: subjectData.subjectName,
+				course,
+				academicYear,
+				// subjectId: subjectId,
+				// subjectName: subjectName,
+				// facultyId: facultyId,
+				// academicYear: academicYear
 			});
 			setSuccessMsg('Subject successfully assigned!');
 			toggleUpdate();
@@ -86,30 +110,40 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 	}
 
 	useEffect(() => {
-		setFilteredSubjects(
-			subjectData?.filter(sub => (sub.academicYear == year))
-		)
-	}, [year, subjectData]);
-
-	useEffect(() => {
 		const getSubjects = async () => {
+			if (!course || !academicYear) {
+				setSubjectList([]);
+				setIsDisabled(true);
+				return;
+			}
+
 			try {
-				const response = await axios.get('/sub/');
-				setSubjectData(response.data.data);
+				const res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
+				console.log(res.data);
+				setSubjectList(res.data.data);
+				setIsDisabled(false);
+				setErrorMsg('');
 			} catch (error) {
 				console.log('Axios Error | AssignSubjectForm | useEffect() | getSubjects(): ', error);
-			}
-		}
-		const getFaculties = async () => {
-			try {
-				const response = await axios.get('/user/');
-				setFacultyData(response.data.data);
-			} catch (error) {
-				console.log('Axios Error | AssignSubjectForm | useEffect() | getFacultyData(): ', error);
+				setErrorMsg(error?.response?.data?.message);
+				setSubjectList([]);
+				setIsDisabled(true);
 			}
 		}
 
 		getSubjects();
+	}, [academicYear, course]);
+
+	useEffect(() => {
+		const getFaculties = async () => {
+			try {
+				const res = await axios.get('/user/');
+				setFacultyList(res.data.data);
+			} catch (error) {
+				console.log('Axios Error | AssignSubjectForm | useEffect() | getFaculties(): ', error);
+			}
+		}
+
 		getFaculties();
 	}, []);
 
@@ -152,7 +186,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 							options={facultyOptions}
 							placeholder='Select a faculty'
 							value={facultyOptions.find(option => (
-								option.value === facultyId
+								option.value === facultyData.facultyId
 							))}
 							onChange={selected => handleFaculty(selected?.value || '')}
 							maxMenuHeight={150}
@@ -163,17 +197,33 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 					{/* Year */}
 					<div>
 						<label className="block text-lg text-gray-700 mb-2 font-semibold">
-							Year
+							Academic Year
 						</label>
 						<Select
 							options={yearOptions}
 							placeholder='Select a year'
 							value={yearOptions.find(option => (
-								option.value === year
+								option.value === academicYear
 							))}
 							onChange={selected => handleYear(selected?.value || '')}
 							maxMenuHeight={150}
 							isClearable
+						/>
+					</div>
+
+					{/* Course */}
+					<div>
+						<label className="block text-lg text-gray-700 mb-2 font-semibold">
+							Course
+						</label>
+						<Select
+							options={courseOptions}
+							placeholder='Select a course'
+							value={courseOptions.find(option => (
+								option.value === course
+							)) || null}
+							onChange={selected => handleCourse(selected?.value || '')}
+							maxMenuHeight={300}
 						/>
 					</div>
 
@@ -186,7 +236,7 @@ function AssignSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggle
 							options={subjectOptions}
 							placeholder='Select a subject'
 							value={subjectOptions.find(option => (
-								option.value === subjectId
+								option.value.subjectId === subjectData?.subjectId
 							)) || null}
 							onChange={selected => handleSubject(selected?.value || '')}
 							isDisabled={isDisabled}
