@@ -1,46 +1,32 @@
-import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { IoMdClose } from "react-icons/io";
-import { FaChevronDown } from "react-icons/fa";
+import axios from "axios";
 import { MdOutlineCancelPresentation } from "react-icons/md";
-import { MdDone } from "react-icons/md";
 import { COLORS } from '../../constants/theme'
+import ErrorSuccessMsg from "../ErrorSuccessMsg";
 
-function AddAllSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
-    const [subjectId, setSubjectId] = useState('');
-    const [subjectName, setSubjectName] = useState('');
-    const [course, setCourse] = useState('');
+function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggleUpdate }) {
     const [isHovered, setIsHovered] = useState(false);
-    const [error, setError] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
     const [file, setFile] = useState(null);
     const fileInputRef = useRef(null);
 
-    useEffect(() => {
-        if (!successMsg) return;
-        const timer = setTimeout(() => {
-            setSuccessMsg("");
-            setIsAddSubjectOpen(false);
-        }, 3000);
-        return () => clearTimeout(timer);
-    }, [successMsg])
-
-    const handleAddAllSubjects = async () => {
+    const handleAssignMultipleSubjects = async () => {
         if (!file) {
-            setError("Please choose a file!");
+            setErrorMsg("Please choose a file!");
             return;
         }
-
+        setErrorMsg('');
         const formData = new FormData();
         formData.append('excelFile', file);
 
         try {
-            const res = await axios.post('/uploadAll/', formData);
+            const res = await axios.post('/sub-upload/upload-excel', formData);
             setSuccessMsg(res.data.message);
             toggleUpdate();
             console.log(res.data);
         } catch (error) {
-            console.log('ERROR || AddAllSubjectsForm || handleAddAllSubjects(): ', error);
+            console.log('ERROR || AssignMultipleSubjectForm || handleAssignMultipleSubjects(): ', error);
         }
     }
 
@@ -54,12 +40,12 @@ function AddAllSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdat
 
         if (!selectedFile) return;
         if (!validTypes.includes(selectedFile.type)) {
-            setError('Only Excel files (.xls, .xlsx) are allowed');
+            setErrorMsg('Only Excel files (.xls, .xlsx) are allowed');
             setFile(null);
             return;
         }
 
-        setError('');
+        setErrorMsg('');
         setFile(selectedFile);
     }
 
@@ -68,13 +54,12 @@ function AddAllSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdat
         fileInputRef.current.value = '';
     }
 
-    if (!isAddSubjectOpen) return null;
+    if (!isAssignSubjectOpen) return null;
 
     return (
         <div>
             {/* Body */}
-            <div className="px-6 py-3 space-y-2">
-
+            <div className="py-3 space-y-2">
                 {/* Subject Code */}
                 <div
                     className='flex border-2 border-gray-300 rounded-sm'
@@ -95,7 +80,6 @@ function AddAllSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdat
                     </label>
                     <div
                         className='w-2/3 px-2 py-1'
-                    // style={{ backgroundColor: COLORS.font }}
                     >
                         {!file ? 'No file choose' : file.name}
                     </div>
@@ -112,7 +96,7 @@ function AddAllSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdat
                 {/* Buttons */}
                 <div className="flex justify-end gap-3 pt-2">
                     <button
-                        onClick={() => setIsAddSubjectOpen(false)}
+                        onClick={() => setIsAssignSubjectOpen(false)}
                         className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
                         style={{ color: COLORS.font }}
                     >
@@ -125,7 +109,7 @@ function AddAllSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdat
                             color: COLORS.font,
                             backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
                         }}
-                        onClick={handleAddAllSubjects}
+                        onClick={handleAssignMultipleSubjects}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                     >
@@ -134,27 +118,15 @@ function AddAllSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdat
                 </div>
 
                 {/* Divider */}
-                {/* <div className="border-t border-gray-300 pt-5">
-                        <p className="text-red-500 text-md">
-                            Note: Once a subject is created, Subject Code cannot be changed.
-                        </p>
-                    </div> */}
-                <div>
-                    {error && (
-                        <p className="text-red-500 text-sm ml-2">
-                            {error}
-                        </p>
-                    )}
-                    {successMsg && (
-                        <p className="text-sm ml-2 flex">
-                            <MdDone className='text-green-500 h-full w-5 mx-1 order rounded-full' />
-                            {successMsg}
-                        </p>
-                    )}
-                </div>
+                <ErrorSuccessMsg
+                    errorMsg={errorMsg}
+                    successMsg={successMsg}
+                    setSuccessMsg={setSuccessMsg}
+                    setIsOpen={setIsAssignSubjectOpen}
+                />
             </div>
         </div>
     );
 }
 
-export default AddAllSubjectsForm
+export default AssignMultipleSubjectForm

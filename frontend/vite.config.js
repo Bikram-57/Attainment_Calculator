@@ -32,6 +32,7 @@ export default defineConfig({
 			'/home/': 'http://localhost:8000',
 			'/activity/': 'http://localhost:8000',
 			'/subject-analysis/': 'http://localhost:8000',
+			'/sub-upload/': 'http://localhost:8000',
 		},
 	},
 })

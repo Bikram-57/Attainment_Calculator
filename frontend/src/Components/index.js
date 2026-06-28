@@ -28,7 +28,7 @@ import ViewCoPoRelation from "./CoPoRelation/ViewCoPoRelation";
 import EditCoPoRelation from "./CoPoRelation/EditCoPoRelation";
 import Footer from "./Footer";
 import ContactUs from "./ContactUs";
-import AddAllSubjectsForm from "./Subject/AddAllSubjectsForm";
+import AddMultipleSubjectsForm from "./Subject/AddMultipleSubjectsForm";
 import AssignSubjects from "./AssignSubjects/AssignSubjects";
 import AssignSubjectForm from "./AssignSubjects/AssignSubjectForm";
 import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
@@ -67,6 +67,8 @@ import Overview from "./Dashboard/Overview";
 import RecentActivity from "./Dashboard/RecentActivity";
 import ProgressCharts from "./Dashboard/ProgressCharts";
 import BarGraph from "./SubjectAnalysis/BarGraph";
+import AssignSingleSubjectForm from "./AssignSubjects/AssignSingleSubjectForm";
+import AssignMultipleSubjectForm from "./AssignSubjects/AssignMultipleSubjectForm";
 
 export {
     NavBar,
@@ -98,7 +100,7 @@ export {
     EditCoPoRelation,
     Footer,
     ContactUs,
-    AddAllSubjectsForm,
+    AddMultipleSubjectsForm,
     AssignSubjects,
     AssignSubjectForm,
     AssignSubjectsHeader,
@@ -136,4 +138,6 @@ export {
     RecentActivity,
     ProgressCharts,
     BarGraph,
+    AssignSingleSubjectForm,
+    AssignMultipleSubjectForm,
 }

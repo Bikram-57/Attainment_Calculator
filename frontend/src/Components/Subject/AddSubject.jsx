@@ -3,7 +3,7 @@ import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 import { COLORS } from '../../constants/theme';
 import AddSubjectForm from './AddSubjectForm';
-import AddAllSubjectsForm from './AddAllSubjectsForm';
+import AddMultipleSubjectsForm from './AddMultipleSubjectsForm';
 import Select from 'react-select';
 
 function AddSubject({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
@@ -67,7 +67,7 @@ function AddSubject({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
                         />
                     }
                     {!addSingleSubject &&
-                        <AddAllSubjectsForm
+                        <AddMultipleSubjectsForm
                             isAddSubjectOpen={isAddSubjectOpen}
                             setIsAddSubjectOpen={setIsAddSubjectOpen}
                             toggleUpdate={toggleUpdate}
