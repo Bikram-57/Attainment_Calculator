@@ -1,18 +1,15 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { COLORS } from '../../constants/theme';
-import Loading from '../Loading';
-import ErrorSuccessMsg from '../ErrorSuccessMsg';
+import { Loading } from '../index';
+import { ErrorSuccessMsg } from '../index';
 
 function EditCoPoRelation({ data, setOpenEdit }) {
-    // const [tableData, setTableData] = useState(data?.mappingData);
     const [isHovered, setIsHovered] = useState(false);
     const [loading, setLoading] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
 
-    // const rows = Object.entries(tableData);
-    // const poColumns = Object.keys(rows[0][1]);
 
     const defaultMappingData = {
         CO1: { PO1: '', PO2: '', PO3: '', PO4: '', PO5: '', PO6: '', PO7: '', PO8: '' },
@@ -53,7 +50,6 @@ function EditCoPoRelation({ data, setOpenEdit }) {
                 course: data.course,
                 mappingData: tableData
             })
-            // setOpenEdit(false);
             setSuccessMsg('Updated successfully!');
         } catch (error) {
             console.log('Axios Error | EditCoPoRelation | handleUpdate(): ', error);
@@ -109,24 +105,6 @@ function EditCoPoRelation({ data, setOpenEdit }) {
                                     ))}
                                 </tr>
                             ))}
-
-                            {/* {rows.map(([co, val]) => (
-                                <tr key={co} className="bg-gray-200 hover:bg-gray-300">
-                                    <td className="border p-2 font-bold bg-gray-300">
-                                        {co}
-                                    </td>
-                                    {poColumns.map(po => (
-                                        <td key={po} className="border p-2 font-semibold">
-                                            <input
-                                                type='text'
-                                                value={val[po]}
-                                                onChange={(e) => handleChange(co, po, e.target.value)}
-                                                className="w-20 h-8 text-center border border-gray-400 bg-white outline-none"
-                                            />
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))} */}
                         </tbody>
                     </table>
                 </div>

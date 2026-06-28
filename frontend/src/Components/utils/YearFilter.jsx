@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { FaFilter } from "react-icons/fa";
-import { COLORS } from '../constants/theme';
+import { COLORS } from '../../constants/theme';
 import Select from 'react-select';
 
 function YearFilter({ defaultYear = '', setFilterYear, isClearable = true }) {

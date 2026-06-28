@@ -3,8 +3,8 @@ import axios from 'axios'
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { MdDone } from "react-icons/md";
 import { COLORS } from '../constants/theme';
-import ErrorSuccessMsg from './ErrorSuccessMsg';
-import Loading from './Loading';
+import { ErrorSuccessMsg } from './index';
+import { Loading } from './index';
 import Select from "react-select";
 import { useSelector } from 'react-redux';
 

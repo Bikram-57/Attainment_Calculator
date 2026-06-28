@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Attainment } from './Attainment/index';
 import { COLORS } from '../constants/theme';
-import ErrorSuccessMsg from './ErrorSuccessMsg';
+import { ErrorSuccessMsg } from './index';
 import Select from 'react-select';
 
 function FetchData() {

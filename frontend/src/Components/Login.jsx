@@ -66,7 +66,13 @@ function Login() {
 
 					{/* Right Section */}
 					<div className="flex items-center p-10">
-						<div className="w-full max-w-md">
+						<form
+							className="w-full max-w-md"
+							onSubmit={e => {
+								e.preventDefault();
+								handleLogin();
+							}}
+						>
 							<h2 className="mb-2 text-4xl font-bold text-[#35558d]">
 								Welcome Back!
 							</h2>
@@ -133,8 +139,8 @@ function Login() {
 
 								{/* Login Button */}
 								<button
+									type="submit"
 									className="w-full rounded-lg bg-[#35558d] py-3 font-semibold text-white transition hover:bg-[#2d4a7a]"
-									onClick={handleLogin}
 								>
 									Login
 								</button>
@@ -149,7 +155,7 @@ function Login() {
 									</NavLink>
 								</div>
 							</div>
-						</div>
+						</form>
 					</div>
 				</div>
 			</div>

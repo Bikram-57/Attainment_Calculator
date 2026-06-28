@@ -5,7 +5,7 @@ import { FaCheckCircle, FaEdit, FaTrash, FaUpload, FaFileAlt, FaUserPlus } from 
 
 function RecentActivity({ activeSubjectCount }) {
     const [recentActivities, setRecentActivities] = useState([]);
-    console.log('here: ', activeSubjectCount)
+
     const activityConfig = {
         // Academic & Mapping
         GENERATED_PO_ATTAINMENT: {
@@ -108,11 +108,6 @@ function RecentActivity({ activeSubjectCount }) {
         return <FaUserPlus className="mt-1 text-gray-600" />;
     };
 
-    // const reportData = [
-    //     { name: "BCA", value: 8 },
-    //     { name: "MCA", value: 3 },
-    // ];
-
     useEffect(() => {
         const getRecentActivities = async () => {
             try {
@@ -162,7 +157,7 @@ function RecentActivity({ activeSubjectCount }) {
                                                 </span>
                                             </div>
 
-                                            <p className="mt-2 font-medium text-slate-800">
+                                            <p className="mt-2 text-slate-800">
                                                 {activity.target}
                                             </p>
 
@@ -243,35 +238,6 @@ function RecentActivity({ activeSubjectCount }) {
                     </div>
                 </div>
             </div>
-
-            {/* <div className="rounded-xl bg-white shadow-sm">
-                <div className="border-b px-4 py-3">
-                    <h2 className="text-xl font-semibold text-slate-800">
-                        No. of Subjects by Course
-                    </h2>
-                </div>
-
-                <div className="p-4">
-                    <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                            <Pie
-                                data={reportData}
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={90}
-                                dataKey="value"
-                                label
-                            >
-                                <Cell fill="#3b82f6" />
-                                <Cell fill="#22c55e" />
-                            </Pie>
-
-                            <Tooltip />
-                            <Legend />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
-            </div> */}
         </div>
     )
 }

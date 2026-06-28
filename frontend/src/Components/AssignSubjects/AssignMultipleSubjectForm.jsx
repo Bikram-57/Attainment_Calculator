@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { COLORS } from '../../constants/theme'
-import ErrorSuccessMsg from "../ErrorSuccessMsg";
+import { ErrorSuccessMsg } from "../index";
 
 function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, toggleUpdate }) {
     const [isHovered, setIsHovered] = useState(false);

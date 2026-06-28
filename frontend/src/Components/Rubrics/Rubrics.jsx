@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import RubricsHeader from "./RubricsHeader";
 import ActionBtns from "../ActionBtns/ActionBtns";
-import Loading from "../Loading";
+import { Loading } from "../index";
 import RubricsViewModal from "./modals/RubricsViewModal";
 import RubricsEditModal from "./modals/RubricsEditModal";
 import RubricsDeleteModal from "./modals/RubricsDeleteModal";

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { COLORS } from '../../constants/theme'
 import axios from 'axios';
-import ErrorSuccessMsg from '../ErrorSuccessMsg';
-import Loading from '../Loading';
+import { ErrorSuccessMsg } from '../index';
+import { Loading } from '../index';
 import Select from 'react-select';
 
 function DownloadBatchReport() {

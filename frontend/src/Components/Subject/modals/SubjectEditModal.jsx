@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { IoMdClose } from "react-icons/io";
 import { COLORS } from '../../../constants/theme';
 import { FaChevronDown } from "react-icons/fa";
-import ErrorSuccessMsg from '../../ErrorSuccessMsg';
+import { ErrorSuccessMsg } from '../../index';
 import Select from 'react-select';
 
 function SubjectEditModal({ data, toggleUpdate, closeMenu }) {

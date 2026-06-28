@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import ErrorSuccessMsg from "../ErrorSuccessMsg";
+import { ErrorSuccessMsg } from "../index";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 

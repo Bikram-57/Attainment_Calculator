@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import DirectAttainmentHeader from './DirectAttainmentHeader';
 import { MdRemoveRedEye } from "react-icons/md";
-import Loading from '../Loading';
+import { Loading } from '../index';
 import DirectAttainmentTable from './DirectAttainmentTable';
 
 function DirectAttainment() {

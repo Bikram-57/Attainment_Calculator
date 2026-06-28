@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
 import { FaFilter } from "react-icons/fa";
 import { COLORS } from '../../constants/theme';
-import YearFilter from '../YearFilter';
+import { YearFilter } from '../index';
 import AddSubject from './AddSubject';
 
 function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear }) {

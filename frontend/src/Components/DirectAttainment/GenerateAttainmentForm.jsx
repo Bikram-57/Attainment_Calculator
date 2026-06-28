@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react'
-import ErrorSuccessMsg from '../ErrorSuccessMsg';
+import { ErrorSuccessMsg } from '../index';
 import { FaChevronDown } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { COLORS } from '../../constants/theme';

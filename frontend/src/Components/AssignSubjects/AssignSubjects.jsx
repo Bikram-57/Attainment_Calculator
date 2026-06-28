@@ -3,7 +3,7 @@ import AssignSubjectsHeader from './AssignSubjectsHeader'
 import { RiDeleteBin6Line } from "react-icons/ri";
 import axios from 'axios';
 import { COLORS } from '../../constants/theme';
-import Loading from '../Loading';
+import { Loading } from '../index';
 
 function AssignSubjects() {
 	const [searchQuery, setSearchQuery] = useState('');
@@ -159,77 +159,6 @@ function AssignSubjects() {
 											) : null
 										)}
 									</td>
-
-									{/* <td className="px-3 py-3">
-										{Object.entries(data.assignments).map(([year, subjects]) =>
-											year == filterYear ? (
-												<details key={year}>
-													<summary className='cursor-pointer font-semibold'>
-														Assigned Subject List
-													</summary>
-
-													<ul className="space-y-1">
-														{subjects.map((subject) => (
-															<li
-																key={subject.subjectId}
-																className="flex items-center justify-between border-b border-gray-300 rounded px-2 py-1 hover:bg-gray-100"
-															>
-																<span>{subject.subjectName}</span>
-
-																<button
-																	className="rounded p-1 text-red-500 hover:bg-red-50 hover:text-red-600 transition cursor-pointer"
-																	title="De-assign Subject"
-																	onClick={() => deAssignSubject(subject.subjectId, data.facultyId, year)}
-																>
-																	<RiDeleteBin6Line size={18} />
-																</button>
-															</li>
-														))}
-													</ul>
-												</details>
-											) : null
-										)}
-									</td> */}
-
-									{/* <td>
-										<div className="p-2">
-											{Object.entries(data.assignments).map(([year, subjects]) =>
-												year == filterYear ? (
-													subjects.length > 0 ? (
-														<details key={year} className="mb-2">
-															<summary className="font-semibold cursor-pointer">
-																{subjects[0].subjectName}
-															</summary>
-
-															<ul className="mt-2 ml-4 list-disc">
-																{subjects.slice(1).map((subject) => (
-																	<li
-																		key={subject.subjectId}
-																		className="flex items-center justify-between"
-																	>
-																		<span>{subject.subjectName}</span>
-
-																		<button
-																			className="rounded p-1 transition cursor-pointer"
-																			style={{
-																				color: COLORS.mint
-																			}}
-																		>
-																			<MdDelete />
-																		</button>
-																	</li>
-																))}
-															</ul>
-														</details>
-													) : (
-														<span key={year}>No subjects assigned</span>
-													)
-												) : null
-											)}
-										</div>
-									</td> */}
-
-
 								</tr>
 							))}
 						</tbody>

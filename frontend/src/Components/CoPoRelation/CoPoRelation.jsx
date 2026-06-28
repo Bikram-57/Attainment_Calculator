@@ -7,7 +7,7 @@ import { BsSearch } from "react-icons/bs";
 import ViewCoPoRelation from './ViewCoPoRelation';
 import EditCoPoRelation from './EditCoPoRelation';
 import { COLORS } from '../../constants/theme'
-import Loading from '../Loading';
+import { Loading } from '../index';
 
 function CoPoRelation() {
     const [subjects, setSubjects] = useState(null);
@@ -70,7 +70,6 @@ function CoPoRelation() {
             try {
                 const res = await axios.get('/sub/');
                 setSubjects(res.data.data);
-                console.log(res.data.data);
             } catch (error) {
                 console.log('Axios Error | CoPoRelation | fetchSubjects(): ', error);
             } finally {

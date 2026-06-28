@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 import { COLORS } from '../../constants/theme'
-import ErrorSuccessMsg from "../ErrorSuccessMsg";
+import { ErrorSuccessMsg } from "../index";
 import Select from 'react-select';
 
 function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {

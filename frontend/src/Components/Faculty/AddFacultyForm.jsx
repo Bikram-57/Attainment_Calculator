@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from 'axios'
 import { IoMdClose } from "react-icons/io";
 import { COLORS } from '../../constants/theme'
-import ErrorSuccessMsg from "../ErrorSuccessMsg";
+import { ErrorSuccessMsg } from "../index";
 
 function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
     const [isHovered, setIsHovered] = useState(false);
