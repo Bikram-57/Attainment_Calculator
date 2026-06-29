@@ -32,7 +32,8 @@ const requestOtp = async (req, res) => {
     await user.save();
 
     // 4. Send the raw unhashed OTP to the user's email inbox
-    const message = `Your password reset verification code is: ${otp}. It will expire in 10 minutes.`;
+    // const message = `Your password reset verification code is: ${otp}. It will expire in 10 minutes.`;
+    const message = `${otp}`;
     await sendEmail(user.email, "Password Reset Verification Code", message);
 
     res.status(200).json({ message: "OTP sent successfully to your email." });
