@@ -181,7 +181,9 @@ function Filters({
     onSemesterChange,
     onCourseChange,
 
-    isClearable = true
+    isYearClearable = true,
+    isSemesterClearable = true,
+    isCourseClearable = true,
 }) {
     const [academicYear, setAcademicYear] = useState(defaultYear);
     const [semester, setSemester] = useState(defaultSemester);
@@ -235,7 +237,7 @@ function Filters({
                         onChange={(selected) =>
                             handleYearChange(selected?.value || '')
                         }
-                        isClearable={isClearable}
+                        isClearable={isYearClearable}
                     />
                 </div>
             )}
@@ -251,7 +253,7 @@ function Filters({
                         onChange={(selected) =>
                             handleSemesterChange(selected?.value || '')
                         }
-                        isClearable={isClearable}
+                        isClearable={isSemesterClearable}
                     />
                 </div>
             )}
@@ -267,7 +269,7 @@ function Filters({
                         onChange={(selected) =>
                             handleCourseChange(selected?.value || '')
                         }
-                        isClearable={isClearable}
+                        isClearable={isCourseClearable}
                     />
                 </div>
             )}
