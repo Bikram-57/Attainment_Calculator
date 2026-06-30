@@ -684,6 +684,123 @@ async function getAssignedSubjectsByFaculty(req, res) {
 
 
 //done
+// async function removeSubjectFromFaculty(req, res) {
+//     try {
+//         // 1. ADDED 'course' to the required inputs
+//         const { facultyId, subjectId, course, academicYear } = req.body;
+
+//         if (!facultyId || !subjectId || !course || academicYear === undefined) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Please provide facultyId, subjectId, course, and academicYear."
+//             });
+//         }
+
+//         const cleanFacultyId = facultyId.trim();
+//         const cleanSubjectId = subjectId.trim();
+//         const cleanCourse = course.trim().toUpperCase(); 
+//         const academicYearStr = academicYear.toString().trim();
+
+//         // Find the faculty document
+//         const facultyRecord = await assignSubject.findOne({ facultyId: cleanFacultyId });
+
+//         if (!facultyRecord) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `Could not find faculty with ID: ${cleanFacultyId}`
+//             });
+//         }
+
+//         // 2. CHECK YEAR LEVEL
+//         if (!facultyRecord.assignments.has(academicYearStr)) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `No assignments found for the year ${academicYearStr}.`
+//             });
+//         }
+
+//         // Get the inner map (the courses)
+//         const yearMap = facultyRecord.assignments.get(academicYearStr);
+
+//         // 3. CHECK COURSE LEVEL
+//         if (!yearMap.has(cleanCourse)) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `No assignments found for course ${cleanCourse} in the year ${academicYearStr}.`
+//             });
+//         }
+
+//         let courseSubjects = yearMap.get(cleanCourse);
+
+//         // 4. FIND AND REMOVE THE SUBJECT
+//         const subjectToRemove = courseSubjects.find(sub => sub.subjectId === cleanSubjectId);
+        
+//         if (!subjectToRemove) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `Subject ${cleanSubjectId} is not assigned to this faculty for ${academicYearStr} - ${cleanCourse}.`
+//             });
+//         }
+
+//         const removedSubjectName = subjectToRemove.subjectName;
+
+//         // Filter the object OUT of the array
+//         courseSubjects = courseSubjects.filter(sub => sub.subjectId !== cleanSubjectId);
+
+//         // 5. NESTED GARBAGE COLLECTION (Keeps DB clean)
+//         if (courseSubjects.length === 0) {
+//             // If no subjects left in this course, delete the course key entirely
+//             yearMap.delete(cleanCourse);
+            
+//             // If no courses left in this year, delete the year key entirely
+//             if (yearMap.size === 0) {
+//                 facultyRecord.assignments.delete(academicYearStr);
+//             } else {
+//                 facultyRecord.assignments.set(academicYearStr, yearMap);
+//             }
+//         } else {
+//             // Otherwise, just save the updated array back to the course
+//             yearMap.set(cleanCourse, courseSubjects);
+//             facultyRecord.assignments.set(academicYearStr, yearMap);
+//         }
+
+//         // Force Mongoose to recognize the nested map changes
+//         facultyRecord.markModified(`assignments.${academicYearStr}`);
+
+//         // Keep the total years count accurate after deletion
+//         facultyRecord.totalYearsRecorded = facultyRecord.assignments.size;
+
+//         await facultyRecord.save();
+
+//         // 6. LOGGING (Updated to include the course name)
+//         await logActivity(
+//             req.user, 
+//             'REMOVED_SUBJECT', 
+//             `${cleanSubjectId} - ${removedSubjectName} (${cleanCourse}) removed from ${facultyRecord.facultyName}`, 
+//             [] 
+//         );
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Subject removed successfully.",
+//             data: facultyRecord
+//         });
+
+//     } catch (error) {
+//         console.error('Full Error Detail:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Server error while deleting assignment",
+//             actualError: error.message
+//         });
+//     }
+// }
+
+
+
+
+
+
 async function removeSubjectFromFaculty(req, res) {
     try {
         // 1. ADDED 'course' to the required inputs
@@ -764,15 +881,15 @@ async function removeSubjectFromFaculty(req, res) {
             facultyRecord.assignments.set(academicYearStr, yearMap);
         }
 
-        // Force Mongoose to recognize the nested map changes
-        facultyRecord.markModified(`assignments.${academicYearStr}`);
+        // THE FIX: Mark the root 'assignments' map as modified, NOT the specific year string
+        facultyRecord.markModified('assignments');
 
         // Keep the total years count accurate after deletion
         facultyRecord.totalYearsRecorded = facultyRecord.assignments.size;
 
         await facultyRecord.save();
 
-        // 6. LOGGING (Updated to include the course name)
+        // 6. LOGGING
         await logActivity(
             req.user, 
             'REMOVED_SUBJECT', 
@@ -795,6 +912,8 @@ async function removeSubjectFromFaculty(req, res) {
         });
     }
 }
+
+
 
 
 

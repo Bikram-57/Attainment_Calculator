@@ -1,6 +1,11 @@
 const CoPoMapping = require('../models/coPoMapping');
 const Subject = require('../models/subject');
 const User = require('../models/user');
+
+// ... existing code ...
+const AssignSubject = require('../models/assignSubject');
+
+
 const logActivity = require('../utils/activityLogger');
 
 // ============================================================================
@@ -360,6 +365,90 @@ const getCoPoRelation = async (req, res) => {
     }
 };
 
+
+
+
+//unsolved code
+async function handleGetMyFilteredSubjects(req, res) {
+    try {
+        const loggedInFacultyId = req.user.facultyId; 
+        const { year } = req.query; 
+
+        if (!year) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Academic year is required." 
+            });
+        }
+
+        // 1. Fetch the user's assignment document
+        const facultyDoc = await AssignSubject.findOne({ facultyId: loggedInFacultyId });
+
+        if (!facultyDoc || !facultyDoc.assignments.has(year)) {
+            return res.status(200).json({
+                success: true,
+                data: {
+                    facultyName: facultyDoc ? facultyDoc.facultyName : req.user.name,
+                    year: year,
+                    subjects: []
+                }
+            });
+        }
+
+        // 2. Extract ALL subjects across ALL courses for this year
+        const yearMap = facultyDoc.assignments.get(year);
+        let assignedSubjects = [];
+
+        for (const [courseName, subjectsArray] of yearMap.entries()) {
+            // Attach the course name dynamically so the frontend still knows which course it belongs to
+            const mappedSubs = subjectsArray.map(sub => ({ ...sub.toObject(), course: courseName }));
+            assignedSubjects = assignedSubjects.concat(mappedSubs);
+        }
+
+        if (assignedSubjects.length === 0) {
+            return res.status(200).json({ success: true, data: { subjects: [] } });
+        }
+
+        // 3. Extract just the subject IDs to query the Subject database
+        const subjectIdsToFetch = assignedSubjects.map(sub => sub.subjectId);
+
+        // 4. Fetch FULL subject details from your Subject collection
+        // .lean() makes it a standard JSON object for easy merging
+        const fullSubjectDetails = await Subject.find({ 
+            subjectId: { $in: subjectIdsToFetch } 
+        }).lean();
+
+        // 5. Merge the assigned data with the full database data
+        const enrichedSubjects = assignedSubjects.map(assigned => {
+            // Find the matching full data object
+            const fullData = fullSubjectDetails.find(dbSub => dbSub.subjectId === assigned.subjectId);
+            
+            return {
+                ...assigned,   // Contains: subjectId, subjectName, course
+                ...fullData    // Merges: credits, syllabus, semester, description, etc.
+            };
+        });
+
+        // 6. Return the fully enriched data
+        return res.status(200).json({
+            success: true,
+            message: "Subjects fetched successfully with full data.",
+            data: {
+                facultyName: facultyDoc.facultyName,
+                year,
+                subjects: enrichedSubjects
+            }
+        });
+
+    } catch (error) {
+        console.error("Error fetching full assigned subjects:", error);
+        return res.status(500).json({ 
+            success: false, 
+            message: "Server error while fetching assignments." 
+        });
+    }
+}
+// ... existing code ...
 
 module.exports = {
     saveCoPoRelation,
