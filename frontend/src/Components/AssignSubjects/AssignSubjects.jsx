@@ -13,14 +13,36 @@ function AssignSubjects() {
 	const [loading, setLoading] = useState(true);
 	const [deAssignSubjectData, setDeAssignSubjectData] = useState(null);
 	const [filterYear, setFilterYear] = useState(new Date().getFullYear());
-	const currentYear = new Date().getFullYear();
 
-	const filteredAssignedSubjectsData = assignedSubjectsData?.filter(sub => (
-		(
-			sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase().trim())
-			&& Object.hasOwn(sub.assignments, filterYear)
-		)
-	));
+	// const filteredAssignedSubjectsData = assignedSubjectsData?.filter(sub => (
+	// 	(
+	// 		sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase().trim())
+	// 		&& Object.hasOwn(sub.assignments, filterYear)
+	// 	)
+	// ));
+
+	const query = searchQuery.toLowerCase().trim();
+
+	const filteredAssignedSubjectsData = assignedSubjectsData?.filter((faculty) => {
+		const subjectMatch = Object.values(
+			faculty.assignments?.[filterYear] || {}
+		).some((subjects) =>
+			subjects.some(
+				(subject) =>
+					subject.subjectId.toLowerCase().includes(query) ||
+					subject.subjectName.toLowerCase().includes(query)
+			)
+		);
+
+		return (
+			Object.hasOwn(faculty.assignments, filterYear) &&
+			(
+				faculty.facultyId.toLowerCase().includes(query) ||
+				faculty.facultyName.toLowerCase().includes(query) ||
+				subjectMatch
+			)
+		);
+	});
 
 	useEffect(() => {
 		const getAssignSubjects = async () => {
@@ -54,7 +76,7 @@ function AssignSubjects() {
 			<AssignSubjectsHeader
 				toggleUpdate={toggleUpdate}
 				setSearchQuery={setSearchQuery}
-				currentYear={currentYear}
+				currentYear={filterYear}
 				setFilterYear={setFilterYear}
 			/>
 			<div className="flex-1 overflow-y-auto">

@@ -30,7 +30,7 @@ function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear, setFilterC
                 showYear
                 showCourse
                 showSemester
-                defaultYear={new Date().getFullYear()}
+                defaultYear={String(new Date().getFullYear())}
                 isYearClearable={false}
                 onYearChange={setFilterYear}
                 onCourseChange={setFilterCourse}
