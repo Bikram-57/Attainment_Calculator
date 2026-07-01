@@ -8,6 +8,7 @@ const {
     getAssignedSubjectsByFaculty,
     removeSubjectFromFaculty,
     getDropdownData,
+    handleGetFacultyAssignmentsByYear,
 
  } = require('../controllers/assignSubject')
 
@@ -15,6 +16,7 @@ const router  = express.Router();
 
 
 router.get('/sub', verifyRoles('admin', 'faculty'), getDropdownData);
+router.get('/year', verifyRoles('admin', 'faculty'), handleGetFacultyAssignmentsByYear);
 
 
 router.post('/', verifyRoles('admin'), handleAssignSubject);
