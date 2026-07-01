@@ -24,6 +24,7 @@ import SubjectEditModal from "./Subject/modals/SubjectEditModal";
 import SubjectDeleteModal from "./Subject/modals/SubjectDeleteModal";
 import AddSubjectForm from "./Subject/AddSubjectForm";
 import CoPoRelation from "./CoPoRelation/CoPoRelation";
+import CoPoRelationHeader from "./CoPoRelation/CoPoRelationHeader";
 import ViewCoPoRelation from "./CoPoRelation/ViewCoPoRelation";
 import EditCoPoRelation from "./CoPoRelation/EditCoPoRelation";
 import Footer from "./Footer";
@@ -96,6 +97,7 @@ export {
     SubjectDeleteModal,
     AddSubjectForm,
     CoPoRelation,
+    CoPoRelationHeader,
     ViewCoPoRelation,
     EditCoPoRelation,
     Footer,

@@ -5,7 +5,9 @@ import ProgressCharts from "./ProgressCharts";
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
+import { useSelector } from 'react-redux';
 function Dashboard() {
+    console.log(useSelector(s => s.auth.accessToken))
     const [activeSubjectCount, setActiveSubjectCount] = useState([]);
 
     useEffect(() => {

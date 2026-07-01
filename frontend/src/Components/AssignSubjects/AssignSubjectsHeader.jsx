@@ -45,7 +45,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                 <div className='border rounded-md flex items-center'>
                     <input
                         type='text'
-                        placeholder='Search by faculty ID'
+                        placeholder='Search by Faculty or Subject'
                         value={search}
                         className='border-r px-3 py-1 w-87.5 outline-none'
                         style={{
