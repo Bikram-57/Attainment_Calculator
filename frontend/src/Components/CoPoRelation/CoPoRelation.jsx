@@ -3,22 +3,25 @@ import { MdRemoveRedEye } from "react-icons/md";
 import { FaCheckCircle, FaClock } from "react-icons/fa";
 import { GrEdit } from "react-icons/gr";
 import axios from 'axios';
-import { BsSearch } from "react-icons/bs";
 import ViewCoPoRelation from './ViewCoPoRelation';
 import EditCoPoRelation from './EditCoPoRelation';
 import { COLORS } from '../../constants/theme'
-import { Loading } from '../index';
+import { CoPoRelationHeader, Loading } from '../index';
+import { useSelector } from 'react-redux';
 
 function CoPoRelation() {
-    const [subjects, setSubjects] = useState(null);
-    const [search, setSearch] = useState("");
+    const userData = useSelector(state => state.auth.userData);
+    const [subjects, setSubjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [openView, setOpenView] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedSubjectData, setSelectedSubjectData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [filterYear, setFilterYear] = useState(new Date().getFullYear());
+    const [filterCourse, setFilterCourse] = useState('');
+    const [filterSemester, setFilterSemester] = useState('');
 
-    const fetchData = async (sub) => {
+    const fetchSelectedCoPoData = async (sub) => {
         setSelectedSubjectData({
             subjectId: sub.subjectId,
             academicYear: sub.academicYear,
@@ -34,7 +37,7 @@ function CoPoRelation() {
             });
             setSelectedSubjectData(res.data);
         } catch (error) {
-            console.log('Axios Error | ViewCoPoRelation | fetchData(): ', error);
+            console.log('Axios Error | ViewCoPoRelation | fetchSelectedCoPoData(): ', error);
         } finally {
             setLoading(false);
         }
@@ -42,42 +45,54 @@ function CoPoRelation() {
 
     const handleViewOpen = async (sub) => {
         setLoading(true);
-        await fetchData(sub);
+        await fetchSelectedCoPoData(sub);
         setOpenView(true);
     }
 
     const handleEditOpen = async (sub) => {
         setLoading(true);
-        await fetchData(sub);
+        await fetchSelectedCoPoData(sub);
         setOpenEdit(true);
     }
 
-    const handleChange = (e) => {
-        if (e.target.value == '') {
-            setSearchQuery('');
-        }
-        setSearch(e.target.value);
-        setSearchQuery(e.target.value);
-    }
+
 
     const filteredSubjects = subjects?.filter(sub => (
-        sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase().trim())
-        || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase().trim())
+        (
+            sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase().trim())
+            || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase().trim())
+        )
+        && (
+            filterCourse ? sub.course == filterCourse : true
+        )
+        && (
+            filterSemester ? sub.semester == filterSemester : true
+        )
     ));
 
     useEffect(() => {
-        const fetchSubjects = async () => {
+        const fetchCoPoSubjectList = async () => {
             try {
-                const res = await axios.get('/sub/');
-                setSubjects(res.data.data);
+                let res;
+                if (userData.role === 'admin') {
+                    res = await axios.get(`/sub/year/${filterYear}`);
+                    setSubjects(res.data.data);
+                } else {
+                    res = await axios.get('/co-po/filter', {
+                        params: {
+                            year: filterYear
+                        }
+                    });
+                    setSubjects(res.data.data.subjects);
+                }
             } catch (error) {
-                console.log('Axios Error | CoPoRelation | fetchSubjects(): ', error);
+                console.log('Axios Error | CoPoRelation | fetchCoPoSubjectList(): ', error);
             } finally {
                 setLoading(false);
             }
         }
-        fetchSubjects();
-    }, []);
+        fetchCoPoSubjectList();
+    }, [filterYear]);
 
     if (!openView && !openEdit) {
         return !loading ? (
@@ -85,38 +100,12 @@ function CoPoRelation() {
                 className="w-full p-4"
                 style={{ backgroundColor: COLORS.latte }}
             >
-                {/* Header */}
-                <div className="mb-3 flex items-center justify-between">
-                    <h2
-                        className="text-xl font-semibold"
-                        style={{ color: COLORS.mint }}
-                    >
-                        CO PO Relations
-                    </h2>
-
-                    {/* Search */}
-                    <div
-                        className="flex w-105 overflow-hidden rounded-md border"
-                    >
-                        <input
-                            type="text"
-                            placeholder="Search by subject Id or name"
-                            value={search}
-                            onChange={(e) => handleChange(e)}
-                            className="w-full border-r px-3 py-1 text-sm outline-none"
-                            style={{
-                                color: COLORS.mintDark
-                            }}
-                        />
-
-                        <button className="px-3 cursor-pointer">
-                            <BsSearch
-                                onClick={() => setSearchQuery(search)}
-                                style={{ color: COLORS.mintDark }}
-                            />
-                        </button>
-                    </div>
-                </div>
+                <CoPoRelationHeader
+                    setSearchQuery={setSearchQuery}
+                    setFilterYear={setFilterYear}
+                    setFilterCourse={setFilterCourse}
+                    setFilterSemester={setFilterSemester}
+                />
 
                 {/* Table */}
                 <div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">

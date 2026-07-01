@@ -13,18 +13,6 @@ function Subject() {
     const [filterSemester, setFilterSemester] = useState('');
     const [loading, setLoading] = useState(true);
 
-    const getSubjectData = async () => {
-        try {
-            const res = await axios.get(`/sub/year/${filterYear}`);
-            setSubjectData(res.data.data);
-            console.log(res.data.data)
-        } catch (error) {
-            console.log('Axios Error | getSubjectData(): ', error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
     const toggleUpdate = () => {
         setToggleNewSubject(prev => !prev)
     }
@@ -46,6 +34,18 @@ function Subject() {
     ))
 
     useEffect(() => {
+        const getSubjectData = async () => {
+            try {
+                const res = await axios.get(`/sub/year/${filterYear}`);
+                setSubjectData(res.data.data);
+                console.log(res.data.data)
+            } catch (error) {
+                console.log('Axios Error | getSubjectData(): ', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
         getSubjectData();
     }, [filterYear, toggleNewSubject]);
     return !loading ? (

@@ -4,13 +4,14 @@ import { Attainment } from './Attainment/index';
 import { COLORS } from '../constants/theme';
 import { ErrorSuccessMsg } from './index';
 import Select from 'react-select';
+import { useSelector } from 'react-redux';
 
 function FetchData() {
+	const userData = useSelector(state => state.auth.userData);
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
 	const [subjectId, setSubjectId] = useState('')
 	const [isDisabled, setIsDisabled] = useState(true);
-	const [allSubjects, setAllSubjects] = useState([]);
 	const [subjectList, setSubjectList] = useState([]);
 	const [errorMsg, setErrorMsg] = useState('');
 	const [fetchClicked, setFetchClicked] = useState(false);
@@ -91,27 +92,37 @@ function FetchData() {
 			setIsDisabled(true);
 			return;
 		}
-
-		const filteredSubjects = allSubjects.filter(sub => (
-			sub.course === course && sub.academicYear === academicYear
-		));
-
-		setSubjectList(filteredSubjects);
-		setIsDisabled(false);
-	}, [academicYear, course, allSubjects]);
-
-	useEffect(() => {
 		const fetchSubjects = async () => {
 			try {
-				const res = await axios.get('/sub/');
-				setAllSubjects(res.data.data);
+				let res;
+				if (userData.role === 'admin') {
+					res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
+				} else {
+					res = await axios.get('/assignSub/sub', {
+						params: {
+							year: academicYear,
+							course
+						}
+					});
+				}
+				if (res.data.data.length === 0) {
+					setErrorMsg('No data for the selected year and course!');
+					setSubjectList([]);
+					setIsDisabled(true);
+					return;
+				}
+				setSubjectList(res.data.data);
+				setIsDisabled(false);
+				setErrorMsg('');
 			} catch (err) {
 				console.log('Error fetching subjects || ', err);
+				setErrorMsg(err?.response?.data?.message);
+				setSubjectList([]);
+				setIsDisabled(true);
 			}
 		};
-
 		fetchSubjects();
-	}, []);
+	}, [academicYear, course]);
 
 	return !fetchClicked ? (
 		<div className='h-full flex flex-col p-4'>

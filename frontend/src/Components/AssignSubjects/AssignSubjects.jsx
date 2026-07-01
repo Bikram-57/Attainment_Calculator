@@ -6,6 +6,7 @@ import { COLORS } from '../../constants/theme';
 import { Loading } from '../index';
 
 function AssignSubjects() {
+
 	const [searchQuery, setSearchQuery] = useState('');
 	const [assignedSubjectsData, setAssignedSubjectsData] = useState([]);
 	const [updateData, setUpdateData] = useState(false);
