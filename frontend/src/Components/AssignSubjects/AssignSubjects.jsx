@@ -4,13 +4,14 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import axios from 'axios';
 import { COLORS } from '../../constants/theme';
 import { Loading } from '../index';
+import DeassignSubject from './DeassignSubject';
 
 function AssignSubjects() {
-
 	const [searchQuery, setSearchQuery] = useState('');
 	const [assignedSubjectsData, setAssignedSubjectsData] = useState([]);
 	const [updateData, setUpdateData] = useState(false);
 	const [loading, setLoading] = useState(true);
+	const [deAssignSubjectData, setDeAssignSubjectData] = useState(null);
 	const [filterYear, setFilterYear] = useState(new Date().getFullYear());
 	const currentYear = new Date().getFullYear();
 
@@ -44,21 +45,8 @@ function AssignSubjects() {
 		setUpdateData(prev => !prev);
 	}
 
-	const deAssignSubject = async (subjectId, facultyId, course, academicYear) => {
-		try {
-			const res = await axios.delete('/assignSub/', {
-				data: {
-					facultyId,
-					subjectId,
-					course,
-					academicYear
-				}
-			});
-			toggleUpdate();
-			// console.log(res.data.data);
-		} catch (error) {
-			console.log('ERROR || AssignSubject | deAssignSubject(): ', error);
-		}
+	const closeDelete = (data) => {
+		setDeAssignSubjectData(null);
 	}
 
 	return !loading ? (
@@ -161,14 +149,14 @@ function AssignSubjects() {
 																<button
 																	className="rounded-lg p-2 text-red-500 transition hover:bg-red-50 hover:text-red-600 cursor-pointer"
 																	title="De-assign Subject"
-																	onClick={() =>
-																		deAssignSubject(
-																			subject.subjectId,
-																			data.facultyId,
-																			course,
-																			filterYear
-																		)
-																	}
+																	onClick={() => setDeAssignSubjectData(
+																		{
+																			subjectId: subject.subjectId,
+																			facultyId: data.facultyId,
+																			academicYear: filterYear,
+																			course
+																		}
+																	)}
 																>
 																	<RiDeleteBin6Line size={18} />
 																</button>
@@ -192,6 +180,13 @@ function AssignSubjects() {
 					)
 				}
 			</div>
+			{deAssignSubjectData && (
+				<DeassignSubject
+					data={deAssignSubjectData}
+					toggleUpdate={toggleUpdate}
+					closeMenu={closeDelete}
+				/>
+			)}
 		</div>
 	) : <Loading />
 }

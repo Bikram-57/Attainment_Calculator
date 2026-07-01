@@ -1,23 +1,24 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { IoWarning } from "react-icons/io5";
-import { COLORS } from '../../../constants/theme';
+import { COLORS } from '../../constants/theme';
 
 function DeassignSubject({ data, toggleUpdate, closeMenu }) {
-    const deAssignSubject = async (subjectId, facultyId, course, academicYear) => {
+    const handleDeAssign = async () => {
         try {
             const res = await axios.delete('/assignSub/', {
                 data: {
-                    facultyId,
-                    subjectId,
-                    course,
-                    academicYear
+                    facultyId: data.facultyId,
+                    subjectId: data.subjectId,
+                    course: data.course,
+                    academicYear: data.academicYear
                 }
             });
             toggleUpdate();
-            // console.log(res.data.data);
         } catch (error) {
-            console.log('ERROR || AssignSubject | deAssignSubject(): ', error);
+            console.log('ERROR || AssignSubject | handleDeAssign(): ', error);
+        } finally {
+            closeMenu();
         }
     }
     return (
@@ -40,12 +41,12 @@ function DeassignSubject({ data, toggleUpdate, closeMenu }) {
                     className="text-2xl font-semibold mb-2"
                     style={{ color: COLORS.mintDark }}
                 >
-                    Delete Subject
+                    De-assign Subject
                 </h2>
 
                 {/* Message */}
                 <p className="text-red-600 text-xl leading-relaxed mb-4">
-                    Are you sure you want to delete this subject?
+                    Are you sure you want to de-assign this subject?
                     <br />
                     This action cannot be undone !
                 </p>
@@ -60,10 +61,10 @@ function DeassignSubject({ data, toggleUpdate, closeMenu }) {
                     </button>
 
                     <button
-                        onClick={deleteSubject}
+                        onClick={handleDeAssign}
                         className="px-4 py-1 rounded-md bg-red-600 text-white text-lg font-medium hover:bg-red-700 transition cursor-pointer"
                     >
-                        Yes, Delete !
+                        Yes, De-Assign !
                     </button>
                 </div>
             </div>
