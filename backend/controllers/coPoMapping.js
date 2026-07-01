@@ -360,7 +360,7 @@ const getCoPoRelation = async (req, res) => {
         console.error("Fetch API Error:", error.message);
         return res.status(500).json({
             success: false,
-            error: "Internal Server Error: " + error.message
+            error: "Internal Server Error: " + error.messagecd 
         });
     }
 };
@@ -369,88 +369,96 @@ const getCoPoRelation = async (req, res) => {
 
 
 //unsolved code
+
+
 async function handleGetMyFilteredSubjects(req, res) {
     try {
-        const loggedInFacultyId = req.user.facultyId; 
+        // 1. Identify the user (This comes from your verifyJWT middleware, NOT the body)
+        const loggedInFacultyId = req.facultyId; 
+        
+        // 2. Get ONLY the year from the URL query (e.g., /my-subjects?year=2026)
         const { year } = req.query; 
 
+        // Security checks
+        if (!loggedInFacultyId) {
+            return res.status(401).json({ success: false, message: "Unauthorized: Token missing or invalid." });
+        }
         if (!year) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Academic year is required." 
-            });
+            return res.status(400).json({ success: false, message: "Year is required in the URL." });
         }
 
-        // 1. Fetch the user's assignment document
+        // 3. Find the assignments for this specific faculty member
         const facultyDoc = await AssignSubject.findOne({ facultyId: loggedInFacultyId });
 
-        if (!facultyDoc || !facultyDoc.assignments.has(year)) {
-            return res.status(200).json({
-                success: true,
-                data: {
-                    facultyName: facultyDoc ? facultyDoc.facultyName : req.user.name,
-                    year: year,
-                    subjects: []
-                }
-            });
+        if (!facultyDoc || !facultyDoc.assignments) {
+            return res.status(200).json({ success: true, data: { year, subjects: [] } });
         }
 
-        // 2. Extract ALL subjects across ALL courses for this year
-        const yearMap = facultyDoc.assignments.get(year);
+        // 4. Safely check if this year exists in their assignments
+        const isMap = typeof facultyDoc.assignments.get === 'function';
+        const hasYear = isMap ? facultyDoc.assignments.has(year) : facultyDoc.assignments.hasOwnProperty(year);
+        
+        if (!hasYear) {
+            return res.status(200).json({ success: true, data: { year, subjects: [] } });
+        }
+
+        // 5. Extract the subjects for this specific year
+        const yearData = isMap ? facultyDoc.assignments.get(year) : facultyDoc.assignments[year];
         let assignedSubjects = [];
 
-        for (const [courseName, subjectsArray] of yearMap.entries()) {
-            // Attach the course name dynamically so the frontend still knows which course it belongs to
-            const mappedSubs = subjectsArray.map(sub => ({ ...sub.toObject(), course: courseName }));
+        const entries = isMap && typeof yearData.entries === 'function' 
+            ? yearData.entries() 
+            : Object.entries(yearData);
+
+        for (const [courseName, subjectsArray] of entries) {
+            const mappedSubs = subjectsArray.map(sub => {
+                const plainSub = (typeof sub.toObject === 'function') ? sub.toObject() : sub;
+                return { ...plainSub, course: courseName };
+            });
             assignedSubjects = assignedSubjects.concat(mappedSubs);
         }
 
         if (assignedSubjects.length === 0) {
-            return res.status(200).json({ success: true, data: { subjects: [] } });
+            return res.status(200).json({ success: true, data: { year, subjects: [] } });
         }
 
-        // 3. Extract just the subject IDs to query the Subject database
+        // 6. Get the subject IDs and fetch their full details from the Subjects DB
         const subjectIdsToFetch = assignedSubjects.map(sub => sub.subjectId);
 
-        // 4. Fetch FULL subject details from your Subject collection
-        // .lean() makes it a standard JSON object for easy merging
         const fullSubjectDetails = await Subject.find({ 
             subjectId: { $in: subjectIdsToFetch } 
         }).lean();
 
-        // 5. Merge the assigned data with the full database data
+        // 7. Merge the assignment data with the full Subject DB data
         const enrichedSubjects = assignedSubjects.map(assigned => {
-            // Find the matching full data object
             const fullData = fullSubjectDetails.find(dbSub => dbSub.subjectId === assigned.subjectId);
-            
             return {
-                ...assigned,   // Contains: subjectId, subjectName, course
-                ...fullData    // Merges: credits, syllabus, semester, description, etc.
+                ...assigned,   
+                ...(fullData || {}) 
             };
         });
 
-        // 6. Return the fully enriched data
+        // 8. Send the final package back to the user
         return res.status(200).json({
             success: true,
-            message: "Subjects fetched successfully with full data.",
             data: {
-                facultyName: facultyDoc.facultyName,
+                facultyName: facultyDoc.facultyName || "Faculty",
                 year,
                 subjects: enrichedSubjects
             }
         });
 
     } catch (error) {
-        console.error("Error fetching full assigned subjects:", error);
+        console.error("Error in handleGetMyFilteredSubjects:", error);
         return res.status(500).json({ 
             success: false, 
-            message: "Server error while fetching assignments." 
+            message: "Server error while fetching assignments."
         });
     }
 }
-// ... existing code ...
 
 module.exports = {
     saveCoPoRelation,
-    getCoPoRelation
+    getCoPoRelation,
+    handleGetMyFilteredSubjects
 };
