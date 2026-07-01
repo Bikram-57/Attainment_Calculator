@@ -5,12 +5,14 @@ import { login } from "../store/authSlice";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ErrorSuccessMsg } from './index'
+import { COLORS } from "../constants/theme";
 
 function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorMsg, setErrorMsg] = useState('');
+	const [isHovered, setIsHovered] = useState(false);
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -46,7 +48,10 @@ function Login() {
 	return (
 		<div className="min-h-screen bg-[#eef4fb] flex flex-col items-center px-4 py-6">
 			{/* Heading */}
-			<h1 className="mb-10 text-center text-4xl font-bold text-[#35558d]">
+			<h1
+				className="mb-10 text-center text-4xl font-bold"
+				style={{ color: COLORS.mint }}
+			>
 				Student Performance Assessment for
 				<br />
 				Outcome Based Education
@@ -74,7 +79,10 @@ function Login() {
 								handleLogin();
 							}}
 						>
-							<h2 className="mb-2 text-4xl font-bold text-[#35558d]">
+							<h2
+								className="mb-2 text-4xl font-bold"
+								style={{ color: COLORS.mint }}
+							>
 								Welcome Back!
 							</h2>
 
@@ -99,7 +107,10 @@ function Login() {
 											className="w-full px-4 py-3 outline-none"
 											onChange={(e) => setEmail(e.target.value)}
 										/>
-										<div className="flex items-center border-l border-gray-300 px-4 text-[#35558d]">
+										<div
+											className="flex items-center border-l border-gray-300 px-4"
+											style={{ color: COLORS.mint }}
+										>
 											<FaUser />
 										</div>
 									</div>
@@ -115,7 +126,10 @@ function Login() {
 											className="w-full px-4 py-3 outline-none"
 											onChange={e => setPassword(e.target.value)}
 										/>
-										<div className="flex items-center border-l border-gray-300 px-4 text-[#35558d]">
+										<div
+											className="flex items-center border-l border-gray-300 px-4"
+											style={{ color: COLORS.mint }}
+										>
 											<FaLock />
 										</div>
 									</div>
@@ -141,7 +155,10 @@ function Login() {
 								{/* Login Button */}
 								<button
 									type="submit"
-									className="w-full rounded-lg bg-[#35558d] py-3 font-semibold text-white transition hover:bg-[#2d4a7a]"
+									className="w-full rounded-lg py-3 font-semibold text-white transition cursor-pointer"
+									onMouseEnter={() => setIsHovered(true)}
+									onMouseLeave={() => setIsHovered(false)}
+									style={{ backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint }}
 								>
 									Login
 								</button>
