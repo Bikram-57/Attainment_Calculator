@@ -89,31 +89,6 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
         }
     }
 
-    const handleDownloadFormat = async () => {
-        // try {
-        //     const response = await axios.get('/download-format/',
-        //         {
-        //             responseType: 'blob',
-        //         }
-        //     );
-
-        //     const blob = new Blob([response.data]);
-        //     const url = window.URL.createObjectURL(blob);
-
-        //     const link = document.createElement('a');
-        //     link.href = url;
-        //     link.download = 'Format.xlsx';
-
-        //     document.body.appendChild(link);
-        //     link.click();
-        //     link.remove();
-        //     window.URL.revokeObjectURL(url);
-        // } catch (error) {
-        //     console.error('Download failed:', error);
-        //     setErrorMsg('Failed to download report.');
-        // }
-    }
-
     useEffect(() => {
         const getSubjects = async () => {
             if (!course || !academicYear) {
@@ -225,36 +200,27 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-between gap-3 pt-10">
+            <div className="flex justify-end gap-3 pt-10">
                 <button
-                    className='text-md border rounded-md px-2 font-semibold cursor-pointer'
-                    onClick={handleDownloadFormat}
-                    style={{ backgroundColor: COLORS.latteDark }}
+                    onClick={() => setIsAssignSubjectOpen(false)}
+                    className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                    style={{ color: COLORS.font }}
                 >
-                    Download Format
+                    Close
                 </button>
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => setIsAssignSubjectOpen(false)}
-                        className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
-                        style={{ color: COLORS.font }}
-                    >
-                        Close
-                    </button>
 
-                    <button
-                        className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
-                        style={{
-                            color: COLORS.font,
-                            backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
-                        }}
-                        onClick={handleAssignSubject}
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                    >
-                        Assign
-                    </button>
-                </div>
+                <button
+                    className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                    style={{
+                        color: COLORS.font,
+                        backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
+                    }}
+                    onClick={handleAssignSubject}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    Assign
+                </button>
             </div>
             <ErrorSuccessMsg
                 errorMsg={errorMsg}

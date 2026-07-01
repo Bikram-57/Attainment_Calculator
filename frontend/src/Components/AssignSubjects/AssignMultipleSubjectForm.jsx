@@ -55,6 +55,31 @@ function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen
         fileInputRef.current.value = '';
     }
 
+    const handleDownloadFormat = async () => {
+        try {
+            const response = await axios.get('/download-format/assign-sub',
+                {
+                    responseType: 'blob',
+                }
+            );
+
+            const blob = new Blob([response.data]);
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Format.xlsx';
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download failed:', error);
+            setErrorMsg('Failed to download report.');
+        }
+    }
+
     if (!isAssignSubjectOpen) return null;
 
     return (
@@ -95,27 +120,36 @@ function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen
                 </div>
 
                 {/* Buttons */}
-                <div className="flex justify-end gap-3 pt-2">
+                <div className="flex justify-between gap-3 pt-4">
                     <button
-                        onClick={() => setIsAssignSubjectOpen(false)}
-                        className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
-                        style={{ color: COLORS.font }}
+                        className='text-sm border rounded-md px-2 font-semibold cursor-pointer'
+                        onClick={handleDownloadFormat}
+                        style={{ backgroundColor: COLORS.latteDark }}
                     >
-                        Close
+                        Download Format
                     </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setIsAssignSubjectOpen(false)}
+                            className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                            style={{ color: COLORS.font }}
+                        >
+                            Close
+                        </button>
 
-                    <button
-                        className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
-                        style={{
-                            color: COLORS.font,
-                            backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
-                        }}
-                        onClick={handleAssignMultipleSubjects}
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                    >
-                        Add
-                    </button>
+                        <button
+                            className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                            style={{
+                                color: COLORS.font,
+                                backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
+                            }}
+                            onClick={handleAssignMultipleSubjects}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                        >
+                            Add
+                        </button>
+                    </div>
                 </div>
 
                 {/* Divider */}
