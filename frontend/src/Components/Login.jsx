@@ -58,7 +58,8 @@ function Login() {
 					{/* Left Section */}
 					<div className="flex items-center justify-center p-10">
 						<img
-							src="/education-vector.jpeg"
+							// src="/education-vector.jpeg"
+							src="/Final-Logo.png"
 							alt="Login Illustration"
 							className="max-h-72 w-auto object-contain"
 						/>
