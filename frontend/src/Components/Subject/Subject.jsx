@@ -22,9 +22,6 @@ function Subject() {
             sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase().trim())
             || sub.subjectName.toLowerCase().includes(searchQuery.toLowerCase().trim())
         )
-        // && (
-        //     filterYear ? sub.academicYear == filterYear : true
-        // )
         && (
             filterCourse ? sub.course == filterCourse : true
         )
@@ -38,7 +35,6 @@ function Subject() {
             try {
                 const res = await axios.get(`/sub/year/${filterYear}`);
                 setSubjectData(res.data.data);
-                console.log(res.data.data)
             } catch (error) {
                 console.log('Axios Error | getSubjectData(): ', error);
             } finally {
