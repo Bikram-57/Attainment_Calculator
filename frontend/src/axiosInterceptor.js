@@ -8,7 +8,9 @@ axios.interceptors.response.use(
 
         if (
             error.response?.status === 401 &&
-            !originalRequest._retry
+            !originalRequest._retry &&
+            originalRequest.url !== '/refresh/' &&
+            !originalRequest.url.includes('/login/')
         ) {
             originalRequest._retry = true;
 
@@ -24,8 +26,12 @@ axios.interceptors.response.use(
                     `Bearer ${newToken}`;
 
                 // Update the failed request before retrying it
-                originalRequest.headers.Authorization =
-                    `Bearer ${newToken}`;
+                originalRequest.headers = {
+                    ...originalRequest.headers,
+                    Authorization: `Bearer ${newToken}`,
+                };
+                // originalRequest.headers.Authorization =
+                //     `Bearer ${newToken}`;
 
                 return axios(originalRequest);
             } catch (refreshError) {

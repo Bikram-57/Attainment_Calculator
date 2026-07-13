@@ -25,6 +25,7 @@ import {
 	DownloadBatchReport,
 	Dashboard,
 	SubjectAnalysis,
+	PublicRoute,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -33,13 +34,29 @@ import DownloadSubjectReport from './Components/DownloadReports/DownloadSubjectR
 
 const router = createBrowserRouter([
 	// Public Routes
+	// {
+	// 	path: '/login',
+	// 	element: <Login />,
+	// },
+	// {
+	// 	path: '/forgot-password',
+	// 	element: <ForgotPassword />,
+	// },
 	{
 		path: '/login',
-		element: <Login />,
+		element: (
+			<PublicRoute>
+				<Login />
+			</PublicRoute>
+		),
 	},
 	{
 		path: '/forgot-password',
-		element: <ForgotPassword />,
+		element: (
+			<PublicRoute>
+				<ForgotPassword />
+			</PublicRoute>
+		),
 	},
 
 	// Protected Routes

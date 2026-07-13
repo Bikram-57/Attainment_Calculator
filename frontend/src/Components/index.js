@@ -70,6 +70,7 @@ import ProgressCharts from "./Dashboard/ProgressCharts";
 import BarGraph from "./SubjectAnalysis/BarGraph";
 import AssignSingleSubjectForm from "./AssignSubjects/AssignSingleSubjectForm";
 import AssignMultipleSubjectForm from "./AssignSubjects/AssignMultipleSubjectForm";
+import PublicRoute from "./PublicRoute";
 
 export {
     NavBar,
@@ -142,4 +143,5 @@ export {
     BarGraph,
     AssignSingleSubjectForm,
     AssignMultipleSubjectForm,
+    PublicRoute,
 }

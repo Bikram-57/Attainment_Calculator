@@ -116,7 +116,7 @@ function SideBar() {
         >
             <div
                 // className='h-15 w-full p-2 flex gap-2 justify-between items-center'
-                className='h-15 w-full p-2 flex gap-2 justify-center items-center'
+                className='h-15 w-full p-2 flex justify-center items-center'
                 style={{
                     backgroundColor: COLORS.latte,
                     color: COLORS.mint
@@ -125,7 +125,9 @@ function SideBar() {
                 {/* <FaGraduationCap className='text-5xl' /> */}
                 {/* <div className='text-xs font-bold'>Student Performance Assessment for Outcome Based Education</div> */}
                 <img src="/Final-Logo-Edited.png" height='60' width='60' />
-                <div className='text-xl font-bold'>Attainment Calc</div>
+                {/* <div className='text-xl font-bold'>Attainment Calc</div> */}
+                <img src="/Final-Logo-Name.png" height='190' width='190' />
+
             </div>
             <div
                 className='p-3 font-semibold text-md'
