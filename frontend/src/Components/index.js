@@ -39,7 +39,8 @@ import PageNotFound from "./PageNotFound";
 import AddSubject from "./Subject/AddSubject";
 import ErrorSuccessMsg from "../utils/ErrorSuccessMsg";
 import Loading from "../utils/Loading";
-import Profile from "./Profile";
+import Profile from "./Profile/Profile";
+import ProfileInfoCard from "./Profile/ProfileInfoCard";
 import ProtectedRoute from "./ProtectedRoute";
 import Login from "./Login";
 import Logout from "./Logout";
@@ -114,6 +115,7 @@ export {
     ErrorSuccessMsg,
     Loading,
     Profile,
+    ProfileInfoCard,
     ProtectedRoute,
     Login,
     Logout,
