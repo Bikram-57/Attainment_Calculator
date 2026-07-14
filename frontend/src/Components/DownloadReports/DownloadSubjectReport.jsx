@@ -4,13 +4,14 @@ import axios from 'axios';
 import { ErrorSuccessMsg } from '../index';
 import { Loading } from '../index';
 import Select from 'react-select';
+import { useSelector } from 'react-redux';
 
 function DownloadSubjectReport() {
+	const userData = useSelector(state => state.auth.userData);
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
 	const [subjectId, setSubjectId] = useState('')
 	const [isDisabled, setIsDisabled] = useState(true);
-	const [allSubjects, setAllSubjects] = useState([]);
 	const [subjectList, setSubjectList] = useState([]);
 	const [isHovered, setIsHovered] = useState(false);
 	const [errorMsg, setErrorMsg] = useState('');
@@ -99,28 +100,37 @@ function DownloadSubjectReport() {
 			setIsDisabled(true);
 			return;
 		}
-
-		const filteredSubjects = allSubjects.filter(sub => (
-			sub.course === course && sub.academicYear === academicYear
-		));
-
-		setSubjectList(filteredSubjects);
-		setIsDisabled(false);
-	}, [academicYear, course, allSubjects]);
-
-	useEffect(() => {
 		const fetchSubjects = async () => {
 			try {
-				const res = await axios.get('/sub/');
-
-				setAllSubjects(res.data.data);
+				let res;
+				if (userData.role === 'admin') {
+					res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
+				} else {
+					res = await axios.get('/assignSub/sub', {
+						params: {
+							year: academicYear,
+							course
+						}
+					});
+				}
+				if (res.data.data.length === 0) {
+					setErrorMsg('No data for the selected year and course!');
+					setSubjectList([]);
+					setIsDisabled(true);
+					return;
+				}
+				setSubjectList(res.data.data);
+				setIsDisabled(false);
+				setErrorMsg('');
 			} catch (err) {
 				console.log('Error fetching subjects || ', err);
+				setErrorMsg(err?.response?.data?.message);
+				setSubjectList([]);
+				setIsDisabled(true);
 			}
 		};
-
 		fetchSubjects();
-	}, []);
+	}, [academicYear, course]);
 
 	return (
 		<div className='h-full flex flex-col p-4'>
