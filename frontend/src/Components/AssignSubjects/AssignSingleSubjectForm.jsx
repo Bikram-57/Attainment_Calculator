@@ -130,105 +130,209 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
     if (!isAssignSubjectOpen) return null;
 
     return (
-        <div>
-            {/* Faculty Name */}
+        <div className="space-y-3">
+            {/* Faculty */}
             <div>
-                <label className="block text-lg text-gray-700 mb-2 font-semibold">
+                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
                     Faculty
                 </label>
+
                 <Select
                     options={facultyOptions}
-                    placeholder='Select a faculty'
-                    value={facultyOptions.find(option => (
-                        option.value === facultyData.facultyId
-                    ))}
-                    onChange={selected => handleFaculty(selected?.value || '')}
+                    placeholder="Select faculty"
+                    value={facultyOptions.find(option => option.value === facultyData)}
+                    onChange={selected => handleFaculty(selected?.value || "")}
                     maxMenuHeight={150}
                     isClearable
                 />
             </div>
 
-            {/* Year */}
+            {/* Academic Year */}
             <div>
-                <label className="block text-lg text-gray-700 mb-2 font-semibold">
+                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
                     Academic Year
                 </label>
+
                 <Select
                     options={yearOptions}
-                    placeholder='Select a year'
-                    value={yearOptions.find(option => (
-                        option.value === academicYear
-                    ))}
-                    onChange={selected => handleYear(selected?.value || '')}
-                    maxMenuHeight={150}
+                    placeholder="Select year"
+                    value={yearOptions.find(option => option.value === academicYear)}
+                    onChange={selected => handleYear(selected?.value || "")}
+                    maxMenuHeight={120}
                     isClearable
                 />
             </div>
 
             {/* Course */}
             <div>
-                <label className="block text-lg text-gray-700 mb-2 font-semibold">
+                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
                     Course
                 </label>
+
                 <Select
                     options={courseOptions}
-                    placeholder='Select a course'
-                    value={courseOptions.find(option => (
-                        option.value === course
-                    )) || null}
-                    onChange={selected => handleCourse(selected?.value || '')}
-                    maxMenuHeight={300}
+                    placeholder="Select course"
+                    value={courseOptions.find(option => option.value === course)}
+                    onChange={selected => handleCourse(selected?.value || "")}
+                    maxMenuHeight={120}
                 />
             </div>
 
-            {/* Subject Name */}
+            {/* Subject */}
             <div>
-                <label className="block text-lg text-gray-700 mb-2 font-semibold">
-                    Subject Name
+                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                    Subject
                 </label>
+
                 <Select
                     options={subjectOptions}
-                    placeholder='Select a subject'
-                    value={subjectOptions.find(option => (
-                        option.value.subjectId === subjectData?.subjectId
-                    )) || null}
-                    onChange={selected => handleSubject(selected?.value || '')}
+                    placeholder="Select subject"
+                    value={subjectOptions.find(option => option.value.subjectId === subjectData?.subjectId) || null}
+                    onChange={selected => handleSubject(selected?.value || "")}
                     isDisabled={isDisabled}
-                    maxMenuHeight={90}
+                    maxMenuHeight={120}
                     isClearable
                 />
             </div>
 
-            {/* Buttons */}
-            <div className="flex justify-end gap-3 pt-10">
-                <button
-                    onClick={() => setIsAssignSubjectOpen(false)}
-                    className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
-                    style={{ color: COLORS.font }}
-                >
-                    Close
-                </button>
+            {/* Footer */}
+            <div className="flex justify-between items-center pt-2">
+                <ErrorSuccessMsg
+                    errorMsg={errorMsg}
+                    successMsg={successMsg}
+                    setSuccessMsg={setSuccessMsg}
+                    setIsOpen={setIsAssignSubjectOpen}
+                />
 
-                <button
-                    className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
-                    style={{
-                        color: COLORS.font,
-                        backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
-                    }}
-                    onClick={handleAssignSubject}
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                >
-                    Assign
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => setIsAssignSubjectOpen(false)}
+                        className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        onClick={handleAssignSubject}
+                        className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+                        style={{
+                            backgroundColor: COLORS.mint,
+                            color: COLORS.font,
+                        }}
+                    >
+                        Assign Subject
+                    </button>
+                </div>
             </div>
-            <ErrorSuccessMsg
-                errorMsg={errorMsg}
-                successMsg={successMsg}
-                setSuccessMsg={setSuccessMsg}
-                setIsOpen={setIsAssignSubjectOpen}
-            />
+
+            {/* Note */}
+            {/* <div className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2">
+                <p className="text-sm text-blue-700">
+                    <span className="font-semibold">Note:</span> Select the <strong>Academic Year</strong> and <strong>Course</strong> first to load the available subjects.
+                </p>
+            </div> */}
+
         </div>
+
+        // <div>
+        //     {/* Faculty Name */}
+        //     <div>
+        //         <label className="block text-lg text-gray-700 mb-2 font-semibold">
+        //             Faculty
+        //         </label>
+        //         <Select
+        //             options={facultyOptions}
+        //             placeholder='Select a faculty'
+        //             value={facultyOptions.find(option => (
+        //                 option.value === facultyData.facultyId
+        //             ))}
+        //             onChange={selected => handleFaculty(selected?.value || '')}
+        //             maxMenuHeight={150}
+        //             isClearable
+        //         />
+        //     </div>
+
+        //     {/* Year */}
+        //     <div>
+        //         <label className="block text-lg text-gray-700 mb-2 font-semibold">
+        //             Academic Year
+        //         </label>
+        //         <Select
+        //             options={yearOptions}
+        //             placeholder='Select a year'
+        //             value={yearOptions.find(option => (
+        //                 option.value === academicYear
+        //             ))}
+        //             onChange={selected => handleYear(selected?.value || '')}
+        //             maxMenuHeight={150}
+        //             isClearable
+        //         />
+        //     </div>
+
+        //     {/* Course */}
+        //     <div>
+        //         <label className="block text-lg text-gray-700 mb-2 font-semibold">
+        //             Course
+        //         </label>
+        //         <Select
+        //             options={courseOptions}
+        //             placeholder='Select a course'
+        //             value={courseOptions.find(option => (
+        //                 option.value === course
+        //             )) || null}
+        //             onChange={selected => handleCourse(selected?.value || '')}
+        //             maxMenuHeight={300}
+        //         />
+        //     </div>
+
+        //     {/* Subject Name */}
+        //     <div>
+        //         <label className="block text-lg text-gray-700 mb-2 font-semibold">
+        //             Subject Name
+        //         </label>
+        //         <Select
+        //             options={subjectOptions}
+        //             placeholder='Select a subject'
+        //             value={subjectOptions.find(option => (
+        //                 option.value.subjectId === subjectData?.subjectId
+        //             )) || null}
+        //             onChange={selected => handleSubject(selected?.value || '')}
+        //             isDisabled={isDisabled}
+        //             maxMenuHeight={90}
+        //             isClearable
+        //         />
+        //     </div>
+
+        //     {/* Buttons */}
+        //     <div className="flex justify-end gap-3 pt-10">
+        //         <button
+        //             onClick={() => setIsAssignSubjectOpen(false)}
+        //             className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+        //             style={{ color: COLORS.font }}
+        //         >
+        //             Close
+        //         </button>
+
+        //         <button
+        //             className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+        //             style={{
+        //                 color: COLORS.font,
+        //                 backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
+        //             }}
+        //             onClick={handleAssignSubject}
+        //             onMouseEnter={() => setIsHovered(true)}
+        //             onMouseLeave={() => setIsHovered(false)}
+        //         >
+        //             Assign
+        //         </button>
+        //     </div>
+        //     <ErrorSuccessMsg
+        //         errorMsg={errorMsg}
+        //         successMsg={successMsg}
+        //         setSuccessMsg={setSuccessMsg}
+        //         setIsOpen={setIsAssignSubjectOpen}
+        //     />
+        // </div>
     )
 }
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import AssignSubjectsHeader from './AssignSubjectsHeader'
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { FaClipboardList } from "react-icons/fa";
 import axios from 'axios';
 import { COLORS } from '../../constants/theme';
 import { Loading } from '../index';
@@ -13,13 +14,6 @@ function AssignSubjects() {
 	const [loading, setLoading] = useState(true);
 	const [deAssignSubjectData, setDeAssignSubjectData] = useState(null);
 	const [filterYear, setFilterYear] = useState(new Date().getFullYear());
-
-	// const filteredAssignedSubjectsData = assignedSubjectsData?.filter(sub => (
-	// 	(
-	// 		sub.facultyId.toLowerCase().includes(searchQuery.toLowerCase().trim())
-	// 		&& Object.hasOwn(sub.assignments, filterYear)
-	// 	)
-	// ));
 
 	const query = searchQuery.toLowerCase().trim();
 
@@ -198,7 +192,19 @@ function AssignSubjects() {
 						</div>
 					) :
 					(
-						<div className='text-center text-lg'>No data available</div>
+						<div className="flex h-full flex-col items-center justify-center gap-4 text-slate-500">
+							<div
+								className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100"
+							>
+								<FaClipboardList className="text-4xl text-slate-400" />
+							</div>
+							<h2 className="text-xl font-semibold">
+								No Assigned Subjects Found
+							</h2>
+							<p className="max-w-sm text-center text-sm">
+								Try changing the filters or assign a new subject.
+							</p>
+						</div>
 					)
 				}
 			</div>

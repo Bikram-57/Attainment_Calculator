@@ -9,12 +9,68 @@ function SubjectDeleteModal({ data, toggleUpdate, closeMenu }) {
             const res = await axios.delete(`/sub/${data.subjectId}`)
             closeMenu();
             toggleUpdate();
-            alert('Subject deleted successfully!');
+            // alert('Subject deleted successfully!');
         } catch (error) {
             console.log('Axios Error | SubjectDeleteModal | deleteSubject(): ', error);
         }
     }
     return (
+        // <div
+        //     className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+        //     onClick={closeMenu}
+        // >
+        //     <div
+        //         className="w-[92%] max-w-md rounded-3xl p-6 text-center shadow-2xl"
+        //         style={{ backgroundColor: COLORS.latte }}
+        //         onClick={(e) => e.stopPropagation()}
+        //     >
+        //         <div className="mb-4 flex justify-center">
+        //             <IoWarning className="h-14 w-14 text-yellow-500" />
+        //         </div>
+
+        //         <h2
+        //             className="text-2xl font-semibold"
+        //             style={{ color: COLORS.mint }}
+        //         >
+        //             Delete Subject
+        //         </h2>
+
+        //         <p className="mt-3 text-gray-700">
+        //             Are you sure you want to permanently delete
+        //         </p>
+
+        //         <div
+        //             className="mt-3 rounded-xl border border-gray-300 bg-white px-4 py-3 font-semibold"
+        //             style={{ color: COLORS.mintDark }}
+        //         >
+        //             {data.subjectId}
+        //         </div>
+
+        //         <p className="mt-4 text-sm text-red-600">
+        //             This action cannot be undone.
+        //         </p>
+
+        //         <div className="mt-6 flex justify-center gap-4">
+
+        //             <button
+        //                 onClick={closeMenu}
+        //                 className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+        //             >
+        //                 Cancel
+        //             </button>
+
+        //             <button
+        //                 onClick={deleteSubject}
+        //                 className="rounded-xl bg-red-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-red-700"
+        //             >
+        //                 Delete Subject
+        //             </button>
+
+        //         </div>
+
+        //     </div>
+        // </div>
+
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default"
             onClick={closeMenu}

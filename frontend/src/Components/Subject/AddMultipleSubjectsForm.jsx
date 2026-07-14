@@ -5,7 +5,6 @@ import { COLORS } from '../../constants/theme'
 import { ErrorSuccessMsg } from "../index";
 
 function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
-    const [isHovered, setIsHovered] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
     const [file, setFile] = useState(null);
@@ -57,75 +56,155 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
     if (!isAddSubjectOpen) return null;
 
     return (
-        <div>
-            {/* Body */}
-            <div className="py-3 space-y-2">
-                {/* Subject Code */}
-                <div
-                    className='flex border-2 border-gray-300 rounded-sm'
-                    style={{ backgroundColor: COLORS.font }}
-                >
+        <div className="space-y-2">
+
+            {/* File Picker */}
+            <div>
+                <label className="mb-2 block text-md font-semibold" style={{ color: COLORS.mintDark }}>
+                    Excel File
+                </label>
+
+                <div className="flex items-center overflow-hidden rounded-xl border border-gray-300 bg-white">
+
                     <label
-                        className='border-gray-300 px-3 py-1 border-r-2 cursor-pointer'
-                        style={{ backgroundColor: COLORS.latteDark }}
+                        className="cursor-pointer border-r border-gray-300 px-4 py-2 text-sm font-medium transition hover:bg-gray-100"
+                        style={{ backgroundColor: COLORS.latteDark, color: COLORS.mintDark }}
                     >
                         Choose File
+
                         <input
                             ref={fileInputRef}
-                            type='file'
-                            accept='.xls, .xlsx'
-                            className='hidden'
+                            type="file"
+                            accept=".xls,.xlsx"
+                            className="hidden"
                             onChange={handleFileChange}
                         />
                     </label>
-                    <div
-                        className='w-2/3 px-2 py-1'
-                    >
-                        {!file ? 'No file choose' : file.name}
+
+                    <div className="flex-1 truncate px-4 text-sm text-gray-600">
+                        {file ? file.name : "No file selected"}
                     </div>
+
                     {file && (
-                        <div
-                            className='ml-auto mr-2'
+                        <button
+                            type="button"
                             onClick={handleRemoveFile}
+                            className="px-3 text-red-500 transition hover:text-red-700"
                         >
-                            <MdOutlineCancelPresentation className='h-full w-6.25 cursor-pointer text-red-600' />
-                        </div>
+                            <MdOutlineCancelPresentation className="h-6 w-6" />
+                        </button>
                     )}
+
                 </div>
 
-                {/* Buttons */}
-                <div className="flex justify-end gap-3 pt-2">
-                    <button
-                        onClick={() => setIsAddSubjectOpen(false)}
-                        className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
-                        style={{ color: COLORS.font }}
-                    >
-                        Close
-                    </button>
+                <p className="mt-2 text-xs text-gray-500">
+                    Supported formats: <strong>.xls</strong>, <strong>.xlsx</strong>
+                </p>
+            </div>
 
-                    <button
-                        className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
-                        style={{
-                            color: COLORS.font,
-                            backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
-                        }}
-                        onClick={handleAddMultipleSubjects}
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                    >
-                        Add
-                    </button>
-                </div>
-
-                {/* Divider */}
+            {/* Buttons */}
+            <div className="flex justify-between items-center">
                 <ErrorSuccessMsg
                     errorMsg={errorMsg}
                     successMsg={successMsg}
                     setSuccessMsg={setSuccessMsg}
                     setIsOpen={setIsAddSubjectOpen}
                 />
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => setIsAddSubjectOpen(false)}
+                        className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        onClick={handleAddMultipleSubjects}
+                        className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+                        style={{
+                            backgroundColor: COLORS.mint,
+                            color: COLORS.font,
+                        }}
+                    >
+                        Upload Subjects
+                    </button>
+                </div>
             </div>
+
+
+
         </div>
+
+
+        // <div>
+        //     {/* Body */}
+        //     <div className="py-3 space-y-2">
+        //         {/* Subject Code */}
+        //         <div
+        //             className='flex border-2 border-gray-300 rounded-sm'
+        //             style={{ backgroundColor: COLORS.font }}
+        //         >
+        //             <label
+        //                 className='border-gray-300 px-3 py-1 border-r-2 cursor-pointer'
+        //                 style={{ backgroundColor: COLORS.latteDark }}
+        //             >
+        //                 Choose File
+        //                 <input
+        //                     ref={fileInputRef}
+        //                     type='file'
+        //                     accept='.xls, .xlsx'
+        //                     className='hidden'
+        //                     onChange={handleFileChange}
+        //                 />
+        //             </label>
+        //             <div
+        //                 className='w-2/3 px-2 py-1'
+        //             >
+        //                 {!file ? 'No file choose' : file.name}
+        //             </div>
+        //             {file && (
+        //                 <div
+        //                     className='ml-auto mr-2'
+        //                     onClick={handleRemoveFile}
+        //                 >
+        //                     <MdOutlineCancelPresentation className='h-full w-6.25 cursor-pointer text-red-600' />
+        //                 </div>
+        //             )}
+        //         </div>
+
+        //         {/* Buttons */}
+        //         <div className="flex justify-end gap-3 pt-2">
+        //             <button
+        //                 onClick={() => setIsAddSubjectOpen(false)}
+        //                 className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+        //                 style={{ color: COLORS.font }}
+        //             >
+        //                 Close
+        //             </button>
+
+        //             <button
+        //                 className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+        //                 style={{
+        //                     color: COLORS.font,
+        //                     backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
+        //                 }}
+        //                 onClick={handleAddMultipleSubjects}
+        //                 onMouseEnter={() => setIsHovered(true)}
+        //                 onMouseLeave={() => setIsHovered(false)}
+        //             >
+        //                 Add
+        //             </button>
+        //         </div>
+
+        //         {/* Divider */}
+        //         <ErrorSuccessMsg
+        //             errorMsg={errorMsg}
+        //             successMsg={successMsg}
+        //             setSuccessMsg={setSuccessMsg}
+        //             setIsOpen={setIsAddSubjectOpen}
+        //         />
+        //     </div>
+        // </div>
     );
 }
 
