@@ -54,7 +54,6 @@ function DownloadBatchReport() {
 
             const link = document.createElement('a');
             link.href = url;
-            // link.download = `Batch_Report_${course}_${academicYear.replace(/\//g, '-')}.xlsx`;
             link.download = `Batch_Report_${course}_${academicYear}.xlsx`;
 
             document.body.appendChild(link);
