@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
-import { FaFilter, FaPlus } from "react-icons/fa";
 import { COLORS } from '../../constants/theme';
 import { Filters } from '../index';
 import AddSubject from './AddSubject';
@@ -69,7 +68,7 @@ function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear, setFilterC
 
                 <button
                     onClick={() => setIsAddSubjectOpen(true)}
-                    className="rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90"
+                    className="rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
                     style={{
                         backgroundColor: COLORS.mint,
                         color: COLORS.font,

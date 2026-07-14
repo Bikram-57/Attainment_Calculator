@@ -102,14 +102,7 @@ function Subject() {
 
                                         <tr
                                             key={subject._id}
-                                            className="
-                                        border-b
-                                        border-slate-100
-                                        even:bg-slate-50
-                                        hover:bg-blue-50
-                                        transition-all
-                                        duration-200
-                                    "
+                                            className="border-b border-slate-100 even:bg-slate-50 hover:bg-blue-50 transition-all duration-200"
                                         >
                                             <td className="px-6 py-4 font-medium text-slate-800">
                                                 {subject.subjectId}
@@ -140,21 +133,13 @@ function Subject() {
                                             <td className="px-6 py-4">
 
                                                 <div
-                                                    className={`
-                                            inline-flex
-                                            items-center
-                                            gap-2
-                                            rounded-full
-                                            px-4
-                                            py-2
-                                            text-sm
-                                            font-semibold
-
-                                            ${subject.status === "Uploaded"
+                                                    className={
+                                                        `inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold
+                                                        ${subject.status === "Uploaded"
                                                             ? "bg-green-100 text-green-700"
                                                             : "bg-amber-100 text-amber-700"
-                                                        }
-                                        `}
+                                                        }`
+                                                    }
                                                 >
                                                     {subject.status === "Uploaded"
                                                         ? <FaCheckCircle />
