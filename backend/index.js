@@ -6,6 +6,8 @@ require('dotenv').config();
 const { connectMongoDB } = require("./connection");
 const verifyJWT = require('./middleware/verifyJWT');
 
+const startTokenCleanupJob = require('./middleware/cornJob');
+
 // --- REQUIRE ROUTERS ---
 
 // Auth Routers (New ones we talked about)
@@ -86,6 +88,8 @@ app.use("/download-format", formatDownload);
 app.use("/activity", activity);
 app.use("/subject-analysis", subjectAnalysis);
 
+
+startTokenCleanupJob();
 
 app.listen(PORT, () => {
     console.log(`Server Started at PORT: ${PORT}`);
