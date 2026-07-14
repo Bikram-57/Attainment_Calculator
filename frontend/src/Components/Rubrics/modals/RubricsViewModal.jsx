@@ -36,8 +36,13 @@ function RubricsViewModal({ data, closeMenu }) {
 
 				{/* Body */}
 				<div className="px-6 py-6">
-					<table className="w-full">
-						<thead className="bg-blue-600 text-white">
+					<table className="w-full border border-gray-300">
+						<thead
+							style={{
+								backgroundColor: COLORS.mint,
+								color: COLORS.font
+							}}
+						>
 							<tr>
 								<th className="px-6 py-3">
 									Level
@@ -58,7 +63,7 @@ function RubricsViewModal({ data, closeMenu }) {
 							{data.thresholds.map((threshold) => (
 								<tr
 									key={threshold.level}
-									className="border-b hover:bg-slate-50"
+									className="border-b border-gray-300 hover:bg-slate-50"
 								>
 									<td className="px-6 py-4 font-medium">
 										Level {threshold.level}

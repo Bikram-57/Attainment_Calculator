@@ -52,10 +52,14 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsGenerateOpen(false)}
+        >
             <div
                 className="w-[92%] max-w-lg max-h-1/2 pb-4 rounded-2xl shadow-2xl overflow-hidden"
                 style={{ backgroundColor: COLORS.latte }}
+                onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
                 <div

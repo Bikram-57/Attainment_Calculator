@@ -142,7 +142,12 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
 
                     {/* Threshold Table */}
                     <table className="w-full border-collapse">
-                        <thead className="bg-blue-600 text-white">
+                        <thead
+                            style={{
+                                backgroundColor: COLORS.mint,
+                                color: COLORS.font
+                            }}
+                        >
                             <tr>
                                 <th className="px-4 py-3">Level</th>
                                 <th className="px-4 py-3">Min %</th>
@@ -214,7 +219,8 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
                         <button
                             type="button"
                             onClick={() => setIsAddRubricsOpen(false)}
-                            className="px-5 py-2 border rounded hover:bg-gray-100"
+                            className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                            style={{ color: COLORS.font }}
                         >
                             Cancel
                         </button>
@@ -222,7 +228,11 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+                            className="px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                            style={{
+                                backgroundColor: COLORS.mint,
+                                color: COLORS.font
+                            }}
                         >
                             {loading ? "Saving..." : "Save"}
                         </button>

@@ -37,7 +37,10 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
     }
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
+        <div
+            className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50"
+            onClick={() => setIsOpen(false)}
+        >
             {/* <div
                 className="w-full max-w-md rounded-2xl shadow-lg p-6 relative"
                 style={{backgroundColor: COLORS.latte}}
@@ -59,6 +62,7 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
             <div
                 className="w-[92%] max-w-lg rounded-2xl shadow-2xl overflow-hidden"
                 style={{ backgroundColor: COLORS.latte }}
+                onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
                 <div

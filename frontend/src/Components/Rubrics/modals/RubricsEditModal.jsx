@@ -83,8 +83,13 @@ function RubricsEditModal({ data, closeMenu, toggleUpdate }) {
                 {/* Body */}
                 <div className="p-6">
 
-                    <table className="w-full border-collapse">
-                        <thead className="bg-blue-600 text-white">
+                    <table className="w-full border border-gray-300">
+                        <thead
+                            style={{
+                                backgroundColor: COLORS.mint,
+                                color: COLORS.font
+                            }}
+                        >
                             <tr>
                                 <th className="px-4 py-3">Level</th>
                                 <th className="px-4 py-3">Min %</th>
@@ -97,7 +102,7 @@ function RubricsEditModal({ data, closeMenu, toggleUpdate }) {
                             {thresholds.map((threshold, index) => (
                                 <tr
                                     key={threshold.level}
-                                    className="border-b"
+                                    className="border-b border-gray-300"
                                 >
                                     <td className="px-4 py-4 font-medium text-center">
                                         Level {threshold.level}
@@ -118,7 +123,7 @@ function RubricsEditModal({ data, closeMenu, toggleUpdate }) {
                                                     e.target.value
                                                 )
                                             }
-                                            className="hover:bg-slate-50 w-full border rounded px-3 py-2"
+                                            className="hover:bg-slate-50 w-full border border-gray-400 rounded px-3 py-2"
                                         />
                                     </td>
 
@@ -137,7 +142,7 @@ function RubricsEditModal({ data, closeMenu, toggleUpdate }) {
                                                     e.target.value
                                                 )
                                             }
-                                            className="hover:bg-slate-50 w-full border rounded px-3 py-2"
+                                            className="hover:bg-slate-50 w-full border border-gray-400 rounded px-3 py-2"
                                         />
                                     </td>
 
@@ -164,11 +169,12 @@ function RubricsEditModal({ data, closeMenu, toggleUpdate }) {
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-end gap-3 px-6 py-4 border-t bg-gray-50">
+                <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-400 bg-gray-50">
 
                     <button
                         onClick={closeMenu}
-                        className="px-5 py-2 rounded border border-gray-300 hover:bg-gray-100 cursor-pointer"
+                        className="bg-gray-500 hover:bg-gray-600 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                        style={{ color: COLORS.font }}
                     >
                         Cancel
                     </button>
@@ -176,7 +182,12 @@ function RubricsEditModal({ data, closeMenu, toggleUpdate }) {
                     <button
                         onClick={handleUpdate}
                         disabled={loading}
-                        className="px-5 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+                        // className="px-5 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+                        className='px-4 py-1 rounded-lg text-lg font-medium cursor-pointer'
+                        style={{
+                            backgroundColor: COLORS.mint,
+                            color: COLORS.font
+                        }}
                     >
                         {loading ? 'Updating...' : 'Update'}
                     </button>

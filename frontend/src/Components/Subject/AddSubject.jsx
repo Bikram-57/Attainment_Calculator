@@ -16,10 +16,14 @@ function AddSubject({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
 
     if (!isAddSubjectOpen) return null;
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsAddSubjectOpen(false)}
+        >
             <div
                 className="w-[92%] max-w-lg rounded-2xl shadow-2xl overflow-hidden"
                 style={{ backgroundColor: COLORS.latte }}
+                onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
                 <div
@@ -40,7 +44,7 @@ function AddSubject({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
                         <IoMdClose className='w-6 h-6' style={{ color: COLORS.font }} />
                     </button>
                 </div>
-                
+
                 {/* Body */}
                 <div className="px-6 py-2 space-y-2">
                     <div>

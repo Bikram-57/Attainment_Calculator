@@ -163,7 +163,7 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 </button>
 
                 <button
-                    className="hover:bg-blue-900 px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
+                    className="px-4 py-1 rounded-lg text-lg font-medium cursor-pointer"
                     style={{
                         color: COLORS.font,
                         backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint
