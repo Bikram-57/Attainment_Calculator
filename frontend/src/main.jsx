@@ -139,10 +139,11 @@ const router = createBrowserRouter([
 				element: <ContactUs />,
 				handle: { title: 'Contact Us' },
 			},
-
+			
 			{
 				path: '*',
 				element: <PageNotFound />,
+				handle: { title: '404 Page' },
 			},
 		],
 	},

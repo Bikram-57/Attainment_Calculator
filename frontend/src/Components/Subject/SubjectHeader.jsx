@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaPlus } from "react-icons/fa";
 import { COLORS } from '../../constants/theme';
 import { Filters } from '../index';
 import AddSubject from './AddSubject';
@@ -18,67 +18,139 @@ function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear, setFilterC
     }
 
     return (
-        <div className='flex justify-between p-4'>
-            <div
-                className='text-xl font-semibold'
-                style={{ color: COLORS.mint }}
-            >
-                All Subjects
-            </div>
+        <div className="flex items-center justify-between gap-6 px-6 py-4 bg-white border-b border-gray-200">
 
-            <Filters
-                showYear
-                showCourse
-                showSemester
-                defaultYear={String(new Date().getFullYear())}
-                isYearClearable={false}
-                onYearChange={setFilterYear}
-                onCourseChange={setFilterCourse}
-                onSemesterChange={setFilterSemester}
-            />
+            {/* Left */}
+            <div className="flex items-center gap-6">
 
-            <div className='flex gap-5 mx-10'>
-                <div
-                    className='border rounded-md flex items-center'
+                <h2
+                    className="text-xl font-semibold whitespace-nowrap"
+                    style={{ color: COLORS.mint }}
                 >
-                    <input
-                        type='text'
-                        placeholder='Search by subject code or name'
-                        value={search}
-                        className='border-r px-3 py-1 w-87.5 outline-none'
-                        style={{
-                            color: COLORS.mintDark
-                        }}
-                        onChange={(e) => handleChange(e)}
+                    All Subjects
+                </h2>
+
+                <div className="relative">
+
+                    <BsSearch
+                        className="absolute left-3 top-1/2 -translate-y-1/2"
+                        style={{ color: COLORS.mintDark }}
                     />
-                    <div
-                        className='px-3 py-1 cursor-pointer'
-                        onClick={() => setSearchQuery(search)}
-                    >
-                        <BsSearch style={{ color: COLORS.mintDark }} />
-                    </div>
-                </div>
-                <div>
-                    <button
-                        className='px-3 py-1 rounded-lg cursor-pointer'
+
+                    <input
+                        type="text"
+                        placeholder="Search subjects..."
+                        value={search}
+                        onChange={handleChange}
+                        className="w-80 rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2"
                         style={{
-                            backgroundColor: COLORS.mint,
-                            color: COLORS.font
+                            color: COLORS.mintDark,
+                            "--tw-ring-color": COLORS.mint,
                         }}
-                        onClick={() => setIsAddSubjectOpen(true)}
-                    >
-                        Add Subject
-                    </button>
+                    />
+
                 </div>
+
             </div>
-            {isAddSubjectOpen &&
+
+            {/* Right */}
+            <div className="flex items-center gap-4">
+
+                <Filters
+                    showYear
+                    showCourse
+                    showSemester
+                    defaultYear={String(new Date().getFullYear())}
+                    isYearClearable={false}
+                    onYearChange={setFilterYear}
+                    onCourseChange={setFilterCourse}
+                    onSemesterChange={setFilterSemester}
+                />
+
+                <button
+                    onClick={() => setIsAddSubjectOpen(true)}
+                    className="rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90"
+                    style={{
+                        backgroundColor: COLORS.mint,
+                        color: COLORS.font,
+                    }}
+                >
+                    + Add Subject
+                </button>
+
+            </div>
+
+            {isAddSubjectOpen && (
                 <AddSubject
                     isAddSubjectOpen={isAddSubjectOpen}
                     setIsAddSubjectOpen={setIsAddSubjectOpen}
                     toggleUpdate={toggleUpdate}
                 />
-            }
+            )}
+
         </div>
+
+        // <div className='flex justify-between p-4'>
+        //     <div
+        //         className='text-xl font-semibold'
+        //         style={{ color: COLORS.mint }}
+        //     >
+        //         All Subjects
+        //     </div>
+
+        //     <Filters
+        //         showYear
+        //         showCourse
+        //         showSemester
+        //         defaultYear={String(new Date().getFullYear())}
+        //         isYearClearable={false}
+        //         onYearChange={setFilterYear}
+        //         onCourseChange={setFilterCourse}
+        //         onSemesterChange={setFilterSemester}
+        //     />
+
+        //     <div className='flex gap-5 mx-10'>
+        //         <div
+        //             className='border rounded-md flex items-center'
+        //         >
+        //             <input
+        //                 type='text'
+        //                 placeholder='Search by subject code or name'
+        //                 value={search}
+        //                 className='border-r px-3 py-1 w-87.5 outline-none'
+        //                 style={{
+        //                     color: COLORS.mintDark
+        //                 }}
+        //                 onChange={(e) => handleChange(e)}
+        //             />
+        //             <div
+        //                 className='px-3 py-1 cursor-pointer'
+        //                 onClick={() => setSearchQuery(search)}
+        //             >
+        //                 <BsSearch style={{ color: COLORS.mintDark }} />
+        //             </div>
+        //         </div>
+        //         <div>
+        //             <button
+        //                 className='px-3 py-1 rounded-lg cursor-pointer'
+        //                 style={{
+        //                     backgroundColor: COLORS.mint,
+        //                     color: COLORS.font
+        //                 }}
+        //                 onClick={() => setIsAddSubjectOpen(true)}
+        //             >
+        //                 Add Subject
+        //             </button>
+        //         </div>
+        //     </div>
+        //     {isAddSubjectOpen &&
+        //         <AddSubject
+        //             isAddSubjectOpen={isAddSubjectOpen}
+        //             setIsAddSubjectOpen={setIsAddSubjectOpen}
+        //             toggleUpdate={toggleUpdate}
+        //         />
+        //     }
+        // </div>
     )
 }
 
