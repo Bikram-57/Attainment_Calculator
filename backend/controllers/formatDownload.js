@@ -32,4 +32,7 @@ const handleUploadAssignSubjectDownload = (req, res) => {
   });
 };
 
-module.exports = { handleFormatDownload, handleUploadAssignSubjectDownload };
+module.exports = {
+  handleFormatDownload,
+  handleUploadAssignSubjectDownload
+};

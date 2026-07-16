@@ -2,6 +2,8 @@
 const AssignSubject = require('../models/AssignSubject'); 
 const Subject = require('../models/subject');
 
+
+//done
 const HangleGetAssignedSubjectCountForCurrentYear = async (req, res) => {
   try {
     const facultyId = req.facultyId; 
@@ -16,8 +18,7 @@ const HangleGetAssignedSubjectCountForCurrentYear = async (req, res) => {
     // 2. Wrap facultyId in String() to ensure it matches the database type
     const facultyRecord = await AssignSubject.findOne({ facultyId: String(facultyId) }).lean();
 
-    let totalCount = 0;
-    let programCounts = {}; 
+    let data = []; 
 
     // Because of .lean(), we can safely use bracket notation here again
     if (facultyRecord && facultyRecord.assignments && facultyRecord.assignments[currentYearStr]) {
@@ -28,17 +29,20 @@ const HangleGetAssignedSubjectCountForCurrentYear = async (req, res) => {
         if (Array.isArray(yearAssignments[programKey])) {
           const count = yearAssignments[programKey].length;
           
-          programCounts[programKey] = count;
-          totalCount += count;
+          // Push the formatted object into the data array
+          data.push({
+            course: programKey,
+            totalSubjects: count
+          });
         }
       }
     }
 
+    // Return the specific JSON format requested
     return res.status(200).json({
       success: true,
       year: parseInt(currentYearStr),
-      totalAssignedSubjects: totalCount,
-      programBreakdown: programCounts 
+      data: data 
     });
 
   } catch (error) {
@@ -52,7 +56,7 @@ const HangleGetAssignedSubjectCountForCurrentYear = async (req, res) => {
 
 
 
-
+//done
 const HandleGetPendingCopoMappingCount = async (req, res) => {
   try {
     const facultyId = req.facultyId; 
@@ -61,7 +65,6 @@ const HandleGetPendingCopoMappingCount = async (req, res) => {
       return res.status(400).json({ message: "Faculty ID is missing from user token." });
     }
 
-    // Note: Your Subject schema uses Number for academicYear, so we parse it to an integer
     const currentYear = new Date().getFullYear(); 
     const currentYearStr = currentYear.toString();
 
@@ -69,16 +72,20 @@ const HandleGetPendingCopoMappingCount = async (req, res) => {
     const facultyRecord = await AssignSubject.findOne({ facultyId: String(facultyId) }).lean();
 
     let assignedSubjectIds = [];
+    let pendingCountsMap = {}; // Will hold { "BCA": 0, "MCA": 0 }
 
-    // 2. Extract every single assigned subjectId into a flat array
+    // 2. Extract every single assigned subjectId and initialize the courses
     if (facultyRecord && facultyRecord.assignments && facultyRecord.assignments[currentYearStr]) {
       const yearAssignments = facultyRecord.assignments[currentYearStr];
       
       for (const courseKey in yearAssignments) {
         if (Array.isArray(yearAssignments[courseKey])) {
+          // Initialize the course count to 0 so it appears in the output even if 0 are pending
+          pendingCountsMap[courseKey.toUpperCase()] = 0;
+
           yearAssignments[courseKey].forEach(subject => {
             if (subject.subjectId) {
-              assignedSubjectIds.push(subject.subjectId); // e.g., ["CA2201", "CA2301"]
+              assignedSubjectIds.push(subject.subjectId);
             }
           });
         }
@@ -89,55 +96,41 @@ const HandleGetPendingCopoMappingCount = async (req, res) => {
     if (assignedSubjectIds.length === 0) {
       return res.status(200).json({
         success: true,
-        academicYear: currentYear,
-        overall: { totalAssigned: 0, completedCount: 0, pendingCount: 0 },
-        programBreakdown: {},
-        message: "No subjects assigned for the current year."
+        data: [] 
       });
     }
 
-    // 4. Query the master Subject collection!
-    // We look up all assigned IDs for the current year and grab their status and course
+    // 4. Query the master Subject collection for the assigned IDs
     const subjectRecords = await Subject.find({
       subjectId: { $in: assignedSubjectIds },
-      academicYear: currentYear // Matching your Number schema type
+      academicYear: currentYear 
     }, 'subjectId course copoMappingStatus').lean();
 
-    // 5. Prepare tracking variables
-    let programBreakdown = {};
-    let overall = { totalAssigned: 0, completedCount: 0, pendingCount: 0 };
-
-    // 6. Loop through the master records and tally up the exact statuses
+    // 5. Loop through the master records and tally up ONLY the pending statuses
     subjectRecords.forEach(subject => {
-      // Ensure the course name is uppercase just in case (e.g., "MCA")
       const course = subject.course ? subject.course.toUpperCase() : "UNKNOWN";
 
-      // Initialize the course in our breakdown if it doesn't exist yet
-      if (!programBreakdown[course]) {
-        programBreakdown[course] = { totalAssigned: 0, completedCount: 0, pendingCount: 0 };
+      // Safety check: Initialize if it somehow wasn't in assignments
+      if (pendingCountsMap[course] === undefined) {
+        pendingCountsMap[course] = 0;
       }
 
-      // Add to total assigned counts
-      programBreakdown[course].totalAssigned += 1;
-      overall.totalAssigned += 1;
-
-      // Check the strict enum from your schema
-      if (subject.copoMappingStatus === 'Uploaded') {
-        programBreakdown[course].completedCount += 1;
-        overall.completedCount += 1;
-      } else {
-        // If it is 'Pending' (or anything else), count it as pending
-        programBreakdown[course].pendingCount += 1;
-        overall.pendingCount += 1;
+      // If the status is not 'Uploaded', count it as a pending mapping
+      if (subject.copoMappingStatus !== 'Uploaded') {
+        pendingCountsMap[course] += 1;
       }
     });
+
+    // 6. Format the map into the requested array structure
+    const data = Object.keys(pendingCountsMap).map(course => ({
+      course: course,
+      count: pendingCountsMap[course]
+    }));
 
     // 7. Send the structured payload
     return res.status(200).json({
       success: true,
-      academicYear: currentYear,
-      overall: overall,
-      programBreakdown: programBreakdown
+      data: data
     });
 
   } catch (error) {
@@ -154,7 +147,7 @@ const HandleGetPendingCopoMappingCount = async (req, res) => {
 
 
 
-
+//done
 const handleGetGeneratedReportCount = async (req, res) => {
   try {
     const facultyId = req.facultyId; 
@@ -163,7 +156,6 @@ const handleGetGeneratedReportCount = async (req, res) => {
       return res.status(400).json({ message: "Faculty ID is missing from user token." });
     }
 
-    // Grab the current year (Number for Subject DB, String for AssignSubject DB)
     const currentYear = new Date().getFullYear(); 
     const currentYearStr = currentYear.toString();
 
@@ -171,13 +163,17 @@ const handleGetGeneratedReportCount = async (req, res) => {
     const facultyRecord = await AssignSubject.findOne({ facultyId: String(facultyId) }).lean();
 
     let assignedSubjectIds = [];
+    let uploadedCountsMap = {};
 
-    // 2. Extract the assigned subject IDs into a flat array
+    // 2. Extract the assigned subject IDs into a flat array & initialize counts
     if (facultyRecord && facultyRecord.assignments && facultyRecord.assignments[currentYearStr]) {
       const yearAssignments = facultyRecord.assignments[currentYearStr];
       
       for (const courseKey in yearAssignments) {
         if (Array.isArray(yearAssignments[courseKey])) {
+          // Initialize the course count to 0 so it always appears in the output
+          uploadedCountsMap[courseKey.toUpperCase()] = 0;
+
           yearAssignments[courseKey].forEach(subject => {
             if (subject.subjectId) {
               assignedSubjectIds.push(subject.subjectId);
@@ -191,54 +187,43 @@ const handleGetGeneratedReportCount = async (req, res) => {
     if (assignedSubjectIds.length === 0) {
       return res.status(200).json({
         success: true,
-        academicYear: currentYear,
-        overall: { totalAssigned: 0, completedCount: 0, pendingCount: 0 },
-        programBreakdown: {},
-        message: "No subjects assigned for the current year."
+        year: currentYear,
+        data: [] 
       });
     }
 
     // 4. Query the master Subject collection
-    // We specifically ask Mongoose to only return the 'status' field alongside course and ID
     const subjectRecords = await Subject.find({
       subjectId: { $in: assignedSubjectIds },
       academicYear: currentYear 
     }, 'subjectId course status').lean();
 
-    // 5. Prepare tracking variables
-    let programBreakdown = {};
-    let overall = { totalAssigned: 0, completedCount: 0, pendingCount: 0 };
-
-    // 6. Loop through the master records and evaluate the 'status' enum
+    // 5. Loop through the master records and tally up ONLY the uploaded statuses
     subjectRecords.forEach(subject => {
       const course = subject.course ? subject.course.toUpperCase() : "UNKNOWN";
 
-      // Initialize the course (MCA/BCA) if it doesn't exist yet
-      if (!programBreakdown[course]) {
-        programBreakdown[course] = { totalAssigned: 0, completedCount: 0, pendingCount: 0 };
+      // Safety check: Initialize if it wasn't captured in assignments
+      if (uploadedCountsMap[course] === undefined) {
+        uploadedCountsMap[course] = 0;
       }
-
-      // Increment assigned counts
-      programBreakdown[course].totalAssigned += 1;
-      overall.totalAssigned += 1;
 
       // Check the specific 'status' enum to see if the report is uploaded
       if (subject.status === 'Uploaded') {
-        programBreakdown[course].completedCount += 1;
-        overall.completedCount += 1;
-      } else {
-        // If it is 'Pending', count it as pending
-        programBreakdown[course].pendingCount += 1;
-        overall.pendingCount += 1;
+        uploadedCountsMap[course] += 1;
       }
     });
+
+    // 6. Format the map into the requested array structure
+    const data = Object.keys(uploadedCountsMap).map(course => ({
+      course: course,
+      uploadedCount: uploadedCountsMap[course]
+    }));
 
     // 7. Send the structured JSON response
     return res.status(200).json({
       success: true,
-      academicYear: currentYear,
-      overall: overall,
-      programBreakdown: programBreakdown
+      year: currentYear,
+      data: data
     });
 
   } catch (error) {
@@ -254,7 +239,7 @@ const handleGetGeneratedReportCount = async (req, res) => {
 
 
 
-
+//done
 const HandleGetMyBCAProgress = async (req, res) => {
   try {
     // 1. Identify the user via the token middleware
@@ -299,13 +284,11 @@ const HandleGetMyBCAProgress = async (req, res) => {
         success: true,
         data: {
           course: targetCourse,
-          academicYear: currentYear,
           totalSubjects: 0,
           uploadedSubjects: 0,
           pendingSubjects: 0,
-          progressPercentage: 0
-        },
-        message: `No subjects assigned to you for ${targetCourse} in ${currentYear}.`
+          progressPercentage: "0.00" // String representation
+        }
       });
     }
 
@@ -330,18 +313,17 @@ const HandleGetMyBCAProgress = async (req, res) => {
 
     const totalCount = uploadedCount + pendingCount;
 
-    // 8. Send back the calculated percentages and counts
+    // 8. Send back the calculated percentages and counts without academicYear
     return res.status(200).json({
       success: true,
       data: {
         course: targetCourse,
-        academicYear: currentYear,
         totalSubjects: totalCount,
         uploadedSubjects: uploadedCount,
         pendingSubjects: pendingCount,
         progressPercentage: totalCount > 0 
-          ? parseFloat(((uploadedCount / totalCount) * 100).toFixed(2))
-          : 0
+          ? ((uploadedCount / totalCount) * 100).toFixed(2) // Removed parseFloat so it remains a string
+          : "0.00"
       }
     });
 
@@ -357,8 +339,7 @@ const HandleGetMyBCAProgress = async (req, res) => {
 
 
 
-
-
+//done
 const handleGetMyMCAProgress = async (req, res) => {
   try {
     // 1. Identify the user via the token middleware
@@ -403,13 +384,11 @@ const handleGetMyMCAProgress = async (req, res) => {
         success: true,
         data: {
           course: targetCourse,
-          academicYear: currentYear,
           totalSubjects: 0,
           uploadedSubjects: 0,
           pendingSubjects: 0,
-          progressPercentage: 0
-        },
-        message: `No subjects assigned to you for ${targetCourse} in ${currentYear}.`
+          progressPercentage: "0.00" // String representation
+        }
       });
     }
 
@@ -439,13 +418,12 @@ const handleGetMyMCAProgress = async (req, res) => {
       success: true,
       data: {
         course: targetCourse,
-        academicYear: currentYear,
         totalSubjects: totalCount,
         uploadedSubjects: uploadedCount,
         pendingSubjects: pendingCount,
         progressPercentage: totalCount > 0 
-          ? parseFloat(((uploadedCount / totalCount) * 100).toFixed(2))
-          : 0
+          ? ((uploadedCount / totalCount) * 100).toFixed(2) // Removed parseFloat so it remains a string
+          : "0.00"
       }
     });
 
@@ -459,9 +437,7 @@ const handleGetMyMCAProgress = async (req, res) => {
 };
 
 
-
-
-
+//done
 const handleGetMyBCACopoProgress = async (req, res) => {
   try {
     // 1. Identify the user via the token middleware
@@ -506,13 +482,11 @@ const handleGetMyBCACopoProgress = async (req, res) => {
         success: true,
         data: {
           course: targetCourse,
-          academicYear: currentYear,
           totalSubjects: 0,
           uploadedSubjects: 0,
           pendingSubjects: 0,
-          progressPercentage: 0
-        },
-        message: `No subjects assigned to you for ${targetCourse} in ${currentYear}.`
+          progressPercentage: "0" // String representation
+        }
       });
     }
 
@@ -521,7 +495,7 @@ const handleGetMyBCACopoProgress = async (req, res) => {
       subjectId: { $in: assignedSubjectIds },
       academicYear: currentYear,
       course: targetCourse 
-    }, 'subjectId copoMappingStatus').lean(); // <-- Specifically asking for copoMappingStatus
+    }, 'subjectId copoMappingStatus').lean();
 
     // 7. Tally the progress
     let uploadedCount = 0;
@@ -539,18 +513,17 @@ const handleGetMyBCACopoProgress = async (req, res) => {
 
     const totalCount = uploadedCount + pendingCount;
 
-    // 8. Send back the calculated percentages and counts
+    // 8. Send back the calculated percentages and counts without academicYear
     return res.status(200).json({
       success: true,
       data: {
         course: targetCourse,
-        academicYear: currentYear,
         totalSubjects: totalCount,
         uploadedSubjects: uploadedCount,
         pendingSubjects: pendingCount,
         progressPercentage: totalCount > 0 
-          ? parseFloat(((uploadedCount / totalCount) * 100).toFixed(2))
-          : 0
+          ? ((uploadedCount / totalCount) * 100).toFixed(2) // Removed parseFloat so it remains a string
+          : "0"
       }
     });
 
@@ -567,12 +540,7 @@ const handleGetMyBCACopoProgress = async (req, res) => {
 
 
 
-
-
-
-
-
-
+//done
 const handleGetMyMCACopoProgress = async (req, res) => {
   try {
     // 1. Identify the user via the token middleware
@@ -617,13 +585,11 @@ const handleGetMyMCACopoProgress = async (req, res) => {
         success: true,
         data: {
           course: targetCourse,
-          academicYear: currentYear,
           totalSubjects: 0,
           uploadedSubjects: 0,
           pendingSubjects: 0,
-          progressPercentage: 0
-        },
-        message: `No subjects assigned to you for ${targetCourse} in ${currentYear}.`
+          progressPercentage: "0.00" // String representation
+        }
       });
     }
 
@@ -650,18 +616,17 @@ const handleGetMyMCACopoProgress = async (req, res) => {
 
     const totalCount = uploadedCount + pendingCount;
 
-    // 8. Send back the calculated percentages and counts
+    // 8. Send back the calculated percentages and counts without academicYear
     return res.status(200).json({
       success: true,
       data: {
         course: targetCourse,
-        academicYear: currentYear,
         totalSubjects: totalCount,
         uploadedSubjects: uploadedCount,
         pendingSubjects: pendingCount,
         progressPercentage: totalCount > 0 
-          ? parseFloat(((uploadedCount / totalCount) * 100).toFixed(2))
-          : 0
+          ? ((uploadedCount / totalCount) * 100).toFixed(2) // Removed parseFloat so it remains a string
+          : "0.00"
       }
     });
 
@@ -673,7 +638,6 @@ const handleGetMyMCACopoProgress = async (req, res) => {
     });
   }
 };
-
 
 
 
