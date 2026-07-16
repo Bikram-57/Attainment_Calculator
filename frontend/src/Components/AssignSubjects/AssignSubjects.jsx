@@ -6,6 +6,7 @@ import axios from 'axios';
 import { COLORS } from '../../constants/theme';
 import { Loading } from '../index';
 import DeassignSubject from './DeassignSubject';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function AssignSubjects() {
 	const [searchQuery, setSearchQuery] = useState('');
@@ -16,6 +17,8 @@ function AssignSubjects() {
 	const [filterYear, setFilterYear] = useState(new Date().getFullYear());
 
 	const query = searchQuery.toLowerCase().trim();
+
+	useDocumentTitle('Assign Subjects');
 
 	const filteredAssignedSubjectsData = assignedSubjectsData?.filter((faculty) => {
 		const subjectMatch = Object.values(

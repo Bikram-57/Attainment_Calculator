@@ -1,6 +1,7 @@
 import React from 'react'
 import { COLORS } from '../../constants/theme'
 import { FaArrowLeft } from 'react-icons/fa';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function Attainment({ academicYear, course, subjectId, setFetchClicked }) {
     const handleCOAttain = () => {
@@ -13,6 +14,8 @@ function Attainment({ academicYear, course, subjectId, setFetchClicked }) {
         window.open(`/po-attainment/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
     }
 
+    useDocumentTitle('Attainment - Fetch Data | Menu');
+
     return (
         <div className='h-full flex flex-col p-4'>
             <div className='flex items-center gap-2 pb-4'>
@@ -21,7 +24,7 @@ function Attainment({ academicYear, course, subjectId, setFetchClicked }) {
                     className="rounded-lg border border-slate-300 bg-white px-2 py-1 hover:bg-slate-100 cursor-pointer"
                 >
                     <FaArrowLeft size={18} />
-                    
+
                 </button>
                 <div
                     className='text-xl font-semibold'

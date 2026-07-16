@@ -7,9 +7,12 @@ import { ErrorSuccessMsg } from './index';
 import { Loading } from './index';
 import Select from "react-select";
 import { useSelector } from 'react-redux';
+import useDocumentTitle from '../hooks/useDocumentTitle.js';
 
 function UploadData() {
 	const userData = useSelector(state => state.auth.userData);
+	const fileInputRef = useRef(null);
+	
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
 	const [subjectId, setSubjectId] = useState('')
@@ -21,7 +24,7 @@ function UploadData() {
 	const [isHovered, setIsHovered] = useState(false);
 	const [uploading, setUploading] = useState(false);
 
-	const fileInputRef = useRef(null);
+	useDocumentTitle('Upload Data - Menu');
 
 	const currentYear = new Date().getFullYear();
 	const yearList = [2024];

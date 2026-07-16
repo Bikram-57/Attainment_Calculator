@@ -1,11 +1,11 @@
-import NavBar from "./NavBar/NavBar";
-import Faculty from "./Faculty/Faculty";
-import FacultyHeader from "./Faculty/FacultyHeader";
-import Subject from "./Subject/Subject";
-import SubjectHeader from "./Subject/SubjectHeader";
-import ActionBtns from "./ActionBtns/ActionBtns";
-import UploadData from "./UploadData";
-import FetchData from "./FetchData";
+// AssignSubjects
+import AssignSubjects from "./AssignSubjects/AssignSubjects";
+import AssignSingleSubjectForm from "./AssignSubjects/AssignSingleSubjectForm";
+import AssignMultipleSubjectForm from "./AssignSubjects/AssignMultipleSubjectForm";
+import AssignSubjectForm from "./AssignSubjects/AssignSubjectForm";
+import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
+
+// Attainment
 import {
     Attainment,
     COAttainment,
@@ -15,63 +15,94 @@ import {
     POAttainment,
     POAttainTable,
 } from "./Attainment/index";
-import AddFacultyForm from "./Faculty/AddFacultyForm";
-import FacultyViewModal from "./Faculty/modals/FacultyViewModal";
-import FacultyEditModal from "./Faculty/modals/FacultyEditModal";
-import FacultyDeleteModal from "./Faculty/modals/FacultyDeleteModal";
-import SubjectViewModal from "./Subject/modals/SubjectViewModal";
-import SubjectEditModal from "./Subject/modals/SubjectEditModal";
-import SubjectDeleteModal from "./Subject/modals/SubjectDeleteModal";
-import AddSubjectForm from "./Subject/AddSubjectForm";
+
+// CoPoRelation
 import CoPoRelation from "./CoPoRelation/CoPoRelation";
 import CoPoRelationHeader from "./CoPoRelation/CoPoRelationHeader";
 import ViewCoPoRelation from "./CoPoRelation/ViewCoPoRelation";
 import EditCoPoRelation from "./CoPoRelation/EditCoPoRelation";
-import Footer from "./Footer";
-import ContactUs from "./ContactUs";
-import AddMultipleSubjectsForm from "./Subject/AddMultipleSubjectsForm";
-import AssignSubjects from "./AssignSubjects/AssignSubjects";
-import AssignSubjectForm from "./AssignSubjects/AssignSubjectForm";
-import AssignSubjectsHeader from "./AssignSubjects/AssignSubjectsHeader";
-import Filters from "../utils/Filters";
-import UnderDevelopment from "../utils/UnderDevelopment";
-import PageNotFound from "./PageNotFound";
-import AddSubject from "./Subject/AddSubject";
-import ErrorSuccessMsg from "../utils/ErrorSuccessMsg";
-import Loading from "../utils/Loading";
-import Profile from "./Profile/Profile";
-import ProfileInfoCard from "./Profile/ProfileInfoCard";
-import ProtectedRoute from "./ProtectedRoute";
-import Login from "./Login";
-import Logout from "./Logout";
-import NavBarMenu from "./NavBar/NavBarMenu";
+
+// Dashboard
+import Dashboard from "./Dashboard/Dashboard";
+import Overview from "./Dashboard/Overview";
+import RecentActivity from "./Dashboard/RecentActivity";
+import ProgressCharts from "./Dashboard/ProgressCharts";
+
+// DirectAttainment
+import DirectAttainment from "./DirectAttainment/DirectAttainment";
+import DirectAttainmentTable from "./DirectAttainment/DirectAttainmentTable";
+import DirectAttainmentHeader from "./DirectAttainment/DirectAttainmentHeader";
+import GenerateAttainmentForm from "./DirectAttainment/GenerateAttainmentForm";
+
+// DownloadReports
+import DownloadBatchReport from "./DownloadReports/DownloadBatchReport";
+import DownloadSubjectReport from "./DownloadReports/DownloadSubjectReport";
+
+// Faculty
+import Faculty from "./Faculty/Faculty";
+import FacultyHeader from "./Faculty/FacultyHeader";
+import AddFacultyForm from "./Faculty/AddFacultyForm";
+import FacultyViewModal from "./Faculty/modals/FacultyViewModal";
+import FacultyEditModal from "./Faculty/modals/FacultyEditModal";
+import FacultyDeleteModal from "./Faculty/modals/FacultyDeleteModal";
+
+// ForgotPassword
 import ForgotPassword from "./ForgotPassword/ForgotPassword";
 import ResetPassword from "./ForgotPassword/ResetPassword";
 import VerifyOtp from "./ForgotPassword/VerifyOtp";
+
+// NavBar
+import NavBar from "./NavBar/NavBar";
+import NavBarMenu from "./NavBar/NavBarMenu";
+
+// Profile
+import Profile from "./Profile/Profile";
+import ProfileInfoCard from "./Profile/ProfileInfoCard";
+
+// Rubrics
 import Rubrics from "./Rubrics/Rubrics";
 import RubricsHeader from "./Rubrics/RubricsHeader";
 import RubricsViewModal from "./Rubrics/modals/RubricsViewModal";
 import RubricsEditModal from "./Rubrics/modals/RubricsEditModal"
 import RubricsDeleteModal from "./Rubrics/modals/RubricsDeleteModal"
 import AddRubricsForm from "./Rubrics/AddRubricsForm";
-import DirectAttainment from "./DirectAttainment/DirectAttainment";
-import DirectAttainmentTable from "./DirectAttainment/DirectAttainmentTable";
-import DirectAttainmentHeader from "./DirectAttainment/DirectAttainmentHeader";
-import GenerateAttainmentForm from "./DirectAttainment/GenerateAttainmentForm";
-import DownloadBatchReport from "./DownloadReports/DownloadBatchReport";
-import DownloadSubjectReport from "./DownloadReports/DownloadSubjectReport";
+
+// SideBar
 import SideBar from "./SideBar/SideBar";
 import SideBarSection from "./SideBar/SideBarSection";
 import SideBarTab from "./SideBar/SideBarTab";
+
+// Subject
+import Subject from "./Subject/Subject";
+import SubjectHeader from "./Subject/SubjectHeader";
+import AddSubject from "./Subject/AddSubject";
+import AddMultipleSubjectsForm from "./Subject/AddMultipleSubjectsForm";
+import SubjectViewModal from "./Subject/modals/SubjectViewModal";
+import SubjectEditModal from "./Subject/modals/SubjectEditModal";
+import SubjectDeleteModal from "./Subject/modals/SubjectDeleteModal";
+import AddSubjectForm from "./Subject/AddSubjectForm";
+
+// SubjectAnalysis
 import SubjectAnalysis from "./SubjectAnalysis/SubjectAnalysis";
-import Dashboard from "./Dashboard/Dashboard";
-import Overview from "./Dashboard/Overview";
-import RecentActivity from "./Dashboard/RecentActivity";
-import ProgressCharts from "./Dashboard/ProgressCharts";
 import BarGraph from "./SubjectAnalysis/BarGraph";
-import AssignSingleSubjectForm from "./AssignSubjects/AssignSingleSubjectForm";
-import AssignMultipleSubjectForm from "./AssignSubjects/AssignMultipleSubjectForm";
+
+// Other Components
+import ContactUs from "./ContactUs";
+import FetchData from "./FetchData";
+import Footer from "./Footer";
+import Login from "./Login";
+import Logout from "./Logout";
+import PageNotFound from "./PageNotFound";
+import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
+import UploadData from "./UploadData";
+
+// utils
+import ActionBtns from "../utils/ActionBtns";
+import ErrorSuccessMsg from "../utils/ErrorSuccessMsg";
+import Filters from "../utils/Filters";
+import Loading from "../utils/Loading";
+import UnderDevelopment from "../utils/UnderDevelopment";
 
 export {
     NavBar,

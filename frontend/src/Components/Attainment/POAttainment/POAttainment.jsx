@@ -2,11 +2,14 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import POAttainTable from './POAttainTable';
+import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
 function POAttainment() {
     const { academicYear, course, subjectId } = useParams();
     const [data, setData] = useState(null);
     const [subjectName, setSubjectName] = useState('');
+
+    useDocumentTitle('PO Attainment Report');
 
     useEffect(() => {
         const getPOData = async () => {

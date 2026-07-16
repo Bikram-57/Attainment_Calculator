@@ -5,17 +5,19 @@ import { useState } from 'react'
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import RubricsHeader from "./RubricsHeader";
-import ActionBtns from "../ActionBtns/ActionBtns";
-import { Loading } from "../index";
+import { ActionBtns, Loading } from "../index";
 import RubricsViewModal from "./modals/RubricsViewModal";
 import RubricsEditModal from "./modals/RubricsEditModal";
 import RubricsDeleteModal from "./modals/RubricsDeleteModal";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 export default function Rubrics() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [toggleRubrics, setToggleRubrics] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    useDocumentTitle('Manage Rubrics');
 
     const getData = async () => {
         try {

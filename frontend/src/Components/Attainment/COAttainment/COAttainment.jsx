@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom'
 import COAttainTable from './COAttainTable';
+import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
 function COAttainment() {
     // const location = useLocation();
@@ -10,6 +11,9 @@ function COAttainment() {
     const [data, setData] = useState(null);
     const { academicYear, course, subjectId } = useParams();
     const [subjectName, setSubjectName] = useState('');
+
+    useDocumentTitle('CO Attainment Report');
+
     useEffect(() => {
         const getCOData = async () => {
             try {

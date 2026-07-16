@@ -5,9 +5,11 @@ import { COLORS } from '../constants/theme';
 import { ErrorSuccessMsg } from './index';
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 function FetchData() {
 	const userData = useSelector(state => state.auth.userData);
+
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
 	const [subjectId, setSubjectId] = useState('')
@@ -22,6 +24,9 @@ function FetchData() {
 
 	const currentYear = new Date().getFullYear();
 	const yearList = [2024];
+
+	useDocumentTitle('Fetch Data - Menu');
+
 	for (let year = yearList[0] + 1; year <= currentYear; year++) {
 		yearList.push(year);
 	}

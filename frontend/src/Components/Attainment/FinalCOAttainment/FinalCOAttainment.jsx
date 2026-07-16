@@ -2,11 +2,14 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import FinalCOAttainTable from './FinalCOAttainTable';
+import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
 function FinalCOAttainment() {
     const { academicYear, course, subjectId } = useParams();
     const [data, setData] = useState(null);
     const [subjectName, setSubjectName] = useState('');
+
+    useDocumentTitle('Final CO Attainment Report');
 
     useEffect(() => {
         const getFinalCOData = async () => {

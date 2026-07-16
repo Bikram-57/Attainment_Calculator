@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ErrorSuccessMsg } from '../index';
 import { Loading } from '../index';
 import Select from 'react-select';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function DownloadBatchReport() {
     const [academicYear, setAcademicYear] = useState('')
@@ -15,6 +16,9 @@ function DownloadBatchReport() {
 
     const currentYear = new Date().getFullYear();
     const yearList = [2024];
+
+    useDocumentTitle('Batch Report - Download');
+    
     for (let year = yearList[0] + 1; year <= currentYear; year++) {
         yearList.push(year);
     }
