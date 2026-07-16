@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { FaCheckCircle, FaEdit, FaTrash, FaUpload, FaFileAlt, FaUserPlus } from "react-icons/fa";
 
-function RecentActivity({ activeSubjectCount }) {
+function RecentActivity({ activeSubjectCount, userRole }) {
     const [recentActivities, setRecentActivities] = useState([]);
+    const adminRecentActivityUrl = '/activity/activities';
+    const facultyRecentActivityUrl = '/activity';
 
     const activityConfig = {
         // Academic & Mapping
@@ -111,7 +113,10 @@ function RecentActivity({ activeSubjectCount }) {
     useEffect(() => {
         const getRecentActivities = async () => {
             try {
-                const res = await axios.get('/activity/activities');
+                // const url = userRole !== 'admin' ? adminRecentActivityUrl : facultyRecentActivityUrl;
+                const url = adminRecentActivityUrl;
+                const res = await axios.get(url);
+                console.log(res)
                 setRecentActivities(res.data.data);
             } catch (error) {
                 console.log('ERROR || Dashboard || useEffect || getRecentActivities || ', error);

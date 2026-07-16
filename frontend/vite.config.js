@@ -89,6 +89,8 @@ export default defineConfig({
             '/activity/': secureProxy,
             '/subject-analysis/': secureProxy,
             '/sub-upload/': secureProxy,
+            // '/copo': secureProxy,
+            '/activity': secureProxy,
         },
     },
 })

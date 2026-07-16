@@ -5,7 +5,11 @@ import ProgressCharts from "./ProgressCharts";
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
+import { useSelector } from 'react-redux';
+
 function Dashboard() {
+    const userData = useSelector(state => state.auth.userData);
+    console.log('TOKEN: ', useSelector(state => state.auth.accessToken));
     const [activeSubjectCount, setActiveSubjectCount] = useState([]);
 
     useEffect(() => {
@@ -23,9 +27,9 @@ function Dashboard() {
     return (
         <div className="min-h-screen bg-slate-100 p-4">
             <div className="mx-auto max-w-7xl overflow-y-auto">
-                <Overview activeSubjectCount={activeSubjectCount} />
-                <RecentActivity activeSubjectCount={activeSubjectCount} />
-                <ProgressCharts />
+                <Overview activeSubjectCount={activeSubjectCount} userRole={userData.role} />
+                <RecentActivity activeSubjectCount={activeSubjectCount} userRole={userData.role} />
+                <ProgressCharts userRole={userData.role} />
             </div>
         </div>
     );

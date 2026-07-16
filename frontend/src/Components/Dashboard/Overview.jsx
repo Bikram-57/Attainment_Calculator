@@ -2,10 +2,12 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { FaBookOpen, FaTasks, FaFileAlt } from "react-icons/fa";
 
-function Overview({ activeSubjectCount }) {
+function Overview({ activeSubjectCount, userRole }) {
     // const [activeSubjectCount, setActiveSubjectCount] = useState([]);
     const [pendingMappingsCount, setPendingMappingsCount] = useState([]);
     const [reportsGeneratedCount, setReportsGeneratedCount] = useState([]);
+    const adminPendingMappingUrl = '/home/copo-count';
+    const facultyPendingMappingUrl = '/copo';
 
     const stats = [
         {
@@ -49,7 +51,10 @@ function Overview({ activeSubjectCount }) {
 
         const getPendingMappingsCount = async () => {
             try {
-                const res = await axios.get('/home/copo-count');
+                // const url = userRole !== 'admin' ? adminPendingMappingUrl : facultyPendingMappingUrl;
+                const url = adminPendingMappingUrl;
+                const res = await axios.get(url);
+                // console.log(res);
                 setPendingMappingsCount(res.data.data);
             } catch (error) {
                 console.log('ERROR || Dashboard || useEffect || getPendingMappingsCount || ', error);

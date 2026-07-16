@@ -2,22 +2,37 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
-function ProgressCharts() {
+function ProgressCharts({ userRole }) {
     const [progressCharts, setProgressCharts] = useState([]);
+    const adminProgressUrls = [
+        '/home/progress-BCA',
+        '/home/progress-MCA',
+        '/home/mapping-progress-BCA',
+        '/home/mapping-progress-MCA'
+    ];
+    const facultyProgressUrls = [
+        '/my-progress/bca',
+        '/my-progress/mca',
+        '/my-copo-progress/bca',
+        '/my-copo-progress/mca'
+    ];
 
     useEffect(() => {
         const fetchProgressCharts = async () => {
             try {
+                // const [url1, url2, url3, url4] = userRole === 'admin' ? adminProgressUrls : facultyProgressUrls;
+                const [url1, url2, url3, url4] = adminProgressUrls;
+                
                 const [
                     bcaProgress,
                     mcaProgress,
                     bcaMapping,
                     mcaMapping
                 ] = await Promise.all([
-                    axios.get('/home/progress-BCA'),
-                    axios.get('/home/progress-MCA'),
-                    axios.get('/home/mapping-progress-BCA'),
-                    axios.get('/home/mapping-progress-MCA')
+                    axios.get(url1),
+                    axios.get(url2),
+                    axios.get(url3),
+                    axios.get(url4)
                 ]);
                 setProgressCharts([
                     {
