@@ -27,7 +27,7 @@ router.get('/year/:academicYear', verifyRoles('admin'), handleGetSubjectsByAcade
 
 router.get('/', verifyRoles('admin', 'faculty'), handleGetAllSubject);
 
-router.get('/:id', verifyRoles('admin'), handleGetSubjectBySubjectId);
+router.get('/:id', verifyRoles('admin', 'faculty'), handleGetSubjectBySubjectId);
 
 router.put('/:id', verifyRoles('admin'), handleUpdateSubject);
 
