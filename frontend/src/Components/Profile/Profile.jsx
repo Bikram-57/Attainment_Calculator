@@ -130,7 +130,8 @@ function Profile() {
                             />
 
                             {isEditing && (
-                                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition group-hover:opacity-100">
+                                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 transition opacity-50">
+                                    {/* <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition group-hover:opacity-100"> */}
                                     <FaCamera className="text-3xl text-white" />
                                 </div>
                             )}
@@ -219,13 +220,14 @@ function Profile() {
                             </div>
                         ) : (
                             <>
-                                <button
-                                    onClick={saveImage}
-                                    className="flex cursor-pointer items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 font-medium text-white transition hover:bg-green-700"
-                                >
-                                    <FaSave />
-                                    Save
-                                </button>
+                                {previewImage !== originalImage &&
+                                    <button
+                                        onClick={saveImage}
+                                        className="flex cursor-pointer items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 font-medium text-white transition hover:bg-green-700"
+                                    >
+                                        <FaSave />
+                                        Save
+                                    </button>}
 
                                 <button
                                     onClick={handleCancel}
@@ -235,13 +237,14 @@ function Profile() {
                                     Cancel
                                 </button>
 
-                                <button
-                                    onClick={handleDeleteImage}
-                                    className="flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 font-medium text-white transition hover:bg-red-700"
-                                >
-                                    <FaTrash />
-                                    Remove
-                                </button>
+                                {previewImage === originalImage &&
+                                    <button
+                                        onClick={handleDeleteImage}
+                                        className="flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 font-medium text-white transition hover:bg-red-700"
+                                    >
+                                        <FaTrash />
+                                        Remove
+                                    </button>}
                             </>
                         )}
                     </div>
