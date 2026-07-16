@@ -1,7 +1,8 @@
 import React from 'react'
 import { COLORS } from '../../constants/theme'
+import { FaArrowLeft } from 'react-icons/fa';
 
-function Attainment({ academicYear, course, subjectId }) {
+function Attainment({ academicYear, course, subjectId, setFetchClicked }) {
     const handleCOAttain = () => {
         window.open(`/co-attainment/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
     }
@@ -14,7 +15,14 @@ function Attainment({ academicYear, course, subjectId }) {
 
     return (
         <div className='h-full flex flex-col p-4'>
-            <div className='flex justify-between pb-4'>
+            <div className='flex items-center gap-2 pb-4'>
+                <button
+                    onClick={() => setFetchClicked(false)}
+                    className="rounded-lg border border-slate-300 bg-white px-2 py-1 hover:bg-slate-100 cursor-pointer"
+                >
+                    <FaArrowLeft size={18} />
+                    
+                </button>
                 <div
                     className='text-xl font-semibold'
                     style={{ color: COLORS.mint }}

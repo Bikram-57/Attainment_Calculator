@@ -205,6 +205,7 @@ function FetchData() {
 				academicYear={academicYear}
 				course={course}
 				subjectId={subjectId}
+				setFetchClicked={setFetchClicked}
 			/>
 		)
 }
