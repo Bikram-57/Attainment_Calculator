@@ -2,7 +2,7 @@
 const AssignSubject = require('../models/AssignSubject'); 
 const Subject = require('../models/subject');
 
-const getAssignedSubjectCountForCurrentYear = async (req, res) => {
+const HangleGetAssignedSubjectCountForCurrentYear = async (req, res) => {
   try {
     const facultyId = req.facultyId; 
 
@@ -53,7 +53,7 @@ const getAssignedSubjectCountForCurrentYear = async (req, res) => {
 
 
 
-const getPendingCopoMappingCount = async (req, res) => {
+const HandleGetPendingCopoMappingCount = async (req, res) => {
   try {
     const facultyId = req.facultyId; 
 
@@ -155,7 +155,7 @@ const getPendingCopoMappingCount = async (req, res) => {
 
 
 
-const getGeneratedReportCount = async (req, res) => {
+const handleGetGeneratedReportCount = async (req, res) => {
   try {
     const facultyId = req.facultyId; 
 
@@ -252,8 +252,437 @@ const getGeneratedReportCount = async (req, res) => {
 
 
 
+
+
+
+const HandleGetMyBCAProgress = async (req, res) => {
+  try {
+    // 1. Identify the user via the token middleware
+    const facultyId = req.facultyId; 
+    
+    // 2. HARDCODED: This controller now strictly looks for BCA
+    const targetCourse = 'BCA';
+
+    if (!facultyId) {
+      return res.status(401).json({ message: "Unauthorized. Faculty ID missing." });
+    }
+
+    const currentYear = new Date().getFullYear();
+    const currentYearStr = currentYear.toString();
+
+    // 3. Fetch this exact user's master assignment record
+    const facultyRecord = await AssignSubject.findOne({ facultyId: String(facultyId) }).lean();
+
+    let assignedSubjectIds = [];
+
+    // 4. Dig into the assignments and pull ONLY the IDs for BCA
+    if (
+      facultyRecord && 
+      facultyRecord.assignments && 
+      facultyRecord.assignments[currentYearStr] &&
+      facultyRecord.assignments[currentYearStr][targetCourse] // Looks specifically for 'BCA'
+    ) {
+      const courseSubjects = facultyRecord.assignments[currentYearStr][targetCourse];
+      
+      if (Array.isArray(courseSubjects)) {
+         courseSubjects.forEach(subject => {
+            if (subject.subjectId) {
+               assignedSubjectIds.push(subject.subjectId);
+            }
+         });
+      }
+    }
+
+    // 5. Early return if they aren't teaching any BCA subjects this year
+    if (assignedSubjectIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          course: targetCourse,
+          academicYear: currentYear,
+          totalSubjects: 0,
+          uploadedSubjects: 0,
+          pendingSubjects: 0,
+          progressPercentage: 0
+        },
+        message: `No subjects assigned to you for ${targetCourse} in ${currentYear}.`
+      });
+    }
+
+    // 6. Query the master Subject collection for JUST this user's BCA IDs
+    const subjectRecords = await Subject.find({
+      subjectId: { $in: assignedSubjectIds },
+      academicYear: currentYear,
+      course: targetCourse // Extra layer of safety ensuring it's BCA
+    }, 'subjectId status').lean();
+
+    // 7. Tally the progress
+    let uploadedCount = 0;
+    let pendingCount = 0;
+
+    subjectRecords.forEach(subject => {
+      if (subject.status === 'Uploaded') {
+        uploadedCount += 1;
+      } else {
+        pendingCount += 1; 
+      }
+    });
+
+    const totalCount = uploadedCount + pendingCount;
+
+    // 8. Send back the calculated percentages and counts
+    return res.status(200).json({
+      success: true,
+      data: {
+        course: targetCourse,
+        academicYear: currentYear,
+        totalSubjects: totalCount,
+        uploadedSubjects: uploadedCount,
+        pendingSubjects: pendingCount,
+        progressPercentage: totalCount > 0 
+          ? parseFloat(((uploadedCount / totalCount) * 100).toFixed(2))
+          : 0
+      }
+    });
+
+  } catch (error) {
+    console.error(`Error calculating BCA course progress:`, error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while calculating your BCA course progress."
+    });
+  }
+};
+
+
+
+
+
+
+const handleGetMyMCAProgress = async (req, res) => {
+  try {
+    // 1. Identify the user via the token middleware
+    const facultyId = req.facultyId; 
+    
+    // 2. HARDCODED: This controller now strictly looks for MCA
+    const targetCourse = 'MCA';
+
+    if (!facultyId) {
+      return res.status(401).json({ message: "Unauthorized. Faculty ID missing." });
+    }
+
+    const currentYear = new Date().getFullYear();
+    const currentYearStr = currentYear.toString();
+
+    // 3. Fetch this exact user's master assignment record
+    const facultyRecord = await AssignSubject.findOne({ facultyId: String(facultyId) }).lean();
+
+    let assignedSubjectIds = [];
+
+    // 4. Dig into the assignments and pull ONLY the IDs for MCA
+    if (
+      facultyRecord && 
+      facultyRecord.assignments && 
+      facultyRecord.assignments[currentYearStr] &&
+      facultyRecord.assignments[currentYearStr][targetCourse] // Looks specifically for 'MCA'
+    ) {
+      const courseSubjects = facultyRecord.assignments[currentYearStr][targetCourse];
+      
+      if (Array.isArray(courseSubjects)) {
+         courseSubjects.forEach(subject => {
+            if (subject.subjectId) {
+               assignedSubjectIds.push(subject.subjectId);
+            }
+         });
+      }
+    }
+
+    // 5. Early return if they aren't teaching any MCA subjects this year
+    if (assignedSubjectIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          course: targetCourse,
+          academicYear: currentYear,
+          totalSubjects: 0,
+          uploadedSubjects: 0,
+          pendingSubjects: 0,
+          progressPercentage: 0
+        },
+        message: `No subjects assigned to you for ${targetCourse} in ${currentYear}.`
+      });
+    }
+
+    // 6. Query the master Subject collection for JUST this user's MCA IDs
+    const subjectRecords = await Subject.find({
+      subjectId: { $in: assignedSubjectIds },
+      academicYear: currentYear,
+      course: targetCourse // Extra layer of safety ensuring it's MCA
+    }, 'subjectId status').lean();
+
+    // 7. Tally the progress
+    let uploadedCount = 0;
+    let pendingCount = 0;
+
+    subjectRecords.forEach(subject => {
+      if (subject.status === 'Uploaded') {
+        uploadedCount += 1;
+      } else {
+        pendingCount += 1; 
+      }
+    });
+
+    const totalCount = uploadedCount + pendingCount;
+
+    // 8. Send back the calculated percentages and counts
+    return res.status(200).json({
+      success: true,
+      data: {
+        course: targetCourse,
+        academicYear: currentYear,
+        totalSubjects: totalCount,
+        uploadedSubjects: uploadedCount,
+        pendingSubjects: pendingCount,
+        progressPercentage: totalCount > 0 
+          ? parseFloat(((uploadedCount / totalCount) * 100).toFixed(2))
+          : 0
+      }
+    });
+
+  } catch (error) {
+    console.error(`Error calculating MCA course progress:`, error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while calculating your MCA course progress."
+    });
+  }
+};
+
+
+
+
+
+const handleGetMyBCACopoProgress = async (req, res) => {
+  try {
+    // 1. Identify the user via the token middleware
+    const facultyId = req.facultyId; 
+    
+    // 2. HARDCODED: This controller now strictly looks for BCA
+    const targetCourse = 'BCA';
+
+    if (!facultyId) {
+      return res.status(401).json({ message: "Unauthorized. Faculty ID missing." });
+    }
+
+    const currentYear = new Date().getFullYear();
+    const currentYearStr = currentYear.toString();
+
+    // 3. Fetch this exact user's master assignment record
+    const facultyRecord = await AssignSubject.findOne({ facultyId: String(facultyId) }).lean();
+
+    let assignedSubjectIds = [];
+
+    // 4. Dig into the assignments and pull ONLY the IDs for BCA
+    if (
+      facultyRecord && 
+      facultyRecord.assignments && 
+      facultyRecord.assignments[currentYearStr] &&
+      facultyRecord.assignments[currentYearStr][targetCourse] // Looks specifically for 'BCA'
+    ) {
+      const courseSubjects = facultyRecord.assignments[currentYearStr][targetCourse];
+      
+      if (Array.isArray(courseSubjects)) {
+         courseSubjects.forEach(subject => {
+            if (subject.subjectId) {
+               assignedSubjectIds.push(subject.subjectId);
+            }
+         });
+      }
+    }
+
+    // 5. Early return if they aren't teaching any BCA subjects this year
+    if (assignedSubjectIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          course: targetCourse,
+          academicYear: currentYear,
+          totalSubjects: 0,
+          uploadedSubjects: 0,
+          pendingSubjects: 0,
+          progressPercentage: 0
+        },
+        message: `No subjects assigned to you for ${targetCourse} in ${currentYear}.`
+      });
+    }
+
+    // 6. TARGETED QUERY: Look specifically at 'copoMappingStatus' for this user's BCA IDs
+    const subjectRecords = await Subject.find({
+      subjectId: { $in: assignedSubjectIds },
+      academicYear: currentYear,
+      course: targetCourse 
+    }, 'subjectId copoMappingStatus').lean(); // <-- Specifically asking for copoMappingStatus
+
+    // 7. Tally the progress
+    let uploadedCount = 0;
+    let pendingCount = 0;
+
+    subjectRecords.forEach(subject => {
+      // Checking the exact copoMappingStatus enum from your Subject schema
+      if (subject.copoMappingStatus === 'Uploaded') {
+        uploadedCount += 1;
+      } else {
+        // If it is 'Pending' (or undefined), count as pending
+        pendingCount += 1; 
+      }
+    });
+
+    const totalCount = uploadedCount + pendingCount;
+
+    // 8. Send back the calculated percentages and counts
+    return res.status(200).json({
+      success: true,
+      data: {
+        course: targetCourse,
+        academicYear: currentYear,
+        totalSubjects: totalCount,
+        uploadedSubjects: uploadedCount,
+        pendingSubjects: pendingCount,
+        progressPercentage: totalCount > 0 
+          ? parseFloat(((uploadedCount / totalCount) * 100).toFixed(2))
+          : 0
+      }
+    });
+
+  } catch (error) {
+    console.error(`Error calculating BCA CO-PO progress:`, error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while calculating your BCA CO-PO progress."
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+const handleGetMyMCACopoProgress = async (req, res) => {
+  try {
+    // 1. Identify the user via the token middleware
+    const facultyId = req.facultyId; 
+    
+    // 2. HARDCODED: This controller now strictly looks for MCA
+    const targetCourse = 'MCA';
+
+    if (!facultyId) {
+      return res.status(401).json({ message: "Unauthorized. Faculty ID missing." });
+    }
+
+    const currentYear = new Date().getFullYear();
+    const currentYearStr = currentYear.toString();
+
+    // 3. Fetch this exact user's master assignment record
+    const facultyRecord = await AssignSubject.findOne({ facultyId: String(facultyId) }).lean();
+
+    let assignedSubjectIds = [];
+
+    // 4. Dig into the assignments and pull ONLY the IDs for MCA
+    if (
+      facultyRecord && 
+      facultyRecord.assignments && 
+      facultyRecord.assignments[currentYearStr] &&
+      facultyRecord.assignments[currentYearStr][targetCourse] // Looks specifically for 'MCA'
+    ) {
+      const courseSubjects = facultyRecord.assignments[currentYearStr][targetCourse];
+      
+      if (Array.isArray(courseSubjects)) {
+         courseSubjects.forEach(subject => {
+            if (subject.subjectId) {
+               assignedSubjectIds.push(subject.subjectId);
+            }
+         });
+      }
+    }
+
+    // 5. Early return if they aren't teaching any MCA subjects this year
+    if (assignedSubjectIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          course: targetCourse,
+          academicYear: currentYear,
+          totalSubjects: 0,
+          uploadedSubjects: 0,
+          pendingSubjects: 0,
+          progressPercentage: 0
+        },
+        message: `No subjects assigned to you for ${targetCourse} in ${currentYear}.`
+      });
+    }
+
+    // 6. TARGETED QUERY: Look specifically at 'copoMappingStatus' for this user's MCA IDs
+    const subjectRecords = await Subject.find({
+      subjectId: { $in: assignedSubjectIds },
+      academicYear: currentYear,
+      course: targetCourse 
+    }, 'subjectId copoMappingStatus').lean(); 
+
+    // 7. Tally the progress
+    let uploadedCount = 0;
+    let pendingCount = 0;
+
+    subjectRecords.forEach(subject => {
+      // Checking the exact copoMappingStatus enum from your Subject schema
+      if (subject.copoMappingStatus === 'Uploaded') {
+        uploadedCount += 1;
+      } else {
+        // If it is 'Pending' (or undefined), count as pending
+        pendingCount += 1; 
+      }
+    });
+
+    const totalCount = uploadedCount + pendingCount;
+
+    // 8. Send back the calculated percentages and counts
+    return res.status(200).json({
+      success: true,
+      data: {
+        course: targetCourse,
+        academicYear: currentYear,
+        totalSubjects: totalCount,
+        uploadedSubjects: uploadedCount,
+        pendingSubjects: pendingCount,
+        progressPercentage: totalCount > 0 
+          ? parseFloat(((uploadedCount / totalCount) * 100).toFixed(2))
+          : 0
+      }
+    });
+
+  } catch (error) {
+    console.error(`Error calculating MCA CO-PO progress:`, error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while calculating your MCA CO-PO progress."
+    });
+  }
+};
+
+
+
+
 module.exports = { 
-  getAssignedSubjectCountForCurrentYear,
-  getPendingCopoMappingCount,
-  getGeneratedReportCount,
+  HangleGetAssignedSubjectCountForCurrentYear,
+  HandleGetPendingCopoMappingCount,
+  handleGetGeneratedReportCount,
+  HandleGetMyBCAProgress,
+  handleGetMyMCAProgress,
+  handleGetMyBCACopoProgress,
+  handleGetMyMCACopoProgress,
  };
