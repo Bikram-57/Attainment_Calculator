@@ -58,21 +58,136 @@ const getPendingSubjects = async (req, res) => {
 // ============================================================================
 // 2. Save Mapping & Update Subject Status
 // ============================================================================
+// const saveCoPoRelation = async (req, res) => {
+//     try {
+//         // const { subjectId, academicYear, course, mappingData, semester } = req.body;
+//         const { subjectId, subjectName, academicYear, course, mappingData, semester } = req.body;
+//         // Safety Check
+//         if (!subjectId || !mappingData) {
+//             return res.status(400).send("Subject ID or Mapping Data is missing.");
+//         }
+
+//         // --- STRICT 8-PO VALIDATION LOGIC ---
+//         const coKeys = Object.keys(mappingData);
+
+//         for (const co of coKeys) {
+//             const poKeys = Object.keys(mappingData[co]);
+
+//             if (poKeys.length > 8) {
+//                 return res.status(400).json({
+//                     success: false,
+//                     message: `Logic Error: ${co} contains ${poKeys.length} POs. Maximum 8 POs allowed.`
+//                 });
+//             }
+
+//             const invalidPOs = poKeys.filter(po => {
+//                 const poNumber = parseInt(po.replace('PO', ''));
+//                 return poNumber > 8 || isNaN(poNumber);
+//             });
+
+//             if (invalidPOs.length > 0) {
+//                 return res.status(400).json({
+//                     success: false,
+//                     message: `Invalid POs in ${co}: [${invalidPOs.join(', ')}]. Only PO1-PO8 permitted.`
+//                 });
+//             }
+//         }
+
+//         // Database Update: Save the Mapping
+//         await CoPoMapping.findOneAndUpdate(
+//             {
+//                 subjectId: subjectId.toUpperCase(),
+//                 academicYear,
+//                 course: (course || "BCA" || "MCA").toUpperCase()
+//             },
+//             { $set: { mappingData, updatedAt: new Date() } },
+//             { upsert: true }
+//         );
+
+//         // Database Update: Mark Subject as Completed
+//         const subjectQuery = {
+//             subjectId: subjectId.toUpperCase(),
+//             academicYear: academicYear
+//         };
+
+//         if (semester) {
+//             subjectQuery.semester = semester;
+//         }
+
+//         await Subject.findOneAndUpdate(
+//             subjectQuery,
+//             { $set: { copoMappingStatus: 'Uploaded' } }
+//         );
+
+//         // ---> ADD THE TRIGGER HERE <---
+//         //   await logActivity(
+//         //         req.user, 
+//         //         // 'MAPPED_CO_PO', 
+//         //         'CO-PO Mapping uploaded!', 
+//         //         `${subjectId.toUpperCase()} (${academicYear})`, 
+//         //         [] 
+//         //     );
+//         // 1. Find the name of the person who uploaded it
+//        // 1. Get the uploader's name
+//         const currentUser = await User.findById(req.user).select('name').lean();
+//         const actorName = currentUser ? currentUser.name : "a Faculty Member";
+
+//         // 2. Force the backend to find the Subject Name using the ID!
+//         const subjectRecord = await Subject.findOne({ 
+//             subjectId: subjectId.toUpperCase(),
+//             academicYear: academicYear 
+//         }).lean();
+        
+//         // Check for 'subjectName' or 'name' depending on how your schema is built
+//         const safeSubjectName = subjectRecord 
+//             ? (subjectRecord.subjectName || subjectRecord.name || "Unknown Subject") 
+//             : "Unknown Subject";
+
+//         const safeCourse = course ? course.toUpperCase() : "UNKNOWN COURSE";
+
+//         // 3. Fire the beautifully formatted notification!
+//         await logActivity(
+//             req.user,
+//             'UPLOADED_CO_PO_MAPPING', 
+//             // `CO-PO Mapping uploaded for ${subjectId.toUpperCase()} - ${safeSubjectName} (${safeCourse}, Batch: ${academicYear}) by ${actorName}`, 
+//             `CO-PO Mapping uploaded for ${subjectId.toUpperCase()} - ${safeSubjectName} (${safeCourse}, ${academicYear}) by ${actorName}`, 
+//             []
+//         );
+
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Data saved successfully and Subject status marked as Uploaded!",
+//             receivedData: { subjectId, academicYear }
+//         });
+
+//     } catch (error) {
+//         console.error("Save Error:", error.message);
+//         res.status(500).send("Server Error: " + error.message);
+//     }
+// };
+
+
+
 const saveCoPoRelation = async (req, res) => {
     try {
-        // const { subjectId, academicYear, course, mappingData, semester } = req.body;
         const { subjectId, subjectName, academicYear, course, mappingData, semester } = req.body;
-        // Safety Check
-        if (!subjectId || !mappingData) {
-            return res.status(400).send("Subject ID or Mapping Data is missing.");
+
+        // 1. Strict Safety Check (Added course & academicYear to ensure database integrity)
+        if (!subjectId || !mappingData || !course || !academicYear) {
+            return res.status(400).json({
+                success: false,
+                message: "Subject ID, Academic Year, Course, or Mapping Data is missing."
+            });
         }
 
-        // --- STRICT 8-PO VALIDATION LOGIC ---
+        // 2. STRICT 8-PO VALIDATION LOGIC
         const coKeys = Object.keys(mappingData);
 
         for (const co of coKeys) {
             const poKeys = Object.keys(mappingData[co]);
 
+            // Prevent more than 8 POs
             if (poKeys.length > 8) {
                 return res.status(400).json({
                     success: false,
@@ -80,6 +195,7 @@ const saveCoPoRelation = async (req, res) => {
                 });
             }
 
+            // Prevent invalid PO naming (e.g., PO9)
             const invalidPOs = poKeys.filter(po => {
                 const poNumber = parseInt(po.replace('PO', ''));
                 return poNumber > 8 || isNaN(poNumber);
@@ -93,18 +209,18 @@ const saveCoPoRelation = async (req, res) => {
             }
         }
 
-        // Database Update: Save the Mapping
+        // 3. Database Update: Save the Mapping (Upsert logic completely prevents duplicates)
         await CoPoMapping.findOneAndUpdate(
             {
                 subjectId: subjectId.toUpperCase(),
-                academicYear,
-                course: (course || "BCA" || "MCA").toUpperCase()
+                academicYear: academicYear,
+                course: course.toUpperCase() // Fixed: Using the variable directly ensures it doesn't break
             },
             { $set: { mappingData, updatedAt: new Date() } },
-            { upsert: true }
+            { upsert: true, new: true }
         );
 
-        // Database Update: Mark Subject as Completed
+        // 4. Database Update: Mark Subject as Completed in the Subject Collection
         const subjectQuery = {
             subjectId: subjectId.toUpperCase(),
             academicYear: academicYear
@@ -119,51 +235,48 @@ const saveCoPoRelation = async (req, res) => {
             { $set: { copoMappingStatus: 'Uploaded' } }
         );
 
-        // ---> ADD THE TRIGGER HERE <---
-        //   await logActivity(
-        //         req.user, 
-        //         // 'MAPPED_CO_PO', 
-        //         'CO-PO Mapping uploaded!', 
-        //         `${subjectId.toUpperCase()} (${academicYear})`, 
-        //         [] 
-        //     );
-        // 1. Find the name of the person who uploaded it
-       // 1. Get the uploader's name
+        // 5. Notification Trigger: Log the Activity
+        // Get the uploader's name safely
         const currentUser = await User.findById(req.user).select('name').lean();
         const actorName = currentUser ? currentUser.name : "a Faculty Member";
 
-        // 2. Force the backend to find the Subject Name using the ID!
+        // Find the Subject Name using the ID
         const subjectRecord = await Subject.findOne({ 
             subjectId: subjectId.toUpperCase(),
             academicYear: academicYear 
         }).lean();
         
-        // Check for 'subjectName' or 'name' depending on how your schema is built
+        // Fallback checks just in case the DB lookup fails, we use the name from req.body
         const safeSubjectName = subjectRecord 
-            ? (subjectRecord.subjectName || subjectRecord.name || "Unknown Subject") 
-            : "Unknown Subject";
+            ? (subjectRecord.subjectName || subjectRecord.name || subjectName || "Unknown Subject") 
+            : (subjectName || "Unknown Subject"); 
 
-        const safeCourse = course ? course.toUpperCase() : "UNKNOWN COURSE";
+        const safeCourse = course.toUpperCase();
 
-        // 3. Fire the beautifully formatted notification!
+        // Fire the formatted notification!
+        // Uncomment this once your logActivity function is imported
+        
         await logActivity(
             req.user,
             'UPLOADED_CO_PO_MAPPING', 
-            // `CO-PO Mapping uploaded for ${subjectId.toUpperCase()} - ${safeSubjectName} (${safeCourse}, Batch: ${academicYear}) by ${actorName}`, 
             `CO-PO Mapping uploaded for ${subjectId.toUpperCase()} - ${safeSubjectName} (${safeCourse}, ${academicYear}) by ${actorName}`, 
             []
         );
+        
 
-
+        // 6. Return Success Response
         return res.status(200).json({
             success: true,
             message: "Data saved successfully and Subject status marked as Uploaded!",
-            receivedData: { subjectId, academicYear }
+            receivedData: { subjectId, academicYear, course }
         });
 
     } catch (error) {
         console.error("Save Error:", error.message);
-        res.status(500).send("Server Error: " + error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Server Error: " + error.message
+        });
     }
 };
 

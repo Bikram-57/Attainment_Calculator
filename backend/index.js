@@ -35,6 +35,7 @@ const downloadDirectAttainmentReport = require('./routes/downloadDirectAttainmen
 const formatDownload = require('./routes/formatDownload');
 const activity = require('./routes/activities');
 const subjectAnalysis = require('./routes/subjectAnalysis');
+const userHomePage = require('./routes/userHomePage');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -85,6 +86,7 @@ app.use("/report", downloadDirectAttainmentReport);
 app.use("/download-format", formatDownload);
 app.use("/activity", activity);
 app.use("/subject-analysis", subjectAnalysis);
+app.use("/", userHomePage);
 
 startTokenCleanupJob();
 

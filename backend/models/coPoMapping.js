@@ -29,4 +29,5 @@ const CoPoMappingSchema = new mongoose.Schema({
 // Indexing ensures we don't get duplicate mappings for the same subject/year
 CoPoMappingSchema.index({ subjectId: 1, academicYear: 1, course: 1 }, { unique: true });
 
-module.exports = mongoose.model('CoPoMapping', CoPoMappingSchema);
+// module.exports = mongoose.model('CoPoMapping', CoPoMappingSchema);
+module.exports = mongoose.models.CoPoMapping || mongoose.model('CoPoMapping', CoPoMappingSchema);

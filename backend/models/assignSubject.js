@@ -150,4 +150,5 @@ const assignSubjectSchema = new mongoose.Schema({
     }
 }, { timestamps: true }); // Automatically handles createdAt and updatedAt
 
-module.exports = mongoose.model('assignSubject', assignSubjectSchema);
+// module.exports = mongoose.model('assignSubject', assignSubjectSchema);
+module.exports = mongoose.models.assignSubject || mongoose.model('assignSubject', assignSubjectSchema);
