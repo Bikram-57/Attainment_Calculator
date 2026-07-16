@@ -58,15 +58,21 @@ function COAttainTable({ data }) {
     }, []);
 
     return (
-        <div className="bg-white">
-            <div className="overflow-auto shadow">
-                <table className='min-w-full text-sm text-center border-collapse whitespace-nowrap'>
-                {/* <table className={`min-w-full ${isOpen ? 'text-xs' : 'text-sm'} text-center border-collapse whitespace-nowrap`}> */}
+        <div className="h-full rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
 
-                    {/* HEADER */}
-                    <thead className="bg-gray-100 sticky top-0 z-10">
+            {/* Table Container */}
+            <div className="h-full overflow-auto">
+
+                <table className="min-w-full border-separate border-spacing-0 text-sm whitespace-nowrap">
+
+                    {/* ================= HEADER ================= */}
+                    <thead className="sticky top-0 z-30">
+
                         <tr>
-                            <th rowSpan={2} className="border border-t-0 border-l-0 border-gray-300 px-0 py-2 sticky left-0 bg-gray-100 z-20">
+                            <th
+                                rowSpan={2}
+                                className="sticky left-0 z-40 border-b border-r border-gray-200 bg-slate-800 px-5 py-4 text-left font-semibold text-white"
+                            >
                                 Reg No
                             </th>
 
@@ -74,7 +80,7 @@ function COAttainTable({ data }) {
                                 <th
                                     key={col.title}
                                     colSpan={col.keys.length + 1}
-                                    className="border border-gray-300 border-t-0 border-r-0 px-1 py-2 font-bold"
+                                    className="border-b border-r border-gray-200 bg-slate-800 px-3 py-4 text-center font-semibold text-white"
                                 >
                                     {col.title}
                                 </th>
@@ -85,168 +91,397 @@ function COAttainTable({ data }) {
                             {columns.map((col) => (
                                 <React.Fragment key={col.title}>
                                     {col.keys.map((key) => (
-                                        <th key={key} className="border border-gray-300 px-1 py-2">
+                                        <th
+                                            key={key}
+                                            className="border-b border-r border-gray-200 bg-slate-700 px-3 py-2 text-xs font-semibold tracking-wide text-white"
+                                        >
                                             {getCOName(key)}
                                         </th>
                                     ))}
-                                    <th className="border border-gray-300 border-r-0 px-1 py-2 font-semibold">Total</th>
+
+                                    <th className="border-b border-r border-gray-200 bg-indigo-800 px-3 py-2 text-xs font-bold text-white">
+                                        Total
+                                    </th>
                                 </React.Fragment>
                             ))}
                         </tr>
+
                     </thead>
 
-                    {/* BODY */}
+                    {/* ================= BODY ================= */}
                     <tbody>
-                        {studentMarks.map((student) => (
-                            <tr key={student.regNo} className="hover:bg-gray-200">
 
-                                <td className="border border-gray-300 border-l-0 px-0 py-2 font-medium sticky left-0 bg-white">
+                        {studentMarks.map((student) => (
+
+                            <tr
+                                key={student.regNo}
+                                className="bg-slate-50 hover:bg-indigo-50 transition-colors"
+                            >
+
+                                <td className="sticky left-0 z-20 border-b border-r border-gray-200 bg-inherit px-5 py-3 font-semibold text-slate-700">
                                     {student.regNo}
                                 </td>
 
                                 {columns.map((col) => (
+
                                     <React.Fragment key={col.title}>
 
-                                        {/* CO Marks */}
                                         {col.keys.map((key) => (
-                                            <td key={key} className="border border-gray-300 px-1 py-2">
+
+                                            <td
+                                                key={key}
+                                                className="border-b border-r border-gray-200 px-3 py-3 text-center text-slate-700"
+                                            >
                                                 {student.marks[key] ?? "-"}
                                             </td>
+
                                         ))}
 
-                                        {/* TOTAL (FROM BACKEND) */}
-                                        <td className="border border-gray-300 border-r-0 px-1 py-2 font-semibold bg-gray-100">
+                                        <td className="border-b border-r border-gray-200 bg-indigo-50 px-3 py-3 text-center font-semibold text-indigo-700">
                                             {student.marks[col.total] ?? "-"}
                                         </td>
 
                                     </React.Fragment>
+
                                 ))}
+
                             </tr>
+
                         ))}
+
                     </tbody>
 
-                    {/* FOOTER: Attainment % */}
-                    <tfoot className="bg-gray-100 font-semibold">
-                        <tr>
-                            <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
+                    {/* ================= FOOTER ================= */}
+                    <tfoot>
+
+                        <tr className="bg-slate-100 font-semibold">
+                            <td className="sticky left-0 border-t border-r border-gray-200 bg-slate-100 px-5 py-3 text-slate-700">
                                 Max Marks
                             </td>
 
                             {columns.map((col) => (
                                 <React.Fragment key={col.title}>
 
-                                    {/* CO */}
                                     {col.keys.map((key) => (
-                                        <td key={key} className="border border-gray-300 px-1 py-2">
+                                        <td
+                                            key={key}
+                                            className="border-t border-r border-gray-200 px-3 py-3 text-center"
+                                        >
                                             {attainmentReport[key]?.maxMarks ?? 0}
                                         </td>
                                     ))}
 
-                                    {/* TOTAL */}
-                                    <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
+                                    <td className="border-t border-r border-gray-200 bg-indigo-100 px-3 py-3 text-center font-bold">
                                         {attainmentReport[col.total]?.maxMarks ?? 0}
                                     </td>
 
                                 </React.Fragment>
                             ))}
                         </tr>
-                        <tr>
-                            <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
+
+                        <tr className="bg-white font-semibold">
+                            <td className="sticky left-0 border-t border-r border-gray-200 bg-white px-5 py-3 text-slate-700">
                                 Target Marks
                             </td>
 
                             {columns.map((col) => (
                                 <React.Fragment key={col.title}>
 
-                                    {/* CO */}
                                     {col.keys.map((key) => (
-                                        <td key={key} className="border border-gray-300 px-1 py-2">
+                                        <td
+                                            key={key}
+                                            className="border-t border-r border-gray-200 px-3 py-3 text-center"
+                                        >
                                             {attainmentReport[key]?.targetMarks ?? 0}
                                         </td>
                                     ))}
 
-                                    {/* TOTAL */}
-                                    <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
+                                    <td className="border-t border-r border-gray-200 bg-indigo-50 px-3 py-3 text-center font-bold">
                                         {attainmentReport[col.total]?.targetMarks ?? 0}
                                     </td>
 
                                 </React.Fragment>
                             ))}
                         </tr>
-                        <tr>
-                            <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
-                                Students {'>'}= 60
+
+                        <tr className="bg-slate-100 font-semibold">
+                            <td className="sticky left-0 border-t border-r border-gray-200 bg-slate-100 px-5 py-3 text-slate-700">
+                                Students ≥ Target
                             </td>
 
                             {columns.map((col) => (
                                 <React.Fragment key={col.title}>
 
-                                    {/* CO */}
                                     {col.keys.map((key) => (
-                                        <td key={key} className="border border-gray-300 px-1 py-2">
+                                        <td
+                                            key={key}
+                                            className="border-t border-r border-gray-200 px-3 py-3 text-center"
+                                        >
                                             {attainmentReport[key]?.studentsAboveTarget ?? 0}
                                         </td>
                                     ))}
 
-                                    {/* TOTAL */}
-                                    <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
+                                    <td className="border-t border-r border-gray-200 bg-indigo-100 px-3 py-3 text-center font-bold">
                                         {attainmentReport[col.total]?.studentsAboveTarget ?? 0}
                                     </td>
 
                                 </React.Fragment>
                             ))}
                         </tr>
-                        <tr>
-                            <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
+
+                        <tr className="bg-white font-semibold">
+                            <td className="sticky left-0 border-t border-r border-gray-200 bg-white px-5 py-3 text-slate-700">
                                 Attainment %
                             </td>
 
                             {columns.map((col) => (
                                 <React.Fragment key={col.title}>
 
-                                    {/* CO % */}
                                     {col.keys.map((key) => (
-                                        <td key={key} className="border border-gray-300 px-1 py-2">
+                                        <td
+                                            key={key}
+                                            className="border-t border-r border-gray-200 px-3 py-3 text-center"
+                                        >
                                             {attainmentReport[key]?.attainmentPercent ?? 0}%
                                         </td>
                                     ))}
 
-                                    {/* TOTAL % */}
-                                    <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
+                                    <td className="border-t border-r border-gray-200 bg-indigo-50 px-3 py-3 text-center font-bold text-indigo-700">
                                         {attainmentReport[col.total]?.attainmentPercent ?? 0}%
                                     </td>
 
                                 </React.Fragment>
                             ))}
                         </tr>
-                        <tr>
-                            <td className="border border-gray-300 border-l-0 border-b-0 px-0 py-2 sticky left-0 bg-gray-100">
+
+                        <tr className="bg-emerald-50 font-semibold">
+
+                            <td className="sticky left-0 border-t border-r border-gray-200 bg-emerald-50 px-5 py-4 text-slate-800">
                                 CO Attainment
                             </td>
 
                             {columns.map((col) => (
                                 <React.Fragment key={col.title}>
 
-                                    {/* CO */}
                                     {col.keys.map((key) => (
-                                        <td key={key} className="border border-gray-300 border-b-0 px-1 py-2">
-                                            {attainmentReport[key]?.attainmentLevel ?? 0}
+                                        <td
+                                            key={key}
+                                            className="border-t border-r border-gray-200 px-3 py-4 text-center"
+                                        >
+                                            <span className="inline-flex min-w-8.5 justify-center rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700">
+                                                {attainmentReport[key]?.attainmentLevel ?? 0}
+                                            </span>
                                         </td>
                                     ))}
 
-                                    {/* TOTAL */}
-                                    <td className="border border-gray-300 border-r-0 border-b-0 px-1 py-2 bg-gray-200">
-                                        {attainmentReport[col.total]?.attainmentLevel ?? 0}
+                                    <td className="border-t border-r border-gray-200 bg-emerald-100 px-3 py-4 text-center">
+                                        <span className="inline-flex min-w-8.5 justify-center rounded-full bg-emerald-600 px-2 py-1 text-xs font-bold text-white">
+                                            {attainmentReport[col.total]?.attainmentLevel ?? 0}
+                                        </span>
                                     </td>
 
                                 </React.Fragment>
                             ))}
+
                         </tr>
+
                     </tfoot>
 
                 </table>
+
             </div>
+
         </div>
+
+        // <div className="bg-white">
+        //     <div className="overflow-auto shadow">
+        //         <table className='min-w-full text-sm text-center border-collapse whitespace-nowrap'>
+        //         {/* <table className={`min-w-full ${isOpen ? 'text-xs' : 'text-sm'} text-center border-collapse whitespace-nowrap`}> */}
+
+        //             {/* HEADER */}
+        //             <thead className="bg-gray-100 sticky top-0 z-10">
+        //                 <tr>
+        //                     <th rowSpan={2} className="border border-t-0 border-l-0 border-gray-300 px-0 py-2 sticky left-0 bg-gray-100 z-20">
+        //                         Reg No
+        //                     </th>
+
+        //                     {columns.map((col) => (
+        //                         <th
+        //                             key={col.title}
+        //                             colSpan={col.keys.length + 1}
+        //                             className="border border-gray-300 border-t-0 border-r-0 px-1 py-2 font-bold"
+        //                         >
+        //                             {col.title}
+        //                         </th>
+        //                     ))}
+        //                 </tr>
+
+        //                 <tr>
+        //                     {columns.map((col) => (
+        //                         <React.Fragment key={col.title}>
+        //                             {col.keys.map((key) => (
+        //                                 <th key={key} className="border border-gray-300 px-1 py-2">
+        //                                     {getCOName(key)}
+        //                                 </th>
+        //                             ))}
+        //                             <th className="border border-gray-300 border-r-0 px-1 py-2 font-semibold">Total</th>
+        //                         </React.Fragment>
+        //                     ))}
+        //                 </tr>
+        //             </thead>
+
+        //             {/* BODY */}
+        //             <tbody>
+        //                 {studentMarks.map((student) => (
+        //                     <tr key={student.regNo} className="hover:bg-gray-200">
+
+        //                         <td className="border border-gray-300 border-l-0 px-0 py-2 font-medium sticky left-0 bg-white">
+        //                             {student.regNo}
+        //                         </td>
+
+        //                         {columns.map((col) => (
+        //                             <React.Fragment key={col.title}>
+
+        //                                 {/* CO Marks */}
+        //                                 {col.keys.map((key) => (
+        //                                     <td key={key} className="border border-gray-300 px-1 py-2">
+        //                                         {student.marks[key] ?? "-"}
+        //                                     </td>
+        //                                 ))}
+
+        //                                 {/* TOTAL (FROM BACKEND) */}
+        //                                 <td className="border border-gray-300 border-r-0 px-1 py-2 font-semibold bg-gray-100">
+        //                                     {student.marks[col.total] ?? "-"}
+        //                                 </td>
+
+        //                             </React.Fragment>
+        //                         ))}
+        //                     </tr>
+        //                 ))}
+        //             </tbody>
+
+        //             {/* FOOTER: Attainment % */}
+        //             <tfoot className="bg-gray-100 font-semibold">
+        //                 <tr>
+        //                     <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
+        //                         Max Marks
+        //                     </td>
+
+        //                     {columns.map((col) => (
+        //                         <React.Fragment key={col.title}>
+
+        //                             {/* CO */}
+        //                             {col.keys.map((key) => (
+        //                                 <td key={key} className="border border-gray-300 px-1 py-2">
+        //                                     {attainmentReport[key]?.maxMarks ?? 0}
+        //                                 </td>
+        //                             ))}
+
+        //                             {/* TOTAL */}
+        //                             <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
+        //                                 {attainmentReport[col.total]?.maxMarks ?? 0}
+        //                             </td>
+
+        //                         </React.Fragment>
+        //                     ))}
+        //                 </tr>
+        //                 <tr>
+        //                     <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
+        //                         Target Marks
+        //                     </td>
+
+        //                     {columns.map((col) => (
+        //                         <React.Fragment key={col.title}>
+
+        //                             {/* CO */}
+        //                             {col.keys.map((key) => (
+        //                                 <td key={key} className="border border-gray-300 px-1 py-2">
+        //                                     {attainmentReport[key]?.targetMarks ?? 0}
+        //                                 </td>
+        //                             ))}
+
+        //                             {/* TOTAL */}
+        //                             <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
+        //                                 {attainmentReport[col.total]?.targetMarks ?? 0}
+        //                             </td>
+
+        //                         </React.Fragment>
+        //                     ))}
+        //                 </tr>
+        //                 <tr>
+        //                     <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
+        //                         Students {'>'}= 60
+        //                     </td>
+
+        //                     {columns.map((col) => (
+        //                         <React.Fragment key={col.title}>
+
+        //                             {/* CO */}
+        //                             {col.keys.map((key) => (
+        //                                 <td key={key} className="border border-gray-300 px-1 py-2">
+        //                                     {attainmentReport[key]?.studentsAboveTarget ?? 0}
+        //                                 </td>
+        //                             ))}
+
+        //                             {/* TOTAL */}
+        //                             <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
+        //                                 {attainmentReport[col.total]?.studentsAboveTarget ?? 0}
+        //                             </td>
+
+        //                         </React.Fragment>
+        //                     ))}
+        //                 </tr>
+        //                 <tr>
+        //                     <td className="border border-gray-300 border-l-0 px-0 py-2 sticky left-0 bg-gray-100">
+        //                         Attainment %
+        //                     </td>
+
+        //                     {columns.map((col) => (
+        //                         <React.Fragment key={col.title}>
+
+        //                             {/* CO % */}
+        //                             {col.keys.map((key) => (
+        //                                 <td key={key} className="border border-gray-300 px-1 py-2">
+        //                                     {attainmentReport[key]?.attainmentPercent ?? 0}%
+        //                                 </td>
+        //                             ))}
+
+        //                             {/* TOTAL % */}
+        //                             <td className="border border-gray-300 border-r-0 px-1 py-2 bg-gray-200">
+        //                                 {attainmentReport[col.total]?.attainmentPercent ?? 0}%
+        //                             </td>
+
+        //                         </React.Fragment>
+        //                     ))}
+        //                 </tr>
+        //                 <tr>
+        //                     <td className="border border-gray-300 border-l-0 border-b-0 px-0 py-2 sticky left-0 bg-gray-100">
+        //                         CO Attainment
+        //                     </td>
+
+        //                     {columns.map((col) => (
+        //                         <React.Fragment key={col.title}>
+
+        //                             {/* CO */}
+        //                             {col.keys.map((key) => (
+        //                                 <td key={key} className="border border-gray-300 border-b-0 px-1 py-2">
+        //                                     {attainmentReport[key]?.attainmentLevel ?? 0}
+        //                                 </td>
+        //                             ))}
+
+        //                             {/* TOTAL */}
+        //                             <td className="border border-gray-300 border-r-0 border-b-0 px-1 py-2 bg-gray-200">
+        //                                 {attainmentReport[col.total]?.attainmentLevel ?? 0}
+        //                             </td>
+
+        //                         </React.Fragment>
+        //                     ))}
+        //                 </tr>
+        //             </tfoot>
+
+        //         </table>
+        //     </div>
+        // </div>
     );
 };
 

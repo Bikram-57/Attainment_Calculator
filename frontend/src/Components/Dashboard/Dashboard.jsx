@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 
 function Dashboard() {
     const userData = useSelector(state => state.auth.userData);
-    console.log('TOKEN: ', useSelector(state => state.auth.accessToken));
+    // console.log('TOKEN: ', useSelector(state => state.auth.accessToken));
     const [activeSubjectCount, setActiveSubjectCount] = useState([]);
 
     useEffect(() => {
