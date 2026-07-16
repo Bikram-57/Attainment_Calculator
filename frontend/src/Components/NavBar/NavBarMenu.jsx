@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 function NavBarMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const userData = useSelector(state => state.auth.userData);
-    const [image, setImage] = useState(`http://localhost:8000/${userData?.profileImage}`);
+    const [image, setImage] = useState(`https://localhost:8000/${userData?.profileImage}`);
     const ref = useRef();
 
     const closeMenu = () => {
