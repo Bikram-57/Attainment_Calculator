@@ -198,17 +198,25 @@ function Profile() {
                     <div className="mt-8 flex flex-wrap justify-center gap-3">
 
                         {!isEditing ? (
-                            <button
-                                onClick={startEditing}
-                                className="flex cursor-pointer items-center gap-2 rounded-lg px-5 py-2.5 font-medium transition"
-                                style={{
-                                    backgroundColor: COLORS.mint,
-                                    color: COLORS.font
-                                }}
-                            >
-                                <FaUserEdit />
-                                Update Picture
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={startEditing}
+                                    className="flex cursor-pointer items-center gap-2 rounded-lg px-5 py-2 font-medium transition hover:opacity-90"
+                                    style={{
+                                        backgroundColor: COLORS.mint,
+                                        color: COLORS.font
+                                    }}
+                                >
+                                    <FaUserEdit />
+                                    Update Picture
+                                </button>
+                                <button
+                                    className="bg-gray-300 p-2 rounded-lg cursor-pointer font-medium px-5 py-2 hover:opacity-90"
+                                    onClick={() => navigate('/change-password')}
+                                >
+                                    Change password
+                                </button>
+                            </div>
                         ) : (
                             <>
                                 <button
@@ -236,12 +244,6 @@ function Profile() {
                                 </button>
                             </>
                         )}
-                        <button
-                            className="bg-gray-300 p-2 rounded-lg cursor-pointer font-bold"
-                            onClick={() => navigate('/change-password')}
-                        >
-                            change password
-                        </button>
                     </div>
 
                 </div>
