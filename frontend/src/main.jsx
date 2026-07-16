@@ -54,7 +54,7 @@ const router = createBrowserRouter([
 		path: '/forgot-password',
 		element: (
 			<PublicRoute>
-				<ForgotPassword />
+				<ForgotPassword mode='forgot' />
 			</PublicRoute>
 		),
 	},
@@ -132,6 +132,11 @@ const router = createBrowserRouter([
 				element: <SubjectAnalysis />,
 				handle: { title: 'Subject Analysis' },
 			},
+			{
+				path: 'change-password',
+				element: <ForgotPassword mode='change' />,
+				handle: { title: 'Change Password' },
+			},
 
 			// Pages that still use App Layout
 			{
@@ -139,7 +144,7 @@ const router = createBrowserRouter([
 				element: <ContactUs />,
 				handle: { title: 'Contact Us' },
 			},
-			
+
 			{
 				path: '*',
 				element: <PageNotFound />,

@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { ErrorSuccessMsg, Loading, ResetPassword, VerifyOtp } from '../index'
 
-export default function ForgotPassword() {
+export default function ForgotPassword({ mode }) {
     const [email, setEmail] = useState("");
     const [otpSent, setOtpSent] = useState(false);
     const [loading, setLoading] = useState(false);

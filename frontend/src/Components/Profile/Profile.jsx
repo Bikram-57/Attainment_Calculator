@@ -5,15 +5,17 @@ import { FaCamera, FaTrash, FaSave, FaTimes, FaUserEdit, FaIdBadge, FaEnvelope, 
 
 import { ErrorSuccessMsg, ProfileInfoCard } from "..";
 import { COLORS } from "../../constants/theme";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
     const userData = useSelector((state) => state.auth.userData);
+    const navigate = useNavigate();
 
     const defaultImage =
         "https://ui-avatars.com/api/?name=User&background=e2e8f0&color=475569&size=256";
 
     const initialImage = userData?.profileImage
-        ? `http://localhost:8000/${userData.profileImage}`
+        ? `https://localhost:8000/${userData.profileImage}`
         : defaultImage;
 
     const [previewImage, setPreviewImage] = useState(initialImage);
@@ -234,7 +236,12 @@ function Profile() {
                                 </button>
                             </>
                         )}
-
+                        <button
+                            className="bg-gray-300 p-2 rounded-lg cursor-pointer font-bold"
+                            onClick={() => navigate('/change-password')}
+                        >
+                            change password
+                        </button>
                     </div>
 
                 </div>
