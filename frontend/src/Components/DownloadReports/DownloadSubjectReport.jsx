@@ -23,7 +23,7 @@ function DownloadSubjectReport() {
 	const yearList = [2024];
 
 	useDocumentTitle('Subject Report - Download')
-	
+
 	for (let year = yearList[0] + 1; year <= currentYear; year++) {
 		yearList.push(year);
 	}
@@ -73,7 +73,6 @@ function DownloadSubjectReport() {
 				},
 				responseType: 'blob',
 			});
-
 			const blob = new Blob([response.data]);
 			const url = window.URL.createObjectURL(blob);
 
@@ -154,7 +153,7 @@ function DownloadSubjectReport() {
 						placeholder='Select a year'
 						value={yearOptions.find(option => (
 							option.value === academicYear
-						))}
+						)) || null}
 						onChange={selected => handleYear(selected?.value || '')}
 						maxMenuHeight={300}
 					/>
@@ -165,7 +164,7 @@ function DownloadSubjectReport() {
 						placeholder='Select a course'
 						value={courseOptions.find(option => (
 							option.value === course
-						))}
+						)) || null}
 						onChange={selected => handleCourse(selected?.value || '')}
 						maxMenuHeight={300}
 					/>
@@ -176,7 +175,7 @@ function DownloadSubjectReport() {
 						placeholder='Select a subject'
 						value={subjectOptions.find(option => (
 							option.value === subjectId
-						))}
+						)) || null}
 						onChange={selected => setSubjectId(selected?.value || '')}
 						isDisabled={isDisabled}
 						maxMenuHeight={300}
