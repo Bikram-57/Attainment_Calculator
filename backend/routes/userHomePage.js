@@ -13,7 +13,7 @@ const {
  } = require('../controllers/userHomePage');
 
 // The request hits verifyJWT first, which attaches req.facultyId, then hits the controller
-router.get('/activity', verifyJWT, HangleGetAssignedSubjectCountForCurrentYear);
+router.get('/activeSubject', verifyJWT, HangleGetAssignedSubjectCountForCurrentYear);
 router.get('/copo', verifyJWT, HandleGetPendingCopoMappingCount);
 router.get('/generated-count', verifyJWT, handleGetGeneratedReportCount);
 router.get('/my-progress/bca', verifyJWT, HandleGetMyBCAProgress); 
