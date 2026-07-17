@@ -8,9 +8,11 @@ import EditCoPoRelation from './EditCoPoRelation';
 import { COLORS } from '../../constants/theme'
 import { CoPoRelationHeader, Loading } from '../index';
 import { useSelector } from 'react-redux';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function CoPoRelation() {
     const userData = useSelector(state => state.auth.userData);
+
     const [subjects, setSubjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [openView, setOpenView] = useState(false);
@@ -20,6 +22,8 @@ function CoPoRelation() {
     const [filterYear, setFilterYear] = useState(new Date().getFullYear());
     const [filterCourse, setFilterCourse] = useState('');
     const [filterSemester, setFilterSemester] = useState('');
+
+    useDocumentTitle('CO PO Relations - Menu');
 
     const fetchSelectedCoPoData = async (sub) => {
         setSelectedSubjectData({

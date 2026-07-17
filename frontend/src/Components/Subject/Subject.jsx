@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import SubjectHeader from './SubjectHeader';
 import { FaCheckCircle, FaClock } from "react-icons/fa";
 import { ActionBtns, Loading, SubjectDeleteModal, SubjectEditModal, SubjectViewModal } from '../index'
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function Subject() {
     const [subjectData, setSubjectData] = useState([]);
@@ -12,6 +13,8 @@ function Subject() {
     const [filterCourse, setFilterCourse] = useState('');
     const [filterSemester, setFilterSemester] = useState('');
     const [loading, setLoading] = useState(true);
+
+    useDocumentTitle('Manage Subjects');
 
     const toggleUpdate = () => {
         setToggleNewSubject(prev => !prev)

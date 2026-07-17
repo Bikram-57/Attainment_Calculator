@@ -6,11 +6,14 @@ import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import { useSelector } from 'react-redux';
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 function Dashboard() {
     const userData = useSelector(state => state.auth.userData);
-    console.log('TOKEN: ', useSelector(state => state.auth.accessToken));
+    // console.log('TOKEN: ', useSelector(state => state.auth.accessToken));
     const [activeSubjectCount, setActiveSubjectCount] = useState([]);
+
+    useDocumentTitle('Dashboard');
 
     useEffect(() => {
         const getActiveSubjectsCount = async () => {

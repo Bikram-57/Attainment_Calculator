@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react'
 import FacultyHeader from './FacultyHeader'
 import axios from 'axios'
 import { ActionBtns, FacultyDeleteModal, FacultyEditModal, FacultyViewModal, Loading } from '../index';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function Faculty() {
 	const [facultyData, setFacultyData] = useState([]);
 	const [toggleNewUser, setToggleNewUser] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [loading, setLoading] = useState(true);
+
+	useDocumentTitle('Manage Faculty');
 
 	const getFacultyData = async () => {
 		try {

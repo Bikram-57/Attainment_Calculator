@@ -7,12 +7,12 @@ import { ErrorSuccessMsg } from '../index';
 import { Loading } from '../index';
 import Select from "react-select";
 import BarGraph from './BarGraph';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function SubjectAnalysis() {
     const [course, setCourse] = useState('')
     const [academicYear, setAcademicYear] = useState('')
     const [semester, setSemester] = useState('')
-
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
     const [isHovered, setIsHovered] = useState(false);
@@ -22,6 +22,8 @@ function SubjectAnalysis() {
     const currentYear = new Date().getFullYear();
     const yearList = [2024];
     const semesterList = [];
+
+    useDocumentTitle('Subject Analysis');
 
     for (let year = yearList[0] + 1; year <= currentYear; year++) {
         yearList.push(year);

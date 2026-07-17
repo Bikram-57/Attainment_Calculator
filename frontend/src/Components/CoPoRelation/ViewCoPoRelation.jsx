@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { COLORS } from '../../constants/theme'
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function ViewCoPoRelation({ data, setOpenView }) {
     const rows = data.mappingData ? Object.entries(data?.mappingData) : [];
     const poColumns = rows[0] ? Object.keys(rows[0][1]) : [];
 
+    useDocumentTitle('Menu - CO PO Relations | View')
+    
     return (
         <div className='px-3 py-4'>
             <div

@@ -4,6 +4,7 @@ import DirectAttainmentHeader from './DirectAttainmentHeader';
 import { MdRemoveRedEye } from "react-icons/md";
 import { Loading } from '../index';
 import DirectAttainmentTable from './DirectAttainmentTable';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function DirectAttainment() {
     const [allData, setAllData] = useState([]);
@@ -13,6 +14,8 @@ function DirectAttainment() {
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [loadingView, setLoadingView] = useState(false);
+
+    useDocumentTitle('Direct Attainment - Menu');
 
     const toggleUpdate = () => {
         setToggleDirectAttain(prev => !prev)

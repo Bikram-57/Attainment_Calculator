@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { COLORS } from '../../constants/theme';
 import { Loading } from '../index';
 import { ErrorSuccessMsg } from '../index';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function EditCoPoRelation({ data, setOpenEdit }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -10,6 +11,7 @@ function EditCoPoRelation({ data, setOpenEdit }) {
     const [successMsg, setSuccessMsg] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
 
+    useDocumentTitle('Menu - CO PO Relations | Edit');
 
     const defaultMappingData = {
         CO1: { PO1: '', PO2: '', PO3: '', PO4: '', PO5: '', PO6: '', PO7: '', PO8: '' },
@@ -64,7 +66,7 @@ function EditCoPoRelation({ data, setOpenEdit }) {
                 className='font-semibold text-lg pb-6'
                 style={{ color: COLORS.mint }}
             >
-                View CO/PO Relation
+                Edit CO/PO Relation
             </div>
             <div>
                 <div className="overflow-auto shadow">
