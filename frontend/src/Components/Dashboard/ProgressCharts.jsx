@@ -11,18 +11,18 @@ function ProgressCharts({ userRole }) {
         '/home/mapping-progress-MCA'
     ];
     const facultyProgressUrls = [
-        '/my-progress/bca',
-        '/my-progress/mca',
-        '/my-copo-progress/bca',
-        '/my-copo-progress/mca'
+        '/user-dashboard/my-progress/bca',
+        '/user-dashboard/my-progress/mca',
+        '/user-dashboard/my-copo-progress/bca',
+        '/user-dashboard/my-copo-progress/mca'
     ];
 
     useEffect(() => {
         const fetchProgressCharts = async () => {
             try {
-                // const [url1, url2, url3, url4] = userRole === 'admin' ? adminProgressUrls : facultyProgressUrls;
-                const [url1, url2, url3, url4] = adminProgressUrls;
-                
+                const [url1, url2, url3, url4] = userRole === 'admin' ? adminProgressUrls : facultyProgressUrls;
+                // const [url1, url2, url3, url4] = adminProgressUrls;
+
                 const [
                     bcaProgress,
                     mcaProgress,
@@ -73,50 +73,56 @@ function ProgressCharts({ userRole }) {
                         </h3>
                     </div>
 
-                    <div className="p-4">
-                        <ResponsiveContainer width="100%" height={220}>
-                            <PieChart>
-                                <Pie
-                                    data={[
-                                        {
-                                            name: 'Uploaded',
-                                            value: chart.uploadedSubjects,
-                                        },
-                                        {
-                                            name: 'Pending',
-                                            value: chart.pendingSubjects,
-                                        },
-                                    ]}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    outerRadius={70}
-                                    label
-                                >
-                                    <Cell fill="#22c55e" />
-                                    {/* <Cell fill="#ef4444" /> */}
-                                    {/* <Cell fill="#eab308" /> */}
-                                    <Cell fill="#f59e0b" />
-                                </Pie>
+                    {chart.totalSubjects > 0 ? (
+                        <div className="p-4">
+                            <ResponsiveContainer width="100%" height={220}>
+                                <PieChart>
+                                    <Pie
+                                        data={[
+                                            {
+                                                name: 'Uploaded',
+                                                value: chart.uploadedSubjects,
+                                            },
+                                            {
+                                                name: 'Pending',
+                                                value: chart.pendingSubjects,
+                                            },
+                                        ]}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        outerRadius={70}
+                                        label
+                                    >
+                                        <Cell fill="#22c55e" />
+                                        {/* <Cell fill="#ef4444" /> */}
+                                        {/* <Cell fill="#eab308" /> */}
+                                        <Cell fill="#f59e0b" />
+                                    </Pie>
 
-                                <Tooltip />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
+                                    <Tooltip />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
 
-                        <div className="mt-4 space-y-1 text-center">
-                            <div className="text-2xl font-bold text-slate-800">
-                                {chart.progressPercentage}%
-                            </div>
+                            <div className="mt-4 space-y-1 text-center">
+                                <div className="text-2xl font-bold text-slate-800">
+                                    {chart.progressPercentage}%
+                                </div>
 
-                            <div className="text-sm text-slate-500">
-                                {chart.uploadedSubjects} / {chart.totalSubjects} completed
-                            </div>
+                                <div className="text-sm text-slate-500">
+                                    {chart.uploadedSubjects} / {chart.totalSubjects} completed
+                                </div>
 
-                            <div className="text-xs text-slate-400">
-                                Pending: {chart.pendingSubjects}
+                                <div className="text-xs text-slate-400">
+                                    Pending: {chart.pendingSubjects}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="p-6 text-center text-slate-500">
+                            No data found
+                        </div>
+                    )}
                 </div>
             ))}
         </div>

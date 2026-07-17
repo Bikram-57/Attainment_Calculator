@@ -116,7 +116,6 @@ function RecentActivity({ activeSubjectCount, userRole }) {
                 // const url = userRole !== 'admin' ? adminRecentActivityUrl : facultyRecentActivityUrl;
                 const url = adminRecentActivityUrl;
                 const res = await axios.get(url);
-                console.log(res)
                 setRecentActivities(res.data.data);
             } catch (error) {
                 console.log('ERROR || Dashboard || useEffect || getRecentActivities || ', error);
@@ -196,52 +195,58 @@ function RecentActivity({ activeSubjectCount, userRole }) {
                     </h2>
                 </div>
 
-                <div className="p-4">
-                    <ResponsiveContainer width="100%" height={320}>
-                        <PieChart>
-                            <Pie
-                                data={activeSubjectCount}
-                                dataKey="totalSubjects"
-                                nameKey="course"
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={85}
-                                label={({ course, percent }) =>
-                                    `${course} ${(percent * 100).toFixed(0)}%`
-                                }
-                            >
-                                <Cell fill="#3b82f6" />
-                                <Cell fill="#22c55e" />
-                            </Pie>
+                {activeSubjectCount.length > 0 ? (
+                    <div className="p-2">
+                        <ResponsiveContainer width="100%" height={320}>
+                            <PieChart>
+                                <Pie
+                                    data={activeSubjectCount}
+                                    dataKey="totalSubjects"
+                                    nameKey="course"
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={85}
+                                    label={({ course, percent }) =>
+                                        `${course} ${(percent * 100).toFixed(0)}%`
+                                    }
+                                >
+                                    <Cell fill="#3b82f6" />
+                                    <Cell fill="#22c55e" />
+                                </Pie>
 
-                            <Tooltip
-                                formatter={(value) => [
-                                    value,
-                                    "Subjects"
-                                ]}
-                            />
+                                <Tooltip
+                                    formatter={(value) => [
+                                        value,
+                                        "Subjects"
+                                    ]}
+                                />
 
-                            <Legend />
-                        </PieChart>
-                    </ResponsiveContainer>
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
 
-                    <div className="mt-2 space-y-2">
-                        {activeSubjectCount.map((item) => (
-                            <div
-                                key={item.course}
-                                className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
-                            >
-                                <span className="font-medium text-slate-700">
-                                    {item.course}
-                                </span>
+                        <div className="mt-2 space-y-2">
+                            {activeSubjectCount.map((item) => (
+                                <div
+                                    key={item.course}
+                                    className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+                                >
+                                    <span className="font-medium text-slate-700">
+                                        {item.course}
+                                    </span>
 
-                                <span className="font-bold text-slate-900">
-                                    {item.totalSubjects}
-                                </span>
-                            </div>
-                        ))}
+                                    <span className="font-bold text-slate-900">
+                                        {item.totalSubjects}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="p-6 text-center text-slate-500">
+                        No data found
+                    </div>
+                )}
             </div>
         </div>
     )

@@ -86,7 +86,8 @@ app.use("/report", downloadDirectAttainmentReport);
 app.use("/download-format", formatDownload);
 app.use("/activity", activity);
 app.use("/subject-analysis", subjectAnalysis);
-app.use("/", userHomePage);
+// app.use("/", userHomePage);
+app.use("/user-dashboard", userHomePage);
 
 startTokenCleanupJob();
 

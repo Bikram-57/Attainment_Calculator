@@ -13,12 +13,16 @@ function Dashboard() {
     // console.log('TOKEN: ', useSelector(state => state.auth.accessToken));
     const [activeSubjectCount, setActiveSubjectCount] = useState([]);
 
+    const adminActiveSubjectsUrl = '/home/total-subject';
+    const facultyActiveSubjectsUrl = '/user-dashboard/activeSubject';
+
     useDocumentTitle('Dashboard');
 
     useEffect(() => {
         const getActiveSubjectsCount = async () => {
             try {
-                const res = await axios.get('/home/total-subject');
+                const url = userData.role === 'admin' ? adminActiveSubjectsUrl : facultyActiveSubjectsUrl;
+                const res = await axios.get(url);
                 setActiveSubjectCount(res.data.data);
             } catch (error) {
                 console.log('ERROR || Dashboard || useEffect || getActiveSubjectsCount || ', error);
