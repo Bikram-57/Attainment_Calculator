@@ -10,6 +10,7 @@ import RubricsViewModal from "./modals/RubricsViewModal";
 import RubricsEditModal from "./modals/RubricsEditModal";
 import RubricsDeleteModal from "./modals/RubricsDeleteModal";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
+import { COLORS } from "../../constants/theme";
 
 export default function Rubrics() {
     const [data, setData] = useState([]);
@@ -50,7 +51,89 @@ export default function Rubrics() {
                 toggleUpdate={toggleUpdate}
                 setSearchQuery={setSearchQuery}
             />
-            <div className="flex-1 overflow-y-auto">
+            <div className="m-3 flex-1 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+
+                {filteredData?.length > 0 ? (
+                    <table className="w-full text-sm">
+
+                        <thead
+                            style={{
+                                backgroundColor: COLORS.mint,
+                                color: COLORS.font,
+                            }}
+                            className="sticky top-0 z-10"
+                        >
+                            <tr className="text-center">
+
+                                <th className="px-6 py-3 text-left font-semibold">
+                                    Course
+                                </th>
+
+                                <th className="px-6 py-3 font-semibold">
+                                    Academic Year
+                                </th>
+
+                                <th className="px-6 py-3 font-semibold">
+                                    Actions
+                                </th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {filteredData.map((rubric, index) => (
+                                <tr
+                                    key={rubric._id}
+                                    className={`border-b border-gray-200 transition hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                        }`}
+                                >
+
+                                    <td className="px-6 py-3 font-medium text-gray-800">
+                                        {rubric.course}
+                                    </td>
+
+                                    <td className="px-6 py-3 text-center text-gray-700">
+                                        {rubric.year}
+                                    </td>
+
+                                    <td className="px-6 py-3">
+                                        <div className="flex justify-center">
+                                            <ActionBtns
+                                                data={rubric}
+                                                toggleUpdate={toggleUpdate}
+                                                ViewModal={RubricsViewModal}
+                                                EditModal={RubricsEditModal}
+                                                DeleteModal={RubricsDeleteModal}
+                                            />
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            ))}
+
+                        </tbody>
+
+                    </table>
+                ) : (
+                    <div className="flex h-64 flex-col items-center justify-center text-gray-500">
+
+                        <div className="mb-2 text-5xl">📋</div>
+
+                        <h3 className="text-lg font-semibold text-gray-700">
+                            No Rubrics Found
+                        </h3>
+
+                        <p className="mt-1 text-sm text-gray-500">
+                            There are no rubric records matching your search.
+                        </p>
+
+                    </div>
+                )}
+
+            </div>
+
+            {/* <div className="flex-1 overflow-y-auto">
                 {filteredData?.length > 0 ?
                     (<table className='w-full'>
                         <thead>
@@ -61,7 +144,6 @@ export default function Rubrics() {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* {subjectData?.map(subject => ( */}
                             {filteredData?.map(rubric => (
                                 <tr className='text-center border-b border-gray-300' key={rubric._id}>
                                     <td className='px-5 py-2 w- [10%]'>{rubric.course}</td>
@@ -83,7 +165,7 @@ export default function Rubrics() {
                         <div className='text-center text-lg'>No data available</div>
                     )
                 }
-            </div>
+            </div> */}
         </div>
     ) : <Loading />
 }

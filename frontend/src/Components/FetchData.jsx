@@ -130,72 +130,175 @@ function FetchData() {
 	}, [academicYear, course]);
 
 	return !fetchClicked ? (
-		<div className='h-full flex flex-col p-4'>
-			<div className='flex justify-between pb-4'>
-				<div
-					className='text-xl font-semibold'
-					style={{ color: COLORS.mint }}
+		<div
+			className="h-full rounded-2xl border border-gray-200 p-5"
+			style={{ backgroundColor: COLORS.latte }}
+		>
+			{/* Header */}
+			<div className="mb-5">
+				<h2
+					className="text-xl font-semibold"
+					style={{ color: COLORS.mintDark }}
 				>
 					Fetch Data
-				</div>
-			</div>
-			<div className='w-full flex gap-4'>
-				<div className='flex-1'>
-					<Select
-						options={yearOptions}
-						placeholder='Select a year'
-						value={yearOptions.find(option => (
-							option.value === academicYear
-						))}
-						onChange={selected => handleYear(selected?.value || '')}
-						maxMenuHeight={300}
-					/>
-				</div>
-				<div className='flex-1'>
-					<Select
-						options={courseOptions}
-						placeholder='Select a course'
-						value={courseOptions.find(option => (
-							option.value === course
-						))}
-						onChange={selected => handleCourse(selected?.value || '')}
-						maxMenuHeight={300}
-					/>
-				</div>
-				<div className='flex-1'>
-					<Select
-						options={subjectOptions}
-						placeholder='Select a subject'
-						value={subjectOptions.find(option => (
-							option.value === subjectId
-						))}
-						onChange={selected => setSubjectId(selected?.value || '')}
-						isDisabled={isDisabled}
-						maxMenuHeight={300}
-					/>
-				</div>
+				</h2>
+
+				<p className="mt-1 text-sm text-gray-600">
+					Select the academic details to retrieve the uploaded marks.
+				</p>
 			</div>
 
-			<div className='flex gap-5 my-7'>
-				<div className='flex-1'>
-					<button
-						onMouseEnter={() => setIsHovered(true)}
-						onMouseLeave={() => setIsHovered(false)}
-						className='w-1/5 rounded-sm p-1 cursor-pointer duration-200'
-						style={{
-							backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint,
-							color: COLORS.font
-						}}
-						onClick={handleFetch}
-					>
-						Fetch
-					</button>
+			{/* Form Card */}
+			<div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+
+				<div className="grid gap-4 md:grid-cols-3">
+
+					{/* Academic Year */}
+					<div>
+						<label
+							className="mb-2 block text-sm font-semibold"
+							style={{ color: COLORS.mintDark }}
+						>
+							Academic Year
+						</label>
+
+						<Select
+							options={yearOptions}
+							placeholder="Select year"
+							value={yearOptions.find(option => option.value === academicYear) || null}
+							onChange={selected => handleYear(selected?.value || "")}
+							maxMenuHeight={180}
+						/>
+					</div>
+
+					{/* Course */}
+					<div>
+						<label
+							className="mb-2 block text-sm font-semibold"
+							style={{ color: COLORS.mintDark }}
+						>
+							Course
+						</label>
+
+						<Select
+							options={courseOptions}
+							placeholder="Select course"
+							value={courseOptions.find(option => option.value === course) || null}
+							onChange={selected => handleCourse(selected?.value || "")}
+							maxMenuHeight={180}
+						/>
+					</div>
+
+					{/* Subject */}
+					<div>
+						<label
+							className="mb-2 block text-sm font-semibold"
+							style={{ color: COLORS.mintDark }}
+						>
+							Subject
+						</label>
+
+						<Select
+							options={subjectOptions}
+							placeholder="Select subject"
+							value={subjectOptions.find(option => option.value === subjectId) || null}
+							onChange={selected => setSubjectId(selected?.value || "")}
+							isDisabled={isDisabled}
+							maxMenuHeight={180}
+						/>
+					</div>
+
 				</div>
+
+				{/* Footer */}
+				<div className="mt-6 flex items-center justify-between">
+
+					<ErrorSuccessMsg
+						errorMsg={errorMsg}
+					/>
+
+					<button
+						onClick={handleFetch}
+						className="rounded-xl px-6 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+						style={{
+							backgroundColor: COLORS.mint,
+							color: COLORS.font,
+						}}
+					>
+						Fetch Data
+					</button>
+
+				</div>
+
 			</div>
-			<ErrorSuccessMsg
-				errorMsg={errorMsg}
-			/>
 		</div>
+
+		// <div className='h-full flex flex-col p-4'>
+		// 	<div className='flex justify-between pb-4'>
+		// 		<div
+		// 			className='text-xl font-semibold'
+		// 			style={{ color: COLORS.mint }}
+		// 		>
+		// 			Fetch Data
+		// 		</div>
+		// 	</div>
+		// 	<div className='w-full flex gap-4'>
+		// 		<div className='flex-1'>
+		// 			<Select
+		// 				options={yearOptions}
+		// 				placeholder='Select a year'
+		// 				value={yearOptions.find(option => (
+		// 					option.value === academicYear
+		// 				))}
+		// 				onChange={selected => handleYear(selected?.value || '')}
+		// 				maxMenuHeight={300}
+		// 			/>
+		// 		</div>
+		// 		<div className='flex-1'>
+		// 			<Select
+		// 				options={courseOptions}
+		// 				placeholder='Select a course'
+		// 				value={courseOptions.find(option => (
+		// 					option.value === course
+		// 				))}
+		// 				onChange={selected => handleCourse(selected?.value || '')}
+		// 				maxMenuHeight={300}
+		// 			/>
+		// 		</div>
+		// 		<div className='flex-1'>
+		// 			<Select
+		// 				options={subjectOptions}
+		// 				placeholder='Select a subject'
+		// 				value={subjectOptions.find(option => (
+		// 					option.value === subjectId
+		// 				))}
+		// 				onChange={selected => setSubjectId(selected?.value || '')}
+		// 				isDisabled={isDisabled}
+		// 				maxMenuHeight={300}
+		// 			/>
+		// 		</div>
+		// 	</div>
+
+		// 	<div className='flex gap-5 my-7'>
+		// 		<div className='flex-1'>
+		// 			<button
+		// 				onMouseEnter={() => setIsHovered(true)}
+		// 				onMouseLeave={() => setIsHovered(false)}
+		// 				className='w-1/5 rounded-sm p-1 cursor-pointer duration-200'
+		// 				style={{
+		// 					backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint,
+		// 					color: COLORS.font
+		// 				}}
+		// 				onClick={handleFetch}
+		// 			>
+		// 				Fetch
+		// 			</button>
+		// 		</div>
+		// 	</div>
+		// 	<ErrorSuccessMsg
+		// 		errorMsg={errorMsg}
+		// 	/>
+		// </div>
 	)
 		:
 		// (coAttainData && (

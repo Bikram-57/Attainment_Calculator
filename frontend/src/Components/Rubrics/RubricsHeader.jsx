@@ -16,55 +16,115 @@ function RubricsHeader({ toggleUpdate, setSearchQuery }) {
     }
 
     return (
-        <div className='flex justify-between p-4'>
-            <div
-                className='text-xl font-semibold'
-                style={{ color: COLORS.mint }}
-            >
-                Rubrics
+        <div className="flex items-center justify-between gap-6 px-6 py-4 border-b border-gray-200 bg-white">
+
+            {/* Left */}
+            <div className="flex items-center gap-6">
+
+                <h2
+                    className="text-xl font-semibold whitespace-nowrap"
+                    style={{ color: COLORS.mint }}
+                >
+                    Rubrics
+                </h2>
+
+                <div className="relative">
+
+                    <BsSearch
+                        className="absolute left-3 top-1/2 -translate-y-1/2"
+                        style={{ color: COLORS.mintDark }}
+                    />
+
+                    <input
+                        type="text"
+                        placeholder="Search by course or academic year..."
+                        value={search}
+                        onChange={handleChange}
+                        className="w-80 rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2"
+                        style={{
+                            color: COLORS.mintDark,
+                            "--tw-ring-color": COLORS.mint,
+                        }}
+                    />
+
+                </div>
+
             </div>
 
-            <div className='flex gap-5 mx-10'>
-                <div
-                    className='border rounded-md flex items-center'
+            {/* Right */}
+            <div className="flex items-center gap-4">
+
+                <button
+                    onClick={() => setIsAddRubricsOpen(true)}
+                    className="rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+                    style={{
+                        backgroundColor: COLORS.mint,
+                        color: COLORS.font,
+                    }}
                 >
-                    <input
-                        type='text'
-                        placeholder='Search by course name or academic year'
-                        value={search}
-                        className='border-r px-3 py-1 w-87.5 outline-none'
-                        style={{
-                            color: COLORS.mintDark
-                        }}
-                        onChange={(e) => handleChange(e)}
-                    />
-                    <div
-                        className='px-3 py-1 cursor-pointer'
-                        onClick={() => setSearchQuery(search)}
-                    >
-                        <BsSearch style={{ color: COLORS.mintDark }} />
-                    </div>
-                </div>
-                <div>
-                    <button
-                        className='px-3 py-1 rounded-lg cursor-pointer'
-                        style={{
-                            backgroundColor: COLORS.mint,
-                            color: COLORS.font
-                        }}
-                        onClick={() => setIsAddRubricsOpen(true)}
-                    >
-                        Add Rubrics
-                    </button>
-                </div>
+                    + Add Rubrics
+                </button>
+
             </div>
-            {isAddRubricsOpen &&
+
+            {isAddRubricsOpen && (
                 <AddRubricsForm
                     toggleUpdate={toggleUpdate}
                     setIsAddRubricsOpen={setIsAddRubricsOpen}
                 />
-            }
+            )}
+
         </div>
+
+        // <div className='flex justify-between p-4'>
+        //     <div
+        //         className='text-xl font-semibold'
+        //         style={{ color: COLORS.mint }}
+        //     >
+        //         Rubrics
+        //     </div>
+
+        //     <div className='flex gap-5 mx-10'>
+        //         <div
+        //             className='border rounded-md flex items-center'
+        //         >
+        //             <input
+        //                 type='text'
+        //                 placeholder='Search by course name or academic year'
+        //                 value={search}
+        //                 className='border-r px-3 py-1 w-87.5 outline-none'
+        //                 style={{
+        //                     color: COLORS.mintDark
+        //                 }}
+        //                 onChange={(e) => handleChange(e)}
+        //             />
+        //             <div
+        //                 className='px-3 py-1 cursor-pointer'
+        //                 onClick={() => setSearchQuery(search)}
+        //             >
+        //                 <BsSearch style={{ color: COLORS.mintDark }} />
+        //             </div>
+        //         </div>
+        //         <div>
+        //             <button
+        //                 className='px-3 py-1 rounded-lg cursor-pointer'
+        //                 style={{
+        //                     backgroundColor: COLORS.mint,
+        //                     color: COLORS.font
+        //                 }}
+        //                 onClick={() => setIsAddRubricsOpen(true)}
+        //             >
+        //                 Add Rubrics
+        //             </button>
+        //         </div>
+        //     </div>
+        //     {isAddRubricsOpen &&
+        //         <AddRubricsForm
+        //             toggleUpdate={toggleUpdate}
+        //             setIsAddRubricsOpen={setIsAddRubricsOpen}
+        //         />
+        //     }
+        // </div>
     )
 }
 

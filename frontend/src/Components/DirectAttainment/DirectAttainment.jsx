@@ -5,6 +5,7 @@ import { MdRemoveRedEye } from "react-icons/md";
 import { Loading } from '../index';
 import DirectAttainmentTable from './DirectAttainmentTable';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
+import { COLORS } from '../../constants/theme';
 
 function DirectAttainment() {
     const [allData, setAllData] = useState([]);
@@ -74,7 +75,94 @@ function DirectAttainment() {
                     toggleUpdate={toggleUpdate}
                     setSearchQuery={setSearchQuery}
                 />
-                <div className="flex-1 overflow-y-auto">
+                <div className="m-3 flex-1 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+                    {filteredAllData?.length > 0 ? (
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr
+                                    style={{
+                                        backgroundColor: COLORS.mint,
+                                        color: COLORS.font,
+                                    }}
+                                >
+                                    <th className="px-6 py-3 text-left font-semibold">
+                                        Course
+                                    </th>
+
+                                    <th className="px-6 py-3 text-center font-semibold">
+                                        Academic Year
+                                    </th>
+
+                                    <th className="px-6 py-3 text-center font-semibold">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {filteredAllData.map((directAttain, index) => (
+                                    <tr
+                                        key={directAttain.id}
+                                        className={`border-b border-gray-200 transition hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                            }`}
+                                    >
+                                        <td className="px-6 py-3 font-medium text-gray-800">
+                                            {directAttain.course}
+                                        </td>
+
+                                        <td className="px-6 py-3 text-center">
+                                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                                                {directAttain.academicYear}
+                                            </span>
+                                        </td>
+
+                                        <td className="px-6 py-3">
+                                            <div className="flex justify-center">
+                                                {!loadingView ? (
+                                                    <button
+                                                        onClick={() =>
+                                                            handleView(
+                                                                directAttain.course,
+                                                                directAttain.academicYear
+                                                            )
+                                                        }
+                                                        className="rounded-md p-1.5 transition hover:opacity-90 cursor-pointer"
+                                                        style={{
+                                                            backgroundColor: COLORS.mint,
+                                                            color: COLORS.font,
+                                                        }}
+                                                        title="View Report"
+                                                    >
+                                                        <MdRemoveRedEye size={15} />
+                                                    </button>
+                                                ) : (
+                                                    <Loading type="view" />
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="flex h-72 flex-col items-center justify-center">
+                            <div className="mb-3 text-5xl">📄</div>
+
+                            <h3
+                                className="text-lg font-semibold"
+                                style={{ color: COLORS.mintDark }}
+                            >
+                                No Reports Available
+                            </h3>
+
+                            <p className="mt-1 text-sm text-gray-500">
+                                Generated direct attainment reports will appear here.
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                {/* <div className="flex-1 overflow-y-auto">
                     {filteredAllData?.length > 0 ?
                         (<table className='w-full'>
                             <thead>
@@ -106,7 +194,7 @@ function DirectAttainment() {
                             <div className='text-center text-lg'>No data available</div>
                         )
                     }
-                </div>
+                </div> */}
             </div>
         ) : (
             <DirectAttainmentTable

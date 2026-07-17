@@ -80,73 +80,177 @@ function SubjectAnalysis() {
     }
 
     return !isOpen ? (
-        <div className='h-full flex flex-col p-4'>
-            <div
-                className='text-xl font-semibold pb-4'
-                style={{ color: COLORS.mint }}
-            >
-                Subject Analysis
-            </div>
-            <div className='w-full flex gap-4'>
-                <div className='flex-1'>
-                    <Select
-                        options={yearOptions}
-                        placeholder='Select a year'
-                        value={yearList.find(option => (
-                            option.value === academicYear
-                        ))}
-                        onChange={selected => setAcademicYear(selected?.value || '')}
-                        maxMenuHeight={300}
-                    />
-                </div>
-                <div className='flex-1'>
-                    <Select
-                        options={courseOptions}
-                        placeholder='Select a course'
-                        value={courseOptions.find(option => (
-                            option.value === course
-                        ))}
-                        onChange={selected => setCourse(selected?.value || '')}
-                        maxMenuHeight={300}
-                    />
-                </div>
+        <div
+            className="h-full rounded-2xl border border-gray-200 p-5"
+            style={{ backgroundColor: COLORS.latte }}
+        >
+            {/* Header */}
+            <div className="mb-5">
+                <h2
+                    className="text-xl font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
+                    Subject Analysis
+                </h2>
 
-                <div className="flex-1">
-                    <Select
-                        options={semesterOptions}
-                        placeholder='Select a semester'
-                        value={semesterOptions.find((option) => (
-                            option.value === semester
-                        ))}
-                        onChange={selected => setSemester(selected?.value || "")}
-                        maxMenuHeight={300}
-                    />
-                </div>
+                <p className="mt-1 text-sm text-gray-600">
+                    Select the academic year, course, and semester to generate the subject-wise analysis.
+                </p>
             </div>
 
-            <div className='flex gap-5 my-7'>
-                <div className='flex w-4/5 items-center'>
+            {/* Form Card */}
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+
+                <div className="grid gap-4 md:grid-cols-3">
+
+                    {/* Academic Year */}
+                    <div>
+                        <label
+                            className="mb-2 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
+                            Academic Year
+                        </label>
+
+                        <Select
+                            options={yearOptions}
+                            placeholder="Select year"
+                            value={yearList.find(option => option.value === academicYear)}
+                            onChange={selected => setAcademicYear(selected?.value || "")}
+                            maxMenuHeight={180}
+                        />
+                    </div>
+
+                    {/* Course */}
+                    <div>
+                        <label
+                            className="mb-2 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
+                            Course
+                        </label>
+
+                        <Select
+                            options={courseOptions}
+                            placeholder="Select course"
+                            value={courseOptions.find(option => option.value === course)}
+                            onChange={selected => setCourse(selected?.value || "")}
+                            maxMenuHeight={180}
+                        />
+                    </div>
+
+                    {/* Semester */}
+                    <div>
+                        <label
+                            className="mb-2 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
+                            Semester
+                        </label>
+
+                        <Select
+                            options={semesterOptions}
+                            placeholder="Select semester"
+                            value={semesterOptions.find(option => option.value === semester)}
+                            onChange={selected => setSemester(selected?.value || "")}
+                            maxMenuHeight={180}
+                        />
+                    </div>
+
+                </div>
+
+                {/* Footer */}
+                <div className="mt-6 flex items-center justify-between">
+
+                    <ErrorSuccessMsg
+                        errorMsg={errorMsg}
+                        successMsg={successMsg}
+                        setSuccessMsg={setSuccessMsg}
+                    />
+
                     <button
-                        className='w-1/3 rounded-sm p-1 cursor-pointer duration-200'
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                        style={{
-                            backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint,
-                            color: COLORS.font
-                        }}
                         onClick={handleSubmit}
+                        className="rounded-xl px-6 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+                        style={{
+                            backgroundColor: COLORS.mint,
+                            color: COLORS.font,
+                        }}
                     >
-                        Submit
+                        Generate Analysis
                     </button>
-                    {/* {uploading && <Loading type='upload' />} */}
+
                 </div>
+
             </div>
-            <ErrorSuccessMsg
-                errorMsg={errorMsg}
-                successMsg={successMsg}
-                setSuccessMsg={setSuccessMsg}
-            />
         </div>
+
+        // <div className='h-full flex flex-col p-4'>
+        //     <div
+        //         className='text-xl font-semibold pb-4'
+        //         style={{ color: COLORS.mint }}
+        //     >
+        //         Subject Analysis
+        //     </div>
+        //     <div className='w-full flex gap-4'>
+        //         <div className='flex-1'>
+        //             <Select
+        //                 options={yearOptions}
+        //                 placeholder='Select a year'
+        //                 value={yearList.find(option => (
+        //                     option.value === academicYear
+        //                 ))}
+        //                 onChange={selected => setAcademicYear(selected?.value || '')}
+        //                 maxMenuHeight={300}
+        //             />
+        //         </div>
+        //         <div className='flex-1'>
+        //             <Select
+        //                 options={courseOptions}
+        //                 placeholder='Select a course'
+        //                 value={courseOptions.find(option => (
+        //                     option.value === course
+        //                 ))}
+        //                 onChange={selected => setCourse(selected?.value || '')}
+        //                 maxMenuHeight={300}
+        //             />
+        //         </div>
+
+        //         <div className="flex-1">
+        //             <Select
+        //                 options={semesterOptions}
+        //                 placeholder='Select a semester'
+        //                 value={semesterOptions.find((option) => (
+        //                     option.value === semester
+        //                 ))}
+        //                 onChange={selected => setSemester(selected?.value || "")}
+        //                 maxMenuHeight={300}
+        //             />
+        //         </div>
+        //     </div>
+
+        //     <div className='flex gap-5 my-7'>
+        //         <div className='flex w-4/5 items-center'>
+        //             <button
+        //                 className='w-1/3 rounded-sm p-1 cursor-pointer duration-200'
+        //                 onMouseEnter={() => setIsHovered(true)}
+        //                 onMouseLeave={() => setIsHovered(false)}
+        //                 style={{
+        //                     backgroundColor: isHovered ? COLORS.mintDark : COLORS.mint,
+        //                     color: COLORS.font
+        //                 }}
+        //                 onClick={handleSubmit}
+        //             >
+        //                 Submit
+        //             </button>
+        //             {/* {uploading && <Loading type='upload' />} */}
+        //         </div>
+        //     </div>
+        //     <ErrorSuccessMsg
+        //         errorMsg={errorMsg}
+        //         successMsg={successMsg}
+        //         setSuccessMsg={setSuccessMsg}
+        //     />
+        // </div>
     ) : (
         <BarGraph
             data={graphData}
