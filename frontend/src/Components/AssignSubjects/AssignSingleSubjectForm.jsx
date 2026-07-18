@@ -99,7 +99,6 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
 
             try {
                 const res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
-                console.log(res.data);
                 setSubjectList(res.data.data);
                 setIsDisabled(false);
                 setErrorMsg('');

@@ -24,7 +24,6 @@ function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen
             const res = await axios.post('/sub-upload/upload-excel', formData);
             setSuccessMsg(res.data.message);
             toggleUpdate();
-            console.log(res.data);
         } catch (error) {
             setErrorMsg(error?.response?.data?.message || 'Something went wrong!');
             console.log('ERROR || AssignMultipleSubjectForm || handleAssignMultipleSubjects(): ', error);
@@ -138,11 +137,7 @@ function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen
             <div className="flex justify-between items-center pt-2">
                 <button
                     onClick={handleDownloadFormat}
-                    className="rounded-xl border border-gray-300 px-5 py-2 text-sm font-medium transition hover:bg-gray-100 cursor-pointer"
-                    style={{
-                        backgroundColor: COLORS.latteDark,
-                        color: COLORS.mintDark
-                    }}
+                    className="rounded-xl border border-gray-400 bg-gray-200 px-5 py-2 text-sm font-medium transition hover:bg-gray-100 cursor-pointer"
                 >
                     Download Format
                 </button>

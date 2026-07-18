@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
+import { MdOutlineCancelPresentation } from "react-icons/md";
 import { COLORS } from '../../constants/theme';
 import GenerateAttainmentForm from './GenerateAttainmentForm';
 
@@ -13,6 +14,11 @@ function DirectAttainmentHeader({ toggleUpdate, setSearchQuery }) {
         }
         setSearch(e.target.value);
         setSearchQuery(e.target.value);
+    }
+
+    const handleClear = () => {
+        setSearch('');
+        setSearchQuery('')
     }
 
     return (
@@ -45,6 +51,13 @@ function DirectAttainmentHeader({ toggleUpdate, setSearchQuery }) {
                             color: COLORS.mintDark,
                         }}
                     />
+
+                    {search.length > 0 &&
+                        <MdOutlineCancelPresentation
+                            className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 cursor-pointer"
+                            onClick={handleClear}
+                        />
+                    }
 
                 </div>
 

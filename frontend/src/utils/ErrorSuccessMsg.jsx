@@ -13,7 +13,7 @@ function ErrorSuccessMsg({ errorMsg, successMsg, setSuccessMsg, setIsOpen, close
 			} else {
 				null;
 			}
-		}, 2000);
+		}, 500);
 		return () => clearTimeout(timer);
 	}, [successMsg]);
 

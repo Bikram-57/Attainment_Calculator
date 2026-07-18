@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { BsSearch } from "react-icons/bs";
+import { MdOutlineCancelPresentation } from "react-icons/md";
 import AddFacultyForm from './AddFacultyForm';
 import { COLORS } from '../../constants/theme';
 
@@ -13,6 +14,11 @@ function FacultyHeader({ toggleUpdate, setSearchQuery }) {
         }
         setSearch(e.target.value);
         setSearchQuery(e.target.value);
+    }
+
+    const handleClear = () => {
+        setSearch('');
+        setSearchQuery('')
     }
 
     return (
@@ -45,7 +51,12 @@ function FacultyHeader({ toggleUpdate, setSearchQuery }) {
                             "--tw-ring-color": COLORS.mint,
                         }}
                     />
-
+                    {search.length > 0 &&
+                        <MdOutlineCancelPresentation
+                            className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 cursor-pointer"
+                            onClick={handleClear}
+                        />
+                    }
                 </div>
 
             </div>
