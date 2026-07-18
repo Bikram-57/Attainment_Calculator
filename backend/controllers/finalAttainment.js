@@ -1,8 +1,190 @@
 const CalculatedMark = require('../models/calculatedMarks');
 const FinalAttainment = require('../models/finalAttainment');
 
+// ============================================================================
+// 1. Calculate & Save Final Attainment
+// ============================================================================
+async function handleFinalAttainment(req, res, isPipelineArg = false) {
+    // 🛡️ THE PIPELINE SHIELD: Prevents Express from injecting the 'next' function
+    const isPipeline = typeof isPipelineArg === 'boolean' ? isPipelineArg : false;
 
-// async function handleFinalAttainment(req, res, isPipeline = false) {
+    try {
+        const { subjectId, academicYear, course } = req.body;
+
+        // 1. SAFETY CHECK & SANITIZATION
+        if (!subjectId || !academicYear || !course) {
+            throw new Error("Missing required fields: subjectId, academicYear, or course.");
+        }
+
+        const cleanSubjectId = subjectId.trim().toUpperCase();
+        const cleanCourse = course.trim().toUpperCase();
+        const cleanYear = academicYear.trim();
+
+        // 2. FETCH CALCULATED DOCUMENT (.lean() guarantees a pure JS object)
+        const calculatedDoc = await CalculatedMark.findOne({ 
+            subjectId: cleanSubjectId, 
+            academicYear: cleanYear, 
+            course: cleanCourse 
+        }).lean(); 
+
+        if (!calculatedDoc?.reportData) {
+            throw new Error("Step 3: Internal Calculation data or reportData is missing.");
+        }
+
+        const coDataMap = {}; 
+
+        // 3. SAFE ITERATION: Because of .lean(), reportData is always a standard Object
+        for (const [key, data] of Object.entries(calculatedDoc.reportData)) {
+            const match = key.match(/CO\d+$/);
+            
+            // Skip keys that don't end in COx (e.g., "TOTAL")
+            if (match) {
+                const coName = match[0]; // e.g., "CO1"
+                const examName = key.replace(`_${coName}`, ""); // e.g., "Quiz_1"
+                const level = data.attainmentLevel || 0;
+
+                // Initialize the CO tracking object if it doesn't exist
+                if (!coDataMap[coName]) {
+                    coDataMap[coName] = { 
+                        exams: {}, 
+                        internalSum: 0,   // OPTIMIZATION: Track sums dynamically instead of pushing to an array
+                        internalCount: 0, 
+                        externalLevel: 0 
+                    };
+                }
+
+                // Identify if the exam is External or Internal
+                const lowerKey = key.toLowerCase();
+                if (lowerKey.includes("e-exam") || lowerKey.includes("e_exam") || lowerKey.includes("end_sem")) {
+                    coDataMap[coName].externalLevel = level;
+                } else {
+                    coDataMap[coName].exams[examName] = level;
+                    coDataMap[coName].internalSum += level;
+                    coDataMap[coName].internalCount++;
+                }
+            }
+        }
+
+        let totalGrandSum = 0;
+        const finalTable = {};
+        const coKeys = Object.keys(coDataMap);
+
+        // 4. BUILD THE FULL ROW FOR EACH CO
+        for (const co of coKeys) {
+            const coInfo = coDataMap[co];
+            
+            // Calculate Internal Average instantly (No .reduce() needed!)
+            const avgInt = coInfo.internalCount > 0 
+                ? (coInfo.internalSum / coInfo.internalCount) 
+                : 0;
+            
+            const grandTotal = (avgInt * 0.5) + (coInfo.externalLevel * 0.5);
+
+            // Create the finalized object combining individual exams and averages
+            finalTable[co] = {
+                ...coInfo.exams, 
+                internalAvg: parseFloat(avgInt.toFixed(2)),
+                externalLevel: coInfo.externalLevel,
+                grandTotal: parseFloat(grandTotal.toFixed(2))
+            };
+
+            totalGrandSum += grandTotal;
+        }
+
+        const finalAttainment = coKeys.length > 0 ? (totalGrandSum / coKeys.length) : 0;
+
+        // 5. SAVE TO FINAL ATTAINMENT COLLECTION
+        await FinalAttainment.findOneAndUpdate(
+            { subjectId: cleanSubjectId, academicYear: cleanYear, course: cleanCourse },
+            { 
+                $set: { 
+                    attainmentTable: finalTable, 
+                    finalSubjectAttainment: parseFloat(finalAttainment.toFixed(2)),
+                    calculatedAt: new Date() 
+                } 
+            },
+            { upsert: true, new: true, lean: true } // lean: true speeds up the write response
+        );
+
+        // --- PIPELINE EXIT ---
+        if (isPipeline) return true; 
+        
+        // 🛡️ THE HEADER SHIELD: Safe response for direct API hits
+        if (!res.headersSent) {
+            return res.status(200).json({ success: true, message: "Final Attainment Calculated." });
+        }
+
+    } catch (error) {
+        console.error("Final Attainment Log Error:", error.message);
+        
+        if (isPipeline) throw error;
+        
+        if (!res.headersSent) {
+            return res.status(500).json({ success: false, error: error.message });
+        }
+    }
+}
+
+// ============================================================================
+// 2. Get Final Attainment Data
+// ============================================================================
+const getFinalAttainmentData = async (req, res) => {
+    try {
+        const { subjectId, academicYear, course } = req.query;
+
+        // 1. ADDED VALIDATION: Prevent crashes if front-end omits parameters
+        if (!subjectId || !academicYear || !course) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Missing required query parameters: subjectId, academicYear, or course." 
+            });
+        }
+
+        // 2. SANITIZE & FETCH: Ensures we don't miss data due to casing differences
+        const data = await FinalAttainment.findOne({ 
+            subjectId: subjectId.trim().toUpperCase(), 
+            academicYear: academicYear.trim(), 
+            course: course.trim().toUpperCase() 
+        }).lean();
+
+        if (!data) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "No document found in Final Attainment collection." 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            data 
+        });
+
+    } catch (error) {
+        console.error("Fetch Final Attainment Error:", error.message);
+        return res.status(500).json({ 
+            success: false, 
+            error: "Internal Server Error while fetching final attainment." 
+        });
+    }
+};
+
+module.exports = { 
+    handleFinalAttainment,
+    getFinalAttainmentData
+};
+
+
+
+
+// const CalculatedMark = require('../models/calculatedMarks');
+// const FinalAttainment = require('../models/finalAttainment');
+
+
+// async function handleFinalAttainment(req, res, isPipelineArg = false) {
+//     // 🛡️ THE PIPELINE SHIELD (The "Ignore" Function)
+//     // Prevents Express from accidentally injecting the 'next' function.
+//     const isPipeline = typeof isPipelineArg === 'boolean' ? isPipelineArg : false;
+
 //     try {
 //         const { subjectId, academicYear, course } = req.body;
 
@@ -16,7 +198,7 @@ const FinalAttainment = require('../models/finalAttainment');
 //             subjectId: subjectId.toUpperCase(), 
 //             academicYear, 
 //             course: course.toUpperCase() 
-//         }).lean(); // .lean() converts the Mongoose doc to a plain JS object for easier handling
+//         }).lean(); 
 
 //         if (!calculatedDoc) throw new Error("Step 3: Internal Calculation data missing.");
 //         if (!calculatedDoc.reportData) throw new Error("Step 3: reportData is empty or missing.");
@@ -24,7 +206,6 @@ const FinalAttainment = require('../models/finalAttainment');
 //         const coDataMap = {}; 
 
 //         // 3. SAFE ITERATION: Handle both standard JS Objects and Mongoose Maps
-//         // We use Object.entries() to safely loop through the keys and values
 //         const reportEntries = calculatedDoc.reportData instanceof Map 
 //             ? Array.from(calculatedDoc.reportData.entries()) 
 //             : Object.entries(calculatedDoc.reportData);
@@ -69,7 +250,7 @@ const FinalAttainment = require('../models/finalAttainment');
 
 //             // Create the document object with individual exam scores
 //             finalTable[co] = {
-//                 ...coInfo.exams, // Spreads Quiz_1: 2, Mid_Term: 3, etc.
+//                 ...coInfo.exams, 
 //                 internalAvg: parseFloat(avgInt.toFixed(2)),
 //                 externalLevel: coInfo.externalLevel,
 //                 grandTotal: parseFloat(grandTotal.toFixed(2))
@@ -90,29 +271,31 @@ const FinalAttainment = require('../models/finalAttainment');
 //                     calculatedAt: new Date() 
 //                 } 
 //             },
-//             { upsert: true, new: true } // Added 'new: true' to return the updated doc if needed
+//             { upsert: true, new: true } 
 //         );
 
-//         // 6. PIPELINE HANDLING: 
-//         // If it's part of the pipeline, return out so the main route can respond.
-//         // If it's hit directly via a separate route, send a success response.
+//         // --- PIPELINE EXIT ---
+//         // 6. If it's part of the pipeline, return out quietly.
 //         if (isPipeline) {
 //             return true; 
-//         } else {
+//         } 
+        
+//         // 🛡️ THE HEADER SHIELD: Safe response for direct API hits
+//         if (!res.headersSent) {
 //             return res.status(200).json({ success: true, message: "Final Attainment Calculated." });
 //         }
 
 //     } catch (error) {
 //         console.error("Final Attainment Log Error:", error.message);
         
-//         // If it's part of the pipeline, THROW the error so the main route's catch block grabs it
+//         // If it's part of the pipeline, THROW the error back to the router
 //         if (isPipeline) {
 //             throw error;
-//         } else {
-//             // Otherwise, send a standard error response
-//             if (!res.headersSent) {
-//                 return res.status(500).json({ success: false, error: error.message });
-//             }
+//         } 
+        
+//         // 🛡️ THE HEADER SHIELD: Safe error response
+//         if (!res.headersSent) {
+//             return res.status(500).json({ success: false, error: error.message });
 //         }
 //     }
 // }
@@ -128,178 +311,44 @@ const FinalAttainment = require('../models/finalAttainment');
 
 
 
+// /**
+//  * getFinalAttainment
+//  * Simple fetch for the final attainment document
+//  */
+// const getFinalAttainmentData = async (req, res) => {
+//     try {
+//         const { subjectId, academicYear, course } = req.query;
+
+//         // .lean() is the key to making sure the data "values" are actually readable in JSON
+//         const data = await FinalAttainment.findOne({ 
+//             subjectId, 
+//             academicYear, 
+//             course 
+//         }).lean();
+
+//         if (!data) {
+//             return res.status(404).json({ 
+//                 success: false, 
+//                 message: "No document found in Final Attainment collection." 
+//             });
+//         }
+
+//         // Return the full document as it is in the DB
+//         return res.status(200).json({ 
+//             success: true, 
+//             data 
+//         });
+
+//     } catch (error) {
+//         return res.status(500).json({ 
+//             success: false, 
+//             error: error.message 
+//         });
+//     }
+// };
 
 
-
-async function handleFinalAttainment(req, res, isPipelineArg = false) {
-    // 🛡️ THE PIPELINE SHIELD (The "Ignore" Function)
-    // Prevents Express from accidentally injecting the 'next' function.
-    const isPipeline = typeof isPipelineArg === 'boolean' ? isPipelineArg : false;
-
-    try {
-        const { subjectId, academicYear, course } = req.body;
-
-        // 1. SAFETY CHECK: Ensure all required fields exist before calling .toUpperCase()
-        if (!subjectId || !academicYear || !course) {
-            throw new Error("Missing required fields: subjectId, academicYear, or course.");
-        }
-
-        // 2. Fetch the calculated document
-        const calculatedDoc = await CalculatedMark.findOne({ 
-            subjectId: subjectId.toUpperCase(), 
-            academicYear, 
-            course: course.toUpperCase() 
-        }).lean(); 
-
-        if (!calculatedDoc) throw new Error("Step 3: Internal Calculation data missing.");
-        if (!calculatedDoc.reportData) throw new Error("Step 3: reportData is empty or missing.");
-
-        const coDataMap = {}; 
-
-        // 3. SAFE ITERATION: Handle both standard JS Objects and Mongoose Maps
-        const reportEntries = calculatedDoc.reportData instanceof Map 
-            ? Array.from(calculatedDoc.reportData.entries()) 
-            : Object.entries(calculatedDoc.reportData);
-
-        reportEntries.forEach(([key, data]) => {
-            const match = key.match(/CO\d+$/);
-            if (match) {
-                const coName = match[0]; // "CO1"
-                const examName = key.replace(`_${coName}`, ""); // "Quiz_1"
-
-                if (!coDataMap[coName]) {
-                    coDataMap[coName] = { 
-                        exams: {}, 
-                        internalLevels: [], 
-                        externalLevel: 0 
-                    };
-                }
-
-                // Identify if it's External or Internal
-                const lowerKey = key.toLowerCase();
-                if (lowerKey.includes("e-exam") || lowerKey.includes("e_exam") || lowerKey.includes("end_sem")) {
-                    coDataMap[coName].externalLevel = data.attainmentLevel || 0;
-                } else {
-                    coDataMap[coName].exams[examName] = data.attainmentLevel || 0;
-                    coDataMap[coName].internalLevels.push(data.attainmentLevel || 0);
-                }
-            }
-        });
-
-        let totalGrandSum = 0;
-        const finalTable = {};
-        const coKeys = Object.keys(coDataMap);
-
-        // 4. Build the full row for each CO
-        coKeys.forEach(co => {
-            const coInfo = coDataMap[co];
-            const avgInt = coInfo.internalLevels.length > 0 
-                ? (coInfo.internalLevels.reduce((a, b) => a + b, 0) / coInfo.internalLevels.length) 
-                : 0;
-            
-            const grandTotal = (avgInt * 0.5) + (coInfo.externalLevel * 0.5);
-
-            // Create the document object with individual exam scores
-            finalTable[co] = {
-                ...coInfo.exams, 
-                internalAvg: parseFloat(avgInt.toFixed(2)),
-                externalLevel: coInfo.externalLevel,
-                grandTotal: parseFloat(grandTotal.toFixed(2))
-            };
-
-            totalGrandSum += grandTotal;
-        });
-
-        const finalAttainment = coKeys.length > 0 ? (totalGrandSum / coKeys.length) : 0;
-
-        // 5. Save to Final Attainment Collection
-        await FinalAttainment.findOneAndUpdate(
-            { subjectId: subjectId.toUpperCase(), academicYear, course: course.toUpperCase() },
-            { 
-                $set: { 
-                    attainmentTable: finalTable, 
-                    finalSubjectAttainment: parseFloat(finalAttainment.toFixed(2)),
-                    calculatedAt: new Date() 
-                } 
-            },
-            { upsert: true, new: true } 
-        );
-
-        // --- PIPELINE EXIT ---
-        // 6. If it's part of the pipeline, return out quietly.
-        if (isPipeline) {
-            return true; 
-        } 
-        
-        // 🛡️ THE HEADER SHIELD: Safe response for direct API hits
-        if (!res.headersSent) {
-            return res.status(200).json({ success: true, message: "Final Attainment Calculated." });
-        }
-
-    } catch (error) {
-        console.error("Final Attainment Log Error:", error.message);
-        
-        // If it's part of the pipeline, THROW the error back to the router
-        if (isPipeline) {
-            throw error;
-        } 
-        
-        // 🛡️ THE HEADER SHIELD: Safe error response
-        if (!res.headersSent) {
-            return res.status(500).json({ success: false, error: error.message });
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * getFinalAttainment
- * Simple fetch for the final attainment document
- */
-const getFinalAttainmentData = async (req, res) => {
-    try {
-        const { subjectId, academicYear, course } = req.query;
-
-        // .lean() is the key to making sure the data "values" are actually readable in JSON
-        const data = await FinalAttainment.findOne({ 
-            subjectId, 
-            academicYear, 
-            course 
-        }).lean();
-
-        if (!data) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "No document found in Final Attainment collection." 
-            });
-        }
-
-        // Return the full document as it is in the DB
-        return res.status(200).json({ 
-            success: true, 
-            data 
-        });
-
-    } catch (error) {
-        return res.status(500).json({ 
-            success: false, 
-            error: error.message 
-        });
-    }
-};
-
-
-module.exports = { 
-    handleFinalAttainment,
-    getFinalAttainmentData
- };
+// module.exports = { 
+//     handleFinalAttainment,
+//     getFinalAttainmentData
+//  };
