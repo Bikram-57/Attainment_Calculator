@@ -1,8 +1,5 @@
 const AttainmentModel = require('../models/finalAttainment'); 
 
-// ============================================================================
-// Fetch Semester-Specific Attainments
-// ============================================================================
 const getSemesterAttainments = async (req, res) => {
   try {
     const { course, academicYear, semester } = req.query;
@@ -15,37 +12,40 @@ const getSemesterAttainments = async (req, res) => {
       });
     }
 
-    // 2. Sanitization (Crucial for reliable DB matching)
+    // 2. Sanitization & Type Conversion
     const cleanCourse = course.trim().toUpperCase();
-    const cleanYear = academicYear.trim();
+    
+    // FinalAttainment usually stores year as String
+    const cleanYearStr = academicYear.trim(); 
+    
+    // Subject collection usually stores year as Number
+    const numericYear = Number(cleanYearStr); 
     const numericSemester = parseInt(semester, 10);
 
-    if (isNaN(numericSemester)) {
+    if (isNaN(numericSemester) || isNaN(numericYear)) {
         return res.status(400).json({ 
             success: false, 
-            message: "Semester must be a valid number." 
+            message: "Semester and Academic Year must be valid numbers." 
         });
     }
 
     // 3. Optimized Aggregation Pipeline
     const results = await AttainmentModel.aggregate([
-      // Step A: Filter Attainments heavily before attempting any joins
+      // Step A: Filter Attainments (Using String Year)
       { 
         $match: { 
           course: cleanCourse, 
-          academicYear: cleanYear 
+          academicYear: cleanYearStr // <-- Matched as String
         } 
       },
       
       // Step B: Advanced Join
-      // Instead of pulling the whole Subject document and filtering later,
-      // we filter during the join. This uses exponentially less memory.
       {
         $lookup: {
-          from: "subjects",
+          from: "subjects", // Make sure your MongoDB collection is exactly named 'subjects'
           let: { 
               subId: "$subjectId", 
-              targetYear: cleanYear 
+              targetYearNum: numericYear // <-- Passed to Subject lookup as Number
           },
           pipeline: [
             {
@@ -53,14 +53,13 @@ const getSemesterAttainments = async (req, res) => {
                 $expr: {
                   $and: [
                     { $eq: ["$subjectId", "$$subId"] },
-                    // Ensure we match the subject for the EXACT year and semester
-                    { $eq: ["$academicYear", "$$targetYear"] }, 
+                    // Compare Number to Number
+                    { $eq: ["$academicYear", "$$targetYearNum"] }, 
                     { $eq: ["$semester", numericSemester] }
                   ]
                 }
               }
             },
-            // Step C: Only carry over the exact fields we need from the Subject DB
             {
               $project: { subjectName: 1, _id: 0 } 
             }
@@ -69,14 +68,12 @@ const getSemesterAttainments = async (req, res) => {
         }
       },
 
-      // Step D: Flatten the array. 
-      // Because we don't use preserveNullAndEmptyArrays, any attainment that 
-      // didn't match the specific semester in Step B is automatically dropped here.
+      // Step C: Flatten the array 
       {
         $unwind: "$subjectDetails"
       },
 
-      // Step E: Format the final clean output
+      // Step D: Format output
       { 
         $project: { 
           _id: 0,
@@ -87,7 +84,6 @@ const getSemesterAttainments = async (req, res) => {
       }
     ]);
 
-    // 4. Return Data
     return res.status(200).json({
       success: true,
       count: results.length,
@@ -106,6 +102,10 @@ const getSemesterAttainments = async (req, res) => {
 module.exports = {
   getSemesterAttainments
 };
+
+
+
+
 
 // const AttainmentModel = require('../models/finalAttainment'); 
 
