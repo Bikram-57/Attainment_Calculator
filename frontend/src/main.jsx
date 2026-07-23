@@ -139,17 +139,17 @@ const router = createBrowserRouter([
 			},
 
 			// Pages that still use App Layout
-			{
-				path: 'contact-us',
-				element: <ContactUs />,
-				handle: { title: 'Contact Us' },
-			},
+			// {
+			// 	path: 'contact-us',
+			// 	element: <ContactUs />,
+			// 	handle: { title: 'Contact Us' },
+			// },
 
-			{
-				path: '*',
-				element: <PageNotFound />,
-				handle: { title: '404 Page' },
-			},
+			// {
+			// 	path: '*',
+			// 	element: <PageNotFound />,
+			// 	handle: { title: '404 Page' },
+			// },
 		],
 	},
 
@@ -180,6 +180,23 @@ const router = createBrowserRouter([
 			</ProtectedRoute>
 		),
 		handle: { title: 'PO Attainment' },
+	},
+	{
+		path: '*',
+		element: (
+			<ProtectedRoute>
+				<PageNotFound />
+			</ProtectedRoute>
+		)
+	},
+	{
+		path: 'contact-us',
+		element: (
+			<ProtectedRoute>
+				<ContactUs />,
+			</ProtectedRoute>
+		)
+		// handle: { title: 'Contact Us' },
 	},
 ])
 

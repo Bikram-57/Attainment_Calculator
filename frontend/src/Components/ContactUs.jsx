@@ -2,8 +2,11 @@ import React from 'react'
 import { MdOutlineMail } from "react-icons/md";
 import { FaLinkedin } from "react-icons/fa";
 import { FaGithub } from "react-icons/fa";
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 function ContactUs() {
+    useDocumentTitle('Contact Us')
+    
     const contacts = [
         {
             name: "Bikram Das",
