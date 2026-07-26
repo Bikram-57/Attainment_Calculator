@@ -225,7 +225,7 @@ function Filters({
     }
     
     return (
-        <div className="flex flex-wrap items-center gap-2 z-10">
+        <div className="flex flex-wrap items-center gap-2 z-3">
             {showYear && (
                 <div className="w-33">
                     <Select
