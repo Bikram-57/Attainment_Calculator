@@ -131,7 +131,7 @@ function Login() {
 												type="text"
 												value={email}
 												placeholder="Enter your email"
-												className="w-full bg-transparent px-5 py-4 outline-none"
+												className="w-full bg-transparent px-5 py-4 outline-none rounded-l-2xl"
 												onChange={(e) => setEmail(e.target.value)}
 											/>
 
@@ -155,7 +155,7 @@ function Login() {
 												type={showPassword ? "text" : "password"}
 												value={password}
 												placeholder="Enter your password"
-												className="w-full bg-transparent px-5 py-4 outline-none"
+												className="w-full bg-transparent px-5 py-4 outline-none rounded-l-2xl"
 												onChange={(e) => setPassword(e.target.value)}
 											/>
 
