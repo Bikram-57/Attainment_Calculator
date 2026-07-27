@@ -61,7 +61,7 @@ export default function Rubrics() {
                                 backgroundColor: COLORS.mint,
                                 color: COLORS.font,
                             }}
-                            className="sticky top-0 z-10"
+                            className="sticky top-0 z-2"
                         >
                             <tr className="text-center">
 

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { FaCamera, FaTrash, FaSave, FaTimes, FaUserEdit, FaIdBadge, FaEnvelope, FaUser } from "react-icons/fa";
 
-import { ErrorSuccessMsg, ProfileInfoCard } from "..";
+import { ErrorSuccessMsg, ProfileInfoCard, RemoveProfilePicture } from "..";
 import { COLORS } from "../../constants/theme";
 import { useNavigate } from "react-router-dom";
 
@@ -23,6 +23,7 @@ function Profile() {
     const [imageFile, setImageFile] = useState(null);
 
     const [isEditing, setIsEditing] = useState(false);
+    const [isRemovePictureClicked, setIsRemovePictureClicked] = useState(false);
 
     const [successMsg, setSuccessMsg] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
@@ -85,6 +86,8 @@ function Profile() {
             setIsEditing(false);
         } catch (error) {
             setErrorMsg(error?.response?.data?.message);
+        } finally {
+            setIsRemovePictureClicked(false);
         }
     };
 
@@ -239,7 +242,7 @@ function Profile() {
 
                                 {previewImage === originalImage &&
                                     <button
-                                        onClick={handleDeleteImage}
+                                        onClick={() => setIsRemovePictureClicked(true)}
                                         className="flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 font-medium text-white transition hover:bg-red-700"
                                     >
                                         <FaTrash />
@@ -248,7 +251,12 @@ function Profile() {
                             </>
                         )}
                     </div>
-
+                    {isRemovePictureClicked &&
+                        <RemoveProfilePicture
+                            handleDeleteImage={handleDeleteImage}
+                            setIsRemovePictureClicked={setIsRemovePictureClicked}
+                        />
+                    }
                 </div>
             </div>
         </div>

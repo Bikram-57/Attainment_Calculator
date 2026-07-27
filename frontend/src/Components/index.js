@@ -58,6 +58,7 @@ import NavBarMenu from "./NavBar/NavBarMenu";
 // Profile
 import Profile from "./Profile/Profile";
 import ProfileInfoCard from "./Profile/ProfileInfoCard";
+import RemoveProfilePicture from "./Profile/RemoveProfilePicture";
 
 // Rubrics
 import Rubrics from "./Rubrics/Rubrics";
@@ -177,4 +178,5 @@ export {
     AssignSingleSubjectForm,
     AssignMultipleSubjectForm,
     PublicRoute,
+    RemoveProfilePicture,
 }
