@@ -72,7 +72,7 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
                     <button
                         onClick={handleDownload}
                         disabled={downloading}
-                        className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+                        className="rounded-lg border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                     >
                         {downloading ? "Downloading..." : "Download"}
                     </button>

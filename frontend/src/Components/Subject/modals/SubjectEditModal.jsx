@@ -171,10 +171,10 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                             placeholder="Select course"
                             value={courseOptions.find(option => option.value === course)}
                             onChange={selected => setCourse(selected?.value || "")}
-                            maxMenuHeight={120}
+                            maxMenuHeight={80}
                         />
                     </div>
-                    <div className="flex justify-between items-center pt-2">
+                    <div className="flex justify-between items-center pt-5">
                         <ErrorSuccessMsg
                             errorMsg={errorMsg}
                             successMsg={successMsg}

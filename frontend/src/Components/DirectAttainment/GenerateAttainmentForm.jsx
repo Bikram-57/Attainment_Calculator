@@ -138,12 +138,12 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
                             onChange={selected =>
                                 setCourse(selected?.value || "")
                             }
-                            maxMenuHeight={120}
+                            maxMenuHeight={80}
                         />
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between border-t border-gray-300 pt-4">
+                    <div className="flex items-center justify-between border-t border-gray-300 pt-5">
                         <ErrorSuccessMsg
                             errorMsg={errorMsg}
                             successMsg={successMsg}
