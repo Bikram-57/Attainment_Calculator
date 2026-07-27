@@ -83,6 +83,11 @@ const router = createBrowserRouter([
 				handle: { title: 'Profile Page' },
 			},
 			{
+				path: 'support',
+				element: <UnderDevelopment />,
+				handle: { title: 'Support' },
+			},
+			{
 				path: 'users',
 				element: <Faculty />,
 				handle: { title: 'Manage Faculty' },

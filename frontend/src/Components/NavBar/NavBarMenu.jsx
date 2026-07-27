@@ -50,10 +50,13 @@ function NavBarMenu() {
                         Profile
                     </NavLink>
 
-                    <button className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 transition hover:bg-gray-50">
+                    <NavLink
+                        to='/support'
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 transition hover:bg-gray-50"
+                    >
                         <FiHelpCircle size={18} />
                         Support
-                    </button>
+                    </NavLink>
 
                     <div className="border-t border-gray-100" />
 

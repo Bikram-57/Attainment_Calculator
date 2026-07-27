@@ -96,6 +96,7 @@ import Logout from "./Logout";
 import PageNotFound from "./PageNotFound";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
+import UnderDevelopment from "./UnderDevelopment";
 import UploadData from "./UploadData";
 
 // utils
@@ -103,7 +104,6 @@ import ActionBtns from "../utils/ActionBtns";
 import ErrorSuccessMsg from "../utils/ErrorSuccessMsg";
 import Filters from "../utils/Filters";
 import Loading from "../utils/Loading";
-import UnderDevelopment from "../utils/UnderDevelopment";
 
 export {
     NavBar,
