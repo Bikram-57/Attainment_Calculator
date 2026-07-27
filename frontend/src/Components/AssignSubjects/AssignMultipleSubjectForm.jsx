@@ -67,7 +67,7 @@ function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen
 
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'Format.xlsx';
+            link.download = 'Upload-All-Assign-Subjects.xlsx';
 
             document.body.appendChild(link);
             link.click();

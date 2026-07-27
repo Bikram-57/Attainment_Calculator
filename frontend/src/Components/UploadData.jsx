@@ -136,7 +136,8 @@ function UploadData() {
 
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = 'Format.xlsx';
+			link.download = 'uploadDataFormat.xlsx';
+			// link.download = 'Format.xlsx';
 
 			document.body.appendChild(link);
 			link.click();
