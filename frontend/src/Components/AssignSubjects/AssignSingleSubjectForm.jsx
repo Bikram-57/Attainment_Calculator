@@ -189,8 +189,9 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
                     value={subjectOptions.find(option => option.value.subjectId === subjectData?.subjectId) || null}
                     onChange={selected => handleSubject(selected?.value || "")}
                     isDisabled={isDisabled}
-                    maxMenuHeight={120}
+                    maxMenuHeight={150}
                     isClearable
+                    menuPlacement="top"
                 />
             </div>
 

@@ -6,10 +6,13 @@ import { FaCamera, FaTrash, FaSave, FaTimes, FaUserEdit, FaIdBadge, FaEnvelope, 
 import { ErrorSuccessMsg, ProfileInfoCard, RemoveProfilePicture } from "..";
 import { COLORS } from "../../constants/theme";
 import { useNavigate } from "react-router-dom";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 function Profile() {
     const userData = useSelector((state) => state.auth.userData);
     const navigate = useNavigate();
+
+    useDocumentTitle('Profile')
 
     const defaultImage =
         "https://ui-avatars.com/api/?name=User&background=e2e8f0&color=475569&size=256";
