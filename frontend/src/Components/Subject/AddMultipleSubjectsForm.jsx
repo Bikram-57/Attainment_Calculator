@@ -56,19 +56,25 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
     if (!isAddSubjectOpen) return null;
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-3">
 
             {/* File Picker */}
             <div>
-                <label className="mb-2 block text-md font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-2 block text-sm sm:text-md font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Excel File
                 </label>
 
                 <div className="flex items-center overflow-hidden rounded-xl border border-gray-300 bg-white">
 
                     <label
-                        className="cursor-pointer border-r border-gray-300 px-4 py-2 text-sm font-medium transition hover:bg-gray-100"
-                        style={{ backgroundColor: COLORS.latteDark, color: COLORS.mintDark }}
+                        className="cursor-pointer border-r border-gray-300 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition hover:bg-gray-100 whitespace-nowrap"
+                        style={{
+                            backgroundColor: COLORS.latteDark,
+                            color: COLORS.mintDark
+                        }}
                     >
                         Choose File
 
@@ -81,46 +87,58 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
                         />
                     </label>
 
-                    <div className="flex-1 truncate px-4 text-sm text-gray-600">
+
+                    <div className="flex-1 truncate px-3 sm:px-4 text-xs sm:text-sm text-gray-600">
                         {file ? file.name : "No file selected"}
                     </div>
+
 
                     {file && (
                         <button
                             type="button"
                             onClick={handleRemoveFile}
-                            className="px-3 text-red-500 transition hover:text-red-700"
+                            className="px-2 sm:px-3 text-red-500 transition hover:text-red-700 shrink-0"
                         >
-                            <MdOutlineCancelPresentation className="h-6 w-6" />
+                            <MdOutlineCancelPresentation className="h-5 w-5 sm:h-6 sm:w-6" />
                         </button>
                     )}
 
                 </div>
 
+
                 <p className="mt-2 text-xs text-gray-500">
                     Supported formats: <strong>.xls</strong>, <strong>.xlsx</strong>
                 </p>
+
             </div>
 
+
             {/* Buttons */}
-            <div className="flex justify-between items-center">
-                <ErrorSuccessMsg
-                    errorMsg={errorMsg}
-                    successMsg={successMsg}
-                    setSuccessMsg={setSuccessMsg}
-                    setIsOpen={setIsAddSubjectOpen}
-                />
-                <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+
+                <div className="order-2 sm:order-1">
+                    <ErrorSuccessMsg
+                        errorMsg={errorMsg}
+                        successMsg={successMsg}
+                        setSuccessMsg={setSuccessMsg}
+                        setIsOpen={setIsAddSubjectOpen}
+                    />
+                </div>
+
+
+                <div className="order-1 sm:order-2 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+
                     <button
                         onClick={() => setIsAddSubjectOpen(false)}
-                        className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+                        className="w-full sm:w-auto rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
                     >
                         Cancel
                     </button>
 
+
                     <button
                         onClick={handleAddMultipleSubjects}
-                        className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+                        className="w-full sm:w-auto rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
                         style={{
                             backgroundColor: COLORS.mint,
                             color: COLORS.font,
@@ -128,12 +146,91 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
                     >
                         Upload Subjects
                     </button>
+
                 </div>
+
             </div>
 
-
-
         </div>
+
+        // <div className="space-y-2">
+
+        //     {/* File Picker */}
+        //     <div>
+        //         <label className="mb-2 block text-md font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Excel File
+        //         </label>
+
+        //         <div className="flex items-center overflow-hidden rounded-xl border border-gray-300 bg-white">
+
+        //             <label
+        //                 className="cursor-pointer border-r border-gray-300 px-4 py-2 text-sm font-medium transition hover:bg-gray-100"
+        //                 style={{ backgroundColor: COLORS.latteDark, color: COLORS.mintDark }}
+        //             >
+        //                 Choose File
+
+        //                 <input
+        //                     ref={fileInputRef}
+        //                     type="file"
+        //                     accept=".xls,.xlsx"
+        //                     className="hidden"
+        //                     onChange={handleFileChange}
+        //                 />
+        //             </label>
+
+        //             <div className="flex-1 truncate px-4 text-sm text-gray-600">
+        //                 {file ? file.name : "No file selected"}
+        //             </div>
+
+        //             {file && (
+        //                 <button
+        //                     type="button"
+        //                     onClick={handleRemoveFile}
+        //                     className="px-3 text-red-500 transition hover:text-red-700"
+        //                 >
+        //                     <MdOutlineCancelPresentation className="h-6 w-6" />
+        //                 </button>
+        //             )}
+
+        //         </div>
+
+        //         <p className="mt-2 text-xs text-gray-500">
+        //             Supported formats: <strong>.xls</strong>, <strong>.xlsx</strong>
+        //         </p>
+        //     </div>
+
+        //     {/* Buttons */}
+        //     <div className="flex justify-between items-center">
+        //         <ErrorSuccessMsg
+        //             errorMsg={errorMsg}
+        //             successMsg={successMsg}
+        //             setSuccessMsg={setSuccessMsg}
+        //             setIsOpen={setIsAddSubjectOpen}
+        //         />
+        //         <div className="flex gap-3">
+        //             <button
+        //                 onClick={() => setIsAddSubjectOpen(false)}
+        //                 className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+        //             >
+        //                 Cancel
+        //             </button>
+
+        //             <button
+        //                 onClick={handleAddMultipleSubjects}
+        //                 className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+        //                 style={{
+        //                     backgroundColor: COLORS.mint,
+        //                     color: COLORS.font,
+        //                 }}
+        //             >
+        //                 Upload Subjects
+        //             </button>
+        //         </div>
+        //     </div>
+
+
+
+        // </div>
 
 
         // <div>

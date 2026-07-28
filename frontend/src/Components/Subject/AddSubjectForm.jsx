@@ -71,11 +71,14 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
     if (!isAddSubjectOpen) return null;
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-3 sm:space-y-4">
 
             {/* Subject Code */}
             <div>
-                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-1 block text-sm font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Subject Code
                 </label>
 
@@ -84,14 +87,18 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     placeholder="e.g. CA1603"
                     value={subjectId}
                     onChange={(e) => setSubjectId(e.target.value)}
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-gray-400"
+                    className="w-full rounded-xl border border-gray-300 bg-white px-3 sm:px-4 py-2 text-sm outline-none focus:border-gray-400"
                     style={{ color: COLORS.mintDark }}
                 />
             </div>
 
+
             {/* Subject Name */}
             <div>
-                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-1 block text-sm font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Subject Name
                 </label>
 
@@ -100,14 +107,18 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     placeholder="e.g. Software Engineering"
                     value={subjectName}
                     onChange={(e) => setSubjectName(e.target.value)}
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-gray-400"
+                    className="w-full rounded-xl border border-gray-300 bg-white px-3 sm:px-4 py-2 text-sm outline-none focus:border-gray-400"
                     style={{ color: COLORS.mintDark }}
                 />
             </div>
 
+
             {/* Academic Year */}
             <div>
-                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-1 block text-sm font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Academic Year
                 </label>
 
@@ -120,9 +131,13 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 />
             </div>
 
+
             {/* Semester */}
             <div>
-                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-1 block text-sm font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Semester
                 </label>
 
@@ -135,9 +150,13 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 />
             </div>
 
+
             {/* Course */}
             <div>
-                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-1 block text-sm font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Course
                 </label>
 
@@ -150,25 +169,31 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                 />
             </div>
 
+
             {/* Buttons */}
-            <div className="flex justify-between items-center pt-2">
-                <ErrorSuccessMsg
-                    errorMsg={errorMsg}
-                    successMsg={successMsg}
-                    setSuccessMsg={setSuccessMsg}
-                    setIsOpen={setIsAddSubjectOpen}
-                />
-                <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 pt-1">
+
+                <div className="order-2 sm:order-1">
+                    <ErrorSuccessMsg
+                        errorMsg={errorMsg}
+                        successMsg={successMsg}
+                        setSuccessMsg={setSuccessMsg}
+                        setIsOpen={setIsAddSubjectOpen}
+                    />
+                </div>
+
+                <div className="order-1 sm:order-2 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+
                     <button
                         onClick={() => setIsAddSubjectOpen(false)}
-                        className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+                        className="w-full sm:w-auto rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
                     >
                         Cancel
                     </button>
 
                     <button
                         onClick={handleAddSubject}
-                        className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+                        className="w-full sm:w-auto rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
                         style={{
                             backgroundColor: COLORS.mint,
                             color: COLORS.font,
@@ -176,19 +201,140 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
                     >
                         Add Subject
                     </button>
-                </div>
-            </div>
 
+                </div>
+
+            </div>
 
 
             {/* Note */}
             <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2">
-                <p className="text-sm text-red-700">
-                    <span className="font-semibold">Note:</span> Once a subject is created, the <strong>Subject Code</strong> cannot be changed.
+                <p className="text-xs sm:text-sm text-red-700 leading-relaxed">
+                    <span className="font-semibold">Note:</span> Once a subject is created, the{" "}
+                    <strong>Subject Code</strong> cannot be changed.
                 </p>
             </div>
 
         </div>
+
+        // <div className="space-y-3">
+
+        //     {/* Subject Code */}
+        //     <div>
+        //         <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Subject Code
+        //         </label>
+
+        //         <input
+        //             type="text"
+        //             placeholder="e.g. CA1603"
+        //             value={subjectId}
+        //             onChange={(e) => setSubjectId(e.target.value)}
+        //             className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-gray-400"
+        //             style={{ color: COLORS.mintDark }}
+        //         />
+        //     </div>
+
+        //     {/* Subject Name */}
+        //     <div>
+        //         <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Subject Name
+        //         </label>
+
+        //         <input
+        //             type="text"
+        //             placeholder="e.g. Software Engineering"
+        //             value={subjectName}
+        //             onChange={(e) => setSubjectName(e.target.value)}
+        //             className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-gray-400"
+        //             style={{ color: COLORS.mintDark }}
+        //         />
+        //     </div>
+
+        //     {/* Academic Year */}
+        //     <div>
+        //         <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Academic Year
+        //         </label>
+
+        //         <Select
+        //             options={yearOptions}
+        //             placeholder="Select year"
+        //             value={yearOptions.find(option => option.value === academicYear)}
+        //             onChange={selected => setAcademicYear(selected?.value || "")}
+        //             maxMenuHeight={120}
+        //         />
+        //     </div>
+
+        //     {/* Semester */}
+        //     <div>
+        //         <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Semester
+        //         </label>
+
+        //         <Select
+        //             options={semesterOptions}
+        //             placeholder="Select semester"
+        //             value={semesterOptions.find(option => option.value === semester)}
+        //             onChange={selected => setSemester(selected?.value || "")}
+        //             maxMenuHeight={120}
+        //         />
+        //     </div>
+
+        //     {/* Course */}
+        //     <div>
+        //         <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Course
+        //         </label>
+
+        //         <Select
+        //             options={courseOptions}
+        //             placeholder="Select course"
+        //             value={courseOptions.find(option => option.value === course)}
+        //             onChange={selected => setCourse(selected?.value || "")}
+        //             maxMenuHeight={120}
+        //         />
+        //     </div>
+
+        //     {/* Buttons */}
+        //     <div className="flex justify-between items-center pt-2">
+        //         <ErrorSuccessMsg
+        //             errorMsg={errorMsg}
+        //             successMsg={successMsg}
+        //             setSuccessMsg={setSuccessMsg}
+        //             setIsOpen={setIsAddSubjectOpen}
+        //         />
+        //         <div className="flex gap-3">
+        //             <button
+        //                 onClick={() => setIsAddSubjectOpen(false)}
+        //                 className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+        //             >
+        //                 Cancel
+        //             </button>
+
+        //             <button
+        //                 onClick={handleAddSubject}
+        //                 className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+        //                 style={{
+        //                     backgroundColor: COLORS.mint,
+        //                     color: COLORS.font,
+        //                 }}
+        //             >
+        //                 Add Subject
+        //             </button>
+        //         </div>
+        //     </div>
+
+
+
+        //     {/* Note */}
+        //     <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2">
+        //         <p className="text-sm text-red-700">
+        //             <span className="font-semibold">Note:</span> Once a subject is created, the <strong>Subject Code</strong> cannot be changed.
+        //         </p>
+        //     </div>
+
+        // </div>
 
 
         // <div>

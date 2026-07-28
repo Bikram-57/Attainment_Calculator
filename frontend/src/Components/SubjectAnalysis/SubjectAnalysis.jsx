@@ -81,30 +81,31 @@ function SubjectAnalysis() {
 
     return !isOpen ? (
         <div
-            className="h-full rounded-2xl border border-gray-200 p-5"
+            className="flex h-1/2 w-full flex-col rounded-2xl border border-gray-200 bg-transparent p-4 sm:p-5 lg:p-6"
             style={{ backgroundColor: COLORS.latte }}
         >
             {/* Header */}
-            <div className="mb-5">
+            <div className="mb-6">
                 <h2
-                    className="text-xl font-semibold"
+                    className="text-xl font-semibold sm:text-2xl"
                     style={{ color: COLORS.mintDark }}
                 >
                     Subject Analysis
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-600">
-                    Select the academic year, course, and semester to generate the subject-wise analysis.
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600 sm:text-base">
+                    Select the academic year, course, and semester to generate the
+                    subject-wise analysis.
                 </p>
             </div>
 
             {/* Form Card */}
-            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="flex-1 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
 
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
 
                     {/* Academic Year */}
-                    <div>
+                    <div className="min-w-0">
                         <label
                             className="mb-2 block text-sm font-semibold"
                             style={{ color: COLORS.mintDark }}
@@ -122,7 +123,7 @@ function SubjectAnalysis() {
                     </div>
 
                     {/* Course */}
-                    <div>
+                    <div className="min-w-0">
                         <label
                             className="mb-2 block text-sm font-semibold"
                             style={{ color: COLORS.mintDark }}
@@ -140,7 +141,7 @@ function SubjectAnalysis() {
                     </div>
 
                     {/* Semester */}
-                    <div>
+                    <div className="min-w-0">
                         <label
                             className="mb-2 block text-sm font-semibold"
                             style={{ color: COLORS.mintDark }}
@@ -160,29 +161,137 @@ function SubjectAnalysis() {
                 </div>
 
                 {/* Footer */}
-                <div className="mt-6 flex items-center justify-between">
+                <div className="mt-8 flex flex-col gap-5 border-t border-gray-200 pt-6 lg:flex-row lg:items-center lg:justify-between">
 
-                    <ErrorSuccessMsg
-                        errorMsg={errorMsg}
-                        successMsg={successMsg}
-                        setSuccessMsg={setSuccessMsg}
-                    />
+                    <div className="min-w-0 flex-1">
+                        <ErrorSuccessMsg
+                            errorMsg={errorMsg}
+                            successMsg={successMsg}
+                            setSuccessMsg={setSuccessMsg}
+                        />
+                    </div>
 
-                    <button
-                        onClick={handleSubmit}
-                        className="rounded-xl px-6 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
-                        style={{
-                            backgroundColor: COLORS.mint,
-                            color: COLORS.font,
-                        }}
-                    >
-                        Generate Analysis
-                    </button>
+                    <div className="flex w-full justify-end lg:w-auto">
+                        <button
+                            onClick={handleSubmit}
+                            className="w-full rounded-xl px-6 py-3 text-sm font-medium shadow-sm transition hover:opacity-90 sm:w-auto sm:min-w-55 cursor-pointer"
+                            style={{
+                                backgroundColor: COLORS.mint,
+                                color: COLORS.font,
+                            }}
+                        >
+                            Generate Analysis
+                        </button>
+                    </div>
 
                 </div>
 
             </div>
         </div>
+
+        // <div
+        //     className="h-full rounded-2xl border border-gray-200 p-5"
+        //     style={{ backgroundColor: COLORS.latte }}
+        // >
+        //     {/* Header */}
+        //     <div className="mb-5">
+        //         <h2
+        //             className="text-xl font-semibold"
+        //             style={{ color: COLORS.mintDark }}
+        //         >
+        //             Subject Analysis
+        //         </h2>
+
+        //         <p className="mt-1 text-sm text-gray-600">
+        //             Select the academic year, course, and semester to generate the subject-wise analysis.
+        //         </p>
+        //     </div>
+
+        //     {/* Form Card */}
+        //     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+
+        //         <div className="grid gap-4 md:grid-cols-3">
+
+        //             {/* Academic Year */}
+        //             <div>
+        //                 <label
+        //                     className="mb-2 block text-sm font-semibold"
+        //                     style={{ color: COLORS.mintDark }}
+        //                 >
+        //                     Academic Year
+        //                 </label>
+
+        //                 <Select
+        //                     options={yearOptions}
+        //                     placeholder="Select year"
+        //                     value={yearList.find(option => option.value === academicYear)}
+        //                     onChange={selected => setAcademicYear(selected?.value || "")}
+        //                     maxMenuHeight={180}
+        //                 />
+        //             </div>
+
+        //             {/* Course */}
+        //             <div>
+        //                 <label
+        //                     className="mb-2 block text-sm font-semibold"
+        //                     style={{ color: COLORS.mintDark }}
+        //                 >
+        //                     Course
+        //                 </label>
+
+        //                 <Select
+        //                     options={courseOptions}
+        //                     placeholder="Select course"
+        //                     value={courseOptions.find(option => option.value === course)}
+        //                     onChange={selected => setCourse(selected?.value || "")}
+        //                     maxMenuHeight={180}
+        //                 />
+        //             </div>
+
+        //             {/* Semester */}
+        //             <div>
+        //                 <label
+        //                     className="mb-2 block text-sm font-semibold"
+        //                     style={{ color: COLORS.mintDark }}
+        //                 >
+        //                     Semester
+        //                 </label>
+
+        //                 <Select
+        //                     options={semesterOptions}
+        //                     placeholder="Select semester"
+        //                     value={semesterOptions.find(option => option.value === semester)}
+        //                     onChange={selected => setSemester(selected?.value || "")}
+        //                     maxMenuHeight={180}
+        //                 />
+        //             </div>
+
+        //         </div>
+
+        //         {/* Footer */}
+        //         <div className="mt-6 flex items-center justify-between">
+
+        //             <ErrorSuccessMsg
+        //                 errorMsg={errorMsg}
+        //                 successMsg={successMsg}
+        //                 setSuccessMsg={setSuccessMsg}
+        //             />
+
+        //             <button
+        //                 onClick={handleSubmit}
+        //                 className="rounded-xl px-6 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+        //                 style={{
+        //                     backgroundColor: COLORS.mint,
+        //                     color: COLORS.font,
+        //                 }}
+        //             >
+        //                 Generate Analysis
+        //             </button>
+
+        //         </div>
+
+        //     </div>
+        // </div>
 
         // <div className='h-full flex flex-col p-4'>
         //     <div

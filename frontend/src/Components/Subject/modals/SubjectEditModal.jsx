@@ -66,43 +66,59 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
     }
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm cursor-default"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm cursor-default p-3 sm:p-4"
             onClick={closeMenu}
         >
             <div
-                className="w-[92%] max-w-xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+                className="w-full max-w-xl max-h-[95vh] overflow-hidden rounded-2xl sm:rounded-3xl bg-white shadow-2xl flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
 
                 {/* Header */}
                 <div
-                    className="flex items-center justify-between px-6 py-4"
+                    className="flex items-start justify-between gap-4 px-4 sm:px-6 py-3 sm:py-4 shrink-0"
                     style={{ backgroundColor: COLORS.mint }}
                 >
                     <div>
-                        <h2 className="text-xl font-semibold" style={{ color: COLORS.font }}>
+                        <h2
+                            className="text-lg sm:text-xl font-semibold"
+                            style={{ color: COLORS.font }}
+                        >
                             Edit Subject
                         </h2>
 
-                        <p className="text-sm opacity-90" style={{ color: COLORS.font }}>
+                        <p
+                            className="text-xs sm:text-sm opacity-90 mt-1"
+                            style={{ color: COLORS.font }}
+                        >
                             Update subject information.
                         </p>
                     </div>
 
                     <button
                         onClick={closeMenu}
-                        className="rounded-lg p-2 transition hover:bg-white/10"
+                        className="rounded-lg p-2 transition hover:bg-white/10 cursor-pointer shrink-0"
                     >
-                        <IoMdClose className="h-6 w-6" style={{ color: COLORS.font }} />
+                        <IoMdClose
+                            className="h-5 w-5 sm:h-6 sm:w-6"
+                            style={{ color: COLORS.font }}
+                        />
                     </button>
                 </div>
 
+
                 {/* Body */}
-                <div className="space-y-3 p-6" style={{ backgroundColor: COLORS.latte }}>
+                <div
+                    className="space-y-3 sm:space-y-4 p-4 sm:p-6 overflow-y-auto"
+                    style={{ backgroundColor: COLORS.latte }}
+                >
 
                     {/* Subject Code */}
                     <div>
-                        <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                        <label
+                            className="mb-1 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
                             Subject Code
                         </label>
 
@@ -110,14 +126,18 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                             type="text"
                             value={data.subjectId}
                             readOnly
-                            className="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm outline-none cursor-not-allowed"
+                            className="w-full rounded-xl border border-gray-300 bg-gray-100 px-3 sm:px-4 py-2.5 text-sm outline-none cursor-not-allowed"
                             style={{ color: COLORS.mintDark }}
                         />
                     </div>
 
+
                     {/* Subject Name */}
                     <div>
-                        <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                        <label
+                            className="mb-1 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
                             Subject Name
                         </label>
 
@@ -125,14 +145,18 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                             type="text"
                             value={subjectName}
                             onChange={(e) => setSubjectName(e.target.value)}
-                            className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-gray-400"
+                            className="w-full rounded-xl border border-gray-300 bg-white px-3 sm:px-4 py-2.5 text-sm outline-none focus:border-gray-400"
                             style={{ color: COLORS.mintDark }}
                         />
                     </div>
 
+
                     {/* Academic Year */}
                     <div>
-                        <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                        <label
+                            className="mb-1 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
                             Academic Year
                         </label>
 
@@ -145,9 +169,13 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                         />
                     </div>
 
+
                     {/* Semester */}
                     <div>
-                        <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                        <label
+                            className="mb-1 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
                             Semester
                         </label>
 
@@ -160,9 +188,13 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                         />
                     </div>
 
+
                     {/* Course */}
                     <div>
-                        <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                        <label
+                            className="mb-1 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
                             Course
                         </label>
 
@@ -174,24 +206,32 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                             maxMenuHeight={80}
                         />
                     </div>
-                    <div className="flex justify-between items-center pt-5">
-                        <ErrorSuccessMsg
-                            errorMsg={errorMsg}
-                            successMsg={successMsg}
-                            setSuccessMsg={setSuccessMsg}
-                            setIsOpen={closeMenu}
-                        />
-                        <div className='flex gap-3'>
+
+
+                    {/* Buttons */}
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 pt-3 sm:pt-5">
+
+                        <div className="order-2 sm:order-1">
+                            <ErrorSuccessMsg
+                                errorMsg={errorMsg}
+                                successMsg={successMsg}
+                                setSuccessMsg={setSuccessMsg}
+                                setIsOpen={closeMenu}
+                            />
+                        </div>
+
+                        <div className="order-1 sm:order-2 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+
                             <button
                                 onClick={closeMenu}
-                                className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+                                className="w-full sm:w-auto rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
                             >
                                 Cancel
                             </button>
 
                             <button
                                 onClick={updateSubject}
-                                className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+                                className="w-full sm:w-auto rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
                                 style={{
                                     backgroundColor: COLORS.mint,
                                     color: COLORS.font,
@@ -199,13 +239,157 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
                             >
                                 Update Subject
                             </button>
+
                         </div>
+
                     </div>
 
                 </div>
 
             </div>
         </div>
+
+        // <div
+        //     className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm cursor-default"
+        //     onClick={closeMenu}
+        // >
+        //     <div
+        //         className="w-[92%] max-w-xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+        //         onClick={(e) => e.stopPropagation()}
+        //     >
+
+        //         {/* Header */}
+        //         <div
+        //             className="flex items-center justify-between px-6 py-4"
+        //             style={{ backgroundColor: COLORS.mint }}
+        //         >
+        //             <div>
+        //                 <h2 className="text-xl font-semibold" style={{ color: COLORS.font }}>
+        //                     Edit Subject
+        //                 </h2>
+
+        //                 <p className="text-sm opacity-90" style={{ color: COLORS.font }}>
+        //                     Update subject information.
+        //                 </p>
+        //             </div>
+
+        //             <button
+        //                 onClick={closeMenu}
+        //                 className="rounded-lg p-2 transition hover:bg-white/10"
+        //             >
+        //                 <IoMdClose className="h-6 w-6" style={{ color: COLORS.font }} />
+        //             </button>
+        //         </div>
+
+        //         {/* Body */}
+        //         <div className="space-y-3 p-6" style={{ backgroundColor: COLORS.latte }}>
+
+        //             {/* Subject Code */}
+        //             <div>
+        //                 <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //                     Subject Code
+        //                 </label>
+
+        //                 <input
+        //                     type="text"
+        //                     value={data.subjectId}
+        //                     readOnly
+        //                     className="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm outline-none cursor-not-allowed"
+        //                     style={{ color: COLORS.mintDark }}
+        //                 />
+        //             </div>
+
+        //             {/* Subject Name */}
+        //             <div>
+        //                 <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //                     Subject Name
+        //                 </label>
+
+        //                 <input
+        //                     type="text"
+        //                     value={subjectName}
+        //                     onChange={(e) => setSubjectName(e.target.value)}
+        //                     className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-gray-400"
+        //                     style={{ color: COLORS.mintDark }}
+        //                 />
+        //             </div>
+
+        //             {/* Academic Year */}
+        //             <div>
+        //                 <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //                     Academic Year
+        //                 </label>
+
+        //                 <Select
+        //                     options={yearOptions}
+        //                     placeholder="Select year"
+        //                     value={yearOptions.find(option => option.value === academicYear)}
+        //                     onChange={selected => setAcademicYear(selected?.value || "")}
+        //                     maxMenuHeight={120}
+        //                 />
+        //             </div>
+
+        //             {/* Semester */}
+        //             <div>
+        //                 <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //                     Semester
+        //                 </label>
+
+        //                 <Select
+        //                     options={semesterOptions}
+        //                     placeholder="Select semester"
+        //                     value={semesterOptions.find(option => option.value === semester)}
+        //                     onChange={selected => setSemester(selected?.value || "")}
+        //                     maxMenuHeight={120}
+        //                 />
+        //             </div>
+
+        //             {/* Course */}
+        //             <div>
+        //                 <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //                     Course
+        //                 </label>
+
+        //                 <Select
+        //                     options={courseOptions}
+        //                     placeholder="Select course"
+        //                     value={courseOptions.find(option => option.value === course)}
+        //                     onChange={selected => setCourse(selected?.value || "")}
+        //                     maxMenuHeight={80}
+        //                 />
+        //             </div>
+        //             <div className="flex justify-between items-center pt-5">
+        //                 <ErrorSuccessMsg
+        //                     errorMsg={errorMsg}
+        //                     successMsg={successMsg}
+        //                     setSuccessMsg={setSuccessMsg}
+        //                     setIsOpen={closeMenu}
+        //                 />
+        //                 <div className='flex gap-3'>
+        //                     <button
+        //                         onClick={closeMenu}
+        //                         className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+        //                     >
+        //                         Cancel
+        //                     </button>
+
+        //                     <button
+        //                         onClick={updateSubject}
+        //                         className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+        //                         style={{
+        //                             backgroundColor: COLORS.mint,
+        //                             color: COLORS.font,
+        //                         }}
+        //                     >
+        //                         Update Subject
+        //                     </button>
+        //                 </div>
+        //             </div>
+
+        //         </div>
+
+        //     </div>
+        // </div>
 
 
         // <div
