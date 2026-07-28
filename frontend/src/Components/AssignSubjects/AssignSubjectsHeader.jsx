@@ -33,19 +33,20 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
     }
 
     return (
-        <div className="flex items-center justify-between gap-6 px-6 py-4 bg-white border-b border-gray-200">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6 px-4 sm:px-6 py-4 bg-white border-b border-gray-200">
 
             {/* Left */}
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 w-full lg:w-auto">
 
                 <h2
-                    className="text-xl font-semibold whitespace-nowrap"
+                    className="text-lg sm:text-xl font-semibold whitespace-nowrap"
                     style={{ color: COLORS.mint }}
                 >
                     Assigned Subjects
                 </h2>
 
-                <div className="relative">
+
+                <div className="relative w-full sm:w-96">
 
                     <BsSearch
                         className="absolute left-3 top-1/2 -translate-y-1/2"
@@ -57,35 +58,42 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                         placeholder="Search by faculty or subject..."
                         value={search}
                         onChange={handleChange}
-                        className="w-96 rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 transition"
+                        className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-10 text-sm outline-none focus:ring-2 transition"
                         style={{
                             color: COLORS.mintDark,
                             "--tw-ring-color": COLORS.mint,
                         }}
                     />
-                    {search.length > 0 &&
+
+
+                    {search.length > 0 && (
                         <MdOutlineCancelPresentation
-                            className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 cursor-pointer"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 sm:h-6 sm:w-6 cursor-pointer"
                             onClick={handleClear}
                         />
-                    }
+                    )}
+
                 </div>
 
             </div>
 
-            {/* Right */}
-            <div className="flex items-center gap-4">
 
-                <Filters
-                    showYear
-                    defaultYear={String(new Date().getFullYear())}
-                    isYearClearable={false}
-                    onYearChange={setFilterYear}
-                />
+            {/* Right */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+
+                <div className="w-full sm:w-auto overflow-x-auto">
+                    <Filters
+                        showYear
+                        defaultYear={String(new Date().getFullYear())}
+                        isYearClearable={false}
+                        onYearChange={setFilterYear}
+                    />
+                </div>
+
 
                 <button
                     onClick={() => setIsAssignSubjectOpen(true)}
-                    className="rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 hover:shadow-md cursor-pointer"
+                    className="w-full sm:w-auto rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 hover:shadow-md cursor-pointer whitespace-nowrap"
                     style={{
                         backgroundColor: COLORS.mint,
                         color: COLORS.font,
@@ -96,6 +104,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
 
             </div>
 
+
             {isAssignSubjectOpen && (
                 <AssignSubjectForm
                     isAssignSubjectOpen={isAssignSubjectOpen}
@@ -105,6 +114,79 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
             )}
 
         </div>
+
+        // <div className="flex items-center justify-between gap-6 px-6 py-4 bg-white border-b border-gray-200">
+
+        //     {/* Left */}
+        //     <div className="flex items-center gap-6">
+
+        //         <h2
+        //             className="text-xl font-semibold whitespace-nowrap"
+        //             style={{ color: COLORS.mint }}
+        //         >
+        //             Assigned Subjects
+        //         </h2>
+
+        //         <div className="relative">
+
+        //             <BsSearch
+        //                 className="absolute left-3 top-1/2 -translate-y-1/2"
+        //                 style={{ color: COLORS.mintDark }}
+        //             />
+
+        //             <input
+        //                 type="text"
+        //                 placeholder="Search by faculty or subject..."
+        //                 value={search}
+        //                 onChange={handleChange}
+        //                 className="w-96 rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 transition"
+        //                 style={{
+        //                     color: COLORS.mintDark,
+        //                     "--tw-ring-color": COLORS.mint,
+        //                 }}
+        //             />
+        //             {search.length > 0 &&
+        //                 <MdOutlineCancelPresentation
+        //                     className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 cursor-pointer"
+        //                     onClick={handleClear}
+        //                 />
+        //             }
+        //         </div>
+
+        //     </div>
+
+        //     {/* Right */}
+        //     <div className="flex items-center gap-4">
+
+        //         <Filters
+        //             showYear
+        //             defaultYear={String(new Date().getFullYear())}
+        //             isYearClearable={false}
+        //             onYearChange={setFilterYear}
+        //         />
+
+        //         <button
+        //             onClick={() => setIsAssignSubjectOpen(true)}
+        //             className="rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 hover:shadow-md cursor-pointer"
+        //             style={{
+        //                 backgroundColor: COLORS.mint,
+        //                 color: COLORS.font,
+        //             }}
+        //         >
+        //             + Assign Subject
+        //         </button>
+
+        //     </div>
+
+        //     {isAssignSubjectOpen && (
+        //         <AssignSubjectForm
+        //             isAssignSubjectOpen={isAssignSubjectOpen}
+        //             setIsAssignSubjectOpen={setIsAssignSubjectOpen}
+        //             toggleUpdate={toggleUpdate}
+        //         />
+        //     )}
+
+        // </div>
 
 
         // <div className='flex justify-between p-4'>

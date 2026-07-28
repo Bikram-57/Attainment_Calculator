@@ -35,42 +35,47 @@ function Faculty() {
 	}, [toggleNewUser]);
 	return !loading ? (
 		<div className="h-full flex flex-col bg-slate-50">
+
 			<FacultyHeader
 				toggleUpdate={toggleUpdate}
 				setSearchQuery={setSearchQuery}
 			/>
 
-			<div className="flex-1 overflow-hidden p-3">
 
-				<div className="h-full rounded-2xl bg-white shadow-lg border border-slate-200 overflow-hidden">
+			<div className="flex-1 overflow-hidden p-2 sm:p-3">
+
+				<div className="h-full rounded-xl sm:rounded-2xl bg-white shadow-lg border border-slate-200 overflow-hidden">
 
 					{filteredFaculty.length ? (
 
 						<div className="h-full overflow-auto">
 
-							<table className="w-full border-collapse">
+							<table className="min-w-175 w-full border-collapse">
 
-								<thead className="sticky top-0 bg-slate-100 z-2">
-									<tr className="text-sm uppercase tracking-wide text-slate-600">
+								<thead className="sticky top-0 bg-slate-100 z-20">
 
-										<th className="px-6 py-4 text-left">
+									<tr className="text-xs sm:text-sm uppercase tracking-wide text-slate-600">
+
+										<th className="px-3 sm:px-6 py-3 sm:py-4 text-left">
 											Faculty ID
 										</th>
 
-										<th className="px-6 py-4 text-left">
+										<th className="px-3 sm:px-6 py-3 sm:py-4 text-left">
 											Faculty Name
 										</th>
 
-										<th className="px-6 py-4 text-left">
+										<th className="px-3 sm:px-6 py-3 sm:py-4 text-left">
 											Email Address
 										</th>
 
-										<th className="px-6 py-4 text-center">
+										<th className="px-3 sm:px-6 py-3 sm:py-4 text-center">
 											Actions
 										</th>
 
 									</tr>
+
 								</thead>
+
 
 								<tbody>
 
@@ -81,23 +86,29 @@ function Faculty() {
 											className="border-b border-slate-100 even:bg-slate-50 hover:bg-blue-50 transition-all duration-200"
 										>
 
-											<td className="px-6 py-4 font-medium text-slate-800">
+											<td className="px-3 sm:px-6 py-3 sm:py-4 font-medium text-sm sm:text-base text-slate-800">
 												{faculty.facultyId}
 											</td>
 
-											<td className="px-6 py-4">
-												<div className="font-semibold text-slate-800">
+
+											<td className="px-3 sm:px-6 py-3 sm:py-4">
+
+												<div className="font-semibold text-sm sm:text-base text-slate-800">
 													{faculty.name}
 												</div>
+
 											</td>
 
-											<td className="px-6 py-4 text-slate-600">
+
+											<td className="px-3 sm:px-6 py-3 sm:py-4 text-sm sm:text-base text-slate-600">
 												{faculty.email}
 											</td>
 
-											<td className="px-6 py-4">
+
+											<td className="px-3 sm:px-6 py-3 sm:py-4">
 
 												<div className="flex justify-center">
+
 													<ActionBtns
 														data={faculty}
 														toggleUpdate={toggleUpdate}
@@ -105,9 +116,11 @@ function Faculty() {
 														EditModal={FacultyEditModal}
 														DeleteModal={FacultyDeleteModal}
 													/>
+
 												</div>
 
 											</td>
+
 
 										</tr>
 
@@ -119,21 +132,25 @@ function Faculty() {
 
 						</div>
 
+
 					) : (
 
-						<div className="flex h-full flex-col items-center justify-center gap-4 text-slate-500">
+						<div className="flex h-full flex-col items-center justify-center gap-3 sm:gap-4 text-slate-500 px-4 text-center">
 
-							<div className="text-6xl">
+							<div className="text-5xl sm:text-6xl">
 								👨‍🏫
 							</div>
 
-							<h2 className="text-xl font-semibold">
+
+							<h2 className="text-lg sm:text-xl font-semibold">
 								No Faculty Found
 							</h2>
 
-							<p className="text-sm">
+
+							<p className="text-xs sm:text-sm">
 								Try changing your search criteria.
 							</p>
+
 
 						</div>
 
@@ -144,6 +161,117 @@ function Faculty() {
 			</div>
 
 		</div>
+
+		// <div className="h-full flex flex-col bg-slate-50">
+		// 	<FacultyHeader
+		// 		toggleUpdate={toggleUpdate}
+		// 		setSearchQuery={setSearchQuery}
+		// 	/>
+
+		// 	<div className="flex-1 overflow-hidden p-3">
+
+		// 		<div className="h-full rounded-2xl bg-white shadow-lg border border-slate-200 overflow-hidden">
+
+		// 			{filteredFaculty.length ? (
+
+		// 				<div className="h-full overflow-auto">
+
+		// 					<table className="w-full border-collapse">
+
+		// 						<thead className="sticky top-0 bg-slate-100 z-2">
+		// 							<tr className="text-sm uppercase tracking-wide text-slate-600">
+
+		// 								<th className="px-6 py-4 text-left">
+		// 									Faculty ID
+		// 								</th>
+
+		// 								<th className="px-6 py-4 text-left">
+		// 									Faculty Name
+		// 								</th>
+
+		// 								<th className="px-6 py-4 text-left">
+		// 									Email Address
+		// 								</th>
+
+		// 								<th className="px-6 py-4 text-center">
+		// 									Actions
+		// 								</th>
+
+		// 							</tr>
+		// 						</thead>
+
+		// 						<tbody>
+
+		// 							{filteredFaculty.map(faculty => (
+
+		// 								<tr
+		// 									key={faculty._id}
+		// 									className="border-b border-slate-100 even:bg-slate-50 hover:bg-blue-50 transition-all duration-200"
+		// 								>
+
+		// 									<td className="px-6 py-4 font-medium text-slate-800">
+		// 										{faculty.facultyId}
+		// 									</td>
+
+		// 									<td className="px-6 py-4">
+		// 										<div className="font-semibold text-slate-800">
+		// 											{faculty.name}
+		// 										</div>
+		// 									</td>
+
+		// 									<td className="px-6 py-4 text-slate-600">
+		// 										{faculty.email}
+		// 									</td>
+
+		// 									<td className="px-6 py-4">
+
+		// 										<div className="flex justify-center">
+		// 											<ActionBtns
+		// 												data={faculty}
+		// 												toggleUpdate={toggleUpdate}
+		// 												ViewModal={FacultyViewModal}
+		// 												EditModal={FacultyEditModal}
+		// 												DeleteModal={FacultyDeleteModal}
+		// 											/>
+		// 										</div>
+
+		// 									</td>
+
+		// 								</tr>
+
+		// 							))}
+
+		// 						</tbody>
+
+		// 					</table>
+
+		// 				</div>
+
+		// 			) : (
+
+		// 				<div className="flex h-full flex-col items-center justify-center gap-4 text-slate-500">
+
+		// 					<div className="text-6xl">
+		// 						👨‍🏫
+		// 					</div>
+
+		// 					<h2 className="text-xl font-semibold">
+		// 						No Faculty Found
+		// 					</h2>
+
+		// 					<p className="text-sm">
+		// 						Try changing your search criteria.
+		// 					</p>
+
+		// 				</div>
+
+		// 			)}
+
+		// 		</div>
+
+		// 	</div>
+
+		// </div>
 
 		// <div className='h-full flex flex-col'>
 		// 	<FacultyHeader toggleUpdate={toggleUpdate} setSearchQuery={setSearchQuery} />

@@ -129,10 +129,14 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
     if (!isAssignSubjectOpen) return null;
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-3 sm:space-y-4">
+
             {/* Faculty */}
             <div>
-                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-1 block text-sm font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Faculty
                 </label>
 
@@ -146,9 +150,13 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
                 />
             </div>
 
+
             {/* Academic Year */}
             <div>
-                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-1 block text-sm font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Academic Year
                 </label>
 
@@ -162,9 +170,13 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
                 />
             </div>
 
+
             {/* Course */}
             <div>
-                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-1 block text-sm font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Course
                 </label>
 
@@ -177,16 +189,24 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
                 />
             </div>
 
+
             {/* Subject */}
             <div>
-                <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+                <label
+                    className="mb-1 block text-sm font-semibold"
+                    style={{ color: COLORS.mintDark }}
+                >
                     Subject
                 </label>
 
                 <Select
                     options={subjectOptions}
                     placeholder="Select subject"
-                    value={subjectOptions.find(option => option.value.subjectId === subjectData?.subjectId) || null}
+                    value={
+                        subjectOptions.find(
+                            option => option.value.subjectId === subjectData?.subjectId
+                        ) || null
+                    }
                     onChange={selected => handleSubject(selected?.value || "")}
                     isDisabled={isDisabled}
                     maxMenuHeight={150}
@@ -195,26 +215,33 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
                 />
             </div>
 
-            {/* Footer */}
-            <div className="flex justify-between items-center pt-2">
-                <ErrorSuccessMsg
-                    errorMsg={errorMsg}
-                    successMsg={successMsg}
-                    setSuccessMsg={setSuccessMsg}
-                    setIsOpen={setIsAssignSubjectOpen}
-                />
 
-                <div className="flex gap-3">
+            {/* Footer */}
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 pt-2">
+
+                <div className="order-2 sm:order-1">
+                    <ErrorSuccessMsg
+                        errorMsg={errorMsg}
+                        successMsg={successMsg}
+                        setSuccessMsg={setSuccessMsg}
+                        setIsOpen={setIsAssignSubjectOpen}
+                    />
+                </div>
+
+
+                <div className="order-1 sm:order-2 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+
                     <button
                         onClick={() => setIsAssignSubjectOpen(false)}
-                        className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+                        className="w-full sm:w-auto rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
                     >
                         Cancel
                     </button>
 
+
                     <button
                         onClick={handleAssignSubject}
-                        className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+                        className="w-full sm:w-auto rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
                         style={{
                             backgroundColor: COLORS.mint,
                             color: COLORS.font,
@@ -222,17 +249,117 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
                     >
                         Assign Subject
                     </button>
+
                 </div>
+
             </div>
 
-            {/* Note */}
-            {/* <div className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2">
-                <p className="text-sm text-blue-700">
-                    <span className="font-semibold">Note:</span> Select the <strong>Academic Year</strong> and <strong>Course</strong> first to load the available subjects.
-                </p>
-            </div> */}
-
         </div>
+
+        // <div className="space-y-3">
+        //     {/* Faculty */}
+        //     <div>
+        //         <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Faculty
+        //         </label>
+
+        //         <Select
+        //             options={facultyOptions}
+        //             placeholder="Select faculty"
+        //             value={facultyOptions.find(option => option.value === facultyData)}
+        //             onChange={selected => handleFaculty(selected?.value || "")}
+        //             maxMenuHeight={150}
+        //             isClearable
+        //         />
+        //     </div>
+
+        //     {/* Academic Year */}
+        //     <div>
+        //         <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Academic Year
+        //         </label>
+
+        //         <Select
+        //             options={yearOptions}
+        //             placeholder="Select year"
+        //             value={yearOptions.find(option => option.value === academicYear)}
+        //             onChange={selected => handleYear(selected?.value || "")}
+        //             maxMenuHeight={120}
+        //             isClearable
+        //         />
+        //     </div>
+
+        //     {/* Course */}
+        //     <div>
+        //         <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Course
+        //         </label>
+
+        //         <Select
+        //             options={courseOptions}
+        //             placeholder="Select course"
+        //             value={courseOptions.find(option => option.value === course)}
+        //             onChange={selected => handleCourse(selected?.value || "")}
+        //             maxMenuHeight={120}
+        //         />
+        //     </div>
+
+        //     {/* Subject */}
+        //     <div>
+        //         <label className="mb-1 block text-sm font-semibold" style={{ color: COLORS.mintDark }}>
+        //             Subject
+        //         </label>
+
+        //         <Select
+        //             options={subjectOptions}
+        //             placeholder="Select subject"
+        //             value={subjectOptions.find(option => option.value.subjectId === subjectData?.subjectId) || null}
+        //             onChange={selected => handleSubject(selected?.value || "")}
+        //             isDisabled={isDisabled}
+        //             maxMenuHeight={150}
+        //             isClearable
+        //             menuPlacement="top"
+        //         />
+        //     </div>
+
+        //     {/* Footer */}
+        //     <div className="flex justify-between items-center pt-2">
+        //         <ErrorSuccessMsg
+        //             errorMsg={errorMsg}
+        //             successMsg={successMsg}
+        //             setSuccessMsg={setSuccessMsg}
+        //             setIsOpen={setIsAssignSubjectOpen}
+        //         />
+
+        //         <div className="flex gap-3">
+        //             <button
+        //                 onClick={() => setIsAssignSubjectOpen(false)}
+        //                 className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+        //             >
+        //                 Cancel
+        //             </button>
+
+        //             <button
+        //                 onClick={handleAssignSubject}
+        //                 className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+        //                 style={{
+        //                     backgroundColor: COLORS.mint,
+        //                     color: COLORS.font,
+        //                 }}
+        //             >
+        //                 Assign Subject
+        //             </button>
+        //         </div>
+        //     </div>
+
+        //     {/* Note */}
+        //     {/* <div className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2">
+        //         <p className="text-sm text-blue-700">
+        //             <span className="font-semibold">Note:</span> Select the <strong>Academic Year</strong> and <strong>Course</strong> first to load the available subjects.
+        //         </p>
+        //     </div> */}
+
+        // </div>
 
         // <div>
         //     {/* Faculty Name */}
