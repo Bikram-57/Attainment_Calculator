@@ -46,7 +46,109 @@ export default function Rubrics() {
     }
 
     return !loading ? (
-        <div className="h-full flex flex-col">
+        <div className="flex h-full w-full flex-col">
+
+            <RubricsHeader
+                toggleUpdate={toggleUpdate}
+                setSearchQuery={setSearchQuery}
+            />
+
+            <div className="m-2 flex-1 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm sm:m-3 lg:m-4">
+
+                {filteredData?.length > 0 ? (
+
+                    <div className="h-full overflow-auto">
+
+                        <table className="min-w-162.5 w-full text-sm">
+
+                            <thead
+                                className="sticky top-0 z-10"
+                                style={{
+                                    backgroundColor: COLORS.mint,
+                                    color: COLORS.font,
+                                }}
+                            >
+                                <tr>
+
+                                    <th className="whitespace-nowrap px-4 py-3 text-left font-semibold sm:px-6">
+                                        Course
+                                    </th>
+
+                                    <th className="whitespace-nowrap px-4 py-3 text-center font-semibold sm:px-6">
+                                        Academic Year
+                                    </th>
+
+                                    <th className="whitespace-nowrap px-4 py-3 text-center font-semibold sm:px-6">
+                                        Actions
+                                    </th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {filteredData.map((rubric, index) => (
+
+                                    <tr
+                                        key={rubric._id}
+                                        className={`border-b border-gray-200 transition hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                            }`}
+                                    >
+
+                                        <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-800 sm:px-6">
+                                            {rubric.course}
+                                        </td>
+
+                                        <td className="whitespace-nowrap px-4 py-3 text-center text-gray-700 sm:px-6">
+                                            {rubric.year}
+                                        </td>
+
+                                        <td className="px-4 py-3 sm:px-6">
+                                            <div className="flex justify-center">
+                                                <ActionBtns
+                                                    data={rubric}
+                                                    toggleUpdate={toggleUpdate}
+                                                    ViewModal={RubricsViewModal}
+                                                    EditModal={RubricsEditModal}
+                                                    DeleteModal={RubricsDeleteModal}
+                                                />
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                ))}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                ) : (
+
+                    <div className="flex h-full min-h-72 flex-col items-center justify-center px-6 text-center text-gray-500">
+
+                        <div className="mb-3 text-5xl">
+                            📋
+                        </div>
+
+                        <h3 className="text-lg font-semibold text-gray-700">
+                            No Rubrics Found
+                        </h3>
+
+                        <p className="mt-2 max-w-md text-sm text-gray-500">
+                            There are no rubric records matching your search.
+                        </p>
+
+                    </div>
+
+                )}
+
+            </div>
+
+
+            {/* <div className="h-full flex flex-col">
             <RubricsHeader
                 toggleUpdate={toggleUpdate}
                 setSearchQuery={setSearchQuery}
@@ -131,7 +233,7 @@ export default function Rubrics() {
                     </div>
                 )}
 
-            </div>
+            </div> */}
 
             {/* <div className="flex-1 overflow-y-auto">
                 {filteredData?.length > 0 ?

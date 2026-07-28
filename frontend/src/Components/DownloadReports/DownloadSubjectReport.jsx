@@ -138,27 +138,28 @@ function DownloadSubjectReport() {
 
 	return (
 		<div
-			className="h-full rounded-2xl border border-gray-200 p-5"
+			className="h-full w-full rounded-2xl border border-gray-200 p-4 sm:p-5 lg:p-6"
 			style={{ backgroundColor: COLORS.latte }}
 		>
 			{/* Header */}
-			<div className="mb-5">
+			<div className="mb-6">
 				<h2
-					className="text-xl font-semibold"
+					className="text-xl font-semibold sm:text-2xl"
 					style={{ color: COLORS.mintDark }}
 				>
 					Download Subject Report
 				</h2>
 
-				<p className="mt-1 text-sm text-gray-600">
-					Select the academic year, course, and subject to generate the detailed subject report.
+				<p className="mt-2 max-w-3xl text-sm text-gray-600 sm:text-base">
+					Select the academic year, course, and subject to generate the
+					detailed subject report.
 				</p>
 			</div>
 
 			{/* Form Card */}
-			<div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+			<div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
 
-				<div className="grid gap-4 md:grid-cols-3">
+				<div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
 					{/* Academic Year */}
 					<div>
@@ -172,8 +173,14 @@ function DownloadSubjectReport() {
 						<Select
 							options={yearOptions}
 							placeholder="Select year"
-							value={yearOptions.find(option => option.value === academicYear) || null}
-							onChange={selected => handleYear(selected?.value || "")}
+							value={
+								yearOptions.find(
+									(option) => option.value === academicYear
+								) || null
+							}
+							onChange={(selected) =>
+								handleYear(selected?.value || "")
+							}
 							maxMenuHeight={180}
 						/>
 					</div>
@@ -190,8 +197,14 @@ function DownloadSubjectReport() {
 						<Select
 							options={courseOptions}
 							placeholder="Select course"
-							value={courseOptions.find(option => option.value === course) || null}
-							onChange={selected => handleCourse(selected?.value || "")}
+							value={
+								courseOptions.find(
+									(option) => option.value === course
+								) || null
+							}
+							onChange={(selected) =>
+								handleCourse(selected?.value || "")
+							}
 							maxMenuHeight={180}
 						/>
 					</div>
@@ -208,8 +221,14 @@ function DownloadSubjectReport() {
 						<Select
 							options={subjectOptions}
 							placeholder="Select subject"
-							value={subjectOptions.find(option => option.value === subjectId) || null}
-							onChange={selected => setSubjectId(selected?.value || "")}
+							value={
+								subjectOptions.find(
+									(option) => option.value === subjectId
+								) || null
+							}
+							onChange={(selected) =>
+								setSubjectId(selected?.value || "")
+							}
 							isDisabled={isDisabled}
 							maxMenuHeight={180}
 						/>
@@ -218,19 +237,21 @@ function DownloadSubjectReport() {
 				</div>
 
 				{/* Footer */}
-				<div className="mt-6 flex items-center justify-between">
+				<div className="mt-8 flex flex-col gap-4 border-t border-gray-200 pt-6 lg:flex-row lg:items-center lg:justify-between">
 
-					<ErrorSuccessMsg
-						errorMsg={errorMsg}
-					/>
+					<div className="min-w-0 flex-1">
+						<ErrorSuccessMsg
+							errorMsg={errorMsg}
+						/>
+					</div>
 
-					<div className="flex items-center gap-4">
+					<div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
 
 						{downloading && <Loading type="download" />}
 
 						<button
 							onClick={handleDownload}
-							className="rounded-xl px-6 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+							className="w-full rounded-xl px-6 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 sm:w-auto cursor-pointer"
 							style={{
 								backgroundColor: COLORS.mint,
 								color: COLORS.font,
@@ -244,7 +265,117 @@ function DownloadSubjectReport() {
 				</div>
 
 			</div>
+
 		</div>
+
+		// <div
+		// 	className="h-full rounded-2xl border border-gray-200 p-5"
+		// 	style={{ backgroundColor: COLORS.latte }}
+		// >
+		// 	{/* Header */}
+		// 	<div className="mb-5">
+		// 		<h2
+		// 			className="text-xl font-semibold"
+		// 			style={{ color: COLORS.mintDark }}
+		// 		>
+		// 			Download Subject Report
+		// 		</h2>
+
+		// 		<p className="mt-1 text-sm text-gray-600">
+		// 			Select the academic year, course, and subject to generate the detailed subject report.
+		// 		</p>
+		// 	</div>
+
+		// 	{/* Form Card */}
+		// 	<div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+
+		// 		<div className="grid gap-4 md:grid-cols-3">
+
+		// 			{/* Academic Year */}
+		// 			<div>
+		// 				<label
+		// 					className="mb-2 block text-sm font-semibold"
+		// 					style={{ color: COLORS.mintDark }}
+		// 				>
+		// 					Academic Year
+		// 				</label>
+
+		// 				<Select
+		// 					options={yearOptions}
+		// 					placeholder="Select year"
+		// 					value={yearOptions.find(option => option.value === academicYear) || null}
+		// 					onChange={selected => handleYear(selected?.value || "")}
+		// 					maxMenuHeight={180}
+		// 				/>
+		// 			</div>
+
+		// 			{/* Course */}
+		// 			<div>
+		// 				<label
+		// 					className="mb-2 block text-sm font-semibold"
+		// 					style={{ color: COLORS.mintDark }}
+		// 				>
+		// 					Course
+		// 				</label>
+
+		// 				<Select
+		// 					options={courseOptions}
+		// 					placeholder="Select course"
+		// 					value={courseOptions.find(option => option.value === course) || null}
+		// 					onChange={selected => handleCourse(selected?.value || "")}
+		// 					maxMenuHeight={180}
+		// 				/>
+		// 			</div>
+
+		// 			{/* Subject */}
+		// 			<div>
+		// 				<label
+		// 					className="mb-2 block text-sm font-semibold"
+		// 					style={{ color: COLORS.mintDark }}
+		// 				>
+		// 					Subject
+		// 				</label>
+
+		// 				<Select
+		// 					options={subjectOptions}
+		// 					placeholder="Select subject"
+		// 					value={subjectOptions.find(option => option.value === subjectId) || null}
+		// 					onChange={selected => setSubjectId(selected?.value || "")}
+		// 					isDisabled={isDisabled}
+		// 					maxMenuHeight={180}
+		// 				/>
+		// 			</div>
+
+		// 		</div>
+
+		// 		{/* Footer */}
+		// 		<div className="mt-6 flex items-center justify-between">
+
+		// 			<ErrorSuccessMsg
+		// 				errorMsg={errorMsg}
+		// 			/>
+
+		// 			<div className="flex items-center gap-4">
+
+		// 				{downloading && <Loading type="download" />}
+
+		// 				<button
+		// 					onClick={handleDownload}
+		// 					className="rounded-xl px-6 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+		// 					style={{
+		// 						backgroundColor: COLORS.mint,
+		// 						color: COLORS.font,
+		// 					}}
+		// 				>
+		// 					Download Report
+		// 				</button>
+
+		// 			</div>
+
+		// 		</div>
+
+		// 	</div>
+		// </div>
 
 		// <div className='h-full flex flex-col p-4'>
 		// 	<div className="flex flex-col gap-3 pb-4 md:flex-row md:items-center md:justify-between">

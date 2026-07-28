@@ -66,29 +66,38 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
             onClick={() => setIsAddRubricsOpen(false)}
         >
             <div
-                className="w-[90%] max-w-2xl rounded-xl overflow-hidden shadow-2xl"
+                className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl shadow-2xl"
                 style={{ backgroundColor: COLORS.latte }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
                 <div
-                    className="flex items-center justify-between px-5 py-3 border-b border-black/10"
+                    className="flex items-center justify-between border-b border-black/10 px-5 py-4 sm:px-6"
                     style={{ backgroundColor: COLORS.mint }}
                 >
-                    <h2
-                        className="text-xl font-semibold"
-                        style={{ color: COLORS.font }}
-                    >
-                        Add Rubrics
-                    </h2>
+                    <div>
+                        <h2
+                            className="text-lg font-semibold sm:text-xl"
+                            style={{ color: COLORS.font }}
+                        >
+                            Add Rubrics
+                        </h2>
+
+                        <p
+                            className="mt-1 text-sm opacity-90"
+                            style={{ color: COLORS.font }}
+                        >
+                            Configure rubric thresholds for a course and academic year.
+                        </p>
+                    </div>
 
                     <button
                         onClick={() => setIsAddRubricsOpen(false)}
-                        className="rounded-md p-1 transition hover:bg-white/10 cursor-pointer"
+                        className="rounded-md p-2 transition hover:bg-white/10 cursor-pointer"
                     >
                         <IoMdClose
                             className="h-6 w-6"
@@ -98,169 +107,390 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-5">
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex flex-1 flex-col overflow-hidden"
+                >
+                    <div className="flex-1 overflow-y-auto p-5 sm:p-6">
 
-                    {/* Course + Year */}
-                    <div className="grid grid-cols-2 gap-4 mb-5">
+                        {/* Course + Year */}
+                        <div className="mb-6 grid gap-5 sm:grid-cols-2">
 
-                        <div>
-                            <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                                Course
-                            </label>
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-slate-700">
+                                    Course
+                                </label>
 
-                            <input
-                                type="text"
-                                value={formData.course}
-                                onChange={(e) =>
-                                    setFormData(prev => ({
-                                        ...prev,
-                                        course: e.target.value.toUpperCase(),
-                                    }))
-                                }
-                                placeholder="Course"
-                                required
-                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-400"
-                            />
+                                <input
+                                    type="text"
+                                    value={formData.course}
+                                    onChange={(e) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            course: e.target.value.toUpperCase(),
+                                        }))
+                                    }
+                                    placeholder="Course"
+                                    required
+                                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-slate-700">
+                                    Academic Year
+                                </label>
+
+                                <input
+                                    type="number"
+                                    value={formData.year}
+                                    onChange={(e) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            year: e.target.value,
+                                        }))
+                                    }
+                                    placeholder="Year"
+                                    required
+                                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+                                />
+                            </div>
+
                         </div>
 
-                        <div>
-                            <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                                Academic Year
-                            </label>
+                        {/* Threshold Table */}
+                        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
 
-                            <input
-                                type="number"
-                                value={formData.year}
-                                onChange={(e) =>
-                                    setFormData(prev => ({
-                                        ...prev,
-                                        year: e.target.value,
-                                    }))
-                                }
-                                placeholder="Year"
-                                required
-                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-400"
+                            <div className="overflow-x-auto">
+
+                                <table className="min-w-125 w-full text-sm">
+
+                                    <thead
+                                        style={{
+                                            backgroundColor: COLORS.mint,
+                                            color: COLORS.font,
+                                        }}
+                                        className="sticky top-0 z-10"
+                                    >
+                                        <tr>
+                                            <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                                                Level
+                                            </th>
+
+                                            <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                                                Min %
+                                            </th>
+
+                                            <th className="whitespace-nowrap px-4 py-3 font-semibold">
+                                                Max %
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        {formData.thresholds.map((item, index) => (
+
+                                            <tr
+                                                key={item.level}
+                                                className="border-t border-gray-200 even:bg-gray-50"
+                                            >
+
+                                                <td className="whitespace-nowrap px-4 py-3 text-center font-medium text-slate-700">
+                                                    Level {item.level}
+                                                </td>
+
+                                                <td className="px-4 py-3">
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min={0}
+                                                        max={100}
+                                                        value={item.minPercent}
+                                                        onChange={(e) =>
+                                                            handleThresholdChange(
+                                                                index,
+                                                                "minPercent",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        required
+                                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-center outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+                                                    />
+                                                </td>
+
+                                                <td className="px-4 py-3">
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min={0}
+                                                        max={100}
+                                                        value={item.maxPercent}
+                                                        onChange={(e) =>
+                                                            handleThresholdChange(
+                                                                index,
+                                                                "maxPercent",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        required
+                                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-center outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+                                                    />
+                                                </td>
+
+                                            </tr>
+
+                                        ))}
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                        <div className="mt-5">
+                            <ErrorSuccessMsg
+                                errorMsg={errorMsg}
+                                successMsg={successMsg}
+                                setSuccessMsg={setSuccessMsg}
+                                close={setIsAddRubricsOpen}
                             />
                         </div>
 
                     </div>
 
-                    {/* Threshold Table */}
-                    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                    {/* Footer */}
+                    <div className="border-t border-gray-200 bg-white px-5 py-4 sm:px-6">
 
-                        <table className="w-full text-sm">
+                        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
 
-                            <thead
+                            <button
+                                type="button"
+                                onClick={() => setIsAddRubricsOpen(false)}
+                                className="w-full rounded-lg bg-gray-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-600 sm:w-auto cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full rounded-lg px-5 py-2.5 text-sm font-medium transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto cursor-pointer"
                                 style={{
                                     backgroundColor: COLORS.mint,
                                     color: COLORS.font,
                                 }}
                             >
-                                <tr>
-                                    <th className="px-3 py-2.5 font-semibold">
-                                        Level
-                                    </th>
-                                    <th className="px-3 py-2.5 font-semibold">
-                                        Min %
-                                    </th>
-                                    <th className="px-3 py-2.5 font-semibold">
-                                        Max %
-                                    </th>
-                                </tr>
-                            </thead>
+                                {loading ? "Saving..." : "Save"}
+                            </button>
 
-                            <tbody>
-                                {formData.thresholds.map((item, index) => (
-                                    <tr
-                                        key={item.level}
-                                        className="border-t border-gray-200 even:bg-gray-50"
-                                    >
-                                        <td className="px-3 py-2.5 text-center font-medium text-slate-700">
-                                            Level {item.level}
-                                        </td>
-
-                                        <td className="px-3 py-2.5">
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                min={0}
-                                                max={100}
-                                                value={item.minPercent}
-                                                onChange={(e) =>
-                                                    handleThresholdChange(
-                                                        index,
-                                                        "minPercent",
-                                                        e.target.value
-                                                    )
-                                                }
-                                                required
-                                                className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-center outline-none focus:border-gray-400"
-                                            />
-                                        </td>
-
-                                        <td className="px-3 py-2.5">
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                min={0}
-                                                max={100}
-                                                value={item.maxPercent}
-                                                onChange={(e) =>
-                                                    handleThresholdChange(
-                                                        index,
-                                                        "maxPercent",
-                                                        e.target.value
-                                                    )
-                                                }
-                                                required
-                                                className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-center outline-none focus:border-gray-400"
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                    <div className="mt-4">
-                        <ErrorSuccessMsg
-                            errorMsg={errorMsg}
-                            successMsg={successMsg}
-                            setSuccessMsg={setSuccessMsg}
-                            close={setIsAddRubricsOpen}
-                        />
-                    </div>
-
-                    {/* Footer */}
-                    <div className="mt-5 flex justify-end gap-3">
-
-                        <button
-                            type="button"
-                            onClick={() => setIsAddRubricsOpen(false)}
-                            className="rounded-lg bg-gray-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-600 cursor-pointer"
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="rounded-lg px-4 py-2 text-sm font-medium transition hover:opacity-90 disabled:opacity-60 cursor-pointer"
-                            style={{
-                                backgroundColor: COLORS.mint,
-                                color: COLORS.font,
-                            }}
-                        >
-                            {loading ? "Saving..." : "Save"}
-                        </button>
+                        </div>
 
                     </div>
 
                 </form>
+
             </div>
         </div>
+
+        // <div
+        //     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        //     onClick={() => setIsAddRubricsOpen(false)}
+        // >
+        //     <div
+        //         className="w-[90%] max-w-2xl rounded-xl overflow-hidden shadow-2xl"
+        //         style={{ backgroundColor: COLORS.latte }}
+        //         onClick={(e) => e.stopPropagation()}
+        //     >
+        //         {/* Header */}
+        //         <div
+        //             className="flex items-center justify-between px-5 py-3 border-b border-black/10"
+        //             style={{ backgroundColor: COLORS.mint }}
+        //         >
+        //             <h2
+        //                 className="text-xl font-semibold"
+        //                 style={{ color: COLORS.font }}
+        //             >
+        //                 Add Rubrics
+        //             </h2>
+
+        //             <button
+        //                 onClick={() => setIsAddRubricsOpen(false)}
+        //                 className="rounded-md p-1 transition hover:bg-white/10 cursor-pointer"
+        //             >
+        //                 <IoMdClose
+        //                     className="h-6 w-6"
+        //                     style={{ color: COLORS.font }}
+        //                 />
+        //             </button>
+        //         </div>
+
+        //         {/* Form */}
+        //         <form onSubmit={handleSubmit} className="p-5">
+
+        //             {/* Course + Year */}
+        //             <div className="grid grid-cols-2 gap-4 mb-5">
+
+        //                 <div>
+        //                     <label className="mb-1.5 block text-sm font-medium text-slate-700">
+        //                         Course
+        //                     </label>
+
+        //                     <input
+        //                         type="text"
+        //                         value={formData.course}
+        //                         onChange={(e) =>
+        //                             setFormData(prev => ({
+        //                                 ...prev,
+        //                                 course: e.target.value.toUpperCase(),
+        //                             }))
+        //                         }
+        //                         placeholder="Course"
+        //                         required
+        //                         className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-400"
+        //                     />
+        //                 </div>
+
+        //                 <div>
+        //                     <label className="mb-1.5 block text-sm font-medium text-slate-700">
+        //                         Academic Year
+        //                     </label>
+
+        //                     <input
+        //                         type="number"
+        //                         value={formData.year}
+        //                         onChange={(e) =>
+        //                             setFormData(prev => ({
+        //                                 ...prev,
+        //                                 year: e.target.value,
+        //                             }))
+        //                         }
+        //                         placeholder="Year"
+        //                         required
+        //                         className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-400"
+        //                     />
+        //                 </div>
+
+        //             </div>
+
+        //             {/* Threshold Table */}
+        //             <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+
+        //                 <table className="w-full text-sm">
+
+        //                     <thead
+        //                         style={{
+        //                             backgroundColor: COLORS.mint,
+        //                             color: COLORS.font,
+        //                         }}
+        //                     >
+        //                         <tr>
+        //                             <th className="px-3 py-2.5 font-semibold">
+        //                                 Level
+        //                             </th>
+        //                             <th className="px-3 py-2.5 font-semibold">
+        //                                 Min %
+        //                             </th>
+        //                             <th className="px-3 py-2.5 font-semibold">
+        //                                 Max %
+        //                             </th>
+        //                         </tr>
+        //                     </thead>
+
+        //                     <tbody>
+        //                         {formData.thresholds.map((item, index) => (
+        //                             <tr
+        //                                 key={item.level}
+        //                                 className="border-t border-gray-200 even:bg-gray-50"
+        //                             >
+        //                                 <td className="px-3 py-2.5 text-center font-medium text-slate-700">
+        //                                     Level {item.level}
+        //                                 </td>
+
+        //                                 <td className="px-3 py-2.5">
+        //                                     <input
+        //                                         type="number"
+        //                                         step="0.01"
+        //                                         min={0}
+        //                                         max={100}
+        //                                         value={item.minPercent}
+        //                                         onChange={(e) =>
+        //                                             handleThresholdChange(
+        //                                                 index,
+        //                                                 "minPercent",
+        //                                                 e.target.value
+        //                                             )
+        //                                         }
+        //                                         required
+        //                                         className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-center outline-none focus:border-gray-400"
+        //                                     />
+        //                                 </td>
+
+        //                                 <td className="px-3 py-2.5">
+        //                                     <input
+        //                                         type="number"
+        //                                         step="0.01"
+        //                                         min={0}
+        //                                         max={100}
+        //                                         value={item.maxPercent}
+        //                                         onChange={(e) =>
+        //                                             handleThresholdChange(
+        //                                                 index,
+        //                                                 "maxPercent",
+        //                                                 e.target.value
+        //                                             )
+        //                                         }
+        //                                         required
+        //                                         className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-center outline-none focus:border-gray-400"
+        //                                     />
+        //                                 </td>
+        //                             </tr>
+        //                         ))}
+        //                     </tbody>
+
+        //                 </table>
+
+        //             </div>
+
+        //             <div className="mt-4">
+        //                 <ErrorSuccessMsg
+        //                     errorMsg={errorMsg}
+        //                     successMsg={successMsg}
+        //                     setSuccessMsg={setSuccessMsg}
+        //                     close={setIsAddRubricsOpen}
+        //                 />
+        //             </div>
+
+        //             {/* Footer */}
+        //             <div className="mt-5 flex justify-end gap-3">
+
+        //                 <button
+        //                     type="button"
+        //                     onClick={() => setIsAddRubricsOpen(false)}
+        //                     className="rounded-lg bg-gray-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-600 cursor-pointer"
+        //                 >
+        //                     Cancel
+        //                 </button>
+
+        //                 <button
+        //                     type="submit"
+        //                     disabled={loading}
+        //                     className="rounded-lg px-4 py-2 text-sm font-medium transition hover:opacity-90 disabled:opacity-60 cursor-pointer"
+        //                     style={{
+        //                         backgroundColor: COLORS.mint,
+        //                         color: COLORS.font,
+        //                     }}
+        //                 >
+        //                     {loading ? "Saving..." : "Save"}
+        //                 </button>
+
+        //             </div>
+
+        //         </form>
+        //     </div>
+        // </div>
 
         // <div
         //     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
