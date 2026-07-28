@@ -189,35 +189,35 @@ function UploadData() {
 
 	return (
 		<div
-			className="h-full rounded-2xl border border-gray-200 p-5"
+			className="h-full w-full rounded-2xl border border-gray-200 bg-white/30 p-4 sm:p-5 lg:p-6"
 			style={{ backgroundColor: COLORS.latte }}
 		>
 			{/* Header */}
-			<div className="mb-5 flex items-center justify-between">
-				<div>
+			<div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+				<div className="min-w-0">
 					<h2
-						className="text-xl font-semibold"
+						className="text-xl font-semibold sm:text-2xl"
 						style={{ color: COLORS.mintDark }}
 					>
 						Upload Data
 					</h2>
 
-					<p className="mt-1 text-sm text-gray-600">
+					<p className="mt-1 text-sm text-gray-600 sm:text-base">
 						Select the academic details and upload the Excel sheet.
 					</p>
 				</div>
 
 				<button
 					onClick={handleDownloadFormat}
-					className="rounded-xl border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100 cursor-pointer"
+					className="w-full rounded-xl border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100 sm:w-auto cursor-pointer"
 				>
 					Download Format
 				</button>
 			</div>
 
 			{/* Selection Card */}
-			<div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-				<div className="grid gap-4 md:grid-cols-3">
+			<div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
+				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 
 					<div>
 						<label
@@ -230,8 +230,14 @@ function UploadData() {
 						<Select
 							options={yearOptions}
 							placeholder="Select year"
-							value={yearOptions.find(option => option.value === academicYear) || null}
-							onChange={selected => handleYear(selected?.value || "")}
+							value={
+								yearOptions.find(
+									(option) => option.value === academicYear
+								) || null
+							}
+							onChange={(selected) =>
+								handleYear(selected?.value || "")
+							}
 							maxMenuHeight={180}
 						/>
 					</div>
@@ -247,8 +253,14 @@ function UploadData() {
 						<Select
 							options={courseOptions}
 							placeholder="Select course"
-							value={courseOptions.find(option => option.value === course) || null}
-							onChange={selected => handleCourse(selected?.value || "")}
+							value={
+								courseOptions.find(
+									(option) => option.value === course
+								) || null
+							}
+							onChange={(selected) =>
+								handleCourse(selected?.value || "")
+							}
 							maxMenuHeight={180}
 						/>
 					</div>
@@ -264,8 +276,14 @@ function UploadData() {
 						<Select
 							options={subjectOptions}
 							placeholder="Select subject"
-							value={subjectOptions.find(option => option.value === subjectId) || null}
-							onChange={(selected) => setSubjectId(selected?.value || "")}
+							value={
+								subjectOptions.find(
+									(option) => option.value === subjectId
+								) || null
+							}
+							onChange={(selected) =>
+								setSubjectId(selected?.value || "")
+							}
 							isDisabled={isDisabled}
 							maxMenuHeight={180}
 						/>
@@ -275,7 +293,6 @@ function UploadData() {
 
 				{/* Upload */}
 				<div className="mt-6">
-
 					<label
 						className="mb-2 block text-sm font-semibold"
 						style={{ color: COLORS.mintDark }}
@@ -283,10 +300,10 @@ function UploadData() {
 						Excel File
 					</label>
 
-					<div className="flex items-center overflow-hidden rounded-xl border border-gray-300 bg-white">
+					<div className="flex flex-col overflow-hidden rounded-xl border border-gray-300 bg-white sm:flex-row sm:items-center">
 
 						<label
-							className="cursor-pointer border-r border-gray-300 px-4 py-2 text-sm font-medium transition hover:bg-gray-100"
+							className="cursor-pointer border-b border-gray-300 px-4 py-3 text-center text-sm font-medium transition hover:bg-gray-100 sm:border-b-0 sm:border-r"
 							style={{
 								backgroundColor: COLORS.latteDark,
 								color: COLORS.mintDark,
@@ -303,7 +320,7 @@ function UploadData() {
 							/>
 						</label>
 
-						<div className="flex-1 truncate px-4 text-sm text-gray-600">
+						<div className="min-w-0 flex-1 truncate px-4 py-3 text-sm text-gray-600">
 							{file ? file.name : "No file selected"}
 						</div>
 
@@ -311,12 +328,11 @@ function UploadData() {
 							<button
 								type="button"
 								onClick={handleRemoveFile}
-								className="px-3 text-red-500 transition hover:text-red-700 cursor-pointer"
+								className="flex items-center justify-center px-4 py-3 text-red-500 transition hover:text-red-700 cursor-pointer sm:px-3"
 							>
 								<MdOutlineCancelPresentation className="h-6 w-6" />
 							</button>
 						)}
-
 					</div>
 
 					<p className="mt-2 text-xs text-gray-500">
@@ -325,21 +341,23 @@ function UploadData() {
 				</div>
 
 				{/* Footer */}
-				<div className="mt-6 flex items-center justify-between">
+				<div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-					<ErrorSuccessMsg
-						errorMsg={errorMsg}
-						successMsg={successMsg}
-						setSuccessMsg={setSuccessMsg}
-					/>
+					<div className="min-w-0 flex-1">
+						<ErrorSuccessMsg
+							errorMsg={errorMsg}
+							successMsg={successMsg}
+							setSuccessMsg={setSuccessMsg}
+						/>
+					</div>
 
-					<div className="flex items-center gap-4">
+					<div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
 
 						{uploading && <Loading type="upload" />}
 
 						<button
 							onClick={handleUpload}
-							className="rounded-xl px-6 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+							className="w-full rounded-xl px-6 py-3 text-sm font-medium shadow-sm transition hover:opacity-90 sm:w-auto cursor-pointer"
 							style={{
 								backgroundColor: COLORS.mint,
 								color: COLORS.font,
@@ -353,6 +371,172 @@ function UploadData() {
 				</div>
 			</div>
 		</div>
+
+		// <div
+		// 	className="h-full rounded-2xl border border-gray-200 p-5"
+		// 	style={{ backgroundColor: COLORS.latte }}
+		// >
+		// 	{/* Header */}
+		// 	<div className="mb-5 flex items-center justify-between">
+		// 		<div>
+		// 			<h2
+		// 				className="text-xl font-semibold"
+		// 				style={{ color: COLORS.mintDark }}
+		// 			>
+		// 				Upload Data
+		// 			</h2>
+
+		// 			<p className="mt-1 text-sm text-gray-600">
+		// 				Select the academic details and upload the Excel sheet.
+		// 			</p>
+		// 		</div>
+
+		// 		<button
+		// 			onClick={handleDownloadFormat}
+		// 			className="rounded-xl border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100 cursor-pointer"
+		// 		>
+		// 			Download Format
+		// 		</button>
+		// 	</div>
+
+		// 	{/* Selection Card */}
+		// 	<div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+		// 		<div className="grid gap-4 md:grid-cols-3">
+
+		// 			<div>
+		// 				<label
+		// 					className="mb-2 block text-sm font-semibold"
+		// 					style={{ color: COLORS.mintDark }}
+		// 				>
+		// 					Academic Year
+		// 				</label>
+
+		// 				<Select
+		// 					options={yearOptions}
+		// 					placeholder="Select year"
+		// 					value={yearOptions.find(option => option.value === academicYear) || null}
+		// 					onChange={selected => handleYear(selected?.value || "")}
+		// 					maxMenuHeight={180}
+		// 				/>
+		// 			</div>
+
+		// 			<div>
+		// 				<label
+		// 					className="mb-2 block text-sm font-semibold"
+		// 					style={{ color: COLORS.mintDark }}
+		// 				>
+		// 					Course
+		// 				</label>
+
+		// 				<Select
+		// 					options={courseOptions}
+		// 					placeholder="Select course"
+		// 					value={courseOptions.find(option => option.value === course) || null}
+		// 					onChange={selected => handleCourse(selected?.value || "")}
+		// 					maxMenuHeight={180}
+		// 				/>
+		// 			</div>
+
+		// 			<div>
+		// 				<label
+		// 					className="mb-2 block text-sm font-semibold"
+		// 					style={{ color: COLORS.mintDark }}
+		// 				>
+		// 					Subject
+		// 				</label>
+
+		// 				<Select
+		// 					options={subjectOptions}
+		// 					placeholder="Select subject"
+		// 					value={subjectOptions.find(option => option.value === subjectId) || null}
+		// 					onChange={(selected) => setSubjectId(selected?.value || "")}
+		// 					isDisabled={isDisabled}
+		// 					maxMenuHeight={180}
+		// 				/>
+		// 			</div>
+
+		// 		</div>
+
+		// 		{/* Upload */}
+		// 		<div className="mt-6">
+
+		// 			<label
+		// 				className="mb-2 block text-sm font-semibold"
+		// 				style={{ color: COLORS.mintDark }}
+		// 			>
+		// 				Excel File
+		// 			</label>
+
+		// 			<div className="flex items-center overflow-hidden rounded-xl border border-gray-300 bg-white">
+
+		// 				<label
+		// 					className="cursor-pointer border-r border-gray-300 px-4 py-2 text-sm font-medium transition hover:bg-gray-100"
+		// 					style={{
+		// 						backgroundColor: COLORS.latteDark,
+		// 						color: COLORS.mintDark,
+		// 					}}
+		// 				>
+		// 					Choose File
+
+		// 					<input
+		// 						ref={fileInputRef}
+		// 						type="file"
+		// 						accept=".xls,.xlsx"
+		// 						className="hidden"
+		// 						onChange={handleFileChange}
+		// 					/>
+		// 				</label>
+
+		// 				<div className="flex-1 truncate px-4 text-sm text-gray-600">
+		// 					{file ? file.name : "No file selected"}
+		// 				</div>
+
+		// 				{file && (
+		// 					<button
+		// 						type="button"
+		// 						onClick={handleRemoveFile}
+		// 						className="px-3 text-red-500 transition hover:text-red-700 cursor-pointer"
+		// 					>
+		// 						<MdOutlineCancelPresentation className="h-6 w-6" />
+		// 					</button>
+		// 				)}
+
+		// 			</div>
+
+		// 			<p className="mt-2 text-xs text-gray-500">
+		// 				Supported formats: <strong>.xls</strong>, <strong>.xlsx</strong>
+		// 			</p>
+		// 		</div>
+
+		// 		{/* Footer */}
+		// 		<div className="mt-6 flex items-center justify-between">
+
+		// 			<ErrorSuccessMsg
+		// 				errorMsg={errorMsg}
+		// 				successMsg={successMsg}
+		// 				setSuccessMsg={setSuccessMsg}
+		// 			/>
+
+		// 			<div className="flex items-center gap-4">
+
+		// 				{uploading && <Loading type="upload" />}
+
+		// 				<button
+		// 					onClick={handleUpload}
+		// 					className="rounded-xl px-6 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+		// 					style={{
+		// 						backgroundColor: COLORS.mint,
+		// 						color: COLORS.font,
+		// 					}}
+		// 				>
+		// 					Upload Data
+		// 				</button>
+
+		// 			</div>
+
+		// 		</div>
+		// 	</div>
+		// </div>
 
 		// <div className='h-full flex flex-col p-4'>
 		// 	<div className='flex justify-between pb-4'>

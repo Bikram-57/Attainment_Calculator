@@ -20,19 +20,19 @@ function CoPoRelationHeader({ setSearchQuery, setFilterYear, setFilterCourse, se
     }
 
     return (
-        <div className="flex items-center justify-between gap-6 px-6 py-4 bg-white border-b border-gray-200">
+        <div className="flex flex-col gap-4 border-b border-gray-200 bg-white px-4 py-4 sm:px-5 lg:px-6 xl:flex-row xl:items-center xl:justify-between">
 
             {/* Left */}
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
 
                 <h2
-                    className="text-xl font-semibold whitespace-nowrap"
+                    className="whitespace-nowrap text-xl font-semibold sm:text-2xl"
                     style={{ color: COLORS.mint }}
                 >
                     CO-PO Relations
                 </h2>
 
-                <div className="relative">
+                <div className="relative w-full lg:w-80 xl:w-96">
 
                     <BsSearch
                         className="absolute left-3 top-1/2 -translate-y-1/2"
@@ -44,41 +44,101 @@ function CoPoRelationHeader({ setSearchQuery, setFilterYear, setFilterCourse, se
                         placeholder="Search by subject code or name..."
                         value={search}
                         onChange={handleChange}
-                        className="w-80 rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2"
+                        className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-10 text-sm outline-none transition focus:ring-2"
                         style={{
                             color: COLORS.mintDark,
                             "--tw-ring-color": COLORS.mint,
                         }}
                     />
 
-                    {search.length > 0 &&
+                    {search.length > 0 && (
                         <MdOutlineCancelPresentation
-                            className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 cursor-pointer"
+                            className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 cursor-pointer text-gray-500 transition hover:text-red-500"
                             onClick={handleClear}
                         />
-                    }
+                    )}
 
                 </div>
 
             </div>
 
             {/* Right */}
-            <div className="flex items-center gap-4">
-
-                <Filters
-                    showYear
-                    defaultYear={String(new Date().getFullYear())}
-                    onYearChange={setFilterYear}
-                    isYearClearable={false}
-                    showCourse
-                    onCourseChange={setFilterCourse}
-                    showSemester
-                    onSemesterChange={setFilterSemester}
-                />
-
+            <div className="w-full xl:w-auto">
+                <div className="flex flex-wrap items-center gap-3 xl:justify-end">
+                    <Filters
+                        showYear
+                        defaultYear={String(new Date().getFullYear())}
+                        onYearChange={setFilterYear}
+                        isYearClearable={false}
+                        showCourse
+                        onCourseChange={setFilterCourse}
+                        showSemester
+                        onSemesterChange={setFilterSemester}
+                    />
+                </div>
             </div>
 
         </div>
+
+        // <div className="flex items-center justify-between gap-6 px-6 py-4 bg-white border-b border-gray-200">
+
+        //     {/* Left */}
+        //     <div className="flex items-center gap-6">
+
+        //         <h2
+        //             className="text-xl font-semibold whitespace-nowrap"
+        //             style={{ color: COLORS.mint }}
+        //         >
+        //             CO-PO Relations
+        //         </h2>
+
+        //         <div className="relative">
+
+        //             <BsSearch
+        //                 className="absolute left-3 top-1/2 -translate-y-1/2"
+        //                 style={{ color: COLORS.mintDark }}
+        //             />
+
+        //             <input
+        //                 type="text"
+        //                 placeholder="Search by subject code or name..."
+        //                 value={search}
+        //                 onChange={handleChange}
+        //                 className="w-80 rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2"
+        //                 style={{
+        //                     color: COLORS.mintDark,
+        //                     "--tw-ring-color": COLORS.mint,
+        //                 }}
+        //             />
+
+        //             {search.length > 0 &&
+        //                 <MdOutlineCancelPresentation
+        //                     className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 cursor-pointer"
+        //                     onClick={handleClear}
+        //                 />
+        //             }
+
+        //         </div>
+
+        //     </div>
+
+        //     {/* Right */}
+        //     <div className="flex items-center gap-4">
+
+        //         <Filters
+        //             showYear
+        //             defaultYear={String(new Date().getFullYear())}
+        //             onYearChange={setFilterYear}
+        //             isYearClearable={false}
+        //             showCourse
+        //             onCourseChange={setFilterCourse}
+        //             showSemester
+        //             onSemesterChange={setFilterSemester}
+        //         />
+
+        //     </div>
+
+        // </div>
 
         // <div className="mb-3 flex items-center justify-between">
         //     <h2

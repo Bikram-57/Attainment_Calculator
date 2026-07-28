@@ -70,7 +70,117 @@ function DirectAttainment() {
 
     return !loading ? (
         !isOpen ? (
-            <div className="h-full flex flex-col">
+            <div className="flex h-full w-full flex-col overflow-hidden">
+                <DirectAttainmentHeader
+                    toggleUpdate={toggleUpdate}
+                    setSearchQuery={setSearchQuery}
+                />
+
+                <div className="flex-1 p-3 sm:p-4 lg:p-5">
+
+                    <div className="h-full max-h-[calc(100vh-220px)] overflow-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+
+                        {filteredAllData?.length > 0 ? (
+
+                            <table className="min-w-162.5 w-full text-sm">
+
+                                <thead className="sticky top-0 z-20">
+                                    <tr
+                                        style={{
+                                            backgroundColor: COLORS.mint,
+                                            color: COLORS.font,
+                                        }}
+                                    >
+                                        <th className="whitespace-nowrap px-4 py-3 text-left font-semibold sm:px-6">
+                                            Course
+                                        </th>
+
+                                        <th className="whitespace-nowrap px-4 py-3 text-center font-semibold sm:px-6">
+                                            Academic Year
+                                        </th>
+
+                                        <th className="whitespace-nowrap px-4 py-3 text-center font-semibold sm:px-6">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {filteredAllData.map((directAttain, index) => (
+                                        <tr
+                                            key={directAttain.id}
+                                            className={`border-b border-gray-200 transition-colors hover:bg-gray-100 ${index % 2 === 0
+                                                ? "bg-white"
+                                                : "bg-gray-50"
+                                                }`}
+                                        >
+                                            <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-800 sm:px-6">
+                                                {directAttain.course}
+                                            </td>
+
+                                            <td className="px-4 py-3 text-center sm:px-6">
+                                                <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                                                    {directAttain.academicYear}
+                                                </span>
+                                            </td>
+
+                                            <td className="px-4 py-3 sm:px-6">
+                                                <div className="flex justify-center">
+                                                    {!loadingView ? (
+                                                        <button
+                                                            onClick={() =>
+                                                                handleView(
+                                                                    directAttain.course,
+                                                                    directAttain.academicYear
+                                                                )
+                                                            }
+                                                            className="rounded-lg p-2 transition hover:opacity-90 cursor-pointer"
+                                                            style={{
+                                                                backgroundColor: COLORS.mint,
+                                                                color: COLORS.font,
+                                                            }}
+                                                            title="View Report"
+                                                        >
+                                                            <MdRemoveRedEye size={16} />
+                                                        </button>
+                                                    ) : (
+                                                        <Loading type="view" />
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+
+                            </table>
+
+                        ) : (
+
+                            <div className="flex min-h-87.5 flex-col items-center justify-center px-6 text-center">
+
+                                <div className="mb-4 text-5xl">📄</div>
+
+                                <h3
+                                    className="text-lg font-semibold sm:text-xl"
+                                    style={{ color: COLORS.mintDark }}
+                                >
+                                    No Reports Available
+                                </h3>
+
+                                <p className="mt-2 max-w-md text-sm text-gray-500 sm:text-base">
+                                    Generated direct attainment reports will appear here.
+                                </p>
+
+                            </div>
+
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                {/* <div className="h-full flex flex-col">
                 <DirectAttainmentHeader
                     toggleUpdate={toggleUpdate}
                     setSearchQuery={setSearchQuery}
@@ -160,7 +270,7 @@ function DirectAttainment() {
                             </p>
                         </div>
                     )}
-                </div>
+                </div> */}
 
                 {/* <div className="flex-1 overflow-y-auto">
                     {filteredAllData?.length > 0 ?

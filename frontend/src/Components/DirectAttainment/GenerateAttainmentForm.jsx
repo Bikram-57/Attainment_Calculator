@@ -53,29 +53,29 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
             onClick={() => setIsGenerateOpen(false)}
         >
             <div
-                className="w-[92%] max-w-lg overflow-hidden rounded-3xl shadow-2xl"
+                className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-3xl shadow-2xl sm:max-w-lg"
                 style={{ backgroundColor: COLORS.latte }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
                 <div
-                    className="flex items-center justify-between px-6 py-4"
+                    className="flex items-start justify-between gap-4 px-5 py-4 sm:px-6"
                     style={{ backgroundColor: COLORS.mint }}
                 >
-                    <div>
+                    <div className="min-w-0">
                         <h2
-                            className="text-xl font-semibold"
+                            className="text-lg font-semibold sm:text-xl"
                             style={{ color: COLORS.font }}
                         >
                             Generate Attainment
                         </h2>
 
                         <p
-                            className="text-sm opacity-90"
+                            className="mt-1 text-sm opacity-90"
                             style={{ color: COLORS.font }}
                         >
                             Generate direct attainment for a selected batch.
@@ -95,7 +95,7 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
 
                 {/* Body */}
                 <div
-                    className="space-y-5 px-6 py-5"
+                    className="flex-1 space-y-5 overflow-y-auto px-5 py-5 sm:px-6"
                     style={{ backgroundColor: COLORS.latte }}
                 >
                     {/* Academic Year */}
@@ -111,12 +111,12 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
                             options={yearOptions}
                             placeholder="Select year"
                             value={yearOptions.find(
-                                option => option.value === academicYear
+                                (option) => option.value === academicYear
                             )}
-                            onChange={selected =>
+                            onChange={(selected) =>
                                 setAcademicYear(selected?.value || "")
                             }
-                            maxMenuHeight={120}
+                            maxMenuHeight={180}
                         />
                     </div>
 
@@ -133,28 +133,32 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
                             options={courseOptions}
                             placeholder="Select course"
                             value={courseOptions.find(
-                                option => option.value === course
+                                (option) => option.value === course
                             )}
-                            onChange={selected =>
+                            onChange={(selected) =>
                                 setCourse(selected?.value || "")
                             }
-                            maxMenuHeight={80}
+                            maxMenuHeight={180}
                         />
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between border-t border-gray-300 pt-5">
-                        <ErrorSuccessMsg
-                            errorMsg={errorMsg}
-                            successMsg={successMsg}
-                            setSuccessMsg={setSuccessMsg}
-                            setIsOpen={setIsGenerateOpen}
-                        />
+                    <div className="flex flex-col gap-4 border-t border-gray-300 pt-5 sm:flex-row sm:items-center sm:justify-between">
 
-                        <div className="flex gap-3">
+                        <div className="min-w-0 flex-1">
+                            <ErrorSuccessMsg
+                                errorMsg={errorMsg}
+                                successMsg={successMsg}
+                                setSuccessMsg={setSuccessMsg}
+                                setIsOpen={setIsGenerateOpen}
+                            />
+                        </div>
+
+                        <div className="flex flex-col-reverse gap-3 sm:flex-row">
+
                             <button
                                 onClick={() => setIsGenerateOpen(false)}
-                                className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+                                className="w-full rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 sm:w-auto cursor-pointer"
                             >
                                 Cancel
                             </button>
@@ -163,7 +167,7 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
                                 onClick={handleGenerate}
                                 onMouseEnter={() => setIsHovered(true)}
                                 onMouseLeave={() => setIsHovered(false)}
-                                className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+                                className="w-full rounded-xl px-5 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 sm:w-auto cursor-pointer"
                                 style={{
                                     backgroundColor: isHovered
                                         ? COLORS.mintDark
@@ -173,11 +177,140 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
                             >
                                 Generate
                             </button>
+
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+
+        // <div
+        //     className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+        //     onClick={() => setIsGenerateOpen(false)}
+        // >
+        //     <div
+        //         className="w-[92%] max-w-lg overflow-hidden rounded-3xl shadow-2xl"
+        //         style={{ backgroundColor: COLORS.latte }}
+        //         onClick={(e) => e.stopPropagation()}
+        //     >
+        //         {/* Header */}
+        //         <div
+        //             className="flex items-center justify-between px-6 py-4"
+        //             style={{ backgroundColor: COLORS.mint }}
+        //         >
+        //             <div>
+        //                 <h2
+        //                     className="text-xl font-semibold"
+        //                     style={{ color: COLORS.font }}
+        //                 >
+        //                     Generate Attainment
+        //                 </h2>
+
+        //                 <p
+        //                     className="text-sm opacity-90"
+        //                     style={{ color: COLORS.font }}
+        //                 >
+        //                     Generate direct attainment for a selected batch.
+        //                 </p>
+        //             </div>
+
+        //             <button
+        //                 onClick={() => setIsGenerateOpen(false)}
+        //                 className="rounded-lg p-2 transition hover:bg-white/10 cursor-pointer"
+        //             >
+        //                 <IoMdClose
+        //                     className="h-6 w-6"
+        //                     style={{ color: COLORS.font }}
+        //                 />
+        //             </button>
+        //         </div>
+
+        //         {/* Body */}
+        //         <div
+        //             className="space-y-5 px-6 py-5"
+        //             style={{ backgroundColor: COLORS.latte }}
+        //         >
+        //             {/* Academic Year */}
+        //             <div>
+        //                 <label
+        //                     className="mb-2 block text-sm font-semibold"
+        //                     style={{ color: COLORS.mintDark }}
+        //                 >
+        //                     Academic Year
+        //                 </label>
+
+        //                 <Select
+        //                     options={yearOptions}
+        //                     placeholder="Select year"
+        //                     value={yearOptions.find(
+        //                         option => option.value === academicYear
+        //                     )}
+        //                     onChange={selected =>
+        //                         setAcademicYear(selected?.value || "")
+        //                     }
+        //                     maxMenuHeight={120}
+        //                 />
+        //             </div>
+
+        //             {/* Course */}
+        //             <div>
+        //                 <label
+        //                     className="mb-2 block text-sm font-semibold"
+        //                     style={{ color: COLORS.mintDark }}
+        //                 >
+        //                     Course
+        //                 </label>
+
+        //                 <Select
+        //                     options={courseOptions}
+        //                     placeholder="Select course"
+        //                     value={courseOptions.find(
+        //                         option => option.value === course
+        //                     )}
+        //                     onChange={selected =>
+        //                         setCourse(selected?.value || "")
+        //                     }
+        //                     maxMenuHeight={80}
+        //                 />
+        //             </div>
+
+        //             {/* Footer */}
+        //             <div className="flex items-center justify-between border-t border-gray-300 pt-5">
+        //                 <ErrorSuccessMsg
+        //                     errorMsg={errorMsg}
+        //                     successMsg={successMsg}
+        //                     setSuccessMsg={setSuccessMsg}
+        //                     setIsOpen={setIsGenerateOpen}
+        //                 />
+
+        //                 <div className="flex gap-3">
+        //                     <button
+        //                         onClick={() => setIsGenerateOpen(false)}
+        //                         className="rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+        //                     >
+        //                         Cancel
+        //                     </button>
+
+        //                     <button
+        //                         onClick={handleGenerate}
+        //                         onMouseEnter={() => setIsHovered(true)}
+        //                         onMouseLeave={() => setIsHovered(false)}
+        //                         className="rounded-xl px-5 py-2 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+        //                         style={{
+        //                             backgroundColor: isHovered
+        //                                 ? COLORS.mintDark
+        //                                 : COLORS.mint,
+        //                             color: COLORS.font,
+        //                         }}
+        //                     >
+        //                         Generate
+        //                     </button>
+        //                 </div>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </div>
 
         // <div
         //     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"

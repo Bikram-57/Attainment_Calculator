@@ -49,14 +49,14 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
         }
     }, []);
     return (
-        <div className="flex h-full flex-col rounded-xl bg-gray-200 p-4">
+        <div className="flex h-full w-full flex-col rounded-2xl bg-gray-200 p-3 sm:p-4 lg:p-5">
 
             {/* Header */}
-            <div className="mb-4 flex items-center justify-between rounded-xl border border-gray-300 bg-gray-100 px-5 py-3">
+            <div className="mb-4 flex flex-col gap-4 rounded-xl border border-gray-300 bg-gray-100 p-4 sm:px-5 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
 
                 <div>
                     <h2
-                        className="text-lg font-semibold"
+                        className="text-lg font-semibold sm:text-xl"
                         style={{ color: COLORS.mint }}
                     >
                         Direct Attainment Report
@@ -67,19 +67,19 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row">
 
                     <button
                         onClick={handleDownload}
                         disabled={downloading}
-                        className="rounded-lg border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+                        className="w-full rounded-lg border border-gray-400 bg-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto cursor-pointer"
                     >
                         {downloading ? "Downloading..." : "Download"}
                     </button>
 
                     <button
                         onClick={() => setIsOpen(false)}
-                        className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600 cursor-pointer"
+                        className="w-full rounded-lg bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-600 sm:w-auto cursor-pointer"
                     >
                         Close
                     </button>
@@ -89,7 +89,7 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
             </div>
 
             {/* Subject Tables */}
-            <div className="flex-1 space-y-4 overflow-y-auto">
+            <div className="flex-1 space-y-5 overflow-y-auto pr-1">
 
                 {subjects.map((subject, index) => {
                     const rows = subject.tableData || [];
@@ -109,16 +109,16 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
                     return (
                         <div
                             key={subject.subjectId}
-                            className="overflow-hidden rounded-xl border border-gray-300 bg-gray-100"
+                            className="overflow-hidden rounded-xl border border-gray-300 bg-gray-100 shadow-sm"
                         >
 
                             {/* Subject Header */}
                             <div
-                                className="flex items-center justify-between border-b border-gray-300 px-5 py-3"
+                                className="flex flex-col gap-3 border-b border-gray-300 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
                                 style={{ backgroundColor: COLORS.latteDark }}
                             >
                                 <div>
-                                    <h3 className="font-semibold text-gray-800">
+                                    <h3 className="text-base font-semibold text-gray-800 sm:text-lg">
                                         {subject.subjectName}
                                     </h3>
 
@@ -128,7 +128,7 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
                                 </div>
 
                                 <span
-                                    className="rounded-full px-3 py-1 text-xs font-semibold"
+                                    className="w-fit rounded-full px-3 py-1 text-xs font-semibold"
                                     style={{
                                         backgroundColor: COLORS.mint,
                                         color: COLORS.font,
@@ -140,9 +140,10 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
 
                             <div className="overflow-x-auto">
 
-                                <table className="min-w-full border-collapse text-sm">
+                                <table className="min-w-175 w-full border-collapse text-sm">
 
                                     <thead
+                                        className="sticky top-0 z-10"
                                         style={{
                                             backgroundColor: COLORS.mint,
                                             color: COLORS.font,
@@ -150,18 +151,18 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
                                     >
                                         <tr>
 
-                                            <th className="px-4 py-3 text-center font-semibold">
+                                            <th className="whitespace-nowrap px-4 py-3 text-center font-semibold">
                                                 CO
                                             </th>
 
-                                            <th className="px-4 py-3 text-center font-semibold">
+                                            <th className="whitespace-nowrap px-4 py-3 text-center font-semibold">
                                                 Level
                                             </th>
 
                                             {poColumns.map((po) => (
                                                 <th
                                                     key={po}
-                                                    className="px-4 py-3 text-center font-semibold"
+                                                    className="whitespace-nowrap px-4 py-3 text-center font-semibold"
                                                 >
                                                     {po}
                                                 </th>
@@ -176,21 +177,21 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
 
                                             <tr
                                                 key={index}
-                                                className="odd:bg-gray-50 even:bg-gray-100 hover:bg-gray-200 transition"
+                                                className="transition odd:bg-gray-50 even:bg-gray-100 hover:bg-gray-200"
                                             >
 
-                                                <td className="border-b border-gray-300 px-4 py-3 text-center font-medium">
+                                                <td className="border-b border-gray-300 px-4 py-3 text-center font-medium whitespace-nowrap">
                                                     {row.co}
                                                 </td>
 
-                                                <td className="border-b border-gray-300 px-4 py-3 text-center">
+                                                <td className="border-b border-gray-300 px-4 py-3 text-center whitespace-nowrap">
                                                     {row.attainmentLevel}
                                                 </td>
 
                                                 {poColumns.map((po) => (
                                                     <td
                                                         key={po}
-                                                        className="border-b border-gray-300 px-4 py-3 text-center"
+                                                        className="border-b border-gray-300 px-4 py-3 text-center whitespace-nowrap"
                                                     >
                                                         {row[po] ?? "-"}
                                                     </td>
@@ -202,10 +203,10 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
 
                                         {directPoRow && (
                                             <tr
+                                                className="font-semibold"
                                                 style={{
                                                     backgroundColor: COLORS.latteDark,
                                                 }}
-                                                className="font-semibold"
                                             >
 
                                                 <td
@@ -218,7 +219,7 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
                                                 {poColumns.map((po) => (
                                                     <td
                                                         key={po}
-                                                        className="border-t border-gray-300 px-4 py-3 text-center"
+                                                        className="border-t border-gray-300 px-4 py-3 text-center whitespace-nowrap"
                                                     >
                                                         {directPoRow[po] ?? "-"}
                                                     </td>
@@ -240,6 +241,198 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
             </div>
 
         </div>
+
+        // <div className="flex h-full flex-col rounded-xl bg-gray-200 p-4">
+
+        //     {/* Header */}
+        //     <div className="mb-4 flex items-center justify-between rounded-xl border border-gray-300 bg-gray-100 px-5 py-3">
+
+        //         <div>
+        //             <h2
+        //                 className="text-lg font-semibold"
+        //                 style={{ color: COLORS.mint }}
+        //             >
+        //                 Direct Attainment Report
+        //             </h2>
+
+        //             <p className="mt-1 text-sm text-gray-600">
+        //                 {data.course} • Batch {data.academicYear}
+        //             </p>
+        //         </div>
+
+        //         <div className="flex items-center gap-3">
+
+        //             <button
+        //                 onClick={handleDownload}
+        //                 disabled={downloading}
+        //                 className="rounded-lg border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+        //             >
+        //                 {downloading ? "Downloading..." : "Download"}
+        //             </button>
+
+        //             <button
+        //                 onClick={() => setIsOpen(false)}
+        //                 className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600 cursor-pointer"
+        //             >
+        //                 Close
+        //             </button>
+
+        //         </div>
+
+        //     </div>
+
+        //     {/* Subject Tables */}
+        //     <div className="flex-1 space-y-4 overflow-y-auto">
+
+        //         {subjects.map((subject, index) => {
+        //             const rows = subject.tableData || [];
+
+        //             const coRows = rows.filter(
+        //                 (row) => row.course !== "Direct PO Attainment"
+        //             );
+
+        //             const directPoRow = rows.find(
+        //                 (row) => row.course === "Direct PO Attainment"
+        //             );
+
+        //             const poColumns = Object.keys(rows[0]).filter((key) =>
+        //                 key.startsWith("PO")
+        //             );
+
+        //             return (
+        //                 <div
+        //                     key={subject.subjectId}
+        //                     className="overflow-hidden rounded-xl border border-gray-300 bg-gray-100"
+        //                 >
+
+        //                     {/* Subject Header */}
+        //                     <div
+        //                         className="flex items-center justify-between border-b border-gray-300 px-5 py-3"
+        //                         style={{ backgroundColor: COLORS.latteDark }}
+        //                     >
+        //                         <div>
+        //                             <h3 className="font-semibold text-gray-800">
+        //                                 {subject.subjectName}
+        //                             </h3>
+
+        //                             <p className="text-sm text-gray-600">
+        //                                 {subject.subjectId}
+        //                             </p>
+        //                         </div>
+
+        //                         <span
+        //                             className="rounded-full px-3 py-1 text-xs font-semibold"
+        //                             style={{
+        //                                 backgroundColor: COLORS.mint,
+        //                                 color: COLORS.font,
+        //                             }}
+        //                         >
+        //                             Subject {subjects.length > 1 ? index + 1 : ""}
+        //                         </span>
+        //                     </div>
+
+        //                     <div className="overflow-x-auto">
+
+        //                         <table className="min-w-full border-collapse text-sm">
+
+        //                             <thead
+        //                                 style={{
+        //                                     backgroundColor: COLORS.mint,
+        //                                     color: COLORS.font,
+        //                                 }}
+        //                             >
+        //                                 <tr>
+
+        //                                     <th className="px-4 py-3 text-center font-semibold">
+        //                                         CO
+        //                                     </th>
+
+        //                                     <th className="px-4 py-3 text-center font-semibold">
+        //                                         Level
+        //                                     </th>
+
+        //                                     {poColumns.map((po) => (
+        //                                         <th
+        //                                             key={po}
+        //                                             className="px-4 py-3 text-center font-semibold"
+        //                                         >
+        //                                             {po}
+        //                                         </th>
+        //                                     ))}
+
+        //                                 </tr>
+        //                             </thead>
+
+        //                             <tbody>
+
+        //                                 {coRows.map((row, index) => (
+
+        //                                     <tr
+        //                                         key={index}
+        //                                         className="odd:bg-gray-50 even:bg-gray-100 hover:bg-gray-200 transition"
+        //                                     >
+
+        //                                         <td className="border-b border-gray-300 px-4 py-3 text-center font-medium">
+        //                                             {row.co}
+        //                                         </td>
+
+        //                                         <td className="border-b border-gray-300 px-4 py-3 text-center">
+        //                                             {row.attainmentLevel}
+        //                                         </td>
+
+        //                                         {poColumns.map((po) => (
+        //                                             <td
+        //                                                 key={po}
+        //                                                 className="border-b border-gray-300 px-4 py-3 text-center"
+        //                                             >
+        //                                                 {row[po] ?? "-"}
+        //                                             </td>
+        //                                         ))}
+
+        //                                     </tr>
+
+        //                                 ))}
+
+        //                                 {directPoRow && (
+        //                                     <tr
+        //                                         style={{
+        //                                             backgroundColor: COLORS.latteDark,
+        //                                         }}
+        //                                         className="font-semibold"
+        //                                     >
+
+        //                                         <td
+        //                                             colSpan={2}
+        //                                             className="border-t border-gray-300 px-4 py-3 text-center"
+        //                                         >
+        //                                             Direct PO Attainment
+        //                                         </td>
+
+        //                                         {poColumns.map((po) => (
+        //                                             <td
+        //                                                 key={po}
+        //                                                 className="border-t border-gray-300 px-4 py-3 text-center"
+        //                                             >
+        //                                                 {directPoRow[po] ?? "-"}
+        //                                             </td>
+        //                                         ))}
+
+        //                                     </tr>
+        //                                 )}
+
+        //                             </tbody>
+
+        //                         </table>
+
+        //                     </div>
+
+        //                 </div>
+        //             );
+        //         })}
+
+        //     </div>
+
+        // </div>
 
         // <div className="flex h-full flex-col rounded-xl bg-gray-100 p-4">
 

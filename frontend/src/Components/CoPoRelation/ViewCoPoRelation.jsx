@@ -10,23 +10,23 @@ function ViewCoPoRelation({ data, setOpenView }) {
 
     return (
         <div
-            className="m-2 rounded-2xl overflow-hidden border border-gray-200 shadow-md"
+            className="mx-2 flex h-full w-full flex-col overflow-hidden rounded-2xl border border-gray-200 shadow-md sm:mx-3 lg:mx-0"
             style={{ backgroundColor: COLORS.latte }}
         >
             {/* Header */}
             <div
-                className="px-5 py-3 border-b border-gray-200"
+                className="border-b border-gray-200 px-4 py-4 sm:px-5 lg:px-6"
                 style={{ backgroundColor: COLORS.mint }}
             >
                 <h2
-                    className="text-lg font-semibold"
+                    className="text-lg font-semibold sm:text-xl"
                     style={{ color: COLORS.font }}
                 >
                     View CO/PO Relation
                 </h2>
 
                 <p
-                    className="text-sm mt-1 opacity-90"
+                    className="mt-1 break-all text-sm opacity-90 sm:text-base"
                     style={{ color: COLORS.font }}
                 >
                     {data.subjectId}
@@ -34,27 +34,30 @@ function ViewCoPoRelation({ data, setOpenView }) {
             </div>
 
             {/* Table */}
-            <div className="p-5">
+            <div className="flex-1 p-4 sm:p-5 lg:p-6">
                 {data.mappingData ? (
-                    <div className="overflow-hidden rounded-xl border border-gray-200">
-                        <div className="overflow-auto max-h-105">
-                            <table className="min-w-full text-sm text-center border-collapse whitespace-nowrap">
+                    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+
+                        <div className="max-h-[70vh] overflow-auto">
+
+                            <table className="min-w-225 w-full border-collapse text-center text-sm">
+
                                 <thead
-                                    className="sticky top-0 z-10"
+                                    className="sticky top-0 z-20"
                                     style={{
                                         backgroundColor: COLORS.latteDark,
                                         color: COLORS.mintDark,
                                     }}
                                 >
                                     <tr>
-                                        <th className="border border-gray-300 px-4 py-3 font-semibold">
+                                        <th className="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap">
                                             {data.subjectId}
                                         </th>
 
                                         {poColumns.map((po) => (
                                             <th
                                                 key={po}
-                                                className="border border-gray-300 px-4 py-3 font-semibold"
+                                                className="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap"
                                             >
                                                 {po}
                                             </th>
@@ -66,11 +69,18 @@ function ViewCoPoRelation({ data, setOpenView }) {
                                     {rows.map(([co, val], index) => (
                                         <tr
                                             key={co}
-                                            className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                                            className={
+                                                index % 2 === 0
+                                                    ? "bg-white"
+                                                    : "bg-gray-50"
+                                            }
                                         >
                                             <td
-                                                className="border border-gray-300 font-semibold"
-                                                style={{ backgroundColor: COLORS.latteDark }}
+                                                className="border border-gray-300 px-4 py-3 font-semibold whitespace-nowrap"
+                                                style={{
+                                                    backgroundColor:
+                                                        COLORS.latteDark,
+                                                }}
                                             >
                                                 {co}
                                             </td>
@@ -78,45 +88,161 @@ function ViewCoPoRelation({ data, setOpenView }) {
                                             {poColumns.map((po) => (
                                                 <td
                                                     key={po}
-                                                    className="border border-gray-300 px-4 py-3"
+                                                    className="border border-gray-300 px-4 py-3 whitespace-nowrap"
                                                 >
                                                     {val[po] || (
-                                                        <span className="text-gray-400">—</span>
+                                                        <span className="text-gray-400">
+                                                            —
+                                                        </span>
                                                     )}
                                                 </td>
                                             ))}
                                         </tr>
                                     ))}
                                 </tbody>
+
                             </table>
+
                         </div>
+
                     </div>
                 ) : (
-                    <div className="rounded-xl border border-dashed border-gray-300 bg-white py-12 text-center">
+                    <div className="flex min-h-75 flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white px-6 text-center">
+
                         <p
-                            className="text-lg font-medium"
+                            className="text-lg font-medium sm:text-xl"
                             style={{ color: COLORS.mintDark }}
                         >
                             No CO/PO Relation Available
                         </p>
 
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-2 text-sm text-gray-500 sm:text-base">
                             Upload the mapping to view it here.
                         </p>
+
                     </div>
                 )}
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end border-t border-gray-200 px-5 py-4">
+            <div className="flex justify-end border-t border-gray-200 px-4 py-4 sm:px-5 lg:px-6">
                 <button
                     onClick={() => setOpenView(false)}
-                    className="rounded-lg bg-gray-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-gray-700 cursor-pointer"
+                    className="w-full rounded-lg bg-gray-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 sm:w-auto cursor-pointer"
                 >
                     Close
                 </button>
             </div>
         </div>
+
+        // <div
+        //     className="m-2 rounded-2xl overflow-hidden border border-gray-200 shadow-md"
+        //     style={{ backgroundColor: COLORS.latte }}
+        // >
+        //     {/* Header */}
+        //     <div
+        //         className="px-5 py-3 border-b border-gray-200"
+        //         style={{ backgroundColor: COLORS.mint }}
+        //     >
+        //         <h2
+        //             className="text-lg font-semibold"
+        //             style={{ color: COLORS.font }}
+        //         >
+        //             View CO/PO Relation
+        //         </h2>
+
+        //         <p
+        //             className="text-sm mt-1 opacity-90"
+        //             style={{ color: COLORS.font }}
+        //         >
+        //             {data.subjectId}
+        //         </p>
+        //     </div>
+
+        //     {/* Table */}
+        //     <div className="p-5">
+        //         {data.mappingData ? (
+        //             <div className="overflow-hidden rounded-xl border border-gray-200">
+        //                 <div className="overflow-auto max-h-105">
+        //                     <table className="min-w-full text-sm text-center border-collapse whitespace-nowrap">
+        //                         <thead
+        //                             className="sticky top-0 z-10"
+        //                             style={{
+        //                                 backgroundColor: COLORS.latteDark,
+        //                                 color: COLORS.mintDark,
+        //                             }}
+        //                         >
+        //                             <tr>
+        //                                 <th className="border border-gray-300 px-4 py-3 font-semibold">
+        //                                     {data.subjectId}
+        //                                 </th>
+
+        //                                 {poColumns.map((po) => (
+        //                                     <th
+        //                                         key={po}
+        //                                         className="border border-gray-300 px-4 py-3 font-semibold"
+        //                                     >
+        //                                         {po}
+        //                                     </th>
+        //                                 ))}
+        //                             </tr>
+        //                         </thead>
+
+        //                         <tbody>
+        //                             {rows.map(([co, val], index) => (
+        //                                 <tr
+        //                                     key={co}
+        //                                     className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+        //                                 >
+        //                                     <td
+        //                                         className="border border-gray-300 font-semibold"
+        //                                         style={{ backgroundColor: COLORS.latteDark }}
+        //                                     >
+        //                                         {co}
+        //                                     </td>
+
+        //                                     {poColumns.map((po) => (
+        //                                         <td
+        //                                             key={po}
+        //                                             className="border border-gray-300 px-4 py-3"
+        //                                         >
+        //                                             {val[po] || (
+        //                                                 <span className="text-gray-400">—</span>
+        //                                             )}
+        //                                         </td>
+        //                                     ))}
+        //                                 </tr>
+        //                             ))}
+        //                         </tbody>
+        //                     </table>
+        //                 </div>
+        //             </div>
+        //         ) : (
+        //             <div className="rounded-xl border border-dashed border-gray-300 bg-white py-12 text-center">
+        //                 <p
+        //                     className="text-lg font-medium"
+        //                     style={{ color: COLORS.mintDark }}
+        //                 >
+        //                     No CO/PO Relation Available
+        //                 </p>
+
+        //                 <p className="mt-1 text-sm text-gray-500">
+        //                     Upload the mapping to view it here.
+        //                 </p>
+        //             </div>
+        //         )}
+        //     </div>
+
+        //     {/* Footer */}
+        //     <div className="flex justify-end border-t border-gray-200 px-5 py-4">
+        //         <button
+        //             onClick={() => setOpenView(false)}
+        //             className="rounded-lg bg-gray-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-gray-700 cursor-pointer"
+        //         >
+        //             Close
+        //         </button>
+        //     </div>
+        // </div>
 
         // <div className='px-3 py-4'>
         //     <div
