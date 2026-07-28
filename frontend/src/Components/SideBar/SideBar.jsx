@@ -14,14 +14,36 @@ import { IoMdDownload } from "react-icons/io";
 import { SiGoogleclassroom } from "react-icons/si";
 import { MdTopic } from "react-icons/md";
 import { NavLink } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { IoClose } from "react-icons/io5";
+import { useDispatch, useSelector } from 'react-redux';
 import { COLORS } from "../../constants/theme";
 import SideBarSection from "./SideBarSection";
 import SideBarTab from "./SideBarTab";
+import { useEffect } from "react";
+import { close, open } from "../../store/sideBarSlice";
 
 function SideBar() {
     const isOpen = useSelector(state => state.sideBar.isSideBarOpen);
     const userData = useSelector(state => state.auth.userData);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1024) {
+                dispatch(close());
+            }
+        };
+
+        handleResize();
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, [dispatch]);
+
     const menuList = [
         {
             role: 'faculty',
@@ -108,37 +130,41 @@ function SideBar() {
 
     return (
         <div
-            className={`
-                fixed top-0 left-0 h-screen overflow-y-auto w-[17%] transform transition-transform duration-300 ease-in-out
-                ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-            `}
+            className={`fixed top-0 left-0 h-screen overflow-y-auto w-64 md:w-72 lg:w-[17%] transform transition-transform duration-300 ease-in-out
+            ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
             style={{ backgroundColor: COLORS.mint }}
         >
             <div
-                // className='h-15 w-full p-2 flex gap-2 justify-between items-center'
-                className='h-15 w-full p-2 flex justify-center items-center'
+                className='min-h-15 w-full p-2 flex justify-center items-center overflow-hidden'
                 style={{
                     backgroundColor: COLORS.latte,
                     color: COLORS.mint
                 }}
             >
-                {/* <FaGraduationCap className='text-5xl' /> */}
-                {/* <div className='text-xs font-bold'>Student Performance Assessment for Outcome Based Education</div> */}
                 <img src="/Final-Logo-Edited.png" height='60' width='60' />
-                {/* <div className='text-xl font-bold'>Attainment Calc</div> */}
-                <img src="/Final-Logo-Name.png" height='190' width='190' />
+                <img
+                    src="/Final-Logo-Name.png"
+                    className="w-32 sm:w-40 lg:w-47.5"
+                />
 
             </div>
             <div
                 className='p-3 font-semibold text-md'
                 style={{ color: COLORS.font }}
             >
-                <SideBarTab
-                    icon={IoOptionsOutline}
-                    to={'/'}
-                    text='Dashboard'
-                    tabClassNames='flex items-center gap-1 mt-2'
-                />
+                <div className="flex items-center justify-between">
+                    <SideBarTab
+                        icon={IoOptionsOutline}
+                        to="/"
+                        text="Dashboard"
+                        tabClassNames="flex items-center gap-1"
+                    />
+
+                    <IoClose
+                        className="text-2xl cursor-pointer lg:hidden"
+                        onClick={() => dispatch(close())}
+                    />
+                </div>
 
                 <div className='my-2'>
 
@@ -271,6 +297,167 @@ function SideBar() {
                 </div>
             </div>
         </div>
+
+        // <div
+        //     className={`
+        //         fixed top-0 left-0 h-screen overflow-y-auto w-[17%] transform transition-transform duration-300 ease-in-out
+        //         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        //     `}
+        //     style={{ backgroundColor: COLORS.mint }}
+        // >
+        //     <div
+        //         className='h-15 w-full p-2 flex justify-center items-center'
+        //         style={{
+        //             backgroundColor: COLORS.latte,
+        //             color: COLORS.mint
+        //         }}
+        //     >
+        //         <img src="/Final-Logo-Edited.png" height='60' width='60' />
+        //         <img src="/Final-Logo-Name.png" height='190' width='190' />
+
+        //     </div>
+        //     <div
+        //         className='p-3 font-semibold text-md'
+        //         style={{ color: COLORS.font }}
+        //     >
+        //         <SideBarTab
+        //             icon={IoOptionsOutline}
+        //             to={'/'}
+        //             text='Dashboard'
+        //             tabClassNames='flex items-center gap-1 mt-2'
+        //         />
+
+        //         <div className='my-2'>
+
+        //             {/* Menu */}
+        //             <SideBarSection
+        //                 icon={CiMenuKebab}
+        //                 text='Menu'
+        //             />
+        //             <div>
+        //                 {menuList.map(tab => (
+        //                     (tab.role === userData.role || userData.role === 'admin') &&
+        //                     (
+        //                         <SideBarTab
+        //                             key={tab.text}
+        //                             icon={tab.icon}
+        //                             to={tab.to}
+        //                             text={tab.text}
+        //                         />
+        //                     )
+        //                 ))}
+        //             </div>
+
+        //             {/* Downloads */}
+        //             <SideBarSection
+        //                 icon={IoMdDownload}
+        //                 text='Downloads'
+        //             />
+        //             <div>
+        //                 {downloadList.map(tab => (
+        //                     (tab.role === userData.role || userData.role === 'admin') &&
+        //                     (
+        //                         <SideBarTab
+        //                             key={tab.text}
+        //                             icon={tab.icon}
+        //                             to={tab.to}
+        //                             text={tab.text}
+        //                         />
+        //                     )
+        //                 ))}
+        //             </div>
+
+
+        //             {/* Rubrics */}
+        //             {userData.role === 'admin' &&
+        //                 (
+        //                     <SideBarSection
+        //                         icon={BiSolidReport}
+        //                         text='Rubrics'
+        //                     />
+        //                 )}
+        //             <div>
+        //                 {rubricsList.map(tab => (
+        //                     (tab.role === userData.role || userData.role === 'admin') &&
+        //                     (
+        //                         <SideBarTab
+        //                             key={tab.text}
+        //                             icon={tab.icon}
+        //                             to={tab.to}
+        //                             text={tab.text}
+        //                         />
+        //                     )
+        //                 ))}
+        //             </div>
+
+        //             {/* Analysis */}
+        //             {userData.role === 'admin' &&
+        //                 (
+        //                     <SideBarSection
+        //                         icon={BiSolidReport}
+        //                         text='Analysis'
+        //                     />
+        //                 )}
+        //             <div>
+        //                 {analysisList.map(tab => (
+        //                     (tab.role === userData.role || userData.role === 'admin') &&
+        //                     (
+        //                         <SideBarTab
+        //                             key={tab.text}
+        //                             icon={tab.icon}
+        //                             to={tab.to}
+        //                             text={tab.text}
+        //                         />
+        //                     )
+        //                 ))}
+        //             </div>
+
+        //             {/* Subjects */}
+        //             {userData.role === 'admin' &&
+        //                 (
+        //                     <SideBarSection
+        //                         icon={LuNotebookText}
+        //                         text='Subjects'
+        //                     />
+        //                 )}
+        //             <div>
+        //                 {subjectList.map(tab => (
+        //                     (tab.role === userData.role || userData.role === 'admin') &&
+        //                     (
+        //                         <SideBarTab
+        //                             key={tab.text}
+        //                             icon={tab.icon}
+        //                             to={tab.to}
+        //                             text={tab.text}
+        //                         />
+        //                     )
+        //                 ))}
+        //             </div>
+
+        //             {/* Faculty */}
+        //             {userData.role === 'admin' &&
+        //                 (
+        //                     <SideBarSection
+        //                         icon={CiMenuKebab}
+        //                         text='Faculty'
+        //                     />
+        //                 )}
+        //             <div>
+        //                 {facultyList.map(tab => (
+        //                     (tab.role === userData.role || userData.role === 'admin') &&
+        //                     (
+        //                         <SideBarTab
+        //                             key={tab.text}
+        //                             icon={tab.icon}
+        //                             to={tab.to}
+        //                             text={tab.text}
+        //                         />
+        //                     )
+        //                 ))}
+        //             </div>
+        //         </div>
+        //     </div>
+        // </div>
     )
 }
 
