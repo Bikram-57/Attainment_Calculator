@@ -32,13 +32,31 @@ function Dashboard() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-slate-100 p-4">
-            <div className="mx-auto max-w-7xl overflow-y-auto">
-                <Overview activeSubjectCount={activeSubjectCount} userRole={userData.role} />
-                <RecentActivity activeSubjectCount={activeSubjectCount} userRole={userData.role} />
-                <ProgressCharts userRole={userData.role} />
+        <div className="min-h-screen w-full bg-slate-100 px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 xl:px-10 2xl:px-12">
+            <div className="mx-auto w-full max-w-7xl space-y-6 overflow-x-hidden">
+                <Overview
+                    activeSubjectCount={activeSubjectCount}
+                    userRole={userData.role}
+                />
+
+                <RecentActivity
+                    activeSubjectCount={activeSubjectCount}
+                    userRole={userData.role}
+                />
+
+                <ProgressCharts
+                    userRole={userData.role}
+                />
             </div>
         </div>
+
+        // <div className="min-h-screen bg-slate-100 p-4">
+        //     <div className="mx-auto max-w-7xl overflow-y-auto">
+        //         <Overview activeSubjectCount={activeSubjectCount} userRole={userData.role} />
+        //         <RecentActivity activeSubjectCount={activeSubjectCount} userRole={userData.role} />
+        //         <ProgressCharts userRole={userData.role} />
+        //     </div>
+        // </div>
     );
 }
 

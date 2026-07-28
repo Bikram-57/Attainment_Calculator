@@ -127,16 +127,16 @@ function RecentActivity({ activeSubjectCount, userRole }) {
 
 
     return (
-        <div className="mb-6 grid gap-6 lg:grid-cols-3">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3 lg:gap-6">
             {/* Recent Activity */}
-            <div className="rounded-xl bg-white shadow-sm lg:col-span-2">
-                <div className="border-b px-4 py-3">
-                    <h2 className="text-xl font-semibold text-slate-800">
+            <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-lg lg:col-span-2">
+                <div className="border-b px-4 py-3 sm:px-5 sm:py-4">
+                    <h2 className="text-lg font-semibold text-slate-800 sm:text-xl">
                         Recent Activity
                     </h2>
                 </div>
 
-                <div className="max-h-100 overflow-y-auto divide-y">
+                <div className="max-h-128 flex-1 divide-y overflow-y-auto">
                     {recentActivities.length > 0 ? (
                         recentActivities.map((activity) => {
                             const config = activityConfig[activity.action] || {
@@ -147,95 +147,100 @@ function RecentActivity({ activeSubjectCount, userRole }) {
                             return (
                                 <div
                                     key={activity._id}
-                                    className="flex flex-col gap-3 p-4"
+                                    className="p-4 transition-colors hover:bg-slate-50 sm:p-5"
                                 >
-                                    <div className="flex items-start gap-3">
-                                        {getActivityIcon(activity.action)}
-
-                                        <div className="flex-1">
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <span
-                                                    className={`rounded-full px-3 py-1 text-xs font-semibold ${config.className}`}
-                                                >
-                                                    {config.label}
-                                                </span>
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                                        <div className="flex items-start gap-3 flex-1">
+                                            <div className="shrink-0">
+                                                {getActivityIcon(activity.action)}
                                             </div>
 
-                                            <p className="mt-2 text-slate-800">
-                                                {activity.target}
-                                            </p>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <span
+                                                        className={`rounded-full px-3 py-1 text-xs font-semibold ${config.className}`}
+                                                    >
+                                                        {config.label}
+                                                    </span>
+                                                </div>
 
-                                            <p className="text-sm text-slate-500">
-                                                By {activity.actor?.name}
-                                            </p>
+                                                <p className="mt-2 wrap-break-word text-sm text-slate-800 sm:text-base">
+                                                    {activity.target}
+                                                </p>
+
+                                                <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+                                                    By {activity.actor?.name}
+                                                </p>
+                                            </div>
                                         </div>
 
-                                        <div className="text-xs text-slate-500 whitespace-nowrap">
-                                            {new Date(
-                                                activity.timestamp
-                                            ).toLocaleString()}
+                                        <div className="text-xs text-slate-500 sm:whitespace-nowrap sm:pl-4">
+                                            {new Date(activity.timestamp).toLocaleString()}
                                         </div>
                                     </div>
                                 </div>
                             );
                         })
                     ) : (
-                        <div className="p-6 text-center text-slate-500">
+                        <div className="flex h-48 items-center justify-center p-6 text-center text-sm text-slate-500 sm:text-base">
                             No recent activity found
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Main Pie Chart */}
-            <div className="rounded-xl bg-white shadow-sm">
-                <div className="border-b px-4 py-3">
-                    <h2 className="text-xl font-semibold text-slate-800">
+            {/* Subject Distribution */}
+            <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-lg">
+                <div className="border-b px-4 py-3 sm:px-5 sm:py-4">
+                    <h2 className="text-lg font-semibold text-slate-800 sm:text-xl">
                         Subject Distribution
                     </h2>
                 </div>
 
                 {activeSubjectCount.length > 0 ? (
-                    <div className="p-2">
-                        <ResponsiveContainer width="100%" height={320}>
-                            <PieChart>
-                                <Pie
-                                    data={activeSubjectCount}
-                                    dataKey="totalSubjects"
-                                    nameKey="course"
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={85}
-                                    label={({ course, percent }) =>
-                                        `${course} ${(percent * 100).toFixed(0)}%`
-                                    }
-                                >
-                                    <Cell fill="#3b82f6" />
-                                    <Cell fill="#22c55e" />
-                                </Pie>
+                    <div className="flex flex-1 flex-col p-4 sm:p-5">
+                        <div className="flex justify-center">
+                            <ResponsiveContainer
+                                width="100%"
+                                height={300}
+                                className="max-w-sm"
+                            >
+                                <PieChart>
+                                    <Pie
+                                        data={activeSubjectCount}
+                                        dataKey="totalSubjects"
+                                        nameKey="course"
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={85}
+                                        label={({ course, percent }) =>
+                                            `${course} ${(percent * 100).toFixed(0)}%`
+                                        }
+                                    >
+                                        <Cell fill="#3b82f6" />
+                                        <Cell fill="#22c55e" />
+                                    </Pie>
 
-                                <Tooltip
-                                    formatter={(value) => [
-                                        value,
-                                        "Subjects"
-                                    ]}
-                                />
+                                    <Tooltip
+                                        formatter={(value) => [value, "Subjects"]}
+                                    />
 
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
 
-                        <div className="mt-2 space-y-2">
+                        <div className="mt-4 space-y-2">
                             {activeSubjectCount.map((item) => (
                                 <div
                                     key={item.course}
-                                    className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+                                    className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-3 transition-colors hover:bg-slate-100"
                                 >
-                                    <span className="font-medium text-slate-700">
+                                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700 sm:text-base">
                                         {item.course}
                                     </span>
 
-                                    <span className="font-bold text-slate-900">
+                                    <span className="ml-3 shrink-0 text-sm font-bold text-slate-900 sm:text-base">
                                         {item.totalSubjects}
                                     </span>
                                 </div>
@@ -243,12 +248,135 @@ function RecentActivity({ activeSubjectCount, userRole }) {
                         </div>
                     </div>
                 ) : (
-                    <div className="p-6 text-center text-slate-500">
+                    <div className="flex flex-1 items-center justify-center p-6 text-center text-sm text-slate-500 sm:text-base">
                         No data found
                     </div>
                 )}
             </div>
         </div>
+
+        // <div className="mb-6 grid gap-6 lg:grid-cols-3">
+        //     {/* Recent Activity */}
+        //     <div className="rounded-xl bg-white shadow-sm lg:col-span-2">
+        //         <div className="border-b px-4 py-3">
+        //             <h2 className="text-xl font-semibold text-slate-800">
+        //                 Recent Activity
+        //             </h2>
+        //         </div>
+
+        //         <div className="max-h-100 overflow-y-auto divide-y">
+        //             {recentActivities.length > 0 ? (
+        //                 recentActivities.map((activity) => {
+        //                     const config = activityConfig[activity.action] || {
+        //                         label: activity.action,
+        //                         className: "bg-gray-100 text-gray-700",
+        //                     };
+
+        //                     return (
+        //                         <div
+        //                             key={activity._id}
+        //                             className="flex flex-col gap-3 p-4"
+        //                         >
+        //                             <div className="flex items-start gap-3">
+        //                                 {getActivityIcon(activity.action)}
+
+        //                                 <div className="flex-1">
+        //                                     <div className="flex flex-wrap items-center gap-2">
+        //                                         <span
+        //                                             className={`rounded-full px-3 py-1 text-xs font-semibold ${config.className}`}
+        //                                         >
+        //                                             {config.label}
+        //                                         </span>
+        //                                     </div>
+
+        //                                     <p className="mt-2 text-slate-800">
+        //                                         {activity.target}
+        //                                     </p>
+
+        //                                     <p className="text-sm text-slate-500">
+        //                                         By {activity.actor?.name}
+        //                                     </p>
+        //                                 </div>
+
+        //                                 <div className="text-xs text-slate-500 whitespace-nowrap">
+        //                                     {new Date(
+        //                                         activity.timestamp
+        //                                     ).toLocaleString()}
+        //                                 </div>
+        //                             </div>
+        //                         </div>
+        //                     );
+        //                 })
+        //             ) : (
+        //                 <div className="p-6 text-center text-slate-500">
+        //                     No recent activity found
+        //                 </div>
+        //             )}
+        //         </div>
+        //     </div>
+
+        //     {/* Main Pie Chart */}
+        //     <div className="rounded-xl bg-white shadow-sm">
+        //         <div className="border-b px-4 py-3">
+        //             <h2 className="text-xl font-semibold text-slate-800">
+        //                 Subject Distribution
+        //             </h2>
+        //         </div>
+
+        //         {activeSubjectCount.length > 0 ? (
+        //             <div className="p-2">
+        //                 <ResponsiveContainer width="100%" height={320}>
+        //                     <PieChart>
+        //                         <Pie
+        //                             data={activeSubjectCount}
+        //                             dataKey="totalSubjects"
+        //                             nameKey="course"
+        //                             cx="50%"
+        //                             cy="50%"
+        //                             outerRadius={85}
+        //                             label={({ course, percent }) =>
+        //                                 `${course} ${(percent * 100).toFixed(0)}%`
+        //                             }
+        //                         >
+        //                             <Cell fill="#3b82f6" />
+        //                             <Cell fill="#22c55e" />
+        //                         </Pie>
+
+        //                         <Tooltip
+        //                             formatter={(value) => [
+        //                                 value,
+        //                                 "Subjects"
+        //                             ]}
+        //                         />
+
+        //                         <Legend />
+        //                     </PieChart>
+        //                 </ResponsiveContainer>
+
+        //                 <div className="mt-2 space-y-2">
+        //                     {activeSubjectCount.map((item) => (
+        //                         <div
+        //                             key={item.course}
+        //                             className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+        //                         >
+        //                             <span className="font-medium text-slate-700">
+        //                                 {item.course}
+        //                             </span>
+
+        //                             <span className="font-bold text-slate-900">
+        //                                 {item.totalSubjects}
+        //                             </span>
+        //                         </div>
+        //                     ))}
+        //                 </div>
+        //             </div>
+        //         ) : (
+        //             <div className="p-6 text-center text-slate-500">
+        //                 No data found
+        //             </div>
+        //         )}
+        //     </div>
+        // </div>
     )
 }
 
