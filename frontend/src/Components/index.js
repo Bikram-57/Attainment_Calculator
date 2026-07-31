@@ -18,6 +18,7 @@ import {
 
 // CoPoRelation
 import CoPoRelation from "./CoPoRelation/CoPoRelation";
+import UploadCoPoRelation from "./CoPoRelation/UploadCoPoRelation";
 import CoPoRelationHeader from "./CoPoRelation/CoPoRelationHeader";
 import ViewCoPoRelation from "./CoPoRelation/ViewCoPoRelation";
 import EditCoPoRelation from "./CoPoRelation/EditCoPoRelation";
@@ -179,4 +180,5 @@ export {
     AssignMultipleSubjectForm,
     PublicRoute,
     RemoveProfilePicture,
+    UploadCoPoRelation,
 }

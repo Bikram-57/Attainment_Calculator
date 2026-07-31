@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { MdRemoveRedEye } from "react-icons/md";
+import { MdRemoveRedEye, MdUploadFile } from "react-icons/md";
 import { FaCheckCircle, FaClock } from "react-icons/fa";
 import { GrEdit } from "react-icons/gr";
 import axios from 'axios';
 import ViewCoPoRelation from './ViewCoPoRelation';
 import EditCoPoRelation from './EditCoPoRelation';
 import { COLORS } from '../../constants/theme'
-import { CoPoRelationHeader, Loading } from '../index';
+import { CoPoRelationHeader, Loading, UploadCoPoRelation } from '../index';
 import { useSelector } from 'react-redux';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
@@ -17,7 +17,9 @@ function CoPoRelation() {
     const [searchQuery, setSearchQuery] = useState('');
     const [openView, setOpenView] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
+    const [openUpload, setOpenUpload] = useState(false);
     const [selectedSubjectData, setSelectedSubjectData] = useState(null);
+    const [selectedSubjectDataForUpload, setSelectedSubjectDataForUpload] = useState({})
     const [loading, setLoading] = useState(true);
     const [filterYear, setFilterYear] = useState(new Date().getFullYear());
     const [filterCourse, setFilterCourse] = useState('');
@@ -59,6 +61,18 @@ function CoPoRelation() {
         setOpenEdit(true);
     }
 
+    const handleUploadOpen = (sub) => {
+        // setLoading(true);
+        setSelectedSubjectDataForUpload({
+            subjectId: sub.subjectId,
+            subjectName: sub.subjectName,
+            academicYear: sub.academicYear,
+            course: sub.course,
+            semester: sub.semester
+        });
+        setOpenUpload(true);
+    }
+
 
 
     const filteredSubjects = subjects?.filter(sub => (
@@ -89,9 +103,7 @@ function CoPoRelation() {
                     });
                     setSubjects(res.data.data.subjects);
                 }
-                console.log('yes1');
             } catch (error) {
-                console.log('yes2');
                 setSubjects([])
                 console.log('Axios Error | CoPoRelation | fetchCoPoSubjectList(): ', error);
             } finally {
@@ -101,7 +113,7 @@ function CoPoRelation() {
         fetchCoPoSubjectList();
     }, [filterYear]);
 
-    if (!openView && !openEdit) {
+    if (!openView && !openEdit && !openUpload) {
         return !loading ? (
             <div
                 className="flex h-full w-full flex-col rounded-2xl border border-gray-200 shadow-sm"
@@ -190,8 +202,8 @@ function CoPoRelation() {
                                                 <div className="flex justify-center">
                                                     <span
                                                         className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${subject.copoMappingStatus === "Uploaded"
-                                                                ? "bg-green-100 text-green-700"
-                                                                : "bg-amber-100 text-amber-700"
+                                                            ? "bg-green-100 text-green-700"
+                                                            : "bg-amber-100 text-amber-700"
                                                             }`}
                                                     >
                                                         {subject.copoMappingStatus === "Uploaded" ? (
@@ -210,7 +222,7 @@ function CoPoRelation() {
 
                                                     <button
                                                         onClick={() => handleViewOpen(subject)}
-                                                        className="rounded-lg p-2.5 transition hover:opacity-90 cursor-pointer"
+                                                        className="rounded-lg p-2 transition hover:opacity-90 cursor-pointer"
                                                         style={{
                                                             backgroundColor: COLORS.mint,
                                                             color: COLORS.font,
@@ -222,7 +234,7 @@ function CoPoRelation() {
 
                                                     <button
                                                         onClick={() => handleEditOpen(subject)}
-                                                        className="rounded-lg p-2.5 transition hover:opacity-90 cursor-pointer"
+                                                        className="rounded-lg p-2 transition hover:opacity-90 cursor-pointer"
                                                         style={{
                                                             backgroundColor: COLORS.mint,
                                                             color: COLORS.font,
@@ -230,6 +242,18 @@ function CoPoRelation() {
                                                         title="Edit Mapping"
                                                     >
                                                         <GrEdit size={15} />
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => handleUploadOpen(subject)}
+                                                        className="rounded-lg p-2 transition hover:opacity-90 cursor-pointer"
+                                                        style={{
+                                                            backgroundColor: COLORS.mint,
+                                                            color: COLORS.font,
+                                                        }}
+                                                        title="Upload Mapping"
+                                                    >
+                                                        <MdUploadFile size={17} />
                                                     </button>
 
                                                 </div>
@@ -541,9 +565,18 @@ function CoPoRelation() {
             />
         )
     }
+    else if (openUpload) {
+        return (
+            <UploadCoPoRelation
+                data={selectedSubjectDataForUpload}
+                setOpenUpload={setOpenUpload}
+            />
+        )
+    }
     else {
         setOpenView(false);
         setOpenEdit(false);
+        setOpenUpload(false);
     }
 }
 
