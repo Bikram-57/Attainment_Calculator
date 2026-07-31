@@ -18,13 +18,13 @@ const downloadFile = (res, relativePath, fileName) => {
     res.download(filePath, fileName, (err) => {
         if (err) {
             console.error(`Error downloading ${fileName}:`, err.message);
-            
+
             // 3. Prevent crashing by ensuring headers haven't already been sent 
             // (e.g., if the download fails halfway through)
             if (!res.headersSent) {
-                res.status(404).json({ 
-                    success: false, 
-                    message: `The requested file '${fileName}' could not be found or accessed.` 
+                res.status(404).json({
+                    success: false,
+                    message: `The requested file '${fileName}' could not be found or accessed.`
                 });
             }
         }
@@ -39,8 +39,8 @@ const downloadFile = (res, relativePath, fileName) => {
 // @route   GET /api/downloads/format
 const handleFormatDownload = (req, res) => {
     downloadFile(
-        res, 
-        '../public/uploadDataFormat/uploadDataFormat.xlsx', 
+        res,
+        '../public/uploadDataFormat/uploadDataFormat.xlsx',
         'uploadDataFormat.xlsx'
     );
 };
@@ -49,15 +49,39 @@ const handleFormatDownload = (req, res) => {
 // @route   GET /api/downloads/assign-subject-format
 const handleUploadAssignSubjectDownload = (req, res) => {
     downloadFile(
-        res, 
-        '../public/uploadAssignSubjectFormat/Upload-All-Assign-Subjects.xlsx', 
+        res,
+        '../public/uploadAssignSubjectFormat/Upload-All-Assign-Subjects.xlsx',
         'Upload-All-Assign-Subjects.xlsx'
     );
 };
 
+// @desc    Download the CO-PO Mapping upload format Excel file
+
+const handleCoPoMappingFormatDownload = (req, res) => {
+    downloadFile(
+        res,
+        '../public/uploadCoPoMappingFormat/uploadCoPoMapping.xlsx',
+        'uploadCoPoMapping.xlsx'
+    );
+};
+
+
+// @desc    Download the Subject upload format Excel file
+
+const handleUploadAllSubjectFormatDownload = (req, res) => {
+    downloadFile(
+        res,
+        '../public/uploadAllSubjectFormat/Upload_all_subjects.xlsx',
+        'uploadCoPoMapping.xlsx'
+    );
+};
+
+
 module.exports = {
     handleFormatDownload,
-    handleUploadAssignSubjectDownload
+    handleUploadAssignSubjectDownload,
+    handleCoPoMappingFormatDownload,
+    handleUploadAllSubjectFormatDownload,
 };
 
 

@@ -18,10 +18,10 @@ export const options = {
 };
 
 // --- GLOBAL VARIABLES ---
-// Ensure this matches the mount path in your app.js (e.g., /api/copo or /co-po)
+// It is perfectly fine to have https:// here. The http module will handle it.
 const BASE_URL = 'https://127.0.0.1:8000/co-po'; 
 
-const JWT_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VySWQiOiI2YTU4Yzc2M2FlMmM2MDBhMzY2MzBkYmIiLCJmYWN1bHR5SWQiOiJDQTIwMjYiLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNzg0NzM3NTY5LCJleHAiOjE3ODQ3Mzg0Njl9.RG8rN0aT9plEaSn3b54JHLUZqM3GM_fjmcda6tSr2QI'; 
+const JWT_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VySWQiOiI2YTU4Yzc2M2FlMmM2MDBhMzY2MzBkYmIiLCJmYWN1bHR5SWQiOiJDQTIwMjYiLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNzg1NDk4MjE3LCJleHAiOjE3ODU0OTkxMTd9.gHFFQI185kMzpB3Of5YipVGjaGVqcJnR35v1TC_zXX4'; 
 
 const headers = {
     'Content-Type': 'application/json',
@@ -38,7 +38,6 @@ export default function () {
     // =========================================================================
     // 1. POST /save-relation (Save CO-PO Mapping)
     // =========================================================================
-    // Constructing mappingData that passes the controller's strict 8-PO validation limit
     const mappingPayload = JSON.stringify({
         subjectId: uniqueSubjectId,
         subjectName: 'Software Engineering Analytics',
@@ -47,12 +46,13 @@ export default function () {
         semester: testSemester,
         mappingData: {
             "CO1": { "PO1": 3, "PO2": 2, "PO3": 1 },
-            "CO2": { "PO4": 3, "PO5": 2, "PO8": 1 }, // Stays within the PO1-PO8 rule
+            "CO2": { "PO4": 3, "PO5": 2, "PO8": 1 }, 
             "CO3": { "PO1": 1, "PO7": 3 }
         }
     });
 
-    let postRes = https.post(`${BASE_URL}/save-relation`, mappingPayload, { headers });
+    // FIXED: Changed https.post to http.post
+    let postRes = http.post(`${BASE_URL}/save-relation`, mappingPayload, { headers });
     
     check(postRes, {
         'POST save-relation is 200': (r) => r.status === 200,
@@ -63,7 +63,8 @@ export default function () {
     // =========================================================================
     // 2. GET /relation (Get Single Subject CO-PO Relation)
     // =========================================================================
-    let getSingleRes = https.get(`${BASE_URL}/relation?subjectId=${uniqueSubjectId}&academicYear=${testYear}&course=${testCourse}`, { headers });
+    // FIXED: Changed https.get to http.get
+    let getSingleRes = http.get(`${BASE_URL}/relation?subjectId=${uniqueSubjectId}&academicYear=${testYear}&course=${testCourse}`, { headers });
     
     check(getSingleRes, {
         'GET single relation is 200 or 404': (r) => r.status === 200 || r.status === 404,
@@ -85,8 +86,8 @@ export default function () {
     // =========================================================================
     // 4. GET /filter (Get My Filtered Subjects)
     // =========================================================================
-    // Relies on the JWT token to identify the faculty member and requires a year
-    let getFilterRes = https.get(`${BASE_URL}/filter?year=${testYear}`, { headers });
+    // FIXED: Changed https.get to http.get
+    let getFilterRes = http.get(`${BASE_URL}/filter?year=${testYear}`, { headers });
     
     check(getFilterRes, {
         'GET filtered subjects is 200': (r) => r.status === 200,

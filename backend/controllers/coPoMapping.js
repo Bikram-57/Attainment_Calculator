@@ -1,3 +1,4 @@
+const xlsx = require('xlsx');
 const CoPoMapping = require('../models/coPoMapping');
 const Subject = require('../models/subject');
 const User = require('../models/user');
@@ -256,12 +257,260 @@ const getCoPoRelationByYear = async (req, res) => {
     }
 };
 
+
+
+
+
+
+
+
+
+
+const handleCoPoMappingThroughExcelSheet = async (req, res) => {
+// try {
+//         const { subjectId, academicYear, course, semester } = req.body;
+//         const file = req.file;
+
+//         if (!subjectId || !academicYear || !course || !file) {
+//             return res.status(400).json({ success: false, message: "Subject ID, Academic Year, Course, and Excel file are required." });
+//         }
+
+//         const cleanSubjectId = subjectId.trim().toUpperCase();
+//         const cleanCourse = course.trim().toUpperCase();
+
+//         // 1. READ THE EXCEL SHEET
+//         const workbook = xlsx.read(file.buffer, { type: 'buffer' });
+//         const sheetName = workbook.SheetNames[0]; 
+//         const sheet = workbook.Sheets[sheetName];
+        
+//         // Convert to a 2D array. defval ensures blank cells become empty strings ("")
+//         const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+
+//         if (rawData.length < 2) {
+//             return res.status(400).json({ success: false, message: "Excel file is empty or missing data rows." });
+//         }
+
+//         // Validate Headers (Ignoring top-left cell, enforcing PO1-PO8)
+//         const expectedHeaders = ["PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PO8"];
+//         for (let i = 1; i <= 8; i++) {
+//             const actualHeader = String(rawData[0][i]).trim().toUpperCase();
+//             if (actualHeader !== expectedHeaders[i - 1]) {
+//                 return res.status(400).json({ success: false, message: `Invalid header at column ${i + 1}. Expected ${expectedHeaders[i - 1]}.` });
+//             }
+//         }
+
+//         // 2. FORMAT THE DATA INTO THE EXACT JSON STRUCTURE
+//         const mappingData = {};
+
+//         // Loop through the data rows (starting at index 1 to skip headers)
+//         for (let i = 1; i < rawData.length; i++) {
+//             const row = rawData[i];
+//             const coKey = String(row[0]).trim().toUpperCase(); // e.g., "CO1"
+            
+//             // Skip completely empty rows at the bottom of the sheet
+//             if (!coKey) continue; 
+
+//             if (!coKey.startsWith('CO')) {
+//                 return res.status(400).json({ success: false, message: `Row ${i + 1} must start with a CO identifier (e.g., CO1). Found: '${row[0]}'` });
+//             }
+
+//             // Initialize the nested object for this CO
+//             mappingData[coKey] = {};
+
+//             // Loop strictly through the 8 PO columns (indices 1 through 8)
+//             for (let j = 1; j <= 8; j++) {
+//                 const poKey = `PO${j}`;
+//                 let cellValue = row[j];
+
+//                 // Convert Excel dashes or spaces into an empty string
+//                 if (cellValue === "—" || cellValue === "-" || cellValue === "") {
+//                     mappingData[coKey][poKey] = "";
+//                 } else {
+//                     // Convert to a number
+//                     cellValue = Number(cellValue);
+//                     if (isNaN(cellValue)) {
+//                         return res.status(400).json({ success: false, message: `Invalid value at ${coKey} -> ${poKey}. Must be a number or dash.` });
+//                     }
+//                     mappingData[coKey][poKey] = cellValue;
+//                 }
+//             }
+//         }
+
+//         // Ensure we actually extracted data before hitting the DB
+//         if (Object.keys(mappingData).length === 0) {
+//             return res.status(400).json({ success: false, message: "No valid mapping data could be extracted." });
+//         }
+
+//         // 3. UPLOAD IN DATABASE
+//         const subjectQuery = { subjectId: cleanSubjectId, academicYear };
+//         if (semester) subjectQuery.semester = semester;
+
+//         // Run both updates simultaneously for better performance
+//         await Promise.all([
+//             CoPoMapping.findOneAndUpdate(
+//                 { subjectId: cleanSubjectId, academicYear, course: cleanCourse },
+//                 { 
+//                     $set: { 
+//                         mappingData: mappingData, // The perfectly formatted JSON object
+//                         updatedAt: new Date() 
+//                     } 
+//                 },
+//                 { upsert: true, new: true } // Upsert creates it if it doesn't exist, updates if it does
+//             ),
+//             Subject.findOneAndUpdate(
+//                 subjectQuery,
+//                 { $set: { copoMappingStatus: 'Uploaded' } }
+//             )
+//         ]);
+
+//         // 4. RETURN SUCCESS RESPONSE
+//         return res.status(200).json({
+//             success: true,
+//             message: "Excel sheet processed and mapping data successfully saved to the database!",
+//             // mappingData: mappingData // Sending it back so you can verify the output in Postman
+//         });
+
+//     } catch (error) {
+//         console.error("Excel Upload Error:", error);
+//         return res.status(500).json({ success: false, message: "Server Error: " + error.message });
+//     }
+// };
+
+
+
+
+try {
+        const { subjectId, subjectName, academicYear, course, semester } = req.body;
+        const file = req.file;
+
+        if (!subjectId || !academicYear || !course || !file) {
+            return res.status(400).json({ success: false, message: "Subject ID, Academic Year, Course, and Excel file are required." });
+        }
+
+        const cleanSubjectId = subjectId.trim().toUpperCase();
+        const cleanCourse = course.trim().toUpperCase();
+
+        // 1. READ THE EXCEL SHEET
+        const workbook = xlsx.read(file.buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0]; 
+        const sheet = workbook.Sheets[sheetName];
+        
+        // Convert to a 2D array. defval ensures blank cells become empty strings ("")
+        const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+
+        if (rawData.length < 2) {
+            return res.status(400).json({ success: false, message: "Excel file is empty or missing data rows." });
+        }
+
+        // Validate Headers (Ignoring top-left cell, enforcing PO1-PO8)
+        const expectedHeaders = ["PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PO8"];
+        for (let i = 1; i <= 8; i++) {
+            const actualHeader = String(rawData[0][i]).trim().toUpperCase();
+            if (actualHeader !== expectedHeaders[i - 1]) {
+                return res.status(400).json({ success: false, message: `Invalid header at column ${i + 1}. Expected ${expectedHeaders[i - 1]}.` });
+            }
+        }
+
+        // 2. FORMAT THE DATA INTO THE EXACT JSON STRUCTURE
+        const mappingData = {};
+
+        for (let i = 1; i < rawData.length; i++) {
+            const row = rawData[i];
+            const coKey = String(row[0]).trim().toUpperCase();
+            
+            if (!coKey) continue; 
+
+            if (!coKey.startsWith('CO')) {
+                return res.status(400).json({ success: false, message: `Row ${i + 1} must start with a CO identifier (e.g., CO1). Found: '${row[0]}'` });
+            }
+
+            mappingData[coKey] = {};
+
+            for (let j = 1; j <= 8; j++) {
+                const poKey = `PO${j}`;
+                let cellValue = row[j];
+
+                if (cellValue === "—" || cellValue === "-" || cellValue === "") {
+                    mappingData[coKey][poKey] = "";
+                } else {
+                    cellValue = Number(cellValue);
+                    if (isNaN(cellValue)) {
+                        return res.status(400).json({ success: false, message: `Invalid value at ${coKey} -> ${poKey}. Must be a number or dash.` });
+                    }
+                    mappingData[coKey][poKey] = cellValue;
+                }
+            }
+        }
+
+        if (Object.keys(mappingData).length === 0) {
+            return res.status(400).json({ success: false, message: "No valid mapping data could be extracted." });
+        }
+
+        // 3. PARALLEL DATABASE EXECUTION
+        const subjectQuery = { subjectId: cleanSubjectId, academicYear };
+        if (semester) subjectQuery.semester = semester;
+
+        // Run Upsert, Subject Update, and User Fetch simultaneously
+        // { new: true, lean: true } ensures we get the updated documents back for the logger
+        const [_, updatedSubject, currentUser] = await Promise.all([
+            CoPoMapping.findOneAndUpdate(
+                { subjectId: cleanSubjectId, academicYear, course: cleanCourse },
+                { 
+                    $set: { 
+                        mappingData: mappingData,
+                        updatedAt: new Date() 
+                    } 
+                },
+                { upsert: true, new: true, lean: true } 
+            ),
+            Subject.findOneAndUpdate(
+                subjectQuery,
+                { $set: { copoMappingStatus: 'Uploaded' } },
+                { new: true, lean: true } 
+            ),
+            User.findById(req.user).select('name').lean()
+        ]);
+
+        // 4. ACTIVITY LOGGER
+        const actorName = currentUser?.name || "a Faculty Member";
+        const safeSubjectName = updatedSubject?.subjectName || updatedSubject?.name || subjectName || "Unknown Subject"; 
+
+        await logActivity(
+            req.user,
+            'UPLOADED_CO_PO_MAPPING', 
+            `CO-PO Mapping uploaded via Excel for ${cleanSubjectId} - ${safeSubjectName} (${cleanCourse}, ${academicYear}) by ${actorName}`, 
+            []
+        );
+
+        // 5. RETURN SUCCESS RESPONSE
+        return res.status(200).json({
+            success: true,
+            message: "Excel sheet processed and mapping data successfully saved to the database!",
+            // mappingData: mappingData 
+        });
+
+    } catch (error) {
+        console.error("Excel Upload Error:", error);
+        return res.status(500).json({ success: false, message: "Server Error: " + error.message });
+    }
+};
+
+
+
+
+
+
+
+
+
+
 module.exports = {
     getPendingSubjects,
     saveCoPoRelation,
     getCoPoRelation,
     handleGetMyFilteredSubjects,
     getCoPoRelationByYear,
+    handleCoPoMappingThroughExcelSheet
 };
 
 
