@@ -120,7 +120,7 @@ function CoPoRelation() {
 
                             <table className="min-w-250 w-full text-sm lg:text-[15px]">
 
-                                <thead className="sticky top-0 z-20 shadow-sm">
+                                <thead className="sticky top-0 z-2 shadow-sm">
                                     <tr
                                         style={{
                                             backgroundColor: COLORS.mint,
