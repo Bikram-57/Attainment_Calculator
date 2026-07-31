@@ -89,7 +89,10 @@ function CoPoRelation() {
                     });
                     setSubjects(res.data.data.subjects);
                 }
+                console.log('yes1');
             } catch (error) {
+                console.log('yes2');
+                setSubjects([])
                 console.log('Axios Error | CoPoRelation | fetchCoPoSubjectList(): ', error);
             } finally {
                 setLoading(false);

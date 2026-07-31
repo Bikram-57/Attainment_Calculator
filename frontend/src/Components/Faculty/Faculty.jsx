@@ -52,7 +52,7 @@ function Faculty() {
 
 							<table className="min-w-175 w-full border-collapse">
 
-								<thead className="sticky top-0 bg-slate-100 z-20">
+								<thead className="sticky top-0 bg-slate-100 z-2">
 
 									<tr className="text-xs sm:text-sm uppercase tracking-wide text-slate-600">
 
