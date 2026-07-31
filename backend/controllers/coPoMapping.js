@@ -266,9 +266,9 @@ const getCoPoRelationByYear = async (req, res) => {
 
 
 
-const handleCoPoMappingThroughExcelSheet = async (req, res) => {
+// const handleCoPoMappingThroughExcelSheet = async (req, res) => {
 // try {
-//         const { subjectId, academicYear, course, semester } = req.body;
+//         const { subjectId, subjectName, academicYear, course, semester } = req.body;
 //         const file = req.file;
 
 //         if (!subjectId || !academicYear || !course || !file) {
@@ -302,31 +302,25 @@ const handleCoPoMappingThroughExcelSheet = async (req, res) => {
 //         // 2. FORMAT THE DATA INTO THE EXACT JSON STRUCTURE
 //         const mappingData = {};
 
-//         // Loop through the data rows (starting at index 1 to skip headers)
 //         for (let i = 1; i < rawData.length; i++) {
 //             const row = rawData[i];
-//             const coKey = String(row[0]).trim().toUpperCase(); // e.g., "CO1"
+//             const coKey = String(row[0]).trim().toUpperCase();
             
-//             // Skip completely empty rows at the bottom of the sheet
 //             if (!coKey) continue; 
 
 //             if (!coKey.startsWith('CO')) {
 //                 return res.status(400).json({ success: false, message: `Row ${i + 1} must start with a CO identifier (e.g., CO1). Found: '${row[0]}'` });
 //             }
 
-//             // Initialize the nested object for this CO
 //             mappingData[coKey] = {};
 
-//             // Loop strictly through the 8 PO columns (indices 1 through 8)
 //             for (let j = 1; j <= 8; j++) {
 //                 const poKey = `PO${j}`;
 //                 let cellValue = row[j];
 
-//                 // Convert Excel dashes or spaces into an empty string
 //                 if (cellValue === "—" || cellValue === "-" || cellValue === "") {
 //                     mappingData[coKey][poKey] = "";
 //                 } else {
-//                     // Convert to a number
 //                     cellValue = Number(cellValue);
 //                     if (isNaN(cellValue)) {
 //                         return res.status(400).json({ success: false, message: `Invalid value at ${coKey} -> ${poKey}. Must be a number or dash.` });
@@ -336,38 +330,51 @@ const handleCoPoMappingThroughExcelSheet = async (req, res) => {
 //             }
 //         }
 
-//         // Ensure we actually extracted data before hitting the DB
 //         if (Object.keys(mappingData).length === 0) {
 //             return res.status(400).json({ success: false, message: "No valid mapping data could be extracted." });
 //         }
 
-//         // 3. UPLOAD IN DATABASE
+//         // 3. PARALLEL DATABASE EXECUTION
 //         const subjectQuery = { subjectId: cleanSubjectId, academicYear };
 //         if (semester) subjectQuery.semester = semester;
 
-//         // Run both updates simultaneously for better performance
-//         await Promise.all([
+//         // Run Upsert, Subject Update, and User Fetch simultaneously
+//         // { new: true, lean: true } ensures we get the updated documents back for the logger
+//         const [_, updatedSubject, currentUser] = await Promise.all([
 //             CoPoMapping.findOneAndUpdate(
 //                 { subjectId: cleanSubjectId, academicYear, course: cleanCourse },
 //                 { 
 //                     $set: { 
-//                         mappingData: mappingData, // The perfectly formatted JSON object
+//                         mappingData: mappingData,
 //                         updatedAt: new Date() 
 //                     } 
 //                 },
-//                 { upsert: true, new: true } // Upsert creates it if it doesn't exist, updates if it does
+//                 { upsert: true, new: true, lean: true } 
 //             ),
 //             Subject.findOneAndUpdate(
 //                 subjectQuery,
-//                 { $set: { copoMappingStatus: 'Uploaded' } }
-//             )
+//                 { $set: { copoMappingStatus: 'Uploaded' } },
+//                 { new: true, lean: true } 
+//             ),
+//             User.findById(req.user).select('name').lean()
 //         ]);
 
-//         // 4. RETURN SUCCESS RESPONSE
+//         // 4. ACTIVITY LOGGER
+//         const actorName = currentUser?.name || "a Faculty Member";
+//         const safeSubjectName = updatedSubject?.subjectName || updatedSubject?.name || subjectName || "Unknown Subject"; 
+
+//         await logActivity(
+//             req.user,
+//             'UPLOADED_CO_PO_MAPPING', 
+//             `CO-PO Mapping uploaded via Excel for ${cleanSubjectId} - ${safeSubjectName} (${cleanCourse}, ${academicYear}) by ${actorName}`, 
+//             []
+//         );
+
+//         // 5. RETURN SUCCESS RESPONSE
 //         return res.status(200).json({
 //             success: true,
 //             message: "Excel sheet processed and mapping data successfully saved to the database!",
-//             // mappingData: mappingData // Sending it back so you can verify the output in Postman
+//             // mappingData: mappingData 
 //         });
 
 //     } catch (error) {
@@ -379,85 +386,124 @@ const handleCoPoMappingThroughExcelSheet = async (req, res) => {
 
 
 
-try {
+/**
+ * @desc    Process uploaded Excel sheet for CO-PO Mapping, validate format, extract data to JSON, and update database.
+ * @route   POST /api/copo/upload-excel
+ */
+const handleCoPoMappingThroughExcelSheet = async (req, res) => {
+    try {
         const { subjectId, subjectName, academicYear, course, semester } = req.body;
         const file = req.file;
 
+        // 1. INPUT VALIDATION
         if (!subjectId || !academicYear || !course || !file) {
-            return res.status(400).json({ success: false, message: "Subject ID, Academic Year, Course, and Excel file are required." });
+            return res.status(400).json({ 
+                success: false, 
+                message: "Subject ID, Academic Year, Course, and Excel file are required." 
+            });
         }
 
+        // Sanitize string inputs to prevent query mismatches
         const cleanSubjectId = subjectId.trim().toUpperCase();
         const cleanCourse = course.trim().toUpperCase();
 
-        // 1. READ THE EXCEL SHEET
+        // 2. EXCEL PARSING
+        // Read buffer directly from memory to avoid disk I/O bottlenecks
         const workbook = xlsx.read(file.buffer, { type: 'buffer' });
-        const sheetName = workbook.SheetNames[0]; 
-        const sheet = workbook.Sheets[sheetName];
+        const sheet = workbook.Sheets[workbook.SheetNames[0]]; 
         
-        // Convert to a 2D array. defval ensures blank cells become empty strings ("")
+        // Convert sheet to a 2D array. 
+        // 'defval: ""' ensures empty cells aren't skipped, keeping array indices perfectly aligned
         const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" });
 
         if (rawData.length < 2) {
-            return res.status(400).json({ success: false, message: "Excel file is empty or missing data rows." });
+            return res.status(400).json({ 
+                success: false, 
+                message: "Excel file is empty or missing data rows." 
+            });
         }
 
-        // Validate Headers (Ignoring top-left cell, enforcing PO1-PO8)
+        // 3. TEMPLATE HEADER VALIDATION
+        // Enforce columns 1-8 strictly match PO1-PO8 (ignoring cell A1 at index 0)
         const expectedHeaders = ["PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PO8"];
+        const headersRow = rawData[0]; // Cache first row for faster access
+
         for (let i = 1; i <= 8; i++) {
-            const actualHeader = String(rawData[0][i]).trim().toUpperCase();
+            const actualHeader = String(headersRow[i]).trim().toUpperCase();
             if (actualHeader !== expectedHeaders[i - 1]) {
-                return res.status(400).json({ success: false, message: `Invalid header at column ${i + 1}. Expected ${expectedHeaders[i - 1]}.` });
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `Invalid header at column ${i + 1}. Expected ${expectedHeaders[i - 1]}.` 
+                });
             }
         }
 
-        // 2. FORMAT THE DATA INTO THE EXACT JSON STRUCTURE
+        // 4. DATA EXTRACTION & FORMATTING
         const mappingData = {};
+        // Use a Set for O(1) fast lookups of acceptable empty cell values
+        const emptyIndicators = new Set(["—", "-", ""]); 
 
+        // Iterate through data rows (skipping index 0 header row)
         for (let i = 1; i < rawData.length; i++) {
             const row = rawData[i];
             const coKey = String(row[0]).trim().toUpperCase();
             
+            // Safely skip trailing blank rows at the bottom of the Excel sheet
             if (!coKey) continue; 
 
+            // Strict prefix validation
             if (!coKey.startsWith('CO')) {
-                return res.status(400).json({ success: false, message: `Row ${i + 1} must start with a CO identifier (e.g., CO1). Found: '${row[0]}'` });
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `Row ${i + 1} must start with a CO identifier (e.g., CO1). Found: '${row[0]}'` 
+                });
             }
 
             mappingData[coKey] = {};
 
+            // Map PO1 through PO8 horizontally across the row
             for (let j = 1; j <= 8; j++) {
                 const poKey = `PO${j}`;
                 let cellValue = row[j];
 
-                if (cellValue === "—" || cellValue === "-" || cellValue === "") {
+                if (emptyIndicators.has(cellValue)) {
                     mappingData[coKey][poKey] = "";
                 } else {
-                    cellValue = Number(cellValue);
-                    if (isNaN(cellValue)) {
-                        return res.status(400).json({ success: false, message: `Invalid value at ${coKey} -> ${poKey}. Must be a number or dash.` });
+                    const numValue = Number(cellValue);
+                    
+                    // Reject non-numeric text data
+                    if (isNaN(numValue)) {
+                        return res.status(400).json({ 
+                            success: false, 
+                            message: `Invalid value at ${coKey} -> ${poKey}. Must be a number or dash.` 
+                        });
                     }
-                    mappingData[coKey][poKey] = cellValue;
+                    mappingData[coKey][poKey] = numValue;
                 }
             }
         }
 
+        // Failsafe: Ensure valid data was actually processed
         if (Object.keys(mappingData).length === 0) {
-            return res.status(400).json({ success: false, message: "No valid mapping data could be extracted." });
+            return res.status(400).json({ 
+                success: false, 
+                message: "No valid mapping data could be extracted." 
+            });
         }
 
-        // 3. PARALLEL DATABASE EXECUTION
+        // 5. PARALLEL DATABASE EXECUTION
+        // Dynamically build the subject query to accommodate optional semester filter
         const subjectQuery = { subjectId: cleanSubjectId, academicYear };
         if (semester) subjectQuery.semester = semester;
 
-        // Run Upsert, Subject Update, and User Fetch simultaneously
-        // { new: true, lean: true } ensures we get the updated documents back for the logger
+        // Run Upsert (Mapping), Update (Subject status), and Fetch (User profile) concurrently.
+        // { lean: true } strips heavy Mongoose document methods for faster reads.
         const [_, updatedSubject, currentUser] = await Promise.all([
             CoPoMapping.findOneAndUpdate(
                 { subjectId: cleanSubjectId, academicYear, course: cleanCourse },
                 { 
                     $set: { 
-                        mappingData: mappingData,
+                        mappingData, // ES6 Shorthand
                         updatedAt: new Date() 
                     } 
                 },
@@ -471,8 +517,9 @@ try {
             User.findById(req.user).select('name').lean()
         ]);
 
-        // 4. ACTIVITY LOGGER
+        // 6. ACTIVITY LOGGING
         const actorName = currentUser?.name || "a Faculty Member";
+        // Attempt to extract the subject name from DB response, fallback to req.body, then unknown
         const safeSubjectName = updatedSubject?.subjectName || updatedSubject?.name || subjectName || "Unknown Subject"; 
 
         await logActivity(
@@ -482,18 +529,21 @@ try {
             []
         );
 
-        // 5. RETURN SUCCESS RESPONSE
+        // 7. SUCCESS RESPONSE
         return res.status(200).json({
             success: true,
-            message: "Excel sheet processed and mapping data successfully saved to the database!",
-            // mappingData: mappingData 
+            message: "Excel sheet processed and mapping data successfully saved to the database!"
         });
 
     } catch (error) {
         console.error("Excel Upload Error:", error);
-        return res.status(500).json({ success: false, message: "Server Error: " + error.message });
+        return res.status(500).json({ 
+            success: false, 
+            message: "Server Error: " + error.message 
+        });
     }
 };
+
 
 
 
