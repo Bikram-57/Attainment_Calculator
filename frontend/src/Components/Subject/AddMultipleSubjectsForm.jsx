@@ -10,6 +10,31 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
     const [file, setFile] = useState(null);
     const fileInputRef = useRef(null);
 
+    const handleDownloadFormat = async () => {
+        try {
+            const response = await axios.get('/download-format/subject',
+                {
+                    responseType: 'blob',
+                }
+            );
+
+            const blob = new Blob([response.data]);
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Upload_all_subjects.xlsx';
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download failed:', error);
+            setErrorMsg('Failed to download report.');
+        }
+    }
+
     const handleAddMultipleSubjects = async () => {
         if (!file) {
             setErrorMsg("Please choose a file!");
@@ -105,36 +130,28 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
 
                 </div>
 
-
                 <p className="mt-2 text-xs text-gray-500">
                     Supported formats: <strong>.xls</strong>, <strong>.xlsx</strong>
                 </p>
 
             </div>
 
-
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 pt-2">
+                <button
+                    onClick={handleDownloadFormat}
+                    className="w-full sm:w-auto rounded-xl border border-gray-400 bg-gray-200 px-5 py-2 text-sm font-medium transition hover:bg-gray-100 cursor-pointer"
+                >
+                    Download Format
+                </button>
 
-                <div className="order-2 sm:order-1">
-                    <ErrorSuccessMsg
-                        errorMsg={errorMsg}
-                        successMsg={successMsg}
-                        setSuccessMsg={setSuccessMsg}
-                        setIsOpen={setIsAddSubjectOpen}
-                    />
-                </div>
-
-
-                <div className="order-1 sm:order-2 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     <button
                         onClick={() => setIsAddSubjectOpen(false)}
                         className="w-full sm:w-auto rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 cursor-pointer"
                     >
                         Cancel
                     </button>
-
 
                     <button
                         onClick={handleAddMultipleSubjects}
@@ -148,9 +165,16 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
                     </button>
 
                 </div>
-
             </div>
 
+            <div className="order-2 sm:order-1">
+                <ErrorSuccessMsg
+                    errorMsg={errorMsg}
+                    successMsg={successMsg}
+                    setSuccessMsg={setSuccessMsg}
+                    setIsOpen={setIsAddSubjectOpen}
+                />
+            </div>
         </div>
 
         // <div className="space-y-2">
