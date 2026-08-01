@@ -239,7 +239,6 @@ const handleDeleteRubricByCourseYear = async (req, res) => {
 
 
 
-// exports.uploadRubric = async (req, res) => {
     const handleUploadRubricsThroughExcelSheet = async(req, res) => {
  try {
     const { course, academicYear } = req.body;

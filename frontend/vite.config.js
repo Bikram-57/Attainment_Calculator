@@ -44,7 +44,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import fs from 'fs' // <-- ADD THIS to read your certificates
+import fs from 'fs'
 
 // Define your backend URL (Make sure it is https!)
 const backendTarget = 'https://localhost:8000';
@@ -63,8 +63,8 @@ export default defineConfig({
         tailwindcss()
     ],
     server: {
-        host: '0.0.0.0', // <-- ADD THIS: Exposes your app to the local network (192.168.x.x)
-        https: {         // <-- ADD THIS: Secures the frontend
+        host: '0.0.0.0', // <-- Exposes your app to the local network (192.168.x.x)
+        https: {         // <-- Secures the frontend
             key: fs.readFileSync('./local-key.pem'),
             cert: fs.readFileSync('./local-cert.pem'),
         },

@@ -72,7 +72,16 @@ const handleUploadAllSubjectFormatDownload = (req, res) => {
     downloadFile(
         res,
         '../public/uploadAllSubjectFormat/Upload_all_subjects.xlsx',
-        'uploadCoPoMapping.xlsx'
+        'Upload_all_subjects.xlsx'
+    );
+};
+
+// @desc    Download the Rubrics upload format Excel file
+const handleUploadRubricsFormatDownload = (req, res) => {
+    downloadFile(
+        res,
+        '../public/UploadRubricsFormat/uploadRubricsFormat.xlsx',
+        'uploadRubricsFormat.xlsx'
     );
 };
 
@@ -82,6 +91,7 @@ module.exports = {
     handleUploadAssignSubjectDownload,
     handleCoPoMappingFormatDownload,
     handleUploadAllSubjectFormatDownload,
+    handleUploadRubricsFormatDownload,
 };
 
 
