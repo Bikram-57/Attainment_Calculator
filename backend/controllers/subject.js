@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Subject = require('../models/subject');
 const User = require('../models/user');
 const logActivity = require('../utils/activityLogger');
@@ -171,34 +172,107 @@ async function handleGetSubjectBySubjectId(req, res) {
 // ============================================================================
 // 5. Delete Subject
 // ============================================================================
+// async function handleDeleteSubject(req, res) {
+//     try {
+//         const { id } = req.params;
+//         const cleanId = id.trim().toUpperCase();
+
+//         const deletedSubject = await Subject.findOneAndDelete({ subjectId: cleanId }).lean();
+
+//         if (!deletedSubject) {
+//             return res.status(404).json({ success: false, message: `Subject with ID ${cleanId} not found.` });
+//         }
+
+//         // Log Activity
+//         const safeCourse = deletedSubject.course || "UNKNOWN COURSE";
+//         await logSubjectAction(req, 'DELETED_SUBJECT', 
+//             `Subject ${deletedSubject.subjectId} - ${deletedSubject.subjectName} (${safeCourse}, Year: ${deletedSubject.academicYear}, Sem: ${deletedSubject.semester}) was deleted`
+//         );
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Subject deleted successfully",
+//             data: deletedSubject
+//         });
+
+//     } catch (error) {
+//         return res.status(500).json({ success: false, message: "Server Error", error: error.message });
+//     }
+// }
+
 async function handleDeleteSubject(req, res) {
     try {
         const { id } = req.params;
         const cleanId = id.trim().toUpperCase();
 
-        const deletedSubject = await Subject.findOneAndDelete({ subjectId: cleanId }).lean();
+        console.log(`\n--- STARTING CASCADE DELETE FOR: ${cleanId} ---`);
 
-        if (!deletedSubject) {
+        // 1. Find the subject FIRST so we know its year and course
+        const subjectToDelete = await Subject.findOne({ subjectId: cleanId }).lean();
+
+        if (!subjectToDelete) {
+            console.log(`--- ABORTED: Subject ${cleanId} not found in main collection --- \n`);
             return res.status(404).json({ success: false, message: `Subject with ID ${cleanId} not found.` });
         }
 
-        // Log Activity
-        const safeCourse = deletedSubject.course || "UNKNOWN COURSE";
+        const { academicYear, course } = subjectToDelete;
+
+        // 2. Surgically remove from assignsubjects (Nested Structure)
+        try {
+            // Construct the dynamic path (e.g., "assignments.2026.BCA")
+            const assignmentPath = `assignments.${academicYear}.${course}`;
+            
+            // Use $pull to remove just the one subject from the array without deleting the faculty record
+            const assignResult = await mongoose.connection.collection('assignsubjects').updateMany(
+                { [assignmentPath]: { $exists: true } }, // Find documents that have this year/course
+                { $pull: { [assignmentPath]: { subjectId: cleanId } } } // Remove the specific subject
+            );
+            console.log(`[assignsubjects]: Pulled ${cleanId} from ${assignResult.modifiedCount} faculty records.`);
+        } catch (assignError) {
+            console.error(`[assignsubjects]: Error during update -`, assignError.message);
+        }
+
+        // 3. Delete from standard "flat" collections
+        const flatCollections = [
+            'calculatedmarks',
+            'copomappings',
+            'directattainments',
+            'finalattainment',
+            'marks',
+            'poattainments',
+            'rubrics'
+        ];
+
+        for (const collectionName of flatCollections) {
+            try {
+                const result = await mongoose.connection.collection(collectionName).deleteMany({ subjectId: cleanId });
+                console.log(`[${collectionName}]: Found and deleted ${result.deletedCount} documents.`);
+            } catch (cleanupError) {
+                console.error(`[${collectionName}]: Error during cleanup -`, cleanupError.message);
+            }
+        }
+
+        // 4. NOW actually delete the main subject document
+        await Subject.findByIdAndDelete(subjectToDelete._id);
+        console.log(`--- SUCCESS: Main Subject ${cleanId} deleted ---\n`);
+
+        // 5. Log Activity
+        const safeCourse = course || "UNKNOWN COURSE";
         await logSubjectAction(req, 'DELETED_SUBJECT', 
-            `Subject ${deletedSubject.subjectId} - ${deletedSubject.subjectName} (${safeCourse}, Year: ${deletedSubject.academicYear}, Sem: ${deletedSubject.semester}) was deleted`
+            `Subject ${cleanId} - ${subjectToDelete.subjectName} (${safeCourse}, Year: ${academicYear}, Sem: ${subjectToDelete.semester}) was deleted`
         );
 
         return res.status(200).json({
             success: true,
-            message: "Subject deleted successfully",
-            data: deletedSubject
+            message: "Subject and all related data completely deleted",
+            data: subjectToDelete
         });
 
     } catch (error) {
+        console.error("Delete Controller Error:", error);
         return res.status(500).json({ success: false, message: "Server Error", error: error.message });
     }
 }
-
 // ============================================================================
 // 6. Get Subjects By Academic Year
 // ============================================================================
