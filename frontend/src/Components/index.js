@@ -68,6 +68,7 @@ import RubricsViewModal from "./Rubrics/modals/RubricsViewModal";
 import RubricsEditModal from "./Rubrics/modals/RubricsEditModal"
 import RubricsDeleteModal from "./Rubrics/modals/RubricsDeleteModal"
 import AddRubricsForm from "./Rubrics/AddRubricsForm";
+import AddMultipleRubrics from "./Rubrics/AddMultipleRubrics";
 
 // SideBar
 import SideBar from "./SideBar/SideBar";
@@ -181,4 +182,5 @@ export {
     PublicRoute,
     RemoveProfilePicture,
     UploadCoPoRelation,
+    AddMultipleRubrics,
 }
