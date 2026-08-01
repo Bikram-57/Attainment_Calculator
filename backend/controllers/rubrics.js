@@ -1,3 +1,4 @@
+const xlsx = require('xlsx');
 const Rubric = require('../models/rubrics');
 const User = require('../models/user'); 
 const logActivity = require('../utils/activityLogger');
@@ -236,12 +237,114 @@ const handleDeleteRubricByCourseYear = async (req, res) => {
     }
 };
 
+
+
+// exports.uploadRubric = async (req, res) => {
+    const handleUploadRubricsThroughExcelSheet = async(req, res) => {
+ try {
+    const { course, academicYear } = req.body;
+
+    // 1. Validate Request Payload
+    if (!course || !academicYear) {
+      return res.status(400).json({ error: 'Course and academicYear are required in the request body.' });
+    }
+    
+    if (!req.file) {
+      return res.status(400).json({ error: 'Excel file is required.' });
+    }
+
+    // 2. Read the Uploaded Excel File
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0]; 
+    const worksheet = workbook.Sheets[sheetName];
+    
+    // Convert to JSON (defval ensures empty cells become empty strings rather than undefined)
+    const rawExcelData = xlsx.utils.sheet_to_json(worksheet, { defval: '' });
+
+    // 3. Strictly Validate and Transform the Format
+    const thresholds = rawExcelData.map((row, index) => {
+      // Ensure strict column names exist
+      if (!('Level' in row) || !('Min %' in row) || !('Max %' in row)) {
+        throw new Error('Invalid file format. Columns must strictly be: "Level", "Min %", "Max %".');
+      }
+
+      // Format Level (e.g., "Level 0" -> 0)
+      const levelString = String(row['Level']).trim();
+      const levelNum = parseInt(levelString.replace(/\D/g, ''), 10);
+
+      // Format Percentages (e.g., "49.99%" -> 49.99)
+      const minString = String(row['Min %']).replace('%', '').trim();
+      const maxString = String(row['Max %']).replace('%', '').trim();
+      
+      const minPercent = parseFloat(minString);
+      const maxPercent = parseFloat(maxString);
+
+      // Ensure parsed values are valid numbers before sending to Mongoose
+      if (isNaN(levelNum) || isNaN(minPercent) || isNaN(maxPercent)) {
+        throw new Error(`Row ${index + 2} contains invalid numeric data.`);
+      }
+
+      return {
+        level: levelNum,
+        minPercent: minPercent,
+        maxPercent: maxPercent
+      };
+    });
+
+    // 4. Construct the Document
+    const newRubric = new Rubric({
+      course: String(course).trim().toUpperCase(),
+      year: parseInt(academicYear, 10),
+      thresholds: thresholds
+    });
+
+    // 5. Save to MongoDB (Triggers your Overlap Engine & Validations)
+    await newRubric.save();
+
+    return res.status(201).json({
+      success: true,
+      message: 'Rubric thresholds successfully uploaded and saved.',
+      data: newRubric
+    });
+
+  } catch (error) {
+    // Handle specific custom format errors thrown in the map function
+    if (error.message.includes('Invalid file format') || error.message.includes('invalid numeric data')) {
+      return res.status(400).json({ success: false, error: error.message });
+    }
+
+    // Handle Mongoose Unique Index Duplicate Error
+    if (error.code === 11000) {
+      return res.status(409).json({ 
+        success: false, 
+        error: `A rubric for ${req.body.course} in year ${req.body.academicYear} already exists.` 
+      });
+    }
+    
+    // Handle Mongoose Schema Validation Errors (Missing levels, overlaps, min > max)
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Schema Validation Failed', 
+        details: messages 
+      });
+    }
+
+    console.error('Server error during Excel upload:', error);
+    return res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+};
+
+
+
 module.exports = { 
     handleUploadrubrics,
     handleGetRubrics,
     handleUpdateRubrics,
     handleFindAllRubrics,
-    handleDeleteRubricByCourseYear
+    handleDeleteRubricByCourseYear,
+    handleUploadRubricsThroughExcelSheet,
 };
 
 
