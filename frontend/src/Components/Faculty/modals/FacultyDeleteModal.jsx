@@ -9,7 +9,6 @@ function FacultyDeleteModal({ data, toggleUpdate, closeMenu }) {
             const res = await axios.delete(`/user/${data.facultyId}`)
             closeMenu();
             toggleUpdate();
-            alert('Faculty deleted successfully!');
         } catch (error) {
             console.log('Axios Error | FacultyDeleteModal | deleteUser(): ', error);
         }
