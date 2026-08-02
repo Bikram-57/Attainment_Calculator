@@ -1,4 +1,4 @@
-const Rubric = require('../models/rubrics'); // Make sure Rubric model is imported here
+const Rubric = require('../models/rubrics');
 
 async function getActiveRubric(course, academicYear) {
     try {
