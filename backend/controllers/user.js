@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
 const { deleteUploadedImage } = require('../utils/fileHelper');
 const logActivity = require('../utils/activityLogger');
@@ -207,41 +208,113 @@ async function handleGetUserByFacultyId(req, res) {
 // ============================================================================
 // 5. Delete User
 // ============================================================================
+// async function handleDeleteUserByFacultyId(req, res) {
+//     try {
+//         const targetId = req.params.id.trim().toUpperCase();
+
+//         // 1. SECURITY: Protect Super Admin
+//         if (targetId === 'CA2026') {
+//             return res.status(403).json({
+//                 success: false,
+//                 message: "System Protection: The Super Admin account is permanent and cannot be deleted."
+//             });
+//         }
+
+//         // 2. Find and Delete
+//         const deletedUser = await User.findOneAndDelete({ facultyId: targetId }).lean();
+
+//         if (!deletedUser) {
+//             return res.status(404).json({ success: false, message: `No faculty member found with ID: ${targetId}` });
+//         }
+
+//         // 3. Cleanup disk files
+//         await deleteUploadedImage(deletedUser.profileImage);
+
+//         // 4. Log Activity
+//         await logUserAction(req, 'DELETED_FACULTY_ACCOUNT', `Faculty account for ${deletedUser.name} (${deletedUser.facultyId}) was deleted`);
+
+//         return res.status(200).json({
+//             success: true,
+//             message: `Faculty member ${targetId} (${deletedUser.name}) has been deleted.`
+//         });
+
+//     } catch (error) {
+//         return res.status(500).json({ success: false, message: "Server Error", error: error.message });
+//     }
+// }
+
+
 async function handleDeleteUserByFacultyId(req, res) {
     try {
         const targetId = req.params.id.trim().toUpperCase();
 
         // 1. SECURITY: Protect Super Admin
-        if (targetId === 'CA1718') {
+        if (targetId === 'CA2026') {
             return res.status(403).json({
                 success: false,
                 message: "System Protection: The Super Admin account is permanent and cannot be deleted."
             });
         }
 
-        // 2. Find and Delete
-        const deletedUser = await User.findOneAndDelete({ facultyId: targetId }).lean();
+        console.log(`\n--- STARTING CASCADE DELETE FOR USER: ${targetId} ---`);
 
-        if (!deletedUser) {
+        // 2. Find the user FIRST before deleting
+        const userToDelete = await User.findOne({ facultyId: targetId }).lean();
+
+        if (!userToDelete) {
+            console.log(`--- ABORTED: User ${targetId} not found --- \n`);
             return res.status(404).json({ success: false, message: `No faculty member found with ID: ${targetId}` });
         }
 
-        // 3. Cleanup disk files
-        await deleteUploadedImage(deletedUser.profileImage);
+        // 3. Define ALL collections from the database (image_0d9c9a.png)
+        // Note: 'users' is excluded here because we delete the main user document in Step 5.
+        const collectionsToClear = [
+            'activitystores',
+            'assignsubjects',
+            'calculatedmarks',
+            'copomappings',
+            'directattainments',
+            'finalattainment',
+            'marks',
+            'poattainments',
+            'rubrics',
+            'subjects'
+        ];
 
-        // 4. Log Activity
-        await logUserAction(req, 'DELETED_FACULTY_ACCOUNT', `Faculty account for ${deletedUser.name} (${deletedUser.facultyId}) was deleted`);
+        // 4. CASCADE DELETE: Loop through and forcefully delete from every collection
+        for (const collectionName of collectionsToClear) {
+            try {
+                // Deletes any document in these collections where the facultyId matches
+                const result = await mongoose.connection.collection(collectionName).deleteMany({ facultyId: targetId });
+                console.log(`[${collectionName}]: Found and deleted ${result.deletedCount} documents for faculty ${targetId}.`);
+            } catch (cleanupError) {
+                console.error(`[${collectionName}]: Error during cleanup -`, cleanupError.message);
+            }
+        }
+
+        // 5. NOW actually delete the main User document
+        await User.findByIdAndDelete(userToDelete._id);
+        console.log(`--- SUCCESS: Main User ${targetId} deleted ---\n`);
+
+        // 6. Cleanup disk files
+        if (userToDelete.profileImage) {
+            await deleteUploadedImage(userToDelete.profileImage); // Ensure this function is imported/defined
+        }
+
+        // 7. Log Activity
+        // Ensure logUserAction is imported/defined in this file
+        await logUserAction(req, 'DELETED_FACULTY_ACCOUNT', `Faculty account for ${userToDelete.name} (${userToDelete.facultyId}) was deleted`);
 
         return res.status(200).json({
             success: true,
-            message: `Faculty member ${targetId} (${deletedUser.name}) has been deleted.`
+            message: `Faculty member ${targetId} (${userToDelete.name}) and all associated records have been successfully deleted from all collections.`
         });
 
     } catch (error) {
+        console.error("Delete User Controller Error:", error);
         return res.status(500).json({ success: false, message: "Server Error", error: error.message });
     }
 }
-
 // ============================================================================
 // 6. Get All Faculty Members
 // ============================================================================
