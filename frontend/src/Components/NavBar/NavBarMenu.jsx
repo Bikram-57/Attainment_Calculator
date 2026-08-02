@@ -39,7 +39,7 @@ function NavBarMenu() {
             {/* Dropdown */}
             {isOpen && (
                 <div
-                    className="absolute right-0 mt-2 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg z-10"
+                    className="absolute right-0 mt-2 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg z-50"
                     onClick={closeMenu}
                 >
                     <NavLink
