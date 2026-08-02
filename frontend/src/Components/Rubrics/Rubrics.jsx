@@ -62,7 +62,7 @@ export default function Rubrics() {
                         <table className="min-w-162.5 w-full text-sm">
 
                             <thead
-                                className="sticky top-0 z-10"
+                                className="sticky top-0 z-2"
                                 style={{
                                     backgroundColor: COLORS.mint,
                                     color: COLORS.font,

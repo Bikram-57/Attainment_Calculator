@@ -9,7 +9,6 @@ function SubjectDeleteModal({ data, toggleUpdate, closeMenu }) {
             const res = await axios.delete(`/sub/${data.subjectId}`)
             closeMenu();
             toggleUpdate();
-            // alert('Subject deleted successfully!');
         } catch (error) {
             console.log('Axios Error | SubjectDeleteModal | deleteSubject(): ', error);
         }
