@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { MdOutlineCancelPresentation } from "react-icons/md";
+import { IoMdClose } from "react-icons/io";
 import { MdDone } from "react-icons/md";
 import { COLORS } from '../constants/theme';
 import { ErrorSuccessMsg } from './index';
@@ -112,8 +113,7 @@ function UploadData() {
 			setIsDisabled(true);
 			console.log(res);
 		} catch (err) {
-			// setErrorMsg("Something went wrong! Format error!");
-			setErrorMsg(err?.response?.data?.message || 'Something went wrong!');
+			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
 			console.log("Error on handleUpload || ", err);
 		} finally {
 			setUploading(false);
@@ -168,18 +168,18 @@ function UploadData() {
 						}
 					});
 				}
-				if (res.data.data.length === 0) {
-					setErrorMsg('No data for the selected year and course!');
-					setSubjectList([]);
-					setIsDisabled(true);
-					return;
-				}
+				// if (res.data.data.length === 0) {
+				// 	setErrorMsg('No data for the selected year and course!');
+				// 	setSubjectList([]);
+				// 	setIsDisabled(true);
+				// 	return;
+				// }
 				setSubjectList(res.data.data);
 				setIsDisabled(false);
 				setErrorMsg('');
 			} catch (err) {
 				console.log('Error fetching subjects || ', err);
-				setErrorMsg(err?.response?.data?.message);
+				setErrorMsg('err: ' + err?.response?.data?.message);
 				setSubjectList([]);
 				setIsDisabled(true);
 			}
@@ -328,9 +328,10 @@ function UploadData() {
 							<button
 								type="button"
 								onClick={handleRemoveFile}
-								className="flex items-center justify-center px-4 py-3 text-red-500 transition hover:text-red-700 cursor-pointer sm:px-3"
+								className="flex items-center justify-center px-4 py-3 text-gray-500 transition hover:text-red-700 cursor-pointer sm:px-3"
 							>
-								<MdOutlineCancelPresentation className="h-6 w-6" />
+								<IoMdClose className="h-6 w-6" />
+								{/* <MdOutlineCancelPresentation className="h-6 w-6" /> */}
 							</button>
 						)}
 					</div>

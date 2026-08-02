@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { COLORS } from '../../constants/theme'
 import { MdOutlineCancelPresentation } from "react-icons/md";
+import { IoMdClose } from "react-icons/io";
 import ErrorSuccessMsg from '../../utils/ErrorSuccessMsg'
 import Select from 'react-select';
 import axios from 'axios';
@@ -183,9 +184,10 @@ function AddMultipleRubrics({ setIsUploadOpen, setIsAddRubricsOpen, toggleUpdate
                         <button
                             type="button"
                             onClick={handleRemoveFile}
-                            className="px-3 text-red-500 transition hover:text-red-700 cursor-pointer"
+                            className="px-3 text-gray-500 transition hover:text-red-700 cursor-pointer"
                         >
-                            <MdOutlineCancelPresentation className="h-6 w-6" />
+                            <IoMdClose className="h-6 w-6" />
+                            {/* <MdOutlineCancelPresentation className="h-6 w-6" /> */}
                         </button>
                     )}
 

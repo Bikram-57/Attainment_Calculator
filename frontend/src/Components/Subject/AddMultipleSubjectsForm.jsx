@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { MdOutlineCancelPresentation } from "react-icons/md";
+import { IoMdClose } from "react-icons/io";
 import { COLORS } from '../../constants/theme'
 import { ErrorSuccessMsg } from "../index";
 
@@ -122,9 +123,10 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
                         <button
                             type="button"
                             onClick={handleRemoveFile}
-                            className="px-2 sm:px-3 text-red-500 transition hover:text-red-700 shrink-0"
+                            className="px-2 sm:px-3 text-gray-500 transition hover:text-red-700 shrink-0"
                         >
-                            <MdOutlineCancelPresentation className="h-5 w-5 sm:h-6 sm:w-6" />
+                            {/* <MdOutlineCancelPresentation className="h-5 w-5 sm:h-6 sm:w-6" /> */}
+                            <IoMdClose className="h-6 w-6" />
                         </button>
                     )}
 

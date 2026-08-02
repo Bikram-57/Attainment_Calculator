@@ -40,7 +40,7 @@ function Login() {
 			);
 			navigate('/');
 		} catch (error) {
-			setErrorMsg(error?.response?.data?.message);
+			setErrorMsg(error?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
 			console.log('ERROR || Login | handleLogin(): ', error);
 		}
 	}
