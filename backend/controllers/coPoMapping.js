@@ -4,7 +4,7 @@ const Subject = require('../models/subject');
 const User = require('../models/user');
 const AssignSubject = require('../models/assignSubject');
 const logActivity = require('../utils/activityLogger');
-
+const { generateAndSavePoAttainment } = require('../controllers/calculatedPo');
 // ============================================================================
 // 1. Fetch Subjects Pending CO-PO Mapping
 // ============================================================================
@@ -33,6 +33,83 @@ const getPendingSubjects = async (req, res) => {
 // ============================================================================
 // 2. Save CO-PO Relation
 // ============================================================================
+// const saveCoPoRelation = async (req, res) => {
+//     try {
+//         const { subjectId, subjectName, academicYear, course, mappingData, semester } = req.body;
+
+//         if (!subjectId || !mappingData || !course || !academicYear) {
+//             return res.status(400).json({ success: false, message: "Subject ID, Academic Year, Course, or Mapping Data is missing." });
+//         }
+
+//         const cleanSubjectId = subjectId.toUpperCase();
+//         const cleanCourse = course.toUpperCase();
+
+//         // 1. STRICT 8-PO VALIDATION LOGIC
+//         for (const [co, poMap] of Object.entries(mappingData)) {
+//             const poKeys = Object.keys(poMap);
+
+//             if (poKeys.length > 8) {
+//                 return res.status(400).json({ success: false, message: `Logic Error: ${co} contains > 8 POs.` });
+//             }
+
+//             const invalidPOs = poKeys.filter(po => {
+//                 const poNumber = parseInt(po.replace('PO', ''), 10);
+//                 return poNumber > 8 || isNaN(poNumber);
+//             });
+
+//             if (invalidPOs.length > 0) {
+//                 return res.status(400).json({ success: false, message: `Invalid POs in ${co}: [${invalidPOs.join(', ')}]. Only PO1-PO8 permitted.` });
+//             }
+//         }
+
+//         const subjectQuery = { subjectId: cleanSubjectId, academicYear };
+//         if (semester) subjectQuery.semester = semester;
+
+//         // 2. PARALLEL EXECUTION (Massive Performance Boost)
+//         // Run the Mapping Upsert, Subject Update, and User Fetch simultaneously instead of one by one.
+//         // We use { new: true } on the Subject update to return the document, eliminating the need for a 4th DB call later!
+//         const [_, updatedSubject, currentUser] = await Promise.all([
+//             CoPoMapping.findOneAndUpdate(
+//                 { subjectId: cleanSubjectId, academicYear, course: cleanCourse },
+//                 { $set: { mappingData, updatedAt: new Date() } },
+//                 { upsert: true, new: true, lean: true }
+//             ),
+//             Subject.findOneAndUpdate(
+//                 subjectQuery,
+//                 { $set: { copoMappingStatus: 'Uploaded' } },
+//                 { new: true, lean: true } 
+//             ),
+//             User.findById(req.user).select('name').lean()
+//         ]);
+
+//         // 3. ACTIVITY LOGGER
+//         const actorName = currentUser?.name || "a Faculty Member";
+//         // Grab the name from the subject we just updated, fallback to req.body, fallback to unknown
+//         const safeSubjectName = updatedSubject?.subjectName || updatedSubject?.name || subjectName || "Unknown Subject"; 
+
+//         await logActivity(
+//             req.user,
+//             'UPLOADED_CO_PO_MAPPING', 
+//             `CO-PO Mapping uploaded for ${cleanSubjectId} - ${safeSubjectName} (${cleanCourse}, ${academicYear}) by ${actorName}`, 
+//             []
+//         );
+
+//         return res.status(200).json({
+//             success: true,
+//             message: "Data saved successfully and Subject status marked as Uploaded!",
+//             receivedData: { subjectId, academicYear, course }
+//         });
+
+//     } catch (error) {
+//         console.error("Save Error:", error.message);
+//         return res.status(500).json({ success: false, message: "Server Error: " + error.message });
+//     }
+// };
+
+
+// Make sure to import your calculation controller at the top of this file:
+// const { generateAndSavePoAttainment } = require('./path/to/your/attainment/controller');
+
 const saveCoPoRelation = async (req, res) => {
     try {
         const { subjectId, subjectName, academicYear, course, mappingData, semester } = req.body;
@@ -65,11 +142,9 @@ const saveCoPoRelation = async (req, res) => {
         const subjectQuery = { subjectId: cleanSubjectId, academicYear };
         if (semester) subjectQuery.semester = semester;
 
-        // 2. PARALLEL EXECUTION (Massive Performance Boost)
-        // Run the Mapping Upsert, Subject Update, and User Fetch simultaneously instead of one by one.
-        // We use { new: true } on the Subject update to return the document, eliminating the need for a 4th DB call later!
+        // 2. PARALLEL EXECUTION (Update the CO-PO Mapping)
         const [_, updatedSubject, currentUser] = await Promise.all([
-            CoPoMapping.findOneAndUpdate(
+            CoPoMapping.findOneAndUpdate( 
                 { subjectId: cleanSubjectId, academicYear, course: cleanCourse },
                 { $set: { mappingData, updatedAt: new Date() } },
                 { upsert: true, new: true, lean: true }
@@ -84,7 +159,6 @@ const saveCoPoRelation = async (req, res) => {
 
         // 3. ACTIVITY LOGGER
         const actorName = currentUser?.name || "a Faculty Member";
-        // Grab the name from the subject we just updated, fallback to req.body, fallback to unknown
         const safeSubjectName = updatedSubject?.subjectName || updatedSubject?.name || subjectName || "Unknown Subject"; 
 
         await logActivity(
@@ -94,9 +168,19 @@ const saveCoPoRelation = async (req, res) => {
             []
         );
 
+        // 4. THE MAGIC LINK: Trigger PO Attainment in Pipeline Mode!
+        // We pass the exact same req and res, but add `true` for isPipelineArg
+        try {
+            await generateAndSavePoAttainment(req, res, true);
+        } catch (calcError) {
+            console.error("Warning: Mapping saved, but auto-recalculation failed:", calcError.message);
+            // We log it but DON'T crash the request, because the mapping itself saved successfully.
+        }
+
+        // 5. FINAL SUCCESS RESPONSE
         return res.status(200).json({
             success: true,
-            message: "Data saved successfully and Subject status marked as Uploaded!",
+            message: "Data saved successfully and PO Attainment recalculated!",
             receivedData: { subjectId, academicYear, course }
         });
 
@@ -105,6 +189,7 @@ const saveCoPoRelation = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server Error: " + error.message });
     }
 };
+
 
 // ============================================================================
 // 3. Get CO-PO Relation (Single)
