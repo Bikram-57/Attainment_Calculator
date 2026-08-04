@@ -9,7 +9,7 @@ const {
     handleGetRubrics,
     handleUpdateRubrics,
     handleFindAllRubrics,
-    handleDeleteRubricByCourseYear,
+    handleDeleteRubric,
     handleUploadRubricsThroughExcelSheet,
 } = require('../controllers/rubrics');
 
@@ -25,6 +25,6 @@ router.post('/upload', verifyRoles('admin'),  handleUploadrubrics);
 router.get('/get', verifyRoles('admin'), handleGetRubrics);
 router.put('/update', verifyRoles('admin'), handleUpdateRubrics);
 router.get('/', verifyRoles('admin'), handleFindAllRubrics);
-router.delete('/delete', verifyRoles('admin'), handleDeleteRubricByCourseYear);
+router.delete('/delete', verifyRoles('admin'), handleDeleteRubric);
 router.post('/upload-rubric', upload.single('rubricFile'), handleUploadRubricsThroughExcelSheet);
 module.exports = router;

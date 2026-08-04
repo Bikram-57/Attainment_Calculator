@@ -31,33 +31,56 @@ const logRubricAction = async (req, actionType, messageContext) => {
 // ============================================================================
 async function handleUploadrubrics(req, res) {
     try {
-        const { course, year, thresholds } = req.body;
+        const { academicYear, semesterType, thresholds } = req.body;
 
         // 1. Basic validation
-        if (!course || !year || !thresholds || !Array.isArray(thresholds)) {
+        if (!academicYear || !semesterType || !thresholds || !Array.isArray(thresholds)) {
             return res.status(400).json({ 
                 success: false, 
-                message: 'Course, year, and thresholds array are required.' 
+                message: 'Academic Year, Semester Type, and thresholds array are required.' 
             });
         }
 
-        const cleanCourse = course.trim().toUpperCase();
-        const cleanYear = parseInt(year, 10);
+        const cleanAcademicYear = academicYear.trim();
+        const cleanSemesterType = semesterType.trim().toUpperCase();
 
-        // 2. Fetch or Create
-        let rubric = await Rubric.findOne({ course: cleanCourse, year: cleanYear });
-
-        if (rubric) {
-            rubric.thresholds = thresholds; // Overwrite if exists
-        } else {
-            rubric = new Rubric({ course: cleanCourse, year: cleanYear, thresholds });
+        if (!['ODD', 'EVEN'].includes(cleanSemesterType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Semester type must be exactly ODD or EVEN.'
+            });
         }
 
-        // 3. Save (Triggers Mongoose validators: overlap checks, mandatory levels, etc.)
+        // 🌟 THE GHOST INDEX FIX: 
+        // This tells MongoDB to delete the old 'course' index and build the new one.
+        // You can leave this here permanently, or remove it after your first successful upload.
+        await Rubric.syncIndexes(); 
+
+        // 2. Fetch or Create
+        let rubric = await Rubric.findOne({ 
+            academicYear: cleanAcademicYear,
+            semesterType: cleanSemesterType
+        });
+
+        if (rubric) {
+            rubric.thresholds = thresholds; 
+        } else {
+            rubric = new Rubric({ 
+                academicYear: cleanAcademicYear, 
+                semesterType: cleanSemesterType,
+                thresholds 
+            });
+        }
+
+        // 3. Save 
         await rubric.save();
 
         // 4. Log Activity asynchronously
-        await logRubricAction(req, 'UPLOADED_RUBRIC', `Attainment Rubric configured for ${cleanCourse} (Year: ${cleanYear})`);
+        await logRubricAction(
+            req, 
+            'UPLOADED_RUBRIC', 
+            `Attainment Rubric configured for ${cleanSemesterType} Semester, Year: ${cleanAcademicYear}`
+        );
 
         return res.status(200).json({
             success: true,
@@ -73,7 +96,7 @@ async function handleUploadrubrics(req, res) {
                 errors: Object.values(error.errors).map(err => err.message) 
             });
         }
-        console.error('Error in uploadRubric:', error);
+        console.error('Error in handleUploadrubrics:', error);
         return res.status(500).json({ success: false, message: 'Server Error while saving rubric.' });
     }
 }
@@ -81,38 +104,88 @@ async function handleUploadrubrics(req, res) {
 // ============================================================================
 // 2. Get Smart Rubric (By Course & Year with Fallback)
 // ============================================================================
+// async function handleGetRubrics(req, res) {
+//     try {
+//         // Fallback checks both query (standard for GET) and body (legacy support)
+//         const course = req.query.course || req.body.course;
+//         const year = req.query.year || req.body.year;
+
+//         if (!course || !year) {
+//             return res.status(400).json({ success: false, message: 'Please provide both course and year to search.' });
+//         }
+
+//         const cleanCourse = course.trim().toUpperCase();
+//         const targetYear = parseInt(year, 10);
+
+//         // Smart Search: Looks for exact year, or falls back to the most recent previous year.
+//         // .lean() provides a massive speed boost for read-only queries.
+//         const rubric = await Rubric.findOne({ 
+//             course: cleanCourse, 
+//             year: { $lte: targetYear } 
+//         })
+//         .sort({ year: -1 })
+//         .lean(); 
+
+//         if (!rubric) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `No rubric found for ${cleanCourse} in or before the year ${targetYear}.`
+//             });
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             message: `Rubric found (Active Year: ${rubric.year})`,
+//             data: rubric
+//         });
+
+//     } catch (error) {
+//         console.error('Error fetching rubric:', error);
+//         return res.status(500).json({ success: false, message: 'Server Error while searching for rubric.' });
+//     }
+// }
+
+
+
 async function handleGetRubrics(req, res) {
     try {
         // Fallback checks both query (standard for GET) and body (legacy support)
-        const course = req.query.course || req.body.course;
-        const year = req.query.year || req.body.year;
+        const academicYear = req.query.academicYear || req.body.academicYear;
+        const semesterType = req.query.semesterType || req.body.semesterType;
 
-        if (!course || !year) {
-            return res.status(400).json({ success: false, message: 'Please provide both course and year to search.' });
+        if (!academicYear || !semesterType) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Please provide both academicYear and semesterType to search.' 
+            });
         }
 
-        const cleanCourse = course.trim().toUpperCase();
-        const targetYear = parseInt(year, 10);
+        const cleanAcademicYear = academicYear.trim();
+        const cleanSemesterType = semesterType.trim().toUpperCase();
 
-        // Smart Search: Looks for exact year, or falls back to the most recent previous year.
-        // .lean() provides a massive speed boost for read-only queries.
+        if (!['ODD', 'EVEN'].includes(cleanSemesterType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Semester type must be exactly ODD or EVEN.'
+            });
+        }
+
+        // Exact match lookup using lean() for a massive read-only speed boost
         const rubric = await Rubric.findOne({ 
-            course: cleanCourse, 
-            year: { $lte: targetYear } 
-        })
-        .sort({ year: -1 })
-        .lean(); 
+            academicYear: cleanAcademicYear, 
+            semesterType: cleanSemesterType 
+        }).lean(); 
 
         if (!rubric) {
             return res.status(404).json({
                 success: false,
-                message: `No rubric found for ${cleanCourse} in or before the year ${targetYear}.`
+                message: `No rubric found for the ${cleanSemesterType} semester of academic year ${cleanAcademicYear}.`
             });
         }
 
         return res.status(200).json({
             success: true,
-            message: `Rubric found (Active Year: ${rubric.year})`,
+            message: `Rubric found for ${cleanAcademicYear} (${cleanSemesterType})`,
             data: rubric
         });
 
@@ -122,40 +195,107 @@ async function handleGetRubrics(req, res) {
     }
 }
 
+
+
 // ============================================================================
 // 3. Update Existing Rubric
 // ============================================================================
+// async function handleUpdateRubrics(req, res) {
+//     try {
+//         const { course, year, thresholds } = req.body;
+
+//         if (!course || !year || !thresholds || !Array.isArray(thresholds)) {
+//             return res.status(400).json({ success: false, message: 'Course, year, and thresholds array are required.' });
+//         }
+
+//         const cleanCourse = course.trim().toUpperCase();
+//         const cleanYear = parseInt(year, 10);
+
+//         // 1. Strict Find (Must exist to update)
+//         const rubric = await Rubric.findOne({ course: cleanCourse, year: cleanYear });
+
+//         if (!rubric) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `No existing rubric found for ${cleanCourse} in ${cleanYear}. Cannot update.`
+//             });
+//         }
+
+//         // 2. Modify and Save (Triggers schema validators)
+//         rubric.thresholds = thresholds;
+//         await rubric.save();
+
+//         // 3. Log Activity
+//         await logRubricAction(req, 'UPDATED_RUBRIC', `Attainment Rubric updated for ${cleanCourse} (Year: ${cleanYear})`);
+
+//         return res.status(200).json({
+//             success: true,
+//             message: `Rubric for ${cleanCourse} (${cleanYear}) updated successfully!`,
+//             data: rubric
+//         });
+
+//     } catch (error) {
+//         if (error.name === 'ValidationError') {
+//             return res.status(400).json({ 
+//                 success: false, 
+//                 message: 'Validation Error', 
+//                 errors: Object.values(error.errors).map(err => err.message) 
+//             });
+//         }
+//         console.error('Error updating rubric:', error);
+//         return res.status(500).json({ success: false, message: 'Server Error while updating rubric.' });
+//     }
+// }
+
+
 async function handleUpdateRubrics(req, res) {
     try {
-        const { course, year, thresholds } = req.body;
+        const { academicYear, semesterType, thresholds } = req.body;
 
-        if (!course || !year || !thresholds || !Array.isArray(thresholds)) {
-            return res.status(400).json({ success: false, message: 'Course, year, and thresholds array are required.' });
+        if (!academicYear || !semesterType || !thresholds || !Array.isArray(thresholds)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Academic Year, Semester Type, and thresholds array are required.' 
+            });
         }
 
-        const cleanCourse = course.trim().toUpperCase();
-        const cleanYear = parseInt(year, 10);
+        const cleanAcademicYear = academicYear.trim();
+        const cleanSemesterType = semesterType.trim().toUpperCase();
+
+        if (!['ODD', 'EVEN'].includes(cleanSemesterType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Semester type must be exactly ODD or EVEN.'
+            });
+        }
 
         // 1. Strict Find (Must exist to update)
-        const rubric = await Rubric.findOne({ course: cleanCourse, year: cleanYear });
+        const rubric = await Rubric.findOne({ 
+            academicYear: cleanAcademicYear, 
+            semesterType: cleanSemesterType 
+        });
 
         if (!rubric) {
             return res.status(404).json({
                 success: false,
-                message: `No existing rubric found for ${cleanCourse} in ${cleanYear}. Cannot update.`
+                message: `No existing rubric found for the ${cleanSemesterType} semester of ${cleanAcademicYear}. Cannot update.`
             });
         }
 
-        // 2. Modify and Save (Triggers schema validators)
+        // 2. Modify and Save (Triggers schema validators, including the overlap check)
         rubric.thresholds = thresholds;
         await rubric.save();
 
         // 3. Log Activity
-        await logRubricAction(req, 'UPDATED_RUBRIC', `Attainment Rubric updated for ${cleanCourse} (Year: ${cleanYear})`);
+        await logRubricAction(
+            req, 
+            'UPDATED_RUBRIC', 
+            `Attainment Rubric updated for ${cleanSemesterType} Semester (Year: ${cleanAcademicYear})`
+        );
 
         return res.status(200).json({
             success: true,
-            message: `Rubric for ${cleanCourse} (${cleanYear}) updated successfully!`,
+            message: `Rubric for ${cleanAcademicYear} (${cleanSemesterType}) updated successfully!`,
             data: rubric
         });
 
@@ -172,13 +312,37 @@ async function handleUpdateRubrics(req, res) {
     }
 }
 
+
 // ============================================================================
 // 4. Find All Rubrics
 // ============================================================================
+// async function handleFindAllRubrics(req, res) {
+//     try {
+//         // .lean() heavily optimizes fetching large lists of documents
+//         const rubrics = await Rubric.find().sort({ course: 1, year: -1 }).lean();
+
+//         if (!rubrics?.length) {
+//             return res.status(404).json({ success: false, message: 'No rubrics found in the database.' });
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             count: rubrics.length,
+//             data: rubrics
+//         });
+
+//     } catch (error) {
+//         console.error('Error fetching all rubrics:', error);
+//         return res.status(500).json({ success: false, message: 'Server Error while fetching rubrics.' });
+//     }
+// }
+
+
 async function handleFindAllRubrics(req, res) {
     try {
         // .lean() heavily optimizes fetching large lists of documents
-        const rubrics = await Rubric.find().sort({ course: 1, year: -1 }).lean();
+        // Updated sorting: Orders by newest Academic Year first, then groups Odd/Even
+        const rubrics = await Rubric.find().sort({ academicYear: -1, semesterType: 1 }).lean();
 
         if (!rubrics?.length) {
             return res.status(404).json({ success: false, message: 'No rubrics found in the database.' });
@@ -196,39 +360,93 @@ async function handleFindAllRubrics(req, res) {
     }
 }
 
-// ============================================================================
-// 5. Delete Rubric By Course & Year
-// ============================================================================
-const handleDeleteRubricByCourseYear = async (req, res) => {
-    try {
-        const { course, year } = req.body;
+// // ============================================================================
+// // 5. Delete Rubric By Course & Year
+// // ============================================================================
+// const handleDeleteRubricByCourseYear = async (req, res) => {
+//     try {
+//         const { course, year } = req.body;
 
-        if (!course || !year) {
-            return res.status(400).json({ success: false, message: 'Please provide both the course and the year to delete.' });
+//         if (!course || !year) {
+//             return res.status(400).json({ success: false, message: 'Please provide both the course and the year to delete.' });
+//         }
+
+//         const cleanCourse = course.trim().toUpperCase();
+//         const cleanYear = parseInt(year, 10);
+
+//         const deletedRubric = await Rubric.findOneAndDelete({
+//             course: cleanCourse, 
+//             year: cleanYear
+//         });
+
+//         if (!deletedRubric) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: `No rubric found for ${cleanCourse} in ${cleanYear}. It may have already been deleted.`
+//             });
+//         }
+
+//         // Log Activity
+//         await logRubricAction(req, 'DELETED_RUBRIC', `Attainment Rubric deleted for ${deletedRubric.course} (Year: ${deletedRubric.year})`);
+
+//         return res.status(200).json({
+//             success: true,
+//             message: `Rubric for ${deletedRubric.course} (${deletedRubric.year}) was successfully deleted!`,
+//             data: { course: deletedRubric.course, year: deletedRubric.year }
+//         });
+
+//     } catch (error) {
+//         console.error('Error deleting rubric:', error);
+//         return res.status(500).json({ success: false, message: 'Server Error while attempting to delete the rubric.' });
+//     }
+// };
+
+
+
+const handleDeleteRubric = async (req, res) => {
+    try {
+        const { academicYear, semesterType } = req.body;
+
+        if (!academicYear || !semesterType) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Please provide both the academicYear and the semesterType to delete.' 
+            });
         }
 
-        const cleanCourse = course.trim().toUpperCase();
-        const cleanYear = parseInt(year, 10);
+        const cleanAcademicYear = academicYear.trim();
+        const cleanSemesterType = semesterType.trim().toUpperCase();
+
+        if (!['ODD', 'EVEN'].includes(cleanSemesterType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Semester type must be exactly ODD or EVEN.'
+            });
+        }
 
         const deletedRubric = await Rubric.findOneAndDelete({
-            course: cleanCourse, 
-            year: cleanYear
+            academicYear: cleanAcademicYear, 
+            semesterType: cleanSemesterType
         });
 
         if (!deletedRubric) {
             return res.status(404).json({
                 success: false,
-                message: `No rubric found for ${cleanCourse} in ${cleanYear}. It may have already been deleted.`
+                message: `No rubric found for the ${cleanSemesterType} semester of ${cleanAcademicYear}. It may have already been deleted.`
             });
         }
 
         // Log Activity
-        await logRubricAction(req, 'DELETED_RUBRIC', `Attainment Rubric deleted for ${deletedRubric.course} (Year: ${deletedRubric.year})`);
+        await logRubricAction(
+            req, 
+            'DELETED_RUBRIC', 
+            `Attainment Rubric deleted for ${deletedRubric.semesterType} Semester (Year: ${deletedRubric.academicYear})`
+        );
 
         return res.status(200).json({
             success: true,
-            message: `Rubric for ${deletedRubric.course} (${deletedRubric.year}) was successfully deleted!`,
-            data: { course: deletedRubric.course, year: deletedRubric.year }
+            message: `Rubric for ${deletedRubric.academicYear} (${deletedRubric.semesterType}) was successfully deleted!`,
+            data: { academicYear: deletedRubric.academicYear, semesterType: deletedRubric.semesterType }
         });
 
     } catch (error) {
@@ -239,100 +457,207 @@ const handleDeleteRubricByCourseYear = async (req, res) => {
 
 
 
-    const handleUploadRubricsThroughExcelSheet = async(req, res) => {
- try {
-    const { course, academicYear } = req.body;
+// const handleUploadRubricsThroughExcelSheet = async(req, res) => {
+//     try {
+//         const { course, academicYear } = req.body;
 
-    // 1. Validate Request Payload
-    if (!course || !academicYear) {
-      return res.status(400).json({ error: 'Course and academicYear are required in the request body.' });
+//         // 1. Validate Request Payload
+//         if (!course || !academicYear) {
+//         return res.status(400).json({ error: 'Course and academicYear are required in the request body.' });
+//         }
+        
+//         if (!req.file) {
+//         return res.status(400).json({ error: 'Excel file is required.' });
+//         }
+
+//         // 2. Read the Uploaded Excel File
+//         const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+//         const sheetName = workbook.SheetNames[0]; 
+//         const worksheet = workbook.Sheets[sheetName];
+        
+//         // Convert to JSON (defval ensures empty cells become empty strings rather than undefined)
+//         const rawExcelData = xlsx.utils.sheet_to_json(worksheet, { defval: '' });
+
+//         // 3. Strictly Validate and Transform the Format
+//         const thresholds = rawExcelData.map((row, index) => {
+//         // Ensure strict column names exist
+//         if (!('Level' in row) || !('Min %' in row) || !('Max %' in row)) {
+//             throw new Error('Invalid file format. Columns must strictly be: "Level", "Min %", "Max %".');
+//         }
+
+//         // Format Level (e.g., "Level 0" -> 0)
+//         const levelString = String(row['Level']).trim();
+//         const levelNum = parseInt(levelString.replace(/\D/g, ''), 10);
+
+//         // Format Percentages (e.g., "49.99%" -> 49.99)
+//         const minString = String(row['Min %']).replace('%', '').trim();
+//         const maxString = String(row['Max %']).replace('%', '').trim();
+        
+//         const minPercent = parseFloat(minString);
+//         const maxPercent = parseFloat(maxString);
+
+//         // Ensure parsed values are valid numbers before sending to Mongoose
+//         if (isNaN(levelNum) || isNaN(minPercent) || isNaN(maxPercent)) {
+//             throw new Error(`Row ${index + 2} contains invalid numeric data.`);
+//         }
+
+//         return {
+//             level: levelNum,
+//             minPercent: minPercent,
+//             maxPercent: maxPercent
+//         };
+//         });
+
+//         // 4. Construct the Document
+//         const newRubric = new Rubric({
+//         course: String(course).trim().toUpperCase(),
+//         year: parseInt(academicYear, 10),
+//         thresholds: thresholds
+//         });
+
+//         // 5. Save to MongoDB (Triggers your Overlap Engine & Validations)
+//         await newRubric.save();
+
+//         return res.status(201).json({
+//         success: true,
+//         message: 'Rubric thresholds successfully uploaded and saved.',
+//         data: newRubric
+//         });
+
+//     } catch (error) {
+//         // Handle specific custom format errors thrown in the map function
+//         if (error.message.includes('Invalid file format') || error.message.includes('invalid numeric data')) {
+//         return res.status(400).json({ success: false, error: error.message });
+//         }
+
+//         // Handle Mongoose Unique Index Duplicate Error
+//         if (error.code === 11000) {
+//         return res.status(409).json({ 
+//             success: false, 
+//             error: `A rubric for ${req.body.course} in year ${req.body.academicYear} already exists.` 
+//         });
+//         }
+        
+//         // Handle Mongoose Schema Validation Errors (Missing levels, overlaps, min > max)
+//         if (error.name === 'ValidationError') {
+//         const messages = Object.values(error.errors).map(err => err.message);
+//         return res.status(400).json({ 
+//             success: false, 
+//             error: 'Schema Validation Failed', 
+//             details: messages 
+//         });
+//         }
+
+//         console.error('Server error during Excel upload:', error);
+//         return res.status(500).json({ success: false, error: 'Internal server error.' });
+//     }
+// };
+
+
+const handleUploadRubricsThroughExcelSheet = async(req, res) => {
+    try {
+        const { academicYear, semesterType } = req.body;
+
+        // 1. Validate Request Payload (Course replaced with semesterType)
+        if (!academicYear || !semesterType) {
+            return res.status(400).json({ error: 'academicYear and semesterType are required in the request body.' });
+        }
+
+        const cleanAcademicYear = academicYear.trim();
+        const cleanSemesterType = semesterType.trim().toUpperCase();
+
+        if (!['ODD', 'EVEN'].includes(cleanSemesterType)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Semester type must be exactly ODD or EVEN.'
+            });
+        }
+        
+        if (!req.file) {
+            return res.status(400).json({ error: 'Excel file is required.' });
+        }
+
+        // 2. Read the Uploaded Excel File
+        const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0]; 
+        const worksheet = workbook.Sheets[sheetName];
+        
+        // Convert to JSON (defval ensures empty cells become empty strings rather than undefined)
+        const rawExcelData = xlsx.utils.sheet_to_json(worksheet, { defval: '' });
+
+        // 3. Strictly Validate and Transform the Format
+        const thresholds = rawExcelData.map((row, index) => {
+            // Ensure strict column names exist
+            if (!('Level' in row) || !('Min %' in row) || !('Max %' in row)) {
+                throw new Error('Invalid file format. Columns must strictly be: "Level", "Min %", "Max %".');
+            }
+
+            // Format Level (e.g., "Level 0" -> 0)
+            const levelString = String(row['Level']).trim();
+            const levelNum = parseInt(levelString.replace(/\D/g, ''), 10);
+
+            // Format Percentages (e.g., "49.99%" -> 49.99)
+            const minString = String(row['Min %']).replace('%', '').trim();
+            const maxString = String(row['Max %']).replace('%', '').trim();
+            
+            const minPercent = parseFloat(minString);
+            const maxPercent = parseFloat(maxString);
+
+            // Ensure parsed values are valid numbers before sending to Mongoose
+            if (isNaN(levelNum) || isNaN(minPercent) || isNaN(maxPercent)) {
+                throw new Error(`Row ${index + 2} contains invalid numeric data.`);
+            }
+
+            return {
+                level: levelNum,
+                minPercent: minPercent,
+                maxPercent: maxPercent
+            };
+        });
+
+        // 4. Construct the Document using the new architecture
+        const newRubric = new Rubric({
+            academicYear: cleanAcademicYear,
+            semesterType: cleanSemesterType,
+            thresholds: thresholds
+        });
+
+        // 5. Save to MongoDB (Triggers your Overlap Engine & Validations)
+        await newRubric.save();
+
+        return res.status(201).json({
+            success: true,
+            message: `Rubric thresholds for ${cleanSemesterType} semester successfully uploaded and saved.`,
+            data: newRubric
+        });
+
+    } catch (error) {
+        // Handle specific custom format errors thrown in the map function
+        if (error.message.includes('Invalid file format') || error.message.includes('invalid numeric data')) {
+            return res.status(400).json({ success: false, error: error.message });
+        }
+
+        // Handle Mongoose Unique Index Duplicate Error (Updated Message)
+        if (error.code === 11000) {
+            return res.status(409).json({ 
+                success: false, 
+                error: `A rubric for the ${req.body.semesterType?.toUpperCase()} semester in ${req.body.academicYear} already exists.` 
+            });
+        }
+        
+        // Handle Mongoose Schema Validation Errors (Missing levels, overlaps, min > max)
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Schema Validation Failed', 
+                details: messages 
+            });
+        }
+
+        console.error('Server error during Excel upload:', error);
+        return res.status(500).json({ success: false, error: 'Internal server error.' });
     }
-    
-    if (!req.file) {
-      return res.status(400).json({ error: 'Excel file is required.' });
-    }
-
-    // 2. Read the Uploaded Excel File
-    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0]; 
-    const worksheet = workbook.Sheets[sheetName];
-    
-    // Convert to JSON (defval ensures empty cells become empty strings rather than undefined)
-    const rawExcelData = xlsx.utils.sheet_to_json(worksheet, { defval: '' });
-
-    // 3. Strictly Validate and Transform the Format
-    const thresholds = rawExcelData.map((row, index) => {
-      // Ensure strict column names exist
-      if (!('Level' in row) || !('Min %' in row) || !('Max %' in row)) {
-        throw new Error('Invalid file format. Columns must strictly be: "Level", "Min %", "Max %".');
-      }
-
-      // Format Level (e.g., "Level 0" -> 0)
-      const levelString = String(row['Level']).trim();
-      const levelNum = parseInt(levelString.replace(/\D/g, ''), 10);
-
-      // Format Percentages (e.g., "49.99%" -> 49.99)
-      const minString = String(row['Min %']).replace('%', '').trim();
-      const maxString = String(row['Max %']).replace('%', '').trim();
-      
-      const minPercent = parseFloat(minString);
-      const maxPercent = parseFloat(maxString);
-
-      // Ensure parsed values are valid numbers before sending to Mongoose
-      if (isNaN(levelNum) || isNaN(minPercent) || isNaN(maxPercent)) {
-        throw new Error(`Row ${index + 2} contains invalid numeric data.`);
-      }
-
-      return {
-        level: levelNum,
-        minPercent: minPercent,
-        maxPercent: maxPercent
-      };
-    });
-
-    // 4. Construct the Document
-    const newRubric = new Rubric({
-      course: String(course).trim().toUpperCase(),
-      year: parseInt(academicYear, 10),
-      thresholds: thresholds
-    });
-
-    // 5. Save to MongoDB (Triggers your Overlap Engine & Validations)
-    await newRubric.save();
-
-    return res.status(201).json({
-      success: true,
-      message: 'Rubric thresholds successfully uploaded and saved.',
-      data: newRubric
-    });
-
-  } catch (error) {
-    // Handle specific custom format errors thrown in the map function
-    if (error.message.includes('Invalid file format') || error.message.includes('invalid numeric data')) {
-      return res.status(400).json({ success: false, error: error.message });
-    }
-
-    // Handle Mongoose Unique Index Duplicate Error
-    if (error.code === 11000) {
-      return res.status(409).json({ 
-        success: false, 
-        error: `A rubric for ${req.body.course} in year ${req.body.academicYear} already exists.` 
-      });
-    }
-    
-    // Handle Mongoose Schema Validation Errors (Missing levels, overlaps, min > max)
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Schema Validation Failed', 
-        details: messages 
-      });
-    }
-
-    console.error('Server error during Excel upload:', error);
-    return res.status(500).json({ success: false, error: 'Internal server error.' });
-  }
 };
 
 
@@ -342,7 +667,7 @@ module.exports = {
     handleGetRubrics,
     handleUpdateRubrics,
     handleFindAllRubrics,
-    handleDeleteRubricByCourseYear,
+    handleDeleteRubric,
     handleUploadRubricsThroughExcelSheet,
 };
 
