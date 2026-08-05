@@ -70,8 +70,9 @@ function Profile() {
             setSuccessMsg(res.data.message);
             setOriginalImage(previewImage);
             setIsEditing(false);
+            
         } catch (error) {
-            setErrorMsg(error?.response?.data?.message);
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to save image!');
         }
     };
 
@@ -82,13 +83,13 @@ function Profile() {
             );
 
             setSuccessMsg(res.data.message);
-
             setPreviewImage(defaultImage);
             setOriginalImage(defaultImage);
             setImageFile(null);
             setIsEditing(false);
+
         } catch (error) {
-            setErrorMsg(error?.response?.data?.message);
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to delete image!');
         } finally {
             setIsRemovePictureClicked(false);
         }
