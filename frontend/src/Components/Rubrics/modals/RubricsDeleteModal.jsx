@@ -8,15 +8,15 @@ function RubricsDeleteModal({ data, toggleUpdate, closeMenu }) {
         try {
             const res = await axios.delete('/rubrics/delete', {
                 data: {
-                    course: data.course,
-                    year: data.year
+                    semesterType: data.semesterType,
+                    academicYear: data.academicYear
                 }
             });
             closeMenu();
             toggleUpdate();
-            alert('Rubrics deleted successfully!');
-        } catch (error) {
-            console.log('Axios Error | RubricsDeleteModal | deleteRubrics(): ', error);
+        } catch (err) {
+            console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Failed to delete rubrics');
+            console.log('Axios Error | RubricsDeleteModal | deleteRubrics(): ', err);
         }
     }
     return (
@@ -47,7 +47,7 @@ function RubricsDeleteModal({ data, toggleUpdate, closeMenu }) {
                     Are you sure you want to delete rubrics for
                     <br className="hidden sm:block" />
                     <span className="font-semibold">
-                        {data.course} - {data.year}
+                        {data.semesterType} semester of {data.academicYear}
                     </span>
                     ?
                     <br />
