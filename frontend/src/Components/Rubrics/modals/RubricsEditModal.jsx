@@ -27,21 +27,17 @@ function RubricsEditModal({ data, closeMenu, toggleUpdate }) {
         try {
             setLoading(true);
             const res = await axios.put('/rubrics/update', {
-                course: data.course,
-                year: data.year,
+                semesterType: data.semesterType,
+                academicYear: data.academicYear,
                 thresholds
             });
             setSuccessMsg(res.data.message);
             toggleUpdate();
 
-        } catch (error) {
-            setErrorMsg(error?.response?.data?.message);
-            console.error(
-                'Axios Error | RubricsEditModal | handleUpdate(): ',
-                error
-            );
+        } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to update rubrics!');
+            console.error('Axios Error | RubricsEditModal | handleUpdate(): ', err);
         } finally {
-            setErrorMsg('');
             setLoading(false);
         }
     };
@@ -67,7 +63,7 @@ function RubricsEditModal({ data, closeMenu, toggleUpdate }) {
                             className="truncate text-lg font-semibold sm:text-xl lg:text-2xl"
                             style={{ color: COLORS.font }}
                         >
-                            {`Edit Rubrics: ${data.course} - ${data.year}`}
+                            {`Edit Rubrics: ${data.academicYear} (${data.semesterType} semester)`}
                         </h2>
 
                         <p

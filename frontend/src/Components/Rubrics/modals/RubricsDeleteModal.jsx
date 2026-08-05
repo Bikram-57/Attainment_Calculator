@@ -47,7 +47,7 @@ function RubricsDeleteModal({ data, toggleUpdate, closeMenu }) {
                     Are you sure you want to delete rubrics for
                     <br className="hidden sm:block" />
                     <span className="font-semibold">
-                        {data.semesterType} semester of {data.academicYear}
+                        {data.academicYear} ({data.semesterType} semester)
                     </span>
                     ?
                     <br />

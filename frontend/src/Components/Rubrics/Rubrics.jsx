@@ -73,7 +73,7 @@ export default function Rubrics() {
                             >
                                 <tr>
 
-                                    <th className="whitespace-nowrap px-4 py-3 text-left font-semibold sm:px-6">
+                                    <th className="whitespace-nowrap px-4 py-3 text-center font-semibold sm:px-6">
                                         Semester Type
                                     </th>
 
@@ -98,11 +98,11 @@ export default function Rubrics() {
                                             }`}
                                     >
 
-                                        <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-800 sm:px-6">
+                                        <td className="whitespace-nowrap px-4 py-3 text-center font-medium text-gray-800 sm:px-6">
                                             {rubric.semesterType}
                                         </td>
 
-                                        <td className="whitespace-nowrap px-4 py-3 text-center text-gray-700 sm:px-6">
+                                        <td className="whitespace-nowrap px-4 py-3 text-center font-medium text-gray-700 sm:px-6">
                                             {rubric.academicYear}
                                         </td>
 

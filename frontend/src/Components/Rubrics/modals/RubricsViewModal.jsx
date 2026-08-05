@@ -24,7 +24,7 @@ function RubricsViewModal({ data, closeMenu }) {
 							className="truncate text-lg font-semibold sm:text-xl lg:text-2xl"
 							style={{ color: COLORS.font }}
 						>
-							{`Rubrics: ${data.course} - ${data.year}`}
+							{`Rubrics: ${data.academicYear} (${data.semesterType} semester)`}
 						</h2>
 
 						<p
