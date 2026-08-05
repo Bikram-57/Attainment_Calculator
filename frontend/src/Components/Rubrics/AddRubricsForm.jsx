@@ -4,11 +4,15 @@ import { IoMdClose } from "react-icons/io";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { COLORS } from "../../constants/theme";
 import { AddMultipleRubrics, ErrorSuccessMsg } from "../index";
+import Select from "react-select";
 
 function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
+    const [academicYear, setAcademicYear] = useState('')
+    const [semesterType, setSemesterType] = useState('')
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         course: "",
         year: "",
@@ -20,7 +24,31 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
         ]
     });
 
-    const [loading, setLoading] = useState(false);
+    const currentYear = new Date().getFullYear();
+    const yearList = [2024];
+    for (let year = yearList[0] + 1; year <= currentYear; year++) {
+        yearList.push(year);
+    }
+
+    const yearOptions = yearList.map((year) => (
+        {
+            value: year,
+            label: year,
+        }
+    ));
+
+    const semesterTypeOptions = [
+        { value: "Odd", label: "Odd" },
+        { value: "Even", label: "Even" },
+    ];
+
+    const handleYear = (selectedYear) => {
+        setAcademicYear(selectedYear);
+    }
+
+    const handleSemesterType = (selectedCourse) => {
+        setSemesterType(selectedCourse);
+    }
 
     const handleThresholdChange = (index, field, value) => {
         const updated = [...formData.thresholds];
@@ -163,47 +191,53 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
                         className="flex flex-1 flex-col overflow-hidden"
                     >
                         <div className="flex-1 overflow-y-auto p-5 sm:p-6">
-
-                            {/* Course + Year */}
                             <div className="mb-6 grid gap-5 sm:grid-cols-2">
 
+                                {/* Semester Type */}
                                 <div>
-                                    <label className="mb-2 block text-sm font-medium text-slate-700">
-                                        Course
+                                    <label
+                                        className="mb-2 block text-sm font-semibold"
+                                        style={{ color: COLORS.mintDark }}
+                                    >
+                                        Semester Type
                                     </label>
 
-                                    <input
-                                        type="text"
-                                        value={formData.course}
-                                        onChange={(e) =>
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                course: e.target.value.toUpperCase(),
-                                            }))
+                                    <Select
+                                        options={semesterTypeOptions}
+                                        placeholder="Select semester type"
+                                        value={
+                                            semesterTypeOptions.find(
+                                                (option) => option.value === semesterType
+                                            ) || null
                                         }
-                                        placeholder="Course"
-                                        required
-                                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+                                        onChange={(selected) =>
+                                            handleSemesterType(selected?.value || "")
+                                        }
+                                        maxMenuHeight={100}
                                     />
                                 </div>
 
+                                {/* Academic Year */}
                                 <div>
-                                    <label className="mb-2 block text-sm font-medium text-slate-700">
+                                    <label
+                                        className="mb-2 block text-sm font-semibold"
+                                        style={{ color: COLORS.mintDark }}
+                                    >
                                         Academic Year
                                     </label>
 
-                                    <input
-                                        type="number"
-                                        value={formData.year}
-                                        onChange={(e) =>
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                year: e.target.value,
-                                            }))
+                                    <Select
+                                        options={yearOptions}
+                                        placeholder="Select year"
+                                        value={
+                                            yearOptions.find(
+                                                (option) => option.value === academicYear
+                                            ) || null
                                         }
-                                        placeholder="Year"
-                                        required
-                                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+                                        onChange={(selected) =>
+                                            handleYear(selected?.value || "")
+                                        }
+                                        maxMenuHeight={180}
                                     />
                                 </div>
 
@@ -221,7 +255,7 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
                                                 backgroundColor: COLORS.mint,
                                                 color: COLORS.font,
                                             }}
-                                            className="sticky top-0 z-10"
+                                            className="sticky top-0"
                                         >
                                             <tr>
                                                 <th className="whitespace-nowrap px-4 py-3 font-semibold">

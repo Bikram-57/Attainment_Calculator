@@ -8,7 +8,7 @@ import axios from 'axios';
 
 function AddMultipleRubrics({ setIsUploadOpen, setIsAddRubricsOpen, toggleUpdate }) {
     const [academicYear, setAcademicYear] = useState('');
-    const [course, setCourse] = useState('');
+    const [semesterType, setSemesterType] = useState('');
     const [file, setFile] = useState(null);
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
@@ -28,9 +28,9 @@ function AddMultipleRubrics({ setIsUploadOpen, setIsAddRubricsOpen, toggleUpdate
         }
     ));
 
-    const courseOptions = [
-        { value: 'BCA', label: 'BCA' },
-        { value: 'MCA', label: 'MCA' }
+    const semesterTypeOptions = [
+        { value: "Odd", label: "Odd" },
+        { value: "Even", label: "Even" },
     ];
 
     const handleDownloadFormat = async () => {
@@ -135,14 +135,14 @@ function AddMultipleRubrics({ setIsUploadOpen, setIsAddRubricsOpen, toggleUpdate
                     className="mb-1 block text-sm font-semibold"
                     style={{ color: COLORS.mintDark }}
                 >
-                    Course
+                    Semester Type
                 </label>
 
                 <Select
-                    options={courseOptions}
-                    placeholder="Select course"
-                    value={courseOptions.find(option => option.value === course)}
-                    onChange={selected => setCourse(selected?.value || "")}
+                    options={semesterTypeOptions}
+                    placeholder="Select semester type"
+                    value={semesterTypeOptions.find(option => option.value === semesterType)}
+                    onChange={selected => setSemesterType(selected?.value || "")}
                     maxMenuHeight={120}
                 />
             </div>
