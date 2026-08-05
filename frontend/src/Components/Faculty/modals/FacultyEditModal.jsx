@@ -24,8 +24,9 @@ function FacultyEditModal({ data, toggleUpdate, closeMenu }) {
             });
             setSuccessMsg('Faculty updated successfully!');
             toggleUpdate();
-        } catch (error) {
-            console.log('Axios Error | FacultyEditModal | updateUser(): ', error);
+        } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to update user!');
+            console.log('Axios Error | FacultyEditModal | updateUser(): ', err);
         }
     }
     return (

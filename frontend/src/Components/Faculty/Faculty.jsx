@@ -16,8 +16,9 @@ function Faculty() {
 		try {
 			const response = await axios.get('/user/');
 			setFacultyData(response.data.data);
-		} catch (error) {
-			console.log('Axios Error | Faculty | getFacultyData(): ', error);
+		} catch (err) {
+			console.log(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch faculty!');
+			console.log('Axios Error | Faculty | getFacultyData(): ', err);
 		} finally {
 			setLoading(false);
 		}
@@ -33,6 +34,7 @@ function Faculty() {
 	useEffect(() => {
 		getFacultyData();
 	}, [toggleNewUser]);
+
 	return !loading ? (
 		<div className="h-full flex flex-col bg-slate-50">
 

@@ -32,6 +32,7 @@ function AddFacultyForm({ isOpen, setIsOpen, toggleUpdate }) {
             toggleUpdate();
             console.log(res.data);
         } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to add faculty!');
             console.log('ERROR || handleAddFaculty(): ', err);
         }
     }
