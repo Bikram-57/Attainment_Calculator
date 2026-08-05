@@ -47,7 +47,7 @@ export default function ResetPassword({ resetToken }) {
             });
             setSuccessMsg(res.data.message)
         } catch (error) {
-            setErrorMsg(error.response?.data?.message || "Something went wrong");
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to reset password!');
         }
     };
 

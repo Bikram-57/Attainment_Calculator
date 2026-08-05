@@ -10,7 +10,7 @@ export default function ForgotPassword({ mode }) {
     const [openForgotPassword, setOpenForgotPassword] = useState(true);
     const [resetToken, setResetToken] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
-	const [successMsg, setSuccessMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
 
     const handleSendOtp = async () => {
         setLoading(true);
@@ -21,6 +21,7 @@ export default function ForgotPassword({ mode }) {
             setMessage(res.data.message);
             setOtpSent(true);
         } catch (error) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to send OTP!');
             console.log('ERROR || ForgotPassword | handleSendOtp(): ', error);
         } finally {
             setLoading(false);

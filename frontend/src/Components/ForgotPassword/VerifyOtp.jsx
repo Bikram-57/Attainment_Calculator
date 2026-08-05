@@ -19,9 +19,9 @@ function VerifyOtp({ email, handleSendOtp, setErrorMsg, setSuccessMsg, setResetT
 			});
 			setSuccessMsg(res.data.message);
 			setResetToken(res.data.resetToken);
-		} catch (error) {
-			setErrorMsg(error.response?.data?.message || "Something went wrong");
-			// console.log('ERROR || ForgotPassword | handleVerifyOtp(): ', error);
+		} catch (err) {
+			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to verify OTP!');
+			console.log('ERROR || VerifyOtp | handleVerifyOtp(): ', err);
 		}
 	};
 
