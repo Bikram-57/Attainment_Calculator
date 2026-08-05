@@ -74,7 +74,7 @@ function SubjectAnalysis() {
             setSemester('');
             console.log(res);
         } catch (err) {
-            setErrorMsg(err?.response?.data?.message || 'Something went wrong!');
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
             console.log("Error on handleSubmit || ", err);
         }
     }

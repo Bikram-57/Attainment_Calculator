@@ -66,10 +66,10 @@ function DownloadBatchReport() {
             window.URL.revokeObjectURL(url);
         } catch (error) {
             if (error.response?.status === 404) {
-                setErrorMsg('Data not available!');
+                setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Data not available!');
             } else {
                 console.error('Download failed:', error);
-                setErrorMsg('Failed to download report.');
+                setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
             }
         } finally {
             setDownloading(false);
