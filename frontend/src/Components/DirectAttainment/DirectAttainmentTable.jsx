@@ -35,8 +35,9 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
             link.remove();
 
             window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Direct PO Report Download Failed:', error);
+        } catch (err) {
+            console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+            console.error('Direct PO Report Download Failed:', err);
         } finally {
             setDownloading(false);
         }

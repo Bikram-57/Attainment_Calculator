@@ -42,27 +42,27 @@ function CoPoRelation() {
                 }
             });
             setSelectedSubjectData(res.data);
-        } catch (error) {
-            console.log('Axios Error | ViewCoPoRelation | fetchSelectedCoPoData(): ', error);
+        } catch (err) {
+            console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+            console.log('Axios Error | ViewCoPoRelation | fetchSelectedCoPoData(): ', err);
         } finally {
             setLoading(false);
         }
     }
-
+    
     const handleViewOpen = async (sub) => {
         setLoading(true);
         await fetchSelectedCoPoData(sub);
         setOpenView(true);
     }
-
+    
     const handleEditOpen = async (sub) => {
         setLoading(true);
         await fetchSelectedCoPoData(sub);
         setOpenEdit(true);
     }
-
+    
     const handleUploadOpen = (sub) => {
-        // setLoading(true);
         setSelectedSubjectDataForUpload({
             subjectId: sub.subjectId,
             subjectName: sub.subjectName,
@@ -72,9 +72,9 @@ function CoPoRelation() {
         });
         setOpenUpload(true);
     }
-
-
-
+    
+    
+    
     const filteredSubjects = subjects?.filter(sub => (
         (
             sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase().trim())
@@ -87,7 +87,7 @@ function CoPoRelation() {
             filterSemester ? sub.semester == filterSemester : true
         )
     ));
-
+    
     useEffect(() => {
         const fetchCoPoSubjectList = async () => {
             try {
@@ -103,9 +103,10 @@ function CoPoRelation() {
                     });
                     setSubjects(res.data.data.subjects);
                 }
-            } catch (error) {
+            } catch (err) {
                 setSubjects([])
-                console.log('Axios Error | CoPoRelation | fetchCoPoSubjectList(): ', error);
+                console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+                console.log('Axios Error | CoPoRelation | fetchCoPoSubjectList(): ', err);
             } finally {
                 setLoading(false);
             }

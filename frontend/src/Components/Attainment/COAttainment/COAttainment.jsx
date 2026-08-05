@@ -30,6 +30,7 @@ function COAttainment() {
                 console.log(res.data);
 
             } catch (err) {
+                console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
                 console.log('ERROR || useEffect - getCOData(): ', err);
             }
         }
@@ -40,6 +41,7 @@ function COAttainment() {
                 setSubjectName(res.data.data.subjectName);
             }
             catch (err) {
+                console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
                 console.log('ERROR || useEffect - getSubject(): ', err);
             }
         }
@@ -71,8 +73,9 @@ function COAttainment() {
             link.remove();
             window.URL.revokeObjectURL(url);
 
-        } catch (error) {
-            console.error('Download failed:', error);
+        } catch (err) {
+            console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+            console.error('Download failed:', err);
         }
     }
 

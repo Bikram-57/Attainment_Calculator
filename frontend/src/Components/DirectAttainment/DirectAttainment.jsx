@@ -26,7 +26,8 @@ function DirectAttainment() {
         try {
             const res = await axios.get('/dir/report');
             setAllData(res.data.data);
-        } catch (error) {
+        } catch (err) {
+            console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
             console.log("Error || DirectAttainment || getAllData() || ", err);
         } finally {
             setLoading(false);
@@ -57,6 +58,7 @@ function DirectAttainment() {
             setData(res.data.data);
             setIsOpen(true);
         } catch (err) {
+            console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
             console.log("Error || DirectAttainment || handleView() || ", err);
         } finally {
             setLoadingView(false);

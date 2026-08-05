@@ -46,8 +46,9 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
             setSuccessMsg('Attainment generated successfully!');
             console.log(res.data);
             toggleUpdate();
-        } catch (error) {
-            console.log('ERROR || GenerateAttainmentForm || handleGenerate(): ', error);
+        } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to generate attainment!');;
+            console.log('ERROR || GenerateAttainmentForm || handleGenerate(): ', err);
         }
     }
 

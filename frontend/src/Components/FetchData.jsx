@@ -121,7 +121,7 @@ function FetchData() {
 				setErrorMsg('');
 			} catch (err) {
 				console.log('Error fetching subjects || ', err);
-				setErrorMsg(err?.response?.data?.message);
+				setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch subjects!');
 				setSubjectList([]);
 				setIsDisabled(true);
 			}
