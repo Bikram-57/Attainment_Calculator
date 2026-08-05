@@ -39,9 +39,9 @@ function Login() {
 				})
 			);
 			navigate('/');
-		} catch (error) {
-			setErrorMsg(error?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
-			console.log('ERROR || Login | handleLogin(): ', error);
+		} catch (err) {
+			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+			console.log('ERROR || Login | handleLogin(): ', err);
 		}
 	}
 

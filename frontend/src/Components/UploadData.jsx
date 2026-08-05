@@ -143,9 +143,9 @@ function UploadData() {
 			link.click();
 			link.remove();
 			window.URL.revokeObjectURL(url);
-		} catch (error) {
-			console.error('Download failed:', error);
-			setErrorMsg('Failed to download report.');
+		} catch (err) {
+			console.error('Download failed:', err);
+			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
 		}
 	}
 
@@ -168,18 +168,18 @@ function UploadData() {
 						}
 					});
 				}
-				// if (res.data.data.length === 0) {
-				// 	setErrorMsg('No data for the selected year and course!');
-				// 	setSubjectList([]);
-				// 	setIsDisabled(true);
-				// 	return;
-				// }
+				if (res.data.data.length === 0) {
+					setErrorMsg('No data for the selected year and course!');
+					setSubjectList([]);
+					setIsDisabled(true);
+					return;
+				}
 				setSubjectList(res.data.data);
 				setIsDisabled(false);
 				setErrorMsg('');
 			} catch (err) {
 				console.log('Error fetching subjects || ', err);
-				setErrorMsg('err: ' + err?.response?.data?.message);
+				setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch subjects!');
 				setSubjectList([]);
 				setIsDisabled(true);
 			}

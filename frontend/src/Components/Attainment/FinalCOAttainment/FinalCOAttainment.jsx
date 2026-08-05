@@ -24,22 +24,24 @@ function FinalCOAttainment() {
                 setData(res.data.data)
                 console.log(res.data.data);
             } catch (err) {
+                console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
                 console.log('ERROR || useEffect - getFinalCOData(): ', err);
             }
         }
-
+        
         const getSubject = async () => {
             try {
                 const res = await axios.get(`/sub/${subjectId}`);
                 setSubjectName(res.data.data.subjectName);
             } catch (err) {
+                console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
                 console.log('ERROR || useEffect - getSubject(): ', err);
             }
         }
         getFinalCOData();
         getSubject();
     }, []);
-
+    
     const handleDownload = async () => {
         try {
             const response = await axios.get('/file/FinalCo', {
@@ -50,21 +52,22 @@ function FinalCOAttainment() {
                 },
                 responseType: 'blob'
             });
-
+            
             const url = window.URL.createObjectURL(response.data);
-
+            
             const link = document.createElement('a');
             link.href = url;
             link.download = `Final_CO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
-
+            
             document.body.appendChild(link);
             link.click();
-
+            
             link.remove();
             window.URL.revokeObjectURL(url);
-
-        } catch (error) {
-            console.error('Download failed:', error);
+            
+        } catch (err) {
+            console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+            console.error('Download failed:', err);
         }
     }
 
