@@ -81,7 +81,7 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
             setSuccessMsg(res.data.message);
             toggleUpdate();
         } catch (error) {
-            setErrorMsg(error?.response?.data?.message);
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to add rubrics');
             console.error("Axios Error | AddRubricsForm | handleSubmit(): ", error);
         } finally {
             setLoading(false);
