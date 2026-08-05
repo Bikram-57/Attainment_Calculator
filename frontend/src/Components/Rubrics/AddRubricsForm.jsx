@@ -14,8 +14,6 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
     const [successMsg, setSuccessMsg] = useState('');
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        course: "",
-        year: "",
         thresholds: [
             { level: 0, minPercent: "", maxPercent: "" },
             { level: 1, minPercent: "", maxPercent: "" },
@@ -32,8 +30,8 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
 
     const yearOptions = yearList.map((year) => (
         {
-            value: year,
-            label: year,
+            value: `${year}-${year + 1}`,
+            label: `${year}-${year + 1}`,
         }
     ));
 
@@ -46,8 +44,8 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
         setAcademicYear(selectedYear);
     }
 
-    const handleSemesterType = (selectedCourse) => {
-        setSemesterType(selectedCourse);
+    const handleSemesterType = (selectedSemesterType) => {
+        setSemesterType(selectedSemesterType);
     }
 
     const handleThresholdChange = (index, field, value) => {
@@ -71,24 +69,20 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
             setLoading(true);
 
             const payload = {
-                course: formData.course,
-                year: Number(formData.year),
+                semesterType: semesterType,
+                academicYear: academicYear,
                 thresholds: formData.thresholds.map(item => ({
                     level: item.level,
                     minPercent: Number(item.minPercent),
                     maxPercent: Number(item.maxPercent)
                 }))
             };
-
             const res = await axios.post("/rubrics/upload", payload);
             setSuccessMsg(res.data.message);
             toggleUpdate();
         } catch (error) {
             setErrorMsg(error?.response?.data?.message);
-            console.error(
-                "Axios Error | AddRubricsForm | handleSubmit(): ",
-                error
-            );
+            console.error("Axios Error | AddRubricsForm | handleSubmit(): ", error);
         } finally {
             setLoading(false);
         }
@@ -123,7 +117,7 @@ function AddRubricsForm({ setIsAddRubricsOpen, toggleUpdate }) {
                         >
                             {isUploadOpen
                                 ? "Upload an Excel file to import rubric thresholds in bulk."
-                                : "Configure rubric thresholds for a course and academic year."
+                                : "Configure rubric thresholds for a semester type and academic year."
                             }
                         </p>
 

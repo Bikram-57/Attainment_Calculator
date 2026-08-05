@@ -23,8 +23,6 @@ export default function Rubrics() {
     const getData = async () => {
         try {
             const res = await axios.get('/rubrics/');
-            console.log(res.data.data);
-            
             setData(res.data.data);
         } catch (error) {
             console.log('Axios Error | Rubcrics | getData(): ', error);
