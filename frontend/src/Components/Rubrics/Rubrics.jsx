@@ -17,6 +17,7 @@ export default function Rubrics() {
     const [loading, setLoading] = useState(true);
     const [toggleRubrics, setToggleRubrics] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
 
     useDocumentTitle('Manage Rubrics');
 
@@ -24,8 +25,10 @@ export default function Rubrics() {
         try {
             const res = await axios.get('/rubrics/');
             setData(res.data.data);
-        } catch (error) {
-            console.log('Axios Error | Rubcrics | getData(): ', error);
+        } catch (err) {
+            setData([]);
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'No data found!');
+            console.log('Axios Error | Rubcrics | getData(): ', err);
         } finally {
             setLoading(false);
         }
@@ -138,7 +141,10 @@ export default function Rubrics() {
                         </h3>
 
                         <p className="mt-2 max-w-md text-sm text-gray-500">
-                            There are no rubric records matching your search.
+                            {!searchQuery ?
+                                errorMsg
+                                : 'There are no rubric records matching your search.'
+                            }
                         </p>
 
                     </div>
