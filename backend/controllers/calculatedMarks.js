@@ -124,28 +124,24 @@ const logActivity = require('../utils/activityLogger');
 
 
 
-
+// Ensure getActiveRubric is imported at the top!
+// const { getActiveRubric } = require('../helpers/rubricHelper');
 
 async function handleCalculatedMarks(req, res, isPipelineArg = false) {
     // 🛡️ THE PIPELINE SHIELD
-    // If Express passes `next`, it's ignored. If passed `true` manually, it bypasses `res` sends.
     const isPipeline = typeof isPipelineArg === 'boolean' ? isPipelineArg : false;
 
     try {
-        const { subjectId, academicYear, course, batch } = req.body;
+        const { subjectId, academicYear, course } = req.body;
         const cleanSubjectId = subjectId?.trim().toUpperCase();
         const cleanCourse = course?.trim().toUpperCase();
-        const cleanAcademicYear = academicYear?.trim();
-        
-        // Safely use batch if it exists, otherwise fall back to academicYear
-        const cleanBatch = batch?.trim() || cleanAcademicYear; 
+        const cleanAcademicYear = academicYear?.trim(); // This acts as your Admission Batch Year
 
-        // 1. Fetch the Raw Data (Using .lean() for read-speed)
+        // 1. Fetch the Raw Data 
         const rawData = await Mark.findOne({ 
             subjectId: cleanSubjectId, 
             academicYear: cleanAcademicYear, 
             course: cleanCourse 
-            // Note: If you added batch to your Mark schema, add `batch: cleanBatch` here!
         }).lean(); 
 
         if (!rawData) {
@@ -156,12 +152,12 @@ async function handleCalculatedMarks(req, res, isPipelineArg = false) {
         }
 
         // 2. Fetch the Dynamic Rubric
-        // 🌟 CRITICAL FIX: Pass cleanSubjectId instead of cleanCourse!
-        // We also destructure both the rubric AND formattedYear from your new helper.
-        const { rubric: activeRubric, formattedYear } = await getActiveRubric(cleanSubjectId, cleanBatch);
+        // 🌟 CRITICAL FIX: Pass cleanSubjectId so the helper can find the semester!
+        // We also destructure the `formattedYear` from your new helper response.
+        const { rubric: activeRubric, formattedYear, semesterType } = await getActiveRubric(cleanSubjectId, cleanAcademicYear);
 
         if (!activeRubric?.thresholds?.length) {
-            const errMsg = `Calculation Logic: No rubric found for Exam Year ${formattedYear}.`;
+            const errMsg = `Calculation Logic: No rubric found for Exam Year ${formattedYear} in ${semesterType} Semester.`;
             if (isPipeline) throw new Error(errMsg);
             if (!res.headersSent) return res.status(404).json({ success: false, message: errMsg });
             return;
@@ -171,38 +167,30 @@ async function handleCalculatedMarks(req, res, isPipelineArg = false) {
         const totalStudents = rawData.actualMarks?.length || 0;
         const attainmentReport = {};
         
-        // OPTIMIZATION: Pre-sort thresholds descending once, so we can just break the loop on the first match
         const sortedThresholds = [...activeRubric.thresholds].sort((a, b) => b.minPercent - a.minPercent);
 
-        // Iterate dynamically over CO keys using Object.entries
         for (const [coKey, max] of Object.entries(rawData.maxMarks || {})) {
-            // SAFETY CHECK: Skip columns that have 0 max marks to avoid division by zero
             if (!max || max <= 0) continue; 
 
             const target = max * 0.60; // 60% target
-
-            // OPTIMIZATION: Standard loop instead of .filter().length saves memory by avoiding intermediate arrays
             let countAbove = 0;
+            
             for (let i = 0; i < totalStudents; i++) {
                 if ((rawData.actualMarks[i].marks[coKey] || 0) >= target) {
                     countAbove++;
                 }
             }
 
-            // Calculate percent safely
             const percent = totalStudents > 0 ? parseFloat(((countAbove / totalStudents) * 100).toFixed(2)) : 0;
 
-            // --- Dynamic Level Calculation ---
             let level = 0; 
             for (const threshold of sortedThresholds) {
-                // Because we pre-sorted descending, the first threshold it is greater than is the correct level
                 if (percent >= threshold.minPercent) {
                     level = threshold.level;
                     break; 
                 }
             }
 
-            // Construct report for this specific CO
             attainmentReport[coKey] = {
                 maxMarks: max, 
                 targetMarks: parseFloat(target.toFixed(2)),
@@ -217,15 +205,13 @@ async function handleCalculatedMarks(req, res, isPipelineArg = false) {
             { subjectId: cleanSubjectId, academicYear: cleanAcademicYear, course: cleanCourse },
             { 
                 $set: { 
-                    // batch: cleanBatch, // Uncomment if you want to save the batch to the DB here!
-                    maxMarks: rawData.maxMarks,       // CRITICAL FIX: Save max marks so the GET API has them
-                    actualMarks: rawData.actualMarks, // First actual marks
-                    reportData: attainmentReport,     // Then report data
+                    maxMarks: rawData.maxMarks,       
+                    actualMarks: rawData.actualMarks, 
+                    reportData: attainmentReport,     
                     totalStudents,
                     calculatedAt: new Date() 
                 } 
             },
-            // lean: true forces Mongoose to return a plain object instead of a heavy document
             { upsert: true, new: true, strict: false, lean: true } 
         );
 

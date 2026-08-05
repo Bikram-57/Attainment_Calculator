@@ -1,7 +1,6 @@
 const Rubric = require('../models/rubrics');
 const Subject = require('../models/subject'); 
 
-// Note: 'admissionYear' is the year selected on the frontend (e.g., "2025")
 async function getActiveRubric(subjectId, admissionYear) {
     try {
         // 1. Transparent Semester Lookup
@@ -16,33 +15,27 @@ async function getActiveRubric(subjectId, admissionYear) {
         // 2. Determine ODD or EVEN
         const semesterType = (semesterNum % 2 === 0) ? 'EVEN' : 'ODD';
 
-        // 3. 🌟 THE TIME-TRAVEL MATH 🌟
-        let examAcademicYear = admissionYear;
+        // 3. THE PROGRESSION MATH 
+        const cleanYearStr = String(admissionYear).trim();
+        const startYear = parseInt(cleanYearStr.split('-')[0], 10);
         
-        // If the frontend sends a flat batch year like "2025"
-        if (admissionYear && !String(admissionYear).includes('-')) {
-            const startYear = parseInt(admissionYear, 10);
-            
-            // Calculate how many years into the future the exam took place
-            // Sem 1/2 = 0 | Sem 3/4 = 1 | Sem 5/6 = 2
-            const yearOffset = Math.ceil(semesterNum / 2) - 1;
-            
-            // Apply the offset to find the real academic year
-            const rubricStartYear = startYear + yearOffset;
-            examAcademicYear = `${rubricStartYear}-${rubricStartYear + 1}`;
-        }
+        const yearOffset = Math.ceil(semesterNum / 2) - 1;
+        const calculatedStartYear = startYear + yearOffset;
+        
+        // This generates exactly "2026-2027" for a 2025 batch in Sem 3/4
+        const examAcademicYear = `${calculatedStartYear}-${calculatedStartYear + 1}`;
 
-        // 4. Query the database using the calculated future year and semester type
+        // 4. Query the database 
+        // CRITICAL FIX: Removed the 'batch' requirement so it perfectly matches your JSON!
         const rubric = await Rubric.findOne({
             academicYear: examAcademicYear,
             semesterType: semesterType
         }).lean();
         
-        // We return both the rubric and the formatted year so your controller 
-        // can use the formatted year in its success/error messages!
         return { 
             rubric: rubric, 
-            formattedYear: examAcademicYear 
+            formattedYear: examAcademicYear ,
+            semesterType: semesterType
         }; 
         
     } catch (error) {
@@ -52,12 +45,6 @@ async function getActiveRubric(subjectId, admissionYear) {
 }
 
 module.exports = { getActiveRubric };
-
-
-
-
-
-
 
 //old
 
