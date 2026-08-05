@@ -53,8 +53,9 @@ function EditCoPoRelation({ data, setOpenEdit }) {
                 mappingData: tableData
             })
             setSuccessMsg('Updated successfully!');
-        } catch (error) {
-            console.log('Axios Error | EditCoPoRelation | handleUpdate(): ', error);
+        } catch (err) {
+            console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+            console.log('Axios Error | EditCoPoRelation | handleUpdate(): ', err);
         } finally {
             setLoading(false);
         }

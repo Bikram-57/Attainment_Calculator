@@ -29,9 +29,9 @@ function UploadCoPoRelation({ data, setOpenUpload }) {
         try {
             const res = await axios.post('/co-po/upload-copo-excel', formData);
             setSuccessMsg(res.data.message);
-        } catch (error) {
-            setErrorMsg(error?.response?.data?.message || 'Something went wrong!');
-            console.log('ERROR || UploadCoPoRelation || handleUploadMapping(): ', error);
+        } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong while uploading!');
+            console.log('ERROR || UploadCoPoRelation || handleUploadMapping(): ', err);
         }
     }
 
@@ -78,9 +78,9 @@ function UploadCoPoRelation({ data, setOpenUpload }) {
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Download failed:', error);
-            setErrorMsg('Failed to download format.');
+        } catch (err) {
+            console.error('Download failed:', err);
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download format!');
         }
     }
 
