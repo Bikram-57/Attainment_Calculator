@@ -16,7 +16,7 @@ function GenerateAttainmentForm({ setIsGenerateOpen, toggleUpdate }) {
     const academicYearList = [];
     const d = new Date();
 
-    for (let i = 2026; i <= d.getFullYear(); i++) {
+    for (let i = 2024; i <= d.getFullYear(); i++) {
         academicYearList.push(i)
     }
 
