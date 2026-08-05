@@ -40,6 +40,7 @@ function Subject() {
                 setSubjectData(res.data.data);
             } catch (error) {
                 setSubjectData([])
+                console.log(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch subjects!');
                 console.log('Axios Error | getSubjectData(): ', error);
             } finally {
                 setLoading(false);

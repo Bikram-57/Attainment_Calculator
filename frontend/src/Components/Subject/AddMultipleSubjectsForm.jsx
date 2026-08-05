@@ -30,9 +30,9 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Download failed:', error);
-            setErrorMsg('Failed to download report.');
+        } catch (err) {
+            console.error('Download failed:', err);
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
         }
     }
 
@@ -50,8 +50,9 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
             setSuccessMsg(res.data.message);
             toggleUpdate();
             console.log(res.data);
-        } catch (error) {
-            console.log('ERROR || AddMultipleSubjectsForm || handleAddMultipleSubjects(): ', error);
+        } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to add subjects!');
+            console.log('ERROR || AddMultipleSubjectsForm || handleAddMultipleSubjects(): ', err);
         }
     }
 

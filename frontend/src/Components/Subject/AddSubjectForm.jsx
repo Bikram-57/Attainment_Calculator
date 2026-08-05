@@ -63,8 +63,9 @@ function AddSubjectForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate })
             setSuccessMsg('Subject successfully added!');
             toggleUpdate();
             console.log(res.data);
-        } catch (error) {
-            console.log('ERROR || handleAddSubject(): ', error);
+        } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to add subject!');
+            console.log('ERROR || handleAddSubject(): ', err);
         }
     }
 

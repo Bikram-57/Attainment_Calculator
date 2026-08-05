@@ -10,6 +10,7 @@ function SubjectDeleteModal({ data, toggleUpdate, closeMenu }) {
             closeMenu();
             toggleUpdate();
         } catch (error) {
+            console.log(err?.response?.data?.message || err?.response?.data?.error || 'Failed to delete subject!');
             console.log('Axios Error | SubjectDeleteModal | deleteSubject(): ', error);
         }
     }

@@ -60,8 +60,9 @@ function SubjectEditModal({ data, toggleUpdate, closeMenu }) {
             });
             setSuccessMsg('Subject updated successfully!');
             toggleUpdate();
-        } catch (error) {
-            console.log('Axios Error | SubjectEditModal | updateSubject(): ', error);
+        } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to update subject!');
+            console.log('Axios Error | SubjectEditModal | updateSubject(): ', err);
         }
     }
     return (
