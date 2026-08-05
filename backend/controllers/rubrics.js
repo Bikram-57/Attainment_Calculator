@@ -29,6 +29,123 @@ const logRubricAction = async (req, actionType, messageContext) => {
 // ============================================================================
 // 1. Upload / Create Rubrics
 // ============================================================================
+
+
+// Make sure to import your models and logger
+// const Rubric = require('../models/Rubric');
+// const User = require('../models/User');
+// const { logActivity } = require('../utils/logger'); 
+
+// async function handleUploadrubrics(req, res) {
+//   try {
+//     const { course, year, thresholds } = req.body;
+
+//     // 1. Basic sanity check before hitting the database
+//     if (!course || !year || !thresholds || !Array.isArray(thresholds)) {
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: 'Course, year, and thresholds array are required.' 
+//       });
+//     }
+
+//     // 2. Sanitize and type-cast the inputs
+//     const cleanCourse = course.trim().toUpperCase();
+//     const cleanYear = Number(year); // Forces the year to be a Number
+
+//     // Failsafe: Ensure the year provided is actually a valid number
+//     if (isNaN(cleanYear)) {
+//         return res.status(400).json({
+//             success: false,
+//             message: 'Year must be a valid number (e.g., 2024).'
+//         });
+//     }
+
+//     // 3. Look for an existing rubric for this exact course and numeric year
+//     let rubric = await Rubric.findOne({ course: cleanCourse, year: cleanYear });
+    
+//     // Track whether we are creating or updating for the logger & status codes
+//     const isNewRubric = !rubric; 
+
+//     if (rubric) {
+//       // If it exists, overwrite the old ranges with the new form data
+//       rubric.thresholds = thresholds;
+//     } else {
+//       // If it doesn't exist, create a brand new one
+//       rubric = new Rubric({ 
+//           course: cleanCourse, 
+//           year: cleanYear, 
+//           thresholds 
+//       });
+//     }
+
+//     // 4. Save the document
+//     // This triggers all the schema validators: mandatory levels, min < max, and overlap prevention.
+//     await rubric.save();
+
+//     // ---> 🔔 THE BELL RINGER (ACTIVITY LOGGER) 🔔 <---
+//     // Get the uploader's ID (handles different auth middleware implementations)
+//     const userId = req.user._id || req.user.id || req.user;
+
+//     // Get the uploader's name for the notification
+//     let actorName = "a Faculty Member";
+//     if (userId) {
+//         const currentUser = await User.findById(userId).select('name').lean();
+//         if (currentUser && currentUser.name) {
+//             actorName = currentUser.name;
+//         }
+//     }
+
+//     // Set dynamic action types based on whether we created or updated
+//     const actionType = isNewRubric ? 'UPLOADED_RUBRIC' : 'UPDATED_RUBRIC';
+//     const actionMessage = isNewRubric 
+//       ? `Attainment Rubric configured for ${cleanCourse} (Year: ${cleanYear}) by ${actorName}`
+//       : `Attainment Rubric updated for ${cleanCourse} (Year: ${cleanYear}) by ${actorName}`;
+
+//     await logActivity(
+//         userId,
+//         actionType, 
+//         actionMessage, 
+//         []
+//     );
+
+//     return res.status(isNewRubric ? 201 : 200).json({
+//       success: true,
+//       message: `Rubric ranges ${isNewRubric ? 'saved' : 'updated'} successfully!`,
+//       data: rubric
+//     });
+
+//   } catch (error) {
+//     // 5. Handle Mongoose Validation Errors gracefully (from your Overlap Engine, etc.)
+//     if (error.name === 'ValidationError') {
+//       const messages = Object.values(error.errors).map(err => err.message);
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: 'Validation Error', 
+//         errors: messages 
+//       });
+//     }
+
+//     // 6. Handle MongoDB Duplicate Key Error
+//     if (error.code === 11000) {
+//         console.error("🚨 DUPLICATE KEY ERROR DETECTED:", error.keyValue);
+//         return res.status(400).json({
+//           success: false,
+//           message: `Database conflict: A rubric for ${JSON.stringify(error.keyValue)} already exists.`,
+//           errorDetails: error.keyValue
+//         });
+//     }
+
+//     // Handle generic server errors
+//     console.error('Error in handleUploadrubrics:', error);
+//     return res.status(500).json({ 
+//       success: false, 
+//       message: 'Server Error while saving rubric.' 
+//     });
+//   }
+// }
+
+
+//new updated
 async function handleUploadrubrics(req, res) {
     try {
         const { academicYear, semesterType, thresholds } = req.body;
@@ -100,7 +217,7 @@ async function handleUploadrubrics(req, res) {
         return res.status(500).json({ success: false, message: 'Server Error while saving rubric.' });
     }
 }
-
+//old
 // ============================================================================
 // 2. Get Smart Rubric (By Course & Year with Fallback)
 // ============================================================================
@@ -146,7 +263,7 @@ async function handleUploadrubrics(req, res) {
 // }
 
 
-
+//new
 async function handleGetRubrics(req, res) {
     try {
         // Fallback checks both query (standard for GET) and body (legacy support)
@@ -196,7 +313,7 @@ async function handleGetRubrics(req, res) {
 }
 
 
-
+//old
 // ============================================================================
 // 3. Update Existing Rubric
 // ============================================================================
@@ -247,7 +364,7 @@ async function handleGetRubrics(req, res) {
 //     }
 // }
 
-
+//new
 async function handleUpdateRubrics(req, res) {
     try {
         const { academicYear, semesterType, thresholds } = req.body;
@@ -312,7 +429,7 @@ async function handleUpdateRubrics(req, res) {
     }
 }
 
-
+//old
 // ============================================================================
 // 4. Find All Rubrics
 // ============================================================================
@@ -337,7 +454,7 @@ async function handleUpdateRubrics(req, res) {
 //     }
 // }
 
-
+//new
 async function handleFindAllRubrics(req, res) {
     try {
         // .lean() heavily optimizes fetching large lists of documents
@@ -359,7 +476,7 @@ async function handleFindAllRubrics(req, res) {
         return res.status(500).json({ success: false, message: 'Server Error while fetching rubrics.' });
     }
 }
-
+//old
 // // ============================================================================
 // // 5. Delete Rubric By Course & Year
 // // ============================================================================
@@ -402,7 +519,7 @@ async function handleFindAllRubrics(req, res) {
 // };
 
 
-
+//new
 const handleDeleteRubric = async (req, res) => {
     try {
         const { academicYear, semesterType } = req.body;
@@ -456,7 +573,7 @@ const handleDeleteRubric = async (req, res) => {
 };
 
 
-
+//old
 // const handleUploadRubricsThroughExcelSheet = async(req, res) => {
 //     try {
 //         const { course, academicYear } = req.body;
@@ -553,6 +670,7 @@ const handleDeleteRubric = async (req, res) => {
 //     }
 // };
 
+//new
 
 const handleUploadRubricsThroughExcelSheet = async(req, res) => {
     try {
