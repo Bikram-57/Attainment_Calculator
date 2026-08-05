@@ -23,8 +23,8 @@ function AddMultipleRubrics({ setIsUploadOpen, setIsAddRubricsOpen, toggleUpdate
 
     const yearOptions = academicYearList.map(year => (
         {
-            value: year,
-            label: year
+            value: `${year}-${year + 1}`,
+            label: `${year}-${year + 1}`,
         }
     ));
 
@@ -59,7 +59,7 @@ function AddMultipleRubrics({ setIsUploadOpen, setIsAddRubricsOpen, toggleUpdate
     }
 
     const handleUploadRubrics = async () => {
-        if (!academicYear || !course) {
+        if (!academicYear || !semesterType) {
             setErrorMsg("Please fill all the fields!");
             return;
         }
@@ -71,17 +71,16 @@ function AddMultipleRubrics({ setIsUploadOpen, setIsAddRubricsOpen, toggleUpdate
         setErrorMsg('');
         const formData = new FormData();
         formData.append('academicYear', academicYear);
-        formData.append('course', course);
+        formData.append('semesterType', semesterType);
         formData.append('rubricFile', file);
 
         try {
             const res = await axios.post('/rubrics/upload-rubric', formData);
             setSuccessMsg(res.data.message);
             toggleUpdate();
-            console.log(res.data);
-        } catch (error) {
-            console.log('ERROR || AddMultipleRubrics || handleUploadRubrics(): ', error);
-            setErrorMsg(error?.response?.data?.message || 'Failed to upload rubrics!')
+        } catch (err) {
+            console.log('ERROR || AddMultipleRubrics || handleUploadRubrics(): ', err);
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to upload rubrics!')
         }
     }
 
