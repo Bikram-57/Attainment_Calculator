@@ -46,12 +46,13 @@ function AssignSubjects() {
 			try {
 				const res = await axios.get('/assignSub/');
 				setAssignedSubjectsData(res.data.data);
-			} catch (error) {
-				if (error.status == 409) {
-					setErrorMsg('Subject already assigned!');
+			} catch (err) {
+				if (err.status == 409) {
+					setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Subject already assigned!');
 				}
 				else {
-					console.log('ERROR || AssignSubject | getAssignSubjects(): ', error);
+					setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+					console.log('ERROR || AssignSubject | getAssignSubjects(): ', err);
 				}
 			} finally {
 				setLoading(false);

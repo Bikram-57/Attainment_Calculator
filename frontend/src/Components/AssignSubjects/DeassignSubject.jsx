@@ -16,6 +16,7 @@ function DeassignSubject({ data, toggleUpdate, closeMenu }) {
             });
             toggleUpdate();
         } catch (error) {
+            console.log(err?.response?.data?.message || err?.response?.data?.error || 'Failed to de-assign subject!');
             console.log('ERROR || AssignSubject | handleDeAssign(): ', error);
         } finally {
             closeMenu();

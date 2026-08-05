@@ -25,9 +25,9 @@ function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen
             const res = await axios.post('/sub-upload/upload-excel', formData);
             setSuccessMsg(res.data.message);
             toggleUpdate();
-        } catch (error) {
-            setErrorMsg(error?.response?.data?.message || 'Something went wrong!');
-            console.log('ERROR || AssignMultipleSubjectForm || handleAssignMultipleSubjects(): ', error);
+        } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to assign subjects!');
+            console.log('ERROR || AssignMultipleSubjectForm || handleAssignMultipleSubjects(): ', err);
         }
     }
 
@@ -74,9 +74,9 @@ function AssignMultipleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Download failed:', error);
-            setErrorMsg('Failed to download report.');
+        } catch (err) {
+            console.error('Download failed:', err);
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
         }
     }
 

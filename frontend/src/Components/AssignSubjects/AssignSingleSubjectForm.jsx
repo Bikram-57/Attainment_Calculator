@@ -79,12 +79,13 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
             });
             setSuccessMsg('Subject successfully assigned!');
             toggleUpdate();
-        } catch (error) {
-            if (error.status == 409) {
-                setErrorMsg('Subject already assigned!');
+        } catch (err) {
+            if (err.status == 409) {
+                setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Subject already assigned!');
             }
             else {
-                console.log('ERROR || AssignSubjectForm | handleAssignSubject(): ', error);
+                setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+                console.log('ERROR || AssignSubjectForm | handleAssignSubject(): ', err);
             }
         }
     }
@@ -102,9 +103,9 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
                 setSubjectList(res.data.data);
                 setIsDisabled(false);
                 setErrorMsg('');
-            } catch (error) {
-                console.log('Axios Error | AssignSubjectForm | useEffect() | getSubjects(): ', error);
-                setErrorMsg(error?.response?.data?.message);
+            } catch (err) {
+                console.log('Axios Error | AssignSubjectForm | useEffect() | getSubjects(): ', err);
+                setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch subjects!');
                 setSubjectList([]);
                 setIsDisabled(true);
             }
@@ -118,8 +119,9 @@ function AssignSingleSubjectForm({ isAssignSubjectOpen, setIsAssignSubjectOpen, 
             try {
                 const res = await axios.get('/user/');
                 setFacultyList(res.data.data);
-            } catch (error) {
-                console.log('Axios Error | AssignSubjectForm | useEffect() | getFaculties(): ', error);
+            } catch (err) {
+                setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch faculties!');
+                console.log('Axios Error | AssignSubjectForm | useEffect() | getFaculties(): ', err);
             }
         }
 
