@@ -37,6 +37,9 @@ const activity = require('./routes/activities');
 const subjectAnalysis = require('./routes/subjectAnalysis');
 const userHomePage = require('./routes/userHomePage');
 
+const endSemMarks = require('./routes/endSemMarks');
+
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
@@ -67,7 +70,7 @@ app.use("/", forgotPassword);
 
 // 2. JWT VERIFICATION GATEWAY
 // Any route below this line will require a valid Access Token
-app.use(verifyJWT);
+// app.use(verifyJWT);
 
 // 3. PROTECTED ROUTES (Requires valid login)
 app.use("/home", home);
@@ -88,6 +91,9 @@ app.use("/activity", activity);
 app.use("/subject-analysis", subjectAnalysis);
 // app.use("/", userHomePage);
 app.use("/user-dashboard", userHomePage);
+
+
+app.use("/end", endSemMarks);
 
 startTokenCleanupJob();
 
