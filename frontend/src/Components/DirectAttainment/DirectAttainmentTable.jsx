@@ -144,7 +144,7 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
                                 <table className="min-w-175 w-full border-collapse text-sm">
 
                                     <thead
-                                        className="sticky top-0 z-10"
+                                        className="sticky top-0 z-2"
                                         style={{
                                             backgroundColor: COLORS.mint,
                                             color: COLORS.font,

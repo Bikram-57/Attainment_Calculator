@@ -30,7 +30,7 @@ function SideBar() {
 
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 1024) {
+            if (window.innerWidth < 1280) {
                 dispatch(close());
             }
         };
@@ -130,12 +130,14 @@ function SideBar() {
 
     return (
         <div
-            className={`fixed top-0 left-0 h-screen overflow-y-auto w-64 md:w-72 lg:w-[17%] transform transition-transform duration-300 ease-in-out
+            // className={`z-10 fixed top-0 left-0 h-screen overflow-y-auto w-64 md:w-72 lg:w-[17%] transform transition-transform duration-300 ease-in-out
+            // ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+            className={`z-10 fixed top-0 left-0 h-screen overflow-y-auto w-64 md:w-72 lg:w-[17%] transform transition-transform duration-300 ease-in-out
             ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
             style={{ backgroundColor: COLORS.mint }}
         >
             <div
-                className='min-h-15 w-full p-2 flex justify-center items-center overflow-hidden'
+                className='min-h-15 w-full flex justify-center items-center overflow-hidden'
                 style={{
                     backgroundColor: COLORS.latte,
                     color: COLORS.mint
@@ -144,7 +146,7 @@ function SideBar() {
                 <img src="/Final-Logo-Edited.png" height='60' width='60' />
                 <img
                     src="/Final-Logo-Name.png"
-                    className="w-32 sm:w-40 lg:w-47.5"
+                    className="w-32 sm:w-40 lg:w-42"
                 />
 
             </div>

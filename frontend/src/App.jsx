@@ -15,6 +15,10 @@ function App() {
 					flex flex-col w-full transition-all duration-300 ease-in-out
 					${isOpen ? 'ml-[17%]' : 'ml-0'}
 				`}
+				// className={`
+				// 	flex flex-col w-full transition-all duration-300 ease-in-out
+				// 	${isOpen ? 'ml-[17%]' : 'ml-0'}
+				// `}
 				style={{ backgroundColor: COLORS.latteDark }}
 			>
 				<NavBar />
