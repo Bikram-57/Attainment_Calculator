@@ -29,59 +29,56 @@ export default function ForgotPassword({ mode }) {
     };
 
     return openForgotPassword ? (
-        <div className="w-full space-y-5">
+        <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+                <div className="mb-8 text-center">
+                    <h1 className="text-3xl font-bold text-slate-900">
+                        {mode === 'forgot' ? 'Forgot Password' : 'Change Password'}
+                    </h1>
+                    <p className="mt-2 text-sm text-slate-500">
+                        {message}
+                    </p>
+                </div>
 
-            {/* Email Input */}
-            <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Email Address
-                </label>
+                <div className="space-y-5">
+                    {/* Email Input */}
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-slate-700">
+                            Email Address
+                        </label>
 
-                <div className="flex flex-col gap-3 sm:flex-row">
-                    <input
-                        type="email"
-                        placeholder="john@example.com"
-                        value={email}
-                        disabled={otpSent}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:bg-slate-100"
-                    />
+                        <div className="flex gap-2">
+                            <input
+                                type="email"
+                                placeholder="john@example.com"
+                                value={email}
+                                disabled={otpSent}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="flex-1 rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 disabled:bg-slate-100"
+                            />
 
-                    {!otpSent && (
-                        <button
-                            onClick={handleSendOtp}
-                            disabled={loading}
-                            className="w-full shrink-0 rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
-                        >
-                            {!loading ? (
-                                "Send OTP"
-                            ) : (
-                                <Loading
-                                    type="forgot-password"
-                                    h="5"
-                                    w="5"
-                                />
+                            {!otpSent && (
+                                <button
+                                    onClick={handleSendOtp}
+                                    className="rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition hover:bg-indigo-700"
+                                >
+                                    {!loading ? 'Send OTP' : <Loading type='forgot-password' h='6' w='6' />}
+                                </button>
                             )}
-                        </button>
+                        </div>
+                    </div>
+
+                    {/* OTP Section */}
+                    {otpSent && (
+                        <VerifyOtp
+                            email={email}
+                            handleSendOtp={handleSendOtp}
+                            setErrorMsg={setErrorMsg}
+                            setSuccessMsg={setSuccessMsg}
+                            setResetToken={setResetToken}
+                        />
                     )}
                 </div>
-            </div>
-
-            {/* OTP Section */}
-            {otpSent && (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-                    <VerifyOtp
-                        email={email}
-                        handleSendOtp={handleSendOtp}
-                        setErrorMsg={setErrorMsg}
-                        setSuccessMsg={setSuccessMsg}
-                        setResetToken={setResetToken}
-                    />
-                </div>
-            )}
-
-            {/* Error / Success */}
-            <div className="pt-1">
                 <ErrorSuccessMsg
                     errorMsg={errorMsg}
                     successMsg={successMsg}
@@ -89,7 +86,6 @@ export default function ForgotPassword({ mode }) {
                     setIsOpen={setOpenForgotPassword}
                 />
             </div>
-
         </div>
 
         // <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
