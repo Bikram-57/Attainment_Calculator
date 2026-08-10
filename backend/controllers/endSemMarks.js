@@ -1,7 +1,7 @@
 const ExcelJS = require('exceljs');
 const xlsx = require('xlsx');
 const fs = require('fs');
-// Adjust the path below to wherever your model is saved
+
 const Attainment = require('../models/endSemMarks'); 
 
 const processEndSemMarks = async (req, res) => {
@@ -10,8 +10,7 @@ const processEndSemMarks = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded.' });
     }
-
-    // 2. Extract only academicYear from req.body (customMaxMarks removed)
+    
     const { academicYear } = req.body; 
 
     // 3. Read the Excel file
