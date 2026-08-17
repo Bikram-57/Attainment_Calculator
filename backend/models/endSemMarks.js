@@ -16,7 +16,7 @@ const studentMarksSchema = new mongoose.Schema({
 }, { _id: false }); // _id is disabled here to keep the array clean, as regNo is already a unique identifier per batch
 
 // Main schema to store the uploaded batch data
-const attainmentSchema = new mongoose.Schema({
+const endSemMarks = new mongoose.Schema({
   subjectCode: {
     type: String,
     required: true,
@@ -41,4 +41,4 @@ const attainmentSchema = new mongoose.Schema({
   timestamps: true // Automatically adds createdAt and updatedAt fields
 });
 
-module.exports = mongoose.model('Attainment', attainmentSchema);
+module.exports = mongoose.model('endSemMarks', endSemMarks);
