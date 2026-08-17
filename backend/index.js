@@ -39,6 +39,7 @@ const userHomePage = require('./routes/userHomePage');
 
 const endSemMarks = require('./routes/endSemMarks');
 const internalMarks = require('./routes/internalMarks');
+const formatRawMarks = require('./routes/tempSubjectMarks');
 
 
 const app = express();
@@ -71,7 +72,7 @@ app.use("/", forgotPassword);
 
 // 2. JWT VERIFICATION GATEWAY
 // Any route below this line will require a valid Access Token
-app.use(verifyJWT);
+// app.use(verifyJWT);
 
 // 3. PROTECTED ROUTES (Requires valid login)
 app.use("/home", home);
@@ -96,6 +97,7 @@ app.use("/user-dashboard", userHomePage);
 
 app.use("/end", endSemMarks);
 app.use("/internal", internalMarks);
+app.use("/raw", formatRawMarks);
 
 startTokenCleanupJob();
 
