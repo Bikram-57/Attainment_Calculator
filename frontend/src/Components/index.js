@@ -100,6 +100,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import UnderDevelopment from "./UnderDevelopment";
 import UploadData from "./UploadData";
+import GenerateSheet from "./GenerateSheet";
 
 // utils
 import ActionBtns from "../utils/ActionBtns";
@@ -183,4 +184,5 @@ export {
     RemoveProfilePicture,
     UploadCoPoRelation,
     AddMultipleRubrics,
+    GenerateSheet,
 }

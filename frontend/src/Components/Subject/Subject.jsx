@@ -38,10 +38,10 @@ function Subject() {
             try {
                 const res = await axios.get(`/sub/year/${filterYear}`);
                 setSubjectData(res.data.data);
-            } catch (error) {
+            } catch (err) {
                 setSubjectData([])
                 console.log(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch subjects!');
-                console.log('Axios Error | getSubjectData(): ', error);
+                console.log('Axios Error | getSubjectData(): ', err);
             } finally {
                 setLoading(false);
             }

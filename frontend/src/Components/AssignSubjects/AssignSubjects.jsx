@@ -48,10 +48,10 @@ function AssignSubjects() {
 				setAssignedSubjectsData(res.data.data);
 			} catch (err) {
 				if (err.status == 409) {
-					setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Subject already assigned!');
+					console.log(err?.response?.data?.message || err?.response?.data?.error || 'Subject already assigned!');
 				}
 				else {
-					setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+					console.log(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
 					console.log('ERROR || AssignSubject | getAssignSubjects(): ', err);
 				}
 			} finally {
