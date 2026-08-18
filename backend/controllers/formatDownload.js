@@ -85,6 +85,23 @@ const handleUploadRubricsFormatDownload = (req, res) => {
     );
 };
 
+// @desc    Download the Internal Marks upload format Excel file
+const handleInternalMarksFormatDownload = (req, res) => {
+    downloadFile(
+        res,
+        '../public/uploadGenerateMarksFormat/uploadInternalMarksFormat.xlsx',
+        'uploadInternalMarksFormat.xlsx'
+    );
+};
+// @desc    Download the External Marks upload format Excel file
+const handleExternalMarksFormatDownload = (req, res) => {
+    downloadFile(
+        res,
+        '../public/uploadGenerateMarksFormat/uploadExternalMarksFormat.xlsx',
+        'uploadExternalMarksFormat.xlsx'
+    );
+};
+
 
 module.exports = {
     handleFormatDownload,
@@ -92,6 +109,8 @@ module.exports = {
     handleCoPoMappingFormatDownload,
     handleUploadAllSubjectFormatDownload,
     handleUploadRubricsFormatDownload,
+    handleInternalMarksFormatDownload,
+    handleExternalMarksFormatDownload,
 };
 
 
