@@ -72,7 +72,7 @@ app.use("/", forgotPassword);
 
 // 2. JWT VERIFICATION GATEWAY
 // Any route below this line will require a valid Access Token
-// app.use(verifyJWT);
+app.use(verifyJWT);
 
 // 3. PROTECTED ROUTES (Requires valid login)
 app.use("/home", home);
