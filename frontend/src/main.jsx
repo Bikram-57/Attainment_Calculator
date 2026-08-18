@@ -26,6 +26,7 @@ import {
 	Dashboard,
 	SubjectAnalysis,
 	PublicRoute,
+	GenerateSheet,
 } from './Components/index.js'
 import store from './store/store.js'
 import { Provider } from 'react-redux'
@@ -116,6 +117,11 @@ const router = createBrowserRouter([
 				path: 'direct-attainment',
 				element: <DirectAttainment />,
 				handle: { title: 'Direct Attainment' },
+			},
+			{
+				path: 'generate-sheet',
+				element: <GenerateSheet />,
+				handle: { title: 'Generate Sheet' },
 			},
 			{
 				path: 'download-subject-report',

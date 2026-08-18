@@ -90,6 +90,7 @@ export default defineConfig({
             '/subject-analysis/': secureProxy,
             '/sub-upload/': secureProxy,
             '/user-dashboard': secureProxy,
+            '/raw/': secureProxy,
         },
     },
 })

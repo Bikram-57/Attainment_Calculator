@@ -15,6 +15,7 @@ import { SiGoogleclassroom } from "react-icons/si";
 import { MdTopic } from "react-icons/md";
 import { NavLink } from 'react-router-dom';
 import { IoClose } from "react-icons/io5";
+import { FaSheetPlastic } from "react-icons/fa6";
 import { useDispatch, useSelector } from 'react-redux';
 import { COLORS } from "../../constants/theme";
 import SideBarSection from "./SideBarSection";
@@ -68,6 +69,12 @@ function SideBar() {
             text: 'Direct Attainment',
             to: '/direct-attainment',
             icon: IoMdCloudUpload,
+        },
+        {
+            role: 'faculty',
+            text: 'Generate Sheet',
+            to: '/generate-sheet',
+            icon: FaSheetPlastic,
         },
     ];
 
