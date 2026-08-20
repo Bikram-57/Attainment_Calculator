@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 
+const verifyRoles = require('../middleware/verifyRoles');
+
 // Import the controller
 const { HandleUploadAssignSubjects } = require('../controllers/uploadAllAssignSubjects');
 
@@ -12,6 +14,6 @@ const upload = multer({ dest: 'uploads/temp/' });
 
 // Define the POST route
 // 'file' is the key the frontend must use in its FormData object
-router.post('/upload-excel', upload.single('file'), HandleUploadAssignSubjects);
+router.post('/upload-excel', verifyRoles('admin', 'faculty'), upload.single('file'), HandleUploadAssignSubjects);
 
 module.exports = router;
