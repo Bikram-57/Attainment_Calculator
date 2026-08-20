@@ -20,3 +20,6 @@ router.get("/internal", handleInternalMarksFormatDownload);
 router.get("/external", handleExternalMarksFormatDownload);
 
 module.exports = router;
+
+
+// must add route security through jwt

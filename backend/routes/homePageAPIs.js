@@ -20,3 +20,5 @@ router.get('/mapping-progress-MCA', handleGetProgressOfCoPoMappingForMCA)
 router.get('/mapping-progress-BCA', handleGetProgressOfCoPoMappingForBCA)
 
 module.exports = router;
+
+// must add route security through jwt

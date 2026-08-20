@@ -14,3 +14,6 @@ router.get('/report', handleGetAllReports);
 router.get('/year', handleGetReportByYear);
 
 module.exports = router;
+
+
+// must add route security through jwt

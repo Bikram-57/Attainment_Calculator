@@ -1,5 +1,8 @@
 const express = require('express')
-const {getSemesterAttainments} = require("../controllers/subjectAnalysis")
+
+const {
+    getSemesterAttainments,
+} = require("../controllers/subjectAnalysis")
 
 const router = express.Router();
 
