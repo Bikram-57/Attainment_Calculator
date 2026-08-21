@@ -4,6 +4,7 @@ import { MdOutlineCancelPresentation } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import { COLORS } from '../../constants/theme'
 import { ErrorSuccessMsg } from "../index";
+import useFileDownload from "../../hooks/useFileDownload";
 
 function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggleUpdate }) {
     const [errorMsg, setErrorMsg] = useState('');
@@ -19,17 +20,19 @@ function AddMultipleSubjectsForm({ isAddSubjectOpen, setIsAddSubjectOpen, toggle
                 }
             );
 
-            const blob = new Blob([response.data]);
-            const url = window.URL.createObjectURL(blob);
+            useFileDownload(response.data, 'Upload_all_subjects.xlsx');
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'Upload_all_subjects.xlsx';
+            // const blob = new Blob([response.data]);
+            // const url = window.URL.createObjectURL(blob);
 
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            // const link = document.createElement('a');
+            // link.href = url;
+            // link.download = 'Upload_all_subjects.xlsx';
+
+            // document.body.appendChild(link);
+            // link.click();
+            // link.remove();
+            // window.URL.revokeObjectURL(url);
         } catch (err) {
             console.error('Download failed:', err);
             setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');

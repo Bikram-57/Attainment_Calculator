@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import POAttainTable from './POAttainTable';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import useFileDownload from '../../../hooks/useFileDownload';
 
 function POAttainment() {
     const { academicYear, course, subjectId } = useParams();
@@ -52,17 +53,22 @@ function POAttainment() {
                 responseType: 'blob'
             });
             
-            const url = window.URL.createObjectURL(response.data);
+            useFileDownload(
+                response.data,
+                `Final_PO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`
+            );
             
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Final_PO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
+            // const url = window.URL.createObjectURL(response.data);
             
-            document.body.appendChild(link);
-            link.click();
+            // const link = document.createElement('a');
+            // link.href = url;
+            // link.download = `Final_PO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
             
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            // document.body.appendChild(link);
+            // link.click();
+            
+            // link.remove();
+            // window.URL.revokeObjectURL(url);
             
         } catch (err) {
             console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');

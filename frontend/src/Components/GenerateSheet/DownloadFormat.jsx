@@ -3,6 +3,7 @@ import Select from "react-select";
 import { FaDownload } from "react-icons/fa";
 import axios from "axios";
 import { COLORS } from "../../constants/theme";
+import useFileDownload from '../../hooks/useFileDownload';
 
 function DownloadFormat() {
     const [downloadFormat, setDownloadFormat] = useState(null);
@@ -32,17 +33,22 @@ function DownloadFormat() {
                 }
             );
 
-            const blob = new Blob([response.data]);
-            const url = window.URL.createObjectURL(blob);
+            useFileDownload(
+                response.data,
+                `${downloadFormat.value}_marks_format.xlsx`
+            )
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${downloadFormat.value}_marks_format.xlsx`;
+            // const blob = new Blob([response.data]);
+            // const url = window.URL.createObjectURL(blob);
 
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            // const link = document.createElement('a');
+            // link.href = url;
+            // link.download = `${downloadFormat.value}_marks_format.xlsx`;
+
+            // document.body.appendChild(link);
+            // link.click();
+            // link.remove();
+            // window.URL.revokeObjectURL(url);
 
         } catch (err) {
             console.log(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download format.');
