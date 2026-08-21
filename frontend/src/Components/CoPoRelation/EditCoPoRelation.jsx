@@ -163,10 +163,62 @@ function EditCoPoRelation({ data, setOpenEdit }) {
                     </div>
 
                 </div>
+
+
+
+
+
+
+                {/* Footer */}
+                <div className="flex flex-col gap-4 border-t border-gray-200 px-0 py-2 mt-2 lg:flex-row lg:items-center lg:justify-between">
+
+                    <div className="min-w-0 flex-1">
+                        <ErrorSuccessMsg
+                            errorMsg={errorMsg}
+                            successMsg={successMsg}
+                            setSuccessMsg={setSuccessMsg}
+                            setIsOpen={setOpenEdit}
+                        />
+                    </div>
+
+                    <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+
+                        {loading && (
+                            <Loading
+                                type="update"
+                                className="flex items-center justify-center"
+                            />
+                        )}
+
+                        <button
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                            onClick={handleUpdate}
+                            className="w-full rounded-lg px-5 py-2.5 text-sm font-medium transition sm:w-auto cursor-pointer"
+                            style={{
+                                backgroundColor: isHovered
+                                    ? COLORS.mintDark
+                                    : COLORS.mint,
+                                color: COLORS.font,
+                            }}
+                        >
+                            Update
+                        </button>
+
+                        <button
+                            onClick={() => setOpenEdit(false)}
+                            className="w-full rounded-lg bg-gray-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 sm:w-auto cursor-pointer"
+                        >
+                            Cancel
+                        </button>
+
+                    </div>
+
+                </div>
             </div>
 
             {/* Footer */}
-            <div className="flex flex-col gap-4 border-t border-gray-200 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+            {/* <div className="flex flex-col gap-4 border-t border-gray-200 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
 
                 <div className="min-w-0 flex-1">
                     <ErrorSuccessMsg
@@ -210,7 +262,7 @@ function EditCoPoRelation({ data, setOpenEdit }) {
 
                 </div>
 
-            </div>
+            </div> */}
         </div>
 
         // <div
