@@ -5,6 +5,7 @@ import { ErrorSuccessMsg } from '../index';
 import { Loading } from '../index';
 import Select from 'react-select';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
+import useFileDownload from '../../hooks/useFileDownload';
 
 function DownloadBatchReport() {
     const [academicYear, setAcademicYear] = useState('')
@@ -53,17 +54,22 @@ function DownloadBatchReport() {
                 }
             );
 
-            const blob = new Blob([response.data]);
-            const url = window.URL.createObjectURL(blob);
+            useFileDownload(
+                response.data,
+                `Batch_Report_${course}_${academicYear}.xlsx`
+            );
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Batch_Report_${course}_${academicYear}.xlsx`;
+            // const blob = new Blob([response.data]);
+            // const url = window.URL.createObjectURL(blob);
 
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            // const link = document.createElement('a');
+            // link.href = url;
+            // link.download = `Batch_Report_${course}_${academicYear}.xlsx`;
+
+            // document.body.appendChild(link);
+            // link.click();
+            // link.remove();
+            // window.URL.revokeObjectURL(url);
         } catch (error) {
             if (error.response?.status === 404) {
                 setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Data not available!');

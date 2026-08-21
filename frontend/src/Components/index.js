@@ -55,6 +55,7 @@ import VerifyOtp from "./ForgotPassword/VerifyOtp";
 // GenerateSheet
 import GenerateSheet from "./GenerateSheet/GenerateSheet";
 import DownloadSheet from "./GenerateSheet/DownloadSheet";
+import DownloadFormat from "./GenerateSheet/DownloadFormat";
 
 // NavBar
 import NavBar from "./NavBar/NavBar";
@@ -189,4 +190,5 @@ export {
     AddMultipleRubrics,
     GenerateSheet,
     DownloadSheet,
+    DownloadFormat,
 }

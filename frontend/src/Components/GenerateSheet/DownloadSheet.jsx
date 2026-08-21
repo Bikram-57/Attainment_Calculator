@@ -5,14 +5,17 @@ import { IoMdClose } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 import Select from 'react-select'
 import axios from 'axios';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import useFileDownload from '../../hooks/useFileDownload';
 
 function DownloadSheet({ setIsDownloadSheetOpen }) {
-    // const [course, setCourse] = useState('');
     const [subjectId, setSubjectId] = useState('');
     const [academicYear, setAcademicYear] = useState('');
     const [isHovered, setIsHovered] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
+
+    useDocumentTitle('Download Sheet | Generate Sheet - Menu');
 
     const academicYearList = [];
     const d = new Date();
@@ -27,11 +30,6 @@ function DownloadSheet({ setIsDownloadSheetOpen }) {
             label: year
         }
     ));
-
-    // const courseOptions = [
-    //     { value: 'BCA', label: 'BCA' },
-    //     { value: 'MCA', label: 'MCA' }
-    // ];
 
     const handleDownload = async () => {
         if (!subjectId || !academicYear) {
@@ -51,43 +49,12 @@ function DownloadSheet({ setIsDownloadSheetOpen }) {
                 }
             );
 
-            const blob = new Blob([response.data]);
-            const url = window.URL.createObjectURL(blob);
+            useFileDownload(response.data, `${subjectId}.xlsx`);
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${subjectId}.xlsx`;
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
         } catch (err) {
             console.error('Download failed:', err);
             setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
         }
-
-
-
-
-        // if (course.length === 0 || academicYear.length === 0) {
-        //     setErrorMsg("Please fill all the fields!");
-        //     return;
-        // }
-        // setErrorMsg('');
-
-        // try {
-        //     const res = await axios.post('/dir/', {
-        //         course,
-        //         academicYear
-        //     });
-        //     setSuccessMsg('Attainment generated successfully!');
-        //     console.log(res.data);
-        //     toggleUpdate();
-        // } catch (err) {
-        //     setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download sheet!');;
-        //     console.log('ERROR || GenerateAttainmentForm || handleDownload(): ', err);
-        // }
     }
 
     return (
@@ -159,7 +126,6 @@ function DownloadSheet({ setIsDownloadSheetOpen }) {
                         />
                     </div>
 
-                    {/* Course */}
                     {/* Subject ID */}
                     <div>
                         <label
@@ -177,24 +143,6 @@ function DownloadSheet({ setIsDownloadSheetOpen }) {
                             className="w-full rounded-xl border border-gray-300 bg-white px-3 sm:px-4 py-2 text-sm outline-none focus:border-gray-400"
                             style={{ color: COLORS.mintDark }}
                         />
-                        {/* <label
-                            className="mb-2 block text-sm font-semibold"
-                            style={{ color: COLORS.mintDark }}
-                        >
-                            Course
-                        </label>
-
-                        <Select
-                            options={courseOptions}
-                            placeholder="Select course"
-                            value={courseOptions.find(
-                                (option) => option.value === course
-                            )}
-                            onChange={(selected) =>
-                                setCourse(selected?.value || "")
-                            }
-                            maxMenuHeight={180}
-                        /> */}
                     </div>
 
                     {/* Footer */}
