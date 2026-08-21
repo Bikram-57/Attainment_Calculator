@@ -2,8 +2,9 @@ import { useState } from "react";
 import Select from "react-select";
 import { FaDownload } from "react-icons/fa";
 import axios from "axios";
+import { COLORS } from "../../constants/theme";
 
-function DownloadFormat({ onDownload }) {
+function DownloadFormat() {
     const [downloadFormat, setDownloadFormat] = useState(null);
 
     const formatOptions = [
@@ -42,11 +43,11 @@ function DownloadFormat({ onDownload }) {
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
+
         } catch (err) {
             console.log(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download format.');
             console.error('Download failed:', err);
         }
-        // onDownload(downloadFormat.value);
     };
 
     return (
@@ -70,9 +71,12 @@ function DownloadFormat({ onDownload }) {
                     type="button"
                     onClick={handleDownload}
                     title={`Download ${downloadFormat.label}`}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-700 cursor-pointer"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-white transition cursor-pointer"
+                    style={{
+                        backgroundColor: COLORS.mint
+                    }}
                 >
-                    <FaDownload size={15} />
+                    <FaDownload size={17} />
                 </button>
             )}
         </div>
