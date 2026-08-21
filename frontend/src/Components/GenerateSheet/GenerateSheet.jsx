@@ -9,6 +9,7 @@ import { Loading } from '../index';
 import Select from "react-select";
 import { useSelector } from 'react-redux';
 import useDocumentTitle from '../../hooks/useDocumentTitle.js';
+import DownloadFormat from './DownloadFormat.jsx';
 
 function GenerateSheet() {
 	const internalMarksFileInputRef = useRef(null);
@@ -194,6 +195,24 @@ function GenerateSheet() {
 						Select the academic details and upload the marks to generate sheet.
 					</p>
 				</div>
+
+				<DownloadFormat
+					// onDownload={(format) => {
+					// 	console.log("Selected format:", format);
+
+						// API call here
+						// format will be either:
+						// "internal"
+						// "external"
+					// }}
+				/>
+
+				{/* <button
+					onClick={handleDownloadFormat}
+					className="w-full rounded-xl border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100 sm:w-auto cursor-pointer"
+				>
+					Download Format
+				</button> */}
 
 				<button
 					onClick={() => setIsDownloadSheetOpen(true)}
