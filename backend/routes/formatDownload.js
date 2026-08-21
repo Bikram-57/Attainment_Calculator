@@ -21,6 +21,3 @@ router.get("/internal",  verifyRoles('admin', 'faculty'), handleInternalMarksFor
 router.get("/external", verifyRoles('admin', 'faculty'), handleExternalMarksFormatDownload);
 
 module.exports = router;
-
-
-// must add route security through jwt
