@@ -150,32 +150,6 @@ function GenerateSheet() {
 		}
 	}
 
-	const handleDownloadFormat = async () => {
-		// try {
-		// 	const response = await axios.get('/download-format/',
-		// 		{
-		// 			responseType: 'blob',
-		// 		}
-		// 	);
-
-		// 	const blob = new Blob([response.data]);
-		// 	const url = window.URL.createObjectURL(blob);
-
-		// 	const link = document.createElement('a');
-		// 	link.href = url;
-		// 	link.download = 'uploadDataFormat.xlsx';
-		// 	// link.download = 'Format.xlsx';
-
-		// 	document.body.appendChild(link);
-		// 	link.click();
-		// 	link.remove();
-		// 	window.URL.revokeObjectURL(url);
-		// } catch (err) {
-		// 	console.error('Download failed:', err);
-		// 	setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
-		// }
-	}
-
 	return (
 		<div
 			className="h-full w-full rounded-2xl border border-gray-200 bg-white/30 p-4 sm:p-5 lg:p-6"
@@ -196,23 +170,7 @@ function GenerateSheet() {
 					</p>
 				</div>
 
-				<DownloadFormat
-					// onDownload={(format) => {
-					// 	console.log("Selected format:", format);
-
-						// API call here
-						// format will be either:
-						// "internal"
-						// "external"
-					// }}
-				/>
-
-				{/* <button
-					onClick={handleDownloadFormat}
-					className="w-full rounded-xl border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100 sm:w-auto cursor-pointer"
-				>
-					Download Format
-				</button> */}
+				<DownloadFormat />
 
 				<button
 					onClick={() => setIsDownloadSheetOpen(true)}

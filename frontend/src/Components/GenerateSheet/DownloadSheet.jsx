@@ -117,7 +117,7 @@ function DownloadSheet({ setIsDownloadSheetOpen }) {
                             className="mt-1 text-sm opacity-90"
                             style={{ color: COLORS.font }}
                         >
-                            Download Sheet for a selected subject Id.
+                            Download Sheet for a selected subject code.
                         </p>
                     </div>
 

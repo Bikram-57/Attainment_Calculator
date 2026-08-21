@@ -56,7 +56,7 @@ function DownloadFormat() {
                 Download Format
             </label>
 
-            <div className="w-48">
+            <div className="w-50">
                 <Select
                     options={formatOptions}
                     value={downloadFormat}
