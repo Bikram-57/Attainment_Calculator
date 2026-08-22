@@ -52,6 +52,11 @@ import ForgotPassword from "./ForgotPassword/ForgotPassword";
 import ResetPassword from "./ForgotPassword/ResetPassword";
 import VerifyOtp from "./ForgotPassword/VerifyOtp";
 
+// GenerateSheet
+import GenerateSheet from "./GenerateSheet/GenerateSheet";
+import DownloadSheet from "./GenerateSheet/DownloadSheet";
+import DownloadFormat from "./GenerateSheet/DownloadFormat";
+
 // NavBar
 import NavBar from "./NavBar/NavBar";
 import NavBarMenu from "./NavBar/NavBarMenu";
@@ -100,7 +105,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import UnderDevelopment from "./UnderDevelopment";
 import UploadData from "./UploadData";
-import GenerateSheet from "./GenerateSheet";
 
 // utils
 import ActionBtns from "../utils/ActionBtns";
@@ -185,4 +189,6 @@ export {
     UploadCoPoRelation,
     AddMultipleRubrics,
     GenerateSheet,
+    DownloadSheet,
+    DownloadFormat,
 }

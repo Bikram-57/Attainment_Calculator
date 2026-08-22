@@ -6,6 +6,7 @@ import { Loading } from '../index';
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
+import useFileDownload from '../../hooks/useFileDownload';
 
 function DownloadSubjectReport() {
 	const userData = useSelector(state => state.auth.userData);
@@ -73,19 +74,25 @@ function DownloadSubjectReport() {
 				},
 				responseType: 'blob',
 			});
-			const blob = new Blob([response.data]);
-			const url = window.URL.createObjectURL(blob);
 
-			const link = document.createElement('a');
-			link.href = url;
+			useFileDownload(
+				response.data,
+				`Subject_Report_${subjectId}_${academicYear}.xlsx`
+			)
 
-			link.download = `Subject_Report_${subjectId}_${academicYear}.xlsx`;
+			// const blob = new Blob([response.data]);
+			// const url = window.URL.createObjectURL(blob);
 
-			document.body.appendChild(link);
-			link.click();
+			// const link = document.createElement('a');
+			// link.href = url;
 
-			link.remove();
-			window.URL.revokeObjectURL(url);
+			// link.download = `Subject_Report_${subjectId}_${academicYear}.xlsx`;
+
+			// document.body.appendChild(link);
+			// link.click();
+
+			// link.remove();
+			// window.URL.revokeObjectURL(url);
 		} catch (error) {
 			if (error.response?.status === 404) {
 				setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Data not available!');

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom'
 import COAttainTable from './COAttainTable';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import useFileDownload from '../../../hooks/useFileDownload';
 
 function COAttainment() {
     // const location = useLocation();
@@ -61,16 +62,21 @@ function COAttainment() {
                 responseType: 'blob'
             });
 
-            const url = window.URL.createObjectURL(response.data);
+            useFileDownload(
+                response.data,
+                `CalculatedMarks_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`
+            );
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `CalculatedMarks_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
+            // const url = window.URL.createObjectURL(response.data);
 
-            document.body.appendChild(link);
-            link.click();
+            // const link = document.createElement('a');
+            // link.href = url;
+            // link.download = `CalculatedMarks_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
 
-            link.remove();
+            // document.body.appendChild(link);
+            // link.click();
+
+            // link.remove();
             window.URL.revokeObjectURL(url);
 
         } catch (err) {

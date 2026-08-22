@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import FinalCOAttainTable from './FinalCOAttainTable';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import useFileDownload from '../../../hooks/useFileDownload';
 
 function FinalCOAttainment() {
     const { academicYear, course, subjectId } = useParams();
@@ -28,7 +29,7 @@ function FinalCOAttainment() {
                 console.log('ERROR || useEffect - getFinalCOData(): ', err);
             }
         }
-        
+
         const getSubject = async () => {
             try {
                 const res = await axios.get(`/sub/${subjectId}`);
@@ -41,7 +42,7 @@ function FinalCOAttainment() {
         getFinalCOData();
         getSubject();
     }, []);
-    
+
     const handleDownload = async () => {
         try {
             const response = await axios.get('/file/FinalCo', {
@@ -52,19 +53,24 @@ function FinalCOAttainment() {
                 },
                 responseType: 'blob'
             });
-            
-            const url = window.URL.createObjectURL(response.data);
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Final_CO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
-            
-            document.body.appendChild(link);
-            link.click();
-            
-            link.remove();
-            window.URL.revokeObjectURL(url);
-            
+
+            useFileDownload(
+                response.data,
+                `Final_CO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`
+            );
+
+            // const url = window.URL.createObjectURL(response.data);
+
+            // const link = document.createElement('a');
+            // link.href = url;
+            // link.download = `Final_CO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
+
+            // document.body.appendChild(link);
+            // link.click();
+
+            // link.remove();
+            // window.URL.revokeObjectURL(url);
+
         } catch (err) {
             console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
             console.error('Download failed:', err);

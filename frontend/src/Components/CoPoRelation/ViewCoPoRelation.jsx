@@ -122,17 +122,32 @@ function ViewCoPoRelation({ data, setOpenView }) {
 
                     </div>
                 )}
+
+
+
+
+
+
+                {/* Footer */}
+                <div className="flex justify-end border-t border-gray-200 px-0 py-2 mt-2">
+                    <button
+                        onClick={() => setOpenView(false)}
+                        className="w-full rounded-lg bg-gray-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 sm:w-auto cursor-pointer"
+                    >
+                        Close
+                    </button>
+                </div>
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end border-t border-gray-200 px-4 py-4 sm:px-5 lg:px-6">
+            {/* <div className="flex justify-end border-t border-gray-200 px-4 py-4 sm:px-5 lg:px-6">
                 <button
                     onClick={() => setOpenView(false)}
                     className="w-full rounded-lg bg-gray-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 sm:w-auto cursor-pointer"
                 >
                     Close
                 </button>
-            </div>
+            </div> */}
         </div>
 
         // <div

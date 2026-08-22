@@ -5,6 +5,7 @@ import { IoMdClose } from "react-icons/io";
 import ErrorSuccessMsg from '../../utils/ErrorSuccessMsg'
 import Select from 'react-select';
 import axios from 'axios';
+import useFileDownload from '../../hooks/useFileDownload';
 
 function AddMultipleRubrics({ setIsUploadOpen, setIsAddRubricsOpen, toggleUpdate }) {
     const [academicYear, setAcademicYear] = useState('');
@@ -41,17 +42,20 @@ function AddMultipleRubrics({ setIsUploadOpen, setIsAddRubricsOpen, toggleUpdate
                 }
             );
 
-            const blob = new Blob([response.data]);
-            const url = window.URL.createObjectURL(blob);
+            useFileDownload(response.data, 'uploadRubricsFormat.xlsx');
+            
+            // const blob = new Blob([response.data]);
+            // const url = window.URL.createObjectURL(blob);
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'uploadRubricsFormat.xlsx';
+            // const link = document.createElement('a');
+            // link.href = url;
+            // link.download = 'uploadRubricsFormat.xlsx';
 
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            // document.body.appendChild(link);
+            // link.click();
+            // link.remove();
+            // window.URL.revokeObjectURL(url);
+
         } catch (error) {
             console.error('Download failed:', error);
             setErrorMsg('Failed to download report.');

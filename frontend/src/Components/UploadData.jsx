@@ -9,6 +9,7 @@ import { Loading } from './index';
 import Select from "react-select";
 import { useSelector } from 'react-redux';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
+import useFileDownload from '../hooks/useFileDownload.js';
 
 function UploadData() {
 	const userData = useSelector(state => state.auth.userData);
@@ -131,18 +132,19 @@ function UploadData() {
 				}
 			);
 
-			const blob = new Blob([response.data]);
-			const url = window.URL.createObjectURL(blob);
+			useFileDownload(response.data, 'uploadDataFormat.xlsx');
+			
+			// const blob = new Blob([response.data]);
+			// const url = window.URL.createObjectURL(blob);
 
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = 'uploadDataFormat.xlsx';
-			// link.download = 'Format.xlsx';
+			// const link = document.createElement('a');
+			// link.href = url;
+			// link.download = 'uploadDataFormat.xlsx';
 
-			document.body.appendChild(link);
-			link.click();
-			link.remove();
-			window.URL.revokeObjectURL(url);
+			// document.body.appendChild(link);
+			// link.click();
+			// link.remove();
+			// window.URL.revokeObjectURL(url);
 		} catch (err) {
 			console.error('Download failed:', err);
 			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');

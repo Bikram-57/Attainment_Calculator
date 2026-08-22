@@ -1,29 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import axios from 'axios'
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import { MdDone } from "react-icons/md";
-import { COLORS } from '../constants/theme';
-import { ErrorSuccessMsg } from './index';
-import { Loading } from './index';
+import { COLORS } from '../../constants/theme.js';
+import { DownloadSheet, ErrorSuccessMsg } from '../index';
+import { Loading } from '../index';
 import Select from "react-select";
 import { useSelector } from 'react-redux';
-import useDocumentTitle from '../hooks/useDocumentTitle.js';
+import useDocumentTitle from '../../hooks/useDocumentTitle.js';
+import DownloadFormat from './DownloadFormat.jsx';
 
 function GenerateSheet() {
 	const internalMarksFileInputRef = useRef(null);
 	const externalMarksFileInputRef = useRef(null);
-    
+
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
 	const [internalMarksFile, setInternalMarksFile] = useState(null);
 	const [externalMarksFile, setExternalMarksFile] = useState(null);
-	
+
 	const [errorMsg, setErrorMsg] = useState('');
 	const [successMsg, setSuccessMsg] = useState('');
 	const [generating, setGenerating] = useState(false);
 
-    const [isDisabled, setIsDisabled] = useState(true);
+	const [isDownloadSheetOpen, setIsDownloadSheetOpen] = useState(false);
+	const [isDisabled, setIsDisabled] = useState(true);
 	const [isHovered, setIsHovered] = useState(false);
 
 	useDocumentTitle('Generate Sheet - Menu');
@@ -114,7 +116,7 @@ function GenerateSheet() {
 		}
 
 		setGenerating(true);
-        
+
 		const formData = new FormData();
 		formData.append('internalMarks', internalMarksFile);
 		formData.append('externalMarks', externalMarksFile);
@@ -132,8 +134,8 @@ function GenerateSheet() {
 			setAcademicYear('');
 			setCourse('');
 			setIsDisabled(true);
-			
-            console.log(res);
+
+			console.log(res);
 		} catch (err) {
 			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
 			console.log("Error on handleGenerate || ", err);
@@ -147,70 +149,6 @@ function GenerateSheet() {
 			}
 		}
 	}
-
-	const handleDownloadFormat = async () => {
-		// try {
-		// 	const response = await axios.get('/download-format/',
-		// 		{
-		// 			responseType: 'blob',
-		// 		}
-		// 	);
-
-		// 	const blob = new Blob([response.data]);
-		// 	const url = window.URL.createObjectURL(blob);
-
-		// 	const link = document.createElement('a');
-		// 	link.href = url;
-		// 	link.download = 'uploadDataFormat.xlsx';
-		// 	// link.download = 'Format.xlsx';
-
-		// 	document.body.appendChild(link);
-		// 	link.click();
-		// 	link.remove();
-		// 	window.URL.revokeObjectURL(url);
-		// } catch (err) {
-		// 	console.error('Download failed:', err);
-		// 	setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
-		// }
-	}
-
-	// useEffect(() => {
-	// 	if (!course || !academicYear) {
-	// 		setSubjectList([]);
-	// 		setIsDisabled(true);
-	// 		return;
-	// 	}
-	// 	const fetchSubjects = async () => {
-	// 		try {
-	// 			let res;
-	// 			if (userData.role === 'admin') {
-	// 				res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
-	// 			} else {
-	// 				res = await axios.get('/assignSub/sub', {
-	// 					params: {
-	// 						year: academicYear,
-	// 						course
-	// 					}
-	// 				});
-	// 			}
-	// 			if (res.data.data.length === 0) {
-	// 				setErrorMsg('No data for the selected year and course!');
-	// 				setSubjectList([]);
-	// 				setIsDisabled(true);
-	// 				return;
-	// 			}
-	// 			setSubjectList(res.data.data);
-	// 			setIsDisabled(false);
-	// 			setErrorMsg('');
-	// 		} catch (err) {
-	// 			console.log('Error fetching subjects || ', err);
-	// 			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch subjects!');
-	// 			setSubjectList([]);
-	// 			setIsDisabled(true);
-	// 		}
-	// 	};
-	// 	fetchSubjects();
-	// }, [academicYear, course]);
 
 	return (
 		<div
@@ -232,18 +170,24 @@ function GenerateSheet() {
 					</p>
 				</div>
 
+				<DownloadFormat />
+
 				<button
-					onClick={handleDownloadFormat}
-					className="w-full rounded-xl border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100 sm:w-auto cursor-pointer"
+					onClick={() => setIsDownloadSheetOpen(true)}
+					className="rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 cursor-pointer"
+					style={{
+						backgroundColor: COLORS.mint,
+						color: COLORS.font,
+					}}
 				>
-					Download Format
+					Download Sheet
 				</button>
 			</div>
 
 			{/* Selection Card */}
 			<div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
+				{/* Select Fields */}
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-
 					<div>
 						<label
 							className="mb-2 block text-sm font-semibold"
@@ -291,7 +235,7 @@ function GenerateSheet() {
 					</div>
 				</div>
 
-				{/* Upload */}
+				{/* Uploads */}
 				<div className="mt-6">
 					<label
 						className="mb-2 block text-sm font-semibold"
@@ -420,6 +364,13 @@ function GenerateSheet() {
 
 				</div>
 			</div>
+
+			{isDownloadSheetOpen && (
+				<DownloadSheet
+					setIsDownloadSheetOpen={setIsDownloadSheetOpen}
+				/>
+			)}
+
 		</div>
 	)
 }
