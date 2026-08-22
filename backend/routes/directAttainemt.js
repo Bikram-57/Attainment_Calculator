@@ -1,5 +1,5 @@
 const express = require('express');
-
+const verifyRoles = require('../middleware/verifyRoles');
 const { 
     extractAttainmentLevels,
     handleGetDirectAttainment,
@@ -9,10 +9,10 @@ const {
 
 const router = express.Router();
 
-router.post('/', extractAttainmentLevels);
-router.get('/', handleGetDirectAttainment);
-router.get('/report', handleGetAllReports);
-router.get('/year', handleGetReportByYear);
+router.post('/',  verifyRoles('admin'), extractAttainmentLevels);
+router.get('/', verifyRoles('admin'), handleGetDirectAttainment);
+router.get('/report', verifyRoles('admin'), handleGetAllReports);
+router.get('/year', verifyRoles('admin'), handleGetReportByYear);
 
 module.exports = router;
 
