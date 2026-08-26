@@ -37,8 +37,6 @@ const activity = require('./routes/activities');
 const subjectAnalysis = require('./routes/subjectAnalysis');
 const userHomePage = require('./routes/userHomePage');
 
-const endSemMarks = require('./routes/endSemMarks');
-const internalMarks = require('./routes/internalMarks');
 const formatRawMarks = require('./routes/tempSubjectMarks');
 
 
@@ -95,8 +93,6 @@ app.use("/subject-analysis", subjectAnalysis);
 app.use("/user-dashboard", userHomePage);
 
 
-app.use("/end", endSemMarks);
-app.use("/internal", internalMarks);
 app.use("/raw", formatRawMarks);
 
 startTokenCleanupJob();
