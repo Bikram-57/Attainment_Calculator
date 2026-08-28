@@ -1222,11 +1222,11 @@
 
 
 
-//correct code
 
 
 
 
+// //Corect code
 
 // // controllers/marksController.js
 // const xlsx = require('xlsx');
@@ -1828,8 +1828,6 @@
 
 
 
-
-
 // controllers/marksController.js
 const xlsx = require('xlsx');
 const fs = require('fs');
@@ -1907,68 +1905,102 @@ const isValidRegNo = (regNo) => {
 };
 
 // ==============================================================
-// DIRECT ATTAINMENT PUSH (Maximum 60% Securing)
+// EXPLICIT QUIZ OVERRIDE + 0.5 STEP ATTAINMENT MAXIMIZER
 // ==============================================================
 const fillCOs = (totalMark, maxMarks) => {
-  if (totalMark === 'AB') return maxMarks.map(() => 'AB');
+  if (totalMark === 'AB') {
+    return maxMarks.map(() => 'AB');
+  }
 
   let total = parseFloat(totalMark) || 0;
+  
   if (total <= 0) return maxMarks.map(() => 0);
   
   const totalMax = maxMarks.reduce((sum, max) => sum + max, 0);
   if (total > totalMax) total = totalMax;
 
+  // --- 1. EXPLICIT QUIZ FAST-PATH ---
+  if (maxMarks.length === 3 && maxMarks[0] === 2 && maxMarks[1] === 2 && maxMarks[2] === 1) {
+    if (Number.isInteger(total)) {
+      if (total === 1) return [0, 0, 1];
+      if (total === 2) return Math.random() > 0.5 ? [2, 0, 0] : [0, 2, 0];
+      if (total === 3) return Math.random() > 0.5 ? [2, 0, 1] : [0, 2, 1];
+      if (total === 4) return [2, 2, 0];
+      if (total === 5) return [2, 2, 1];
+    }
+  }
+
+  // --- 2. 0.5 STEP ATTAINMENT MAXIMIZER ---
   const ATTAINMENT_THRESHOLD = 0.60; 
   
   let remainingInt = Math.round(total * 100);
   const maxMarksInt = maxMarks.map(m => Math.round(m * 100));
   
   let resultInt = maxMarks.map(() => 0);
+  const STEP = 50; 
 
-  // Phase 1: The "Attainment Push"
-  // We prioritize crossing the 60% threshold for as many COs as mathematically possible.
-  // We shuffle the COs so we don't unfairly bias one over the other across the whole class.
-  let indices = maxMarks.map((_, i) => i).sort(() => Math.random() - 0.5);
-
-  for (let i of indices) {
-    let target = Math.ceil(maxMarksInt[i] * ATTAINMENT_THRESHOLD);
-    
-    // If the student has enough remaining marks to pass this CO, secure it instantly.
-    if (remainingInt >= target) {
-      resultInt[i] = target;
-      remainingInt -= target;
-    }
-  }
-
-  // Phase 2: Natural Leftover Distribution
-  // Distribute remaining marks randomly in integer chunks (1 mark = 100)
   while (remainingInt > 0) {
-    let validIndices = maxMarks.map((_, i) => i).filter(i => resultInt[i] < maxMarksInt[i]);
-    if (validIndices.length === 0) break; 
-    
-    let i = validIndices[Math.floor(Math.random() * validIndices.length)];
-    let chunk = remainingInt >= 100 ? 100 : remainingInt;
+    let chunk = remainingInt >= STEP ? STEP : remainingInt;
+    let helped = false;
 
-    if (resultInt[i] + chunk <= maxMarksInt[i]) {
+    let needsHelp = [];
+    let hasSpace = [];
+
+    for (let i = 0; i < maxMarks.length; i++) {
+      if (resultInt[i] + chunk <= maxMarksInt[i]) {
+        let target = Math.ceil((maxMarksInt[i] * ATTAINMENT_THRESHOLD) / STEP) * STEP;
+        if (resultInt[i] < target) {
+          needsHelp.push(i);
+        } else {
+          hasSpace.push(i);
+        }
+      }
+    }
+
+    if (needsHelp.length > 0) {
+      for (let k = needsHelp.length - 1; k > 0; k--) {
+        const j = Math.floor(Math.random() * (k + 1));
+        [needsHelp[k], needsHelp[j]] = [needsHelp[j], needsHelp[k]];
+      }
+
+      needsHelp.sort((a, b) => {
+        let targetA = Math.ceil((maxMarksInt[a] * ATTAINMENT_THRESHOLD) / STEP) * STEP;
+        let targetB = Math.ceil((maxMarksInt[b] * ATTAINMENT_THRESHOLD) / STEP) * STEP;
+        let gapA = targetA - resultInt[a];
+        let gapB = targetB - resultInt[b];
+        return gapA - gapB; 
+      });
+
+      let i = needsHelp[0];
       resultInt[i] += chunk;
       remainingInt -= chunk;
-    } else {
-      let space = maxMarksInt[i] - resultInt[i];
-      resultInt[i] += space;
-      remainingInt -= space;
+      helped = true;
+      
+    } else if (hasSpace.length > 0) {
+      let i = hasSpace[Math.floor(Math.random() * hasSpace.length)];
+      resultInt[i] += chunk;
+      remainingInt -= chunk;
+      helped = true;
+    }
+
+    if (!helped) {
+      let anySpace = maxMarks.map((_, i) => i).filter(i => resultInt[i] < maxMarksInt[i]);
+      if (anySpace.length === 0) break;
+      let i = anySpace[Math.floor(Math.random() * anySpace.length)];
+      let give = Math.min(remainingInt, maxMarksInt[i] - resultInt[i]);
+      resultInt[i] += give;
+      remainingInt -= give;
     }
   }
 
   let finalResult = resultInt.map(val => Math.round(val) / 100);
   
-  // Phase 3: Strict Math Failsafe
   let currentSum = finalResult.reduce((sum, val) => sum + val, 0);
   currentSum = Math.round(currentSum * 100) / 100;
   let targetTotal = Math.round(total * 100) / 100;
 
   if (currentSum !== targetTotal) {
     let diff = Math.round((targetTotal - currentSum) * 100) / 100;
-    
     for (let i = 0; i < finalResult.length; i++) {
       if (diff > 0 && finalResult[i] + diff <= maxMarks[i]) {
         finalResult[i] = Math.round((finalResult[i] + diff) * 100) / 100;
@@ -2005,6 +2037,7 @@ const processAssessmentFiles = async (req, res) => {
     }
 
     const studentMap = {}; 
+    const orderedRegNos = []; 
     let subCode = "SUBJECT_CODE";
     let subName = "SUBJECT_NAME";
 
@@ -2034,6 +2067,10 @@ const processAssessmentFiles = async (req, res) => {
 
         const regNo = String(row[actualRegKey]).trim();
         if (!isValidRegNo(regNo)) continue;
+
+        if (!studentMap[regNo]) {
+          orderedRegNos.push(regNo);
+        }
 
         const q1Total = extractValue(row, ["quiz1", "quiz 1", "q1"]);
         const midTotal = extractValue(row, ["mid-sem", "midsem", "mid term", "mid exam"]);
@@ -2088,25 +2125,25 @@ const processAssessmentFiles = async (req, res) => {
         const regNo = String(row[actualRegKey]).trim();
         if (!isValidRegNo(regNo)) continue;
 
+        // STRICT MATCHING: Ignore students not in the internal sheet entirely
+        if (!studentMap[regNo]) {
+          continue;
+        }
+
         const remarks = extractTextValue(row, ["remarks"]).toUpperCase();
         const ansBook = extractTextValue(row, ["ans book", "ab/dt/mp"]).toUpperCase();
         
-        if (!studentMap[regNo]) {
-          studentMap[regNo] = {
-            regNo: regNo,
-            marks: {
-              Quiz_1_CO1: 0, Quiz_1_CO2: 0, Quiz_1_CO3: 0, Quiz_1_TOTAL: 0,
-              Mid_Term_CO1: 0, Mid_Term_CO2: 0, Mid_Term_CO3: 0, Mid_Term_TOTAL: 0,
-              Quiz_2_CO1: 0, Quiz_2_CO2: 0, Quiz_2_CO3: 0, Quiz_2_TOTAL: 0,
-              Surprise_Quiz_CO1: 0, Surprise_Quiz_CO2: 0, Surprise_Quiz_CO3: 0, Surprise_Quiz_TOTAL: 0,
-              Assignment_CO1: 0, Assignment_CO2: 0, Assignment_CO3: 0, Assignment_CO4: 0, Assignment_CO5: 0, Assignment_TOTAL: 0,
-            }
-          };
+        // If a student has "LEFT", totally ignore this row AND delete them from our roster
+        if (remarks.includes('LEFT')) {
+          delete studentMap[regNo];
+          const idx = orderedRegNos.indexOf(regNo);
+          if (idx > -1) orderedRegNos.splice(idx, 1);
+          continue; 
         }
 
         let es_co1, es_co2, es_co3, es_co4, es_co5, es_Total;
 
-        if (remarks.includes('LEFT') || remarks.includes('AB') || ansBook.includes('AB') || ansBook === 'ABSENT') {
+        if (remarks.includes('AB') || ansBook.includes('AB') || ansBook === 'ABSENT') {
           es_co1 = 'AB'; es_co2 = 'AB'; es_co3 = 'AB'; es_co4 = 'AB'; es_co5 = 'AB'; es_Total = 'AB';
         } else {
           const safeAdd = (a, b) => (a === 'AB' || b === 'AB') ? 'AB' : a + b;
@@ -2134,9 +2171,15 @@ const processAssessmentFiles = async (req, res) => {
     }
 
     // ==========================================
-    // 4. SAVE TO MONGODB
+    // 4. SAVE TO MONGODB (Strict Roster Preserved)
     // ==========================================
-    const parsedStudents = Object.values(studentMap);
+    const parsedStudents = [];
+    for (const regNo of orderedRegNos) {
+      if (studentMap[regNo]) {
+        parsedStudents.push(studentMap[regNo]);
+      }
+    }
+
     const queryId = subjectId || subCode;
 
     let subjectRecord = await SubjectMarks.findOne({
