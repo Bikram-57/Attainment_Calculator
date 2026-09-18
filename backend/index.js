@@ -37,8 +37,9 @@ const activity = require('./routes/activities');
 const subjectAnalysis = require('./routes/subjectAnalysis');
 const userHomePage = require('./routes/userHomePage');
 const printReadyPDFdownload = require('./routes/PrintReadyPDFDownload');
-
 const formatRawMarks = require('./routes/tempSubjectMarks');
+
+const labMarks = require('./routes/labMarks');
 
 
 const app = express();
@@ -93,9 +94,11 @@ app.use("/subject-analysis", subjectAnalysis);
 // app.use("/", userHomePage);
 app.use("/user-dashboard", userHomePage);
 app.use("/printReady", printReadyPDFdownload);
-
-
 app.use("/raw", formatRawMarks);
+
+app.use("/lab", labMarks);
+
+
 
 startTokenCleanupJob();
 
