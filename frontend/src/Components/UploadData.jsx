@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import { MdOutlineCancelPresentation } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
-import { MdDone } from "react-icons/md";
 import { COLORS } from '../constants/theme';
 import { ErrorSuccessMsg } from './index';
 import { Loading } from './index';
@@ -15,6 +13,7 @@ function UploadData() {
 	const userData = useSelector(state => state.auth.userData);
 	const fileInputRef = useRef(null);
 
+	const [subjectType, setSubjectType] = useState('theory');
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
 	const [subjectId, setSubjectId] = useState('')
@@ -23,7 +22,6 @@ function UploadData() {
 	const [errorMsg, setErrorMsg] = useState('');
 	const [successMsg, setSuccessMsg] = useState('');
 	const [subjectList, setSubjectList] = useState([]);
-	const [isHovered, setIsHovered] = useState(false);
 	const [uploading, setUploading] = useState(false);
 
 	useDocumentTitle('Upload Data - Menu');
@@ -33,6 +31,11 @@ function UploadData() {
 	for (let year = yearList[0] + 1; year <= currentYear; year++) {
 		yearList.push(year);
 	}
+
+	const subjectTypeOptions = [
+		{ value: "theory", label: "Theory" },
+		{ value: "lab", label: "Lab" },
+	];
 
 	const yearOptions = yearList.map((year) => (
 		{
@@ -133,18 +136,7 @@ function UploadData() {
 			);
 
 			useFileDownload(response.data, 'uploadDataFormat.xlsx');
-			
-			// const blob = new Blob([response.data]);
-			// const url = window.URL.createObjectURL(blob);
 
-			// const link = document.createElement('a');
-			// link.href = url;
-			// link.download = 'uploadDataFormat.xlsx';
-
-			// document.body.appendChild(link);
-			// link.click();
-			// link.remove();
-			// window.URL.revokeObjectURL(url);
 		} catch (err) {
 			console.error('Download failed:', err);
 			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
@@ -220,6 +212,29 @@ function UploadData() {
 			{/* Selection Card */}
 			<div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+
+					<div>
+						<label
+							className="mb-2 block text-sm font-semibold"
+							style={{ color: COLORS.mintDark }}
+						>
+							Subject type
+						</label>
+
+						<Select
+							options={subjectTypeOptions}
+							placeholder="Select year"
+							value={
+								subjectTypeOptions.find(
+									(option) => option.value === subjectType
+								) || null
+							}
+							onChange={(selected) =>
+								setSubjectType(selected?.value || "")
+							}
+							maxMenuHeight={180}
+						/>
+					</div>
 
 					<div>
 						<label
