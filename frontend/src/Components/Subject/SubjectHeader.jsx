@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { COLORS } from '../../constants/theme';
-import { Filters } from '../index';
+import { Filters, SearchBar } from '../index';
 import AddSubject from './AddSubject';
 
 function SubjectHeader({
@@ -127,7 +127,13 @@ function SubjectHeader({
                     All Subjects
                 </h2>
 
-                <div className="relative">
+                <SearchBar
+                    search={search}
+                    placeholderText='Search subjects...'
+                    handleChange={handleChange}
+                    handleClear={handleClear}
+                />
+                {/* <div className="relative">
 
                     <BsSearch
                         className="absolute left-3 top-1/2 -translate-y-1/2"
@@ -151,7 +157,7 @@ function SubjectHeader({
                             onClick={handleClear}
                         />
                     }
-                </div>
+                </div> */}
 
             </div>
 
