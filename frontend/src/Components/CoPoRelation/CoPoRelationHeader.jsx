@@ -4,7 +4,7 @@ import { BsSearch } from "react-icons/bs";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import Filters from '../../utils/Filters';
 
-function CoPoRelationHeader({ setSearchQuery, setFilterYear, setFilterCourse, setFilterSemester }) {
+function CoPoRelationHeader({ setSearchQuery, filterYear, filterCourse, filterSemester, setFilterYear, setFilterCourse, setFilterSemester }) {
     const [search, setSearch] = useState("");
     const handleChange = (e) => {
         if (e.target.value == '') {
@@ -67,12 +67,16 @@ function CoPoRelationHeader({ setSearchQuery, setFilterYear, setFilterCourse, se
                 <div className="flex flex-wrap items-center gap-3 xl:justify-end">
                     <Filters
                         showYear
-                        defaultYear={String(new Date().getFullYear())}
+                        // defaultYear={String(new Date().getFullYear())}
+                        defaultYear={filterYear}
+                        // defaultYear={String(filterYear)}
                         onYearChange={setFilterYear}
                         isYearClearable={false}
                         showCourse
+                        defaultCourse={filterCourse}
                         onCourseChange={setFilterCourse}
                         showSemester
+                        defaultSemester={filterSemester}
                         onSemesterChange={setFilterSemester}
                     />
                 </div>

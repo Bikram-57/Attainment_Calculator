@@ -12,6 +12,7 @@ import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function CoPoRelation() {
     const userData = useSelector(state => state.auth.userData);
+    const currentYear = new Date().getFullYear();
 
     const [subjects, setSubjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -21,7 +22,7 @@ function CoPoRelation() {
     const [selectedSubjectData, setSelectedSubjectData] = useState(null);
     const [selectedSubjectDataForUpload, setSelectedSubjectDataForUpload] = useState({})
     const [loading, setLoading] = useState(true);
-    const [filterYear, setFilterYear] = useState(new Date().getFullYear());
+    const [filterYear, setFilterYear] = useState(currentYear);
     const [filterCourse, setFilterCourse] = useState('');
     const [filterSemester, setFilterSemester] = useState('');
 
@@ -49,19 +50,19 @@ function CoPoRelation() {
             setLoading(false);
         }
     }
-    
+
     const handleViewOpen = async (sub) => {
         setLoading(true);
         await fetchSelectedCoPoData(sub);
         setOpenView(true);
     }
-    
+
     const handleEditOpen = async (sub) => {
         setLoading(true);
         await fetchSelectedCoPoData(sub);
         setOpenEdit(true);
     }
-    
+
     const handleUploadOpen = (sub) => {
         setSelectedSubjectDataForUpload({
             subjectId: sub.subjectId,
@@ -72,9 +73,9 @@ function CoPoRelation() {
         });
         setOpenUpload(true);
     }
-    
-    
-    
+
+
+
     const filteredSubjects = subjects?.filter(sub => (
         (
             sub.subjectId.toLowerCase().includes(searchQuery.toLowerCase().trim())
@@ -87,9 +88,10 @@ function CoPoRelation() {
             filterSemester ? sub.semester == filterSemester : true
         )
     ));
-    
+
     useEffect(() => {
         const fetchCoPoSubjectList = async () => {
+            setLoading(true);
             try {
                 let res;
                 if (userData.role === 'admin') {
@@ -123,6 +125,9 @@ function CoPoRelation() {
                 {/* Header */}
                 <CoPoRelationHeader
                     setSearchQuery={setSearchQuery}
+                    filterYear={filterYear}
+                    filterCourse={filterCourse}
+                    filterSemester={filterSemester}
                     setFilterYear={setFilterYear}
                     setFilterCourse={setFilterCourse}
                     setFilterSemester={setFilterSemester}
@@ -291,263 +296,6 @@ function CoPoRelation() {
                     </div>
                 </div>
             </div>
-
-            // <div
-            //     className="flex h-full flex-col rounded-2xl border border-gray-200 shadow-sm"
-            //     style={{ backgroundColor: COLORS.latte }}
-            // >
-            //     {/* Header */}
-            //     <CoPoRelationHeader
-            //         setSearchQuery={setSearchQuery}
-            //         setFilterYear={setFilterYear}
-            //         setFilterCourse={setFilterCourse}
-            //         setFilterSemester={setFilterSemester}
-            //     />
-
-            //     {/* Table */}
-            //     {/* <div className="flex-1 overflow-hidden px-5 pb-5"> */}
-            //     <div className="flex-1 overflow-hidden m-3">
-
-            //         <div className="h-full overflow-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
-
-            //             {filteredSubjects?.length > 0 ? (
-
-            //                 <table className="min-w-full text-sm">
-
-            //                     <thead className="sticky top-0 z-2">
-            //                         <tr
-            //                             style={{
-            //                                 backgroundColor: COLORS.mint,
-            //                                 color: COLORS.font,
-            //                             }}
-            //                         >
-            //                             <th className="px-5 py-3 text-left font-semibold">Subject Code</th>
-            //                             <th className="px-5 py-3 text-left font-semibold">Subject Name</th>
-            //                             <th className="px-5 py-3 text-center font-semibold">Year</th>
-            //                             <th className="px-5 py-3 text-center font-semibold">Semester</th>
-            //                             <th className="px-5 py-3 text-center font-semibold">Course</th>
-            //                             <th className="px-5 py-3 text-center font-semibold">Status</th>
-            //                             <th className="px-5 py-3 text-center font-semibold">Actions</th>
-            //                         </tr>
-            //                     </thead>
-
-            //                     <tbody>
-
-            //                         {filteredSubjects.map((subject, index) => (
-
-            //                             <tr
-            //                                 key={subject.subjectId}
-            //                                 className="border-b border-gray-100 transition hover:bg-gray-50"
-            //                             >
-
-            //                                 <td className="px-5 py-3 font-medium text-slate-800">
-            //                                     {subject.subjectId}
-            //                                 </td>
-
-            //                                 <td className="px-5 py-3 text-slate-700">
-            //                                     {subject.subjectName}
-            //                                 </td>
-
-            //                                 <td className="px-5 py-3 text-center">
-            //                                     {subject.academicYear}
-            //                                 </td>
-
-            //                                 <td className="px-5 py-3 text-center">
-            //                                     {subject.semester || "-"}
-            //                                 </td>
-
-            //                                 <td className="px-5 py-3 text-center">
-            //                                     {subject.course}
-            //                                 </td>
-
-            //                                 <td className="px-5 py-3">
-            //                                     <div className="flex justify-center">
-            //                                         <span
-            //                                             className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold
-            //                                 ${subject.copoMappingStatus === "Uploaded"
-            //                                                     ? "bg-green-100 text-green-700"
-            //                                                     : "bg-amber-100 text-amber-700"
-            //                                                 }`}
-            //                                         >
-            //                                             {subject.copoMappingStatus === "Uploaded" ? (
-            //                                                 <FaCheckCircle size={14} />
-            //                                             ) : (
-            //                                                 <FaClock size={14} />
-            //                                             )}
-
-            //                                             {subject.copoMappingStatus}
-            //                                         </span>
-            //                                     </div>
-            //                                 </td>
-
-            //                                 <td className="px-5 py-3">
-            //                                     <div className="flex justify-center gap-2">
-
-            //                                         <button
-            //                                             onClick={() => handleViewOpen(subject)}
-            //                                             className="rounded-lg p-2 transition hover:opacity-90 cursor-pointer"
-            //                                             style={{
-            //                                                 backgroundColor: COLORS.mint,
-            //                                                 color: COLORS.font,
-            //                                             }}
-            //                                             title="View Mapping"
-            //                                         >
-            //                                             <MdRemoveRedEye size={16} />
-            //                                         </button>
-
-            //                                         <button
-            //                                             onClick={() => handleEditOpen(subject)}
-            //                                             className="rounded-lg p-2 transition hover:opacity-90 cursor-pointer"
-            //                                             style={{
-            //                                                 backgroundColor: COLORS.mint,
-            //                                                 color: COLORS.font,
-            //                                             }}
-            //                                             title="Edit Mapping"
-            //                                         >
-            //                                             <GrEdit size={15} />
-            //                                         </button>
-
-            //                                     </div>
-            //                                 </td>
-
-            //                             </tr>
-
-            //                         ))}
-
-            //                     </tbody>
-
-            //                 </table>
-
-            //             ) : (
-
-            //                 <div className="flex h-full min-h-87.5 flex-col items-center justify-center">
-
-            //                     <div className="mb-4 rounded-full bg-gray-100 p-5">
-            //                         <MdRemoveRedEye
-            //                             size={36}
-            //                             className="text-gray-400"
-            //                         />
-            //                     </div>
-
-            //                     <h3 className="text-lg font-semibold text-gray-700">
-            //                         No Relation Found
-            //                     </h3>
-
-            //                     <p className="mt-1 text-sm text-gray-500">
-            //                         No subjects match the selected filters.
-            //                     </p>
-
-            //                 </div>
-
-            //             )}
-
-            //         </div>
-
-            //     </div>
-            // </div>
-
-            // <div
-            //     className="w-full p-4"
-            //     style={{ backgroundColor: COLORS.latte }}
-            // >
-            //     <CoPoRelationHeader
-            //         setSearchQuery={setSearchQuery}
-            //         setFilterYear={setFilterYear}
-            //         setFilterCourse={setFilterCourse}
-            //         setFilterSemester={setFilterSemester}
-            //     />
-
-            //     {/* Table */}
-            //     <div className="max-h-125 overflow-y-auto overflow-x-auto border border-gray-200">
-            //         {filteredSubjects?.length > 0 ? (
-            //             <table className="w-full text-md">
-            //                 <thead>
-            //                     <tr
-            //                         className='text-center border-b border-gray-300'
-            //                         style={{
-            //                             backgroundColor: COLORS.mint,
-            //                             color: COLORS.font
-            //                         }}
-            //                     >
-            //                         <th className='px-3 py-2 w-[15%] text-left'>Subject Code</th>
-            //                         <th className='px-3 py-2 w-[30%] text-left'>Subject Name</th>
-            //                         <th className='px-3 py-2 w-[15%]'>Academic Year</th>
-            //                         <th className='px-3 py-2 w-[10%]'>Semester</th>
-            //                         <th className='px-3 py-2 w-[10%]'>Course</th>
-            //                         <th className='px-3 py-2 w-[10%]'>Status</th>
-            //                         <th className='px-3 py-2 w-[10%]'>Action</th>
-            //                     </tr>
-            //                 </thead>
-
-            //                 <tbody>
-            //                     {filteredSubjects?.map((subject, index) => (
-            //                         <tr
-            //                             key={index}
-            //                             className={`border-b border-gray-200 text-center ${index % 2 === 0
-            //                                 ? "bg-[#f1f1f1]"
-            //                                 : "bg-[#fafafa]"
-            //                                 }`}
-            //                         >
-            //                             <td className="px-2 py-1 w-[15%] text-left">{subject.subjectId}</td>
-            //                             <td className="px-2 py-1 w-[30%] text-left">{subject.subjectName}</td>
-            //                             <td className='px-5 py-2 w-[15%]'>{subject.academicYear}</td>
-            //                             <td className='px-5 py-2 w-[10%]'>{subject.semester || '-'}</td>
-            //                             <td className='px-5 py-2 w-[10%]'>{subject.course}</td>
-            //                             <td className='px-5 py-2 w-[10%]'>
-            //                                 <div
-            //                                     className={`flex items-center gap-2 rounded-full w-full px-3 py-1 text-sm font-medium
-            //                                     ${subject.copoMappingStatus === 'Uploaded'
-            //                                             ? "bg-green-100 text-green-700"
-            //                                             : "bg-amber-100 text-amber-700"
-            //                                         }`}
-            //                                 >
-            //                                     {subject.copoMappingStatus === 'Uploaded' ? (
-            //                                         <FaCheckCircle />
-            //                                     ) : (
-            //                                         <FaClock />
-            //                                     )}
-
-            //                                     {subject.copoMappingStatus}
-            //                                 </div>
-            //                             </td>
-
-            //                             <td className="px-2 py-1">
-            //                                 <div className="flex items-center justify-center gap-2">
-            //                                     {/* View */}
-            //                                     <button
-            //                                         className="rounded p-1 transition cursor-pointer"
-            //                                         style={{
-            //                                             backgroundColor: COLORS.mint,
-            //                                             color: COLORS.font
-            //                                         }}
-            //                                         onClick={() => handleViewOpen(subject)}
-            //                                     >
-            //                                         <MdRemoveRedEye />
-            //                                     </button>
-            //                                     {/* Edit */}
-            //                                     <button
-            //                                         className="rounded p-1 transition cursor-pointer"
-            //                                         style={{
-            //                                             backgroundColor: COLORS.mint,
-            //                                             color: COLORS.font
-            //                                         }}
-            //                                         onClick={() => handleEditOpen(subject)}
-            //                                     >
-            //                                         <GrEdit />
-            //                                     </button>
-            //                                 </div>
-            //                             </td>
-            //                         </tr>
-            //                     ))}
-            //                 </tbody>
-            //             </table>
-            //         ) :
-            //             (
-            //                 <div className='text-center text-lg'>No data available</div>
-            //             )
-            //         }
-            //     </div>
-            // </div>
         ) : <Loading />
     }
     else if (openView && selectedSubjectData) {
