@@ -75,7 +75,7 @@ function AssignSubjects() {
 			<AssignSubjectsHeader
 				toggleUpdate={toggleUpdate}
 				setSearchQuery={setSearchQuery}
-				currentYear={filterYear}
+				filterYear={filterYear}
 				setFilterYear={setFilterYear}
 			/>
 

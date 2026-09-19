@@ -6,18 +6,18 @@ import { FaFilter } from "react-icons/fa";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { Filters } from '../index';
 
-function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFilterYear }) {
+function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, filterYear, setFilterYear }) {
     const [isAssignSubjectOpen, setIsAssignSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
-    const [year, setYear] = useState('');
-    const defaultYear = new Date().getFullYear();
+    // const [year, setYear] = useState('');
+    // const defaultYear = new Date().getFullYear();
 
-    const yearList = [2025, 2024];
+    // const yearList = [2025, 2024];
 
-    const handleYear = (e) => {
-        setYear(e.target.value);
-        setFilterYear(e.target.value);
-    }
+    // const handleYear = (e) => {
+    //     setYear(e.target.value);
+    //     setFilterYear(e.target.value);
+    // }
 
     const handleChange = (e) => {
         if (e.target.value == '') {
@@ -160,7 +160,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
 
                 <Filters
                     showYear
-                    defaultYear={String(new Date().getFullYear())}
+                    defaultYear={filterYear}
                     isYearClearable={false}
                     onYearChange={setFilterYear}
                 />

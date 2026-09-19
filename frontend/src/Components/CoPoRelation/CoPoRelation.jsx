@@ -12,7 +12,6 @@ import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 function CoPoRelation() {
     const userData = useSelector(state => state.auth.userData);
-    const currentYear = new Date().getFullYear();
 
     const [subjects, setSubjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -22,7 +21,7 @@ function CoPoRelation() {
     const [selectedSubjectData, setSelectedSubjectData] = useState(null);
     const [selectedSubjectDataForUpload, setSelectedSubjectDataForUpload] = useState({})
     const [loading, setLoading] = useState(true);
-    const [filterYear, setFilterYear] = useState(currentYear);
+    const [filterYear, setFilterYear] = useState(new Date().getFullYear());
     const [filterCourse, setFilterCourse] = useState('');
     const [filterSemester, setFilterSemester] = useState('');
 
