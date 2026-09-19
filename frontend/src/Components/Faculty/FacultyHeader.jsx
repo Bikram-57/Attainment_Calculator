@@ -3,6 +3,7 @@ import { BsSearch } from "react-icons/bs";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import AddFacultyForm from './AddFacultyForm';
 import { COLORS } from '../../constants/theme';
+import SearchBar from '../../utils/SearchBar';
 
 function FacultyHeader({ toggleUpdate, setSearchQuery }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -34,8 +35,13 @@ function FacultyHeader({ toggleUpdate, setSearchQuery }) {
                     Faculty List
                 </h2>
 
-
-                <div className="relative w-full sm:w-80">
+                <SearchBar
+                    search={search}
+                    placeholderText='Search faculty...'
+                    handleChange={handleChange}
+                    handleClear={handleClear}
+                />
+                {/* <div className="relative w-full sm:w-80">
 
                     <BsSearch
                         className="absolute left-3 top-1/2 -translate-y-1/2"
@@ -63,7 +69,7 @@ function FacultyHeader({ toggleUpdate, setSearchQuery }) {
                         />
                     )}
 
-                </div>
+                </div> */}
 
             </div>
 
