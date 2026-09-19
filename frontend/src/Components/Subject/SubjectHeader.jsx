@@ -5,7 +5,16 @@ import { COLORS } from '../../constants/theme';
 import { Filters } from '../index';
 import AddSubject from './AddSubject';
 
-function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear, setFilterCourse, setFilterSemester }) {
+function SubjectHeader({
+    toggleUpdate,
+    setSearchQuery,
+    filterYear,
+    filterCourse,
+    filterSemester,
+    setFilterYear,
+    setFilterCourse,
+    setFilterSemester
+}) {
     const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
 
@@ -153,7 +162,9 @@ function SubjectHeader({ toggleUpdate, setSearchQuery, setFilterYear, setFilterC
                     showYear
                     showCourse
                     showSemester
-                    defaultYear={String(new Date().getFullYear())}
+                    defaultYear={filterYear}
+                    defaultCourse={filterCourse}
+                    defaultSemester={filterSemester}
                     isYearClearable={false}
                     onYearChange={setFilterYear}
                     onCourseChange={setFilterCourse}
