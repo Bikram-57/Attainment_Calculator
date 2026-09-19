@@ -3,6 +3,7 @@ import { BsSearch } from 'react-icons/bs'
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { COLORS } from '../../constants/theme';
 import GenerateAttainmentForm from './GenerateAttainmentForm';
+import SearchBar from '../../utils/SearchBar';
 
 function DirectAttainmentHeader({ toggleUpdate, setSearchQuery }) {
     const [search, setSearch] = useState('');
@@ -34,6 +35,11 @@ function DirectAttainmentHeader({ toggleUpdate, setSearchQuery }) {
                     Direct Attainment
                 </h2>
 
+                {/* <SearchBar
+                    search={search}
+                    handleChange={handleChange}
+                    handleClear={handleClear}
+                /> */}
                 <div className="relative w-full lg:w-80 xl:w-96">
 
                     <BsSearch

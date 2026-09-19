@@ -3,8 +3,17 @@ import { COLORS } from '../../constants/theme'
 import { BsSearch } from "react-icons/bs";
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import Filters from '../../utils/Filters';
+import SearchBar from '../../utils/SearchBar';
 
-function CoPoRelationHeader({ setSearchQuery, filterYear, filterCourse, filterSemester, setFilterYear, setFilterCourse, setFilterSemester }) {
+function CoPoRelationHeader({
+    setSearchQuery,
+    filterYear,
+    filterCourse,
+    filterSemester,
+    setFilterYear,
+    setFilterCourse,
+    setFilterSemester
+}) {
     const [search, setSearch] = useState("");
     const handleChange = (e) => {
         if (e.target.value == '') {
@@ -32,7 +41,13 @@ function CoPoRelationHeader({ setSearchQuery, filterYear, filterCourse, filterSe
                     CO-PO Relations
                 </h2>
 
-                <div className="relative w-full lg:w-80 xl:w-96">
+                <SearchBar
+                    search={search}
+                    placeholderText="Search by subject code or name..."
+                    handleChange={handleChange}
+                    handleClear={handleClear}
+                />
+                {/* <div className="relative w-full lg:w-80 xl:w-96">
 
                     <BsSearch
                         className="absolute left-3 top-1/2 -translate-y-1/2"
@@ -58,7 +73,7 @@ function CoPoRelationHeader({ setSearchQuery, filterYear, filterCourse, filterSe
                         />
                     )}
 
-                </div>
+                </div> */}
 
             </div>
 

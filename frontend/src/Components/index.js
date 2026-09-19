@@ -111,6 +111,7 @@ import ActionBtns from "../utils/ActionBtns";
 import ErrorSuccessMsg from "../utils/ErrorSuccessMsg";
 import Filters from "../utils/Filters";
 import Loading from "../utils/Loading";
+import SearchBar from "../utils/SearchBar";
 
 export {
     NavBar,
@@ -191,4 +192,5 @@ export {
     GenerateSheet,
     DownloadSheet,
     DownloadFormat,
+    SearchBar,
 }
