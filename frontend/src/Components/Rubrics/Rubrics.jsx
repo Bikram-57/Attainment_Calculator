@@ -1,9 +1,7 @@
-import { FaChevronDown, FaChevronRight, FaGraduationCap, FaCalendarAlt, } from "react-icons/fa";
 import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react'
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 import RubricsHeader from "./RubricsHeader";
 import { ActionBtns, Loading } from "../index";
 import RubricsViewModal from "./modals/RubricsViewModal";
@@ -16,7 +14,9 @@ export default function Rubrics() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [toggleRubrics, setToggleRubrics] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+    // const [searchQuery, setSearchQuery] = useState('');
+    const [filterYear, setFilterYear] = useState('');
+    const [filterSemester, setFilterSemester] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
 
     useDocumentTitle('Manage Rubrics');
@@ -34,10 +34,19 @@ export default function Rubrics() {
         }
     }
 
-    const filteredData = data.filter(rubric =>
-        rubric.semesterType.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-        String(rubric.academicYear).toLowerCase().includes(searchQuery.toLowerCase().trim())
-    );
+    const filteredData = data?.filter(rubric => (
+        (
+            filterSemester ? rubric.semesterType === filterSemester : true
+        )
+        && (
+            // filterYear ? rubric.academicYear == filterYear : true
+            filterYear ? String(rubric.academicYear).includes(filterYear) : true
+        )
+    ));
+    // const filteredData = data.filter(rubric =>
+    //     rubric.semesterType.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
+    //     String(rubric.academicYear).toLowerCase().includes(searchQuery.toLowerCase().trim())
+    // );
 
 
     useEffect(() => {
@@ -53,7 +62,11 @@ export default function Rubrics() {
 
             <RubricsHeader
                 toggleUpdate={toggleUpdate}
-                setSearchQuery={setSearchQuery}
+                // setSearchQuery={setSearchQuery}
+                filterYear={filterYear}
+                filterSemester={filterSemester}
+                setFilterYear={setFilterYear}
+                setFilterSemester={setFilterSemester}
             />
 
             <div className="m-2 flex-1 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm sm:m-3 lg:m-4">
@@ -91,13 +104,11 @@ export default function Rubrics() {
                             <tbody>
 
                                 {filteredData.map((rubric, index) => (
-
                                     <tr
                                         key={rubric._id}
                                         className={`border-b border-gray-200 transition hover:bg-gray-100 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
                                             }`}
                                     >
-
                                         <td className="whitespace-nowrap px-4 py-3 text-center font-medium text-gray-800 sm:px-6">
                                             {rubric.semesterType}
                                         </td>
@@ -141,7 +152,7 @@ export default function Rubrics() {
                         </h3>
 
                         <p className="mt-2 max-w-md text-sm text-gray-500">
-                            {!searchQuery ?
+                            {(!filterYear || !filterSemester) ?
                                 errorMsg
                                 : 'There are no rubric records matching your search.'
                             }

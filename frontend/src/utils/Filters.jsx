@@ -169,6 +169,7 @@ import { useState } from 'react';
 import Select from 'react-select';
 
 function Filters({
+    forRubrics = false,
     showYear = false,
     showSemester = false,
     showCourse = false,
@@ -205,6 +206,11 @@ function Filters({
         { value: '7', label: 'Sem 7' },
         { value: '8', label: 'Sem 8' },
     ];
+
+    const semesterTypeOptions = [
+        { value: 'ODD', label: 'ODD' },
+        { value: 'EVEN', label: 'EVEN' },
+    ]
 
     const courseOptions = [
         { value: 'BCA', label: 'BCA' },
@@ -247,7 +253,7 @@ function Filters({
                 <div className="w-40">
                     <Select
                         placeholder="Semester"
-                        options={semesterOptions}
+                        options={!forRubrics ? semesterOptions : semesterTypeOptions}
                         value={semesterOptions.find(
                             // option => option.value === semester
                             option => option.value === String(defaultSemester)

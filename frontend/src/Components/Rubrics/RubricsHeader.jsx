@@ -4,23 +4,25 @@ import { MdOutlineCancelPresentation } from "react-icons/md";
 import { COLORS } from '../../constants/theme';
 import AddRubricsForm from './AddRubricsForm';
 import SearchBar from '../../utils/SearchBar';
+import Filters from '../../utils/Filters';
 
-function RubricsHeader({ toggleUpdate, setSearchQuery }) {
+// function RubricsHeader({ toggleUpdate, setSearchQuery }) {
+function RubricsHeader({ toggleUpdate, filterYear, filterSemester, setFilterYear, setFilterSemester }) {
     const [isAddRubricsOpen, setIsAddRubricsOpen] = useState(false);
-    const [search, setSearch] = useState('');
+    // const [search, setSearch] = useState('');
 
-    const handleChange = (e) => {
-        if (e.target.value == '') {
-            setSearchQuery('');
-        }
-        setSearch(e.target.value);
-        setSearchQuery(e.target.value);
-    }
+    // const handleChange = (e) => {
+    //     if (e.target.value == '') {
+    //         setSearchQuery('');
+    //     }
+    //     setSearch(e.target.value);
+    //     setSearchQuery(e.target.value);
+    // }
 
-    const handleClear = () => {
-        setSearch('');
-        setSearchQuery('')
-    }
+    // const handleClear = () => {
+    //     setSearch('');
+    //     setSearchQuery('')
+    // }
 
     return (
         <div className="flex flex-col gap-4 border-b border-gray-200 bg-white px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
@@ -35,40 +37,22 @@ function RubricsHeader({ toggleUpdate, setSearchQuery }) {
                     Rubrics
                 </h2>
 
-                <SearchBar
+                <Filters
+                    forRubrics
+                    showYear
+                    showSemester
+                    defaultYear={filterYear}
+                    defaultSemester={filterSemester}
+                    onYearChange={setFilterYear}
+                    onSemesterChange={setFilterSemester}
+                />
+
+                {/* <SearchBar
                     search={search}
                     placeholderText='Search by semester type or academic year...'
                     handleChange={handleChange}
                     handleClear={handleClear}
-                />
-
-                {/* <div className="relative w-full lg:w-80 xl:w-96">
-
-                    <BsSearch
-                        className="absolute left-3 top-1/2 -translate-y-1/2"
-                        style={{ color: COLORS.mintDark }}
-                    />
-
-                    <input
-                        type="text"
-                        placeholder="Search by course or academic year..."
-                        value={search}
-                        onChange={handleChange}
-                        className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-10 text-sm outline-none transition focus:ring-2"
-                        style={{
-                            color: COLORS.mintDark,
-                            "--tw-ring-color": COLORS.mint,
-                        }}
-                    />
-
-                    {search.length > 0 && (
-                        <MdOutlineCancelPresentation
-                            className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 cursor-pointer text-gray-500 transition hover:text-red-500 sm:h-6 sm:w-6"
-                            onClick={handleClear}
-                        />
-                    )}
-
-                </div> */}
+                /> */}
 
             </div>
 
