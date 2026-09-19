@@ -12,7 +12,9 @@ function DirectAttainment() {
     const [data, setData] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [toggleDirectAttain, setToggleDirectAttain] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+    // const [searchQuery, setSearchQuery] = useState('');
+    const [filterYear, setFilterYear] = useState('');
+    const [filterCourse, setFilterCourse] = useState('');
     const [loading, setLoading] = useState(true);
     const [loadingView, setLoadingView] = useState(false);
 
@@ -34,17 +36,20 @@ function DirectAttainment() {
         }
     }
 
-    // const filteredAllData = allData.filter(directAttain =>
-    //     directAttain.course.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-    //     String(directAttain.academicYear).toLowerCase().includes(searchQuery.toLowerCase().trim())
-    // );
+    const filteredAllData = allData?.filter(directAttain => (
+        (
+            filterCourse ? directAttain.course == filterCourse : true
+        )
+        && (
+            filterYear ? directAttain.academicYear == filterYear : true
+        )
+    ));
+    // const filteredAllData = allData.filter(directAttain => {
+    //     const searchText = `${directAttain.course} ${directAttain.academicYear}`
+    //         .toLowerCase();
 
-    const filteredAllData = allData.filter(directAttain => {
-        const searchText = `${directAttain.course} ${directAttain.academicYear}`
-            .toLowerCase();
-
-        return searchText.includes(searchQuery.toLowerCase().trim());
-    });
+    //     return searchText.includes(searchQuery.toLowerCase().trim());
+    // });
 
     const handleView = async (course, academicYear) => {
         setLoadingView(true);
@@ -75,7 +80,11 @@ function DirectAttainment() {
             <div className="flex h-full w-full flex-col overflow-hidden">
                 <DirectAttainmentHeader
                     toggleUpdate={toggleUpdate}
-                    setSearchQuery={setSearchQuery}
+                    // setSearchQuery={setSearchQuery}
+                    filterYear={filterYear}
+                    filterCourse={filterCourse}
+                    setFilterYear={setFilterYear}
+                    setFilterCourse={setFilterCourse}
                 />
 
                 <div className="flex-1 p-3 sm:p-4 lg:p-5">
