@@ -39,7 +39,8 @@ const userHomePage = require('./routes/userHomePage');
 const printReadyPDFdownload = require('./routes/PrintReadyPDFDownload');
 const formatRawMarks = require('./routes/tempSubjectMarks');
 
-// const labMarks = require('./routes/labMarks');
+const labMarks = require('./routes/calculatedLabMarks');
+const finalAttainment = require('./routes/finalLabAttainment');
 
 
 const app = express();
@@ -96,7 +97,8 @@ app.use("/user-dashboard", userHomePage);
 app.use("/printReady", printReadyPDFdownload);
 app.use("/raw", formatRawMarks);
 
-// app.use("/lab", labMarks);
+app.use("/lab", labMarks);
+app.use("/final-lab", finalAttainment);
 
 
 
