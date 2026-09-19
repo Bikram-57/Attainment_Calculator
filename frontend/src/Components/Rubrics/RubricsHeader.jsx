@@ -3,6 +3,7 @@ import { BsSearch } from 'react-icons/bs'
 import { MdOutlineCancelPresentation } from "react-icons/md";
 import { COLORS } from '../../constants/theme';
 import AddRubricsForm from './AddRubricsForm';
+import SearchBar from '../../utils/SearchBar';
 
 function RubricsHeader({ toggleUpdate, setSearchQuery }) {
     const [isAddRubricsOpen, setIsAddRubricsOpen] = useState(false);
@@ -34,7 +35,14 @@ function RubricsHeader({ toggleUpdate, setSearchQuery }) {
                     Rubrics
                 </h2>
 
-                <div className="relative w-full lg:w-80 xl:w-96">
+                <SearchBar
+                    search={search}
+                    placeholderText='Search by semester type or academic year...'
+                    handleChange={handleChange}
+                    handleClear={handleClear}
+                />
+
+                {/* <div className="relative w-full lg:w-80 xl:w-96">
 
                     <BsSearch
                         className="absolute left-3 top-1/2 -translate-y-1/2"
@@ -60,7 +68,7 @@ function RubricsHeader({ toggleUpdate, setSearchQuery }) {
                         />
                     )}
 
-                </div>
+                </div> */}
 
             </div>
 
