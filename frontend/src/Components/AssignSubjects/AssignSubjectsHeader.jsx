@@ -4,7 +4,7 @@ import AssignSubjectForm from './AssignSubjectForm';
 import { COLORS } from '../../constants/theme';
 import { FaFilter } from "react-icons/fa";
 import { MdOutlineCancelPresentation } from "react-icons/md";
-import { Filters } from '../index';
+import { Filters, SearchBar } from '../index';
 
 function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, filterYear, setFilterYear }) {
     const [isAssignSubjectOpen, setIsAssignSubjectOpen] = useState(false);
@@ -127,7 +127,13 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, filterYear, setFil
                     Assigned Subjects
                 </h2>
 
-                <div className="relative">
+                <SearchBar
+                    search={search}
+                    placeholderText='Search by faculty or subject...'
+                    handleChange={handleChange}
+                    handleClear={handleClear}
+                />
+                {/* <div className="relative">
 
                     <BsSearch
                         className="absolute left-3 top-1/2 -translate-y-1/2"
@@ -151,7 +157,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, filterYear, setFil
                             onClick={handleClear}
                         />
                     }
-                </div>
+                </div> */}
 
             </div>
 
