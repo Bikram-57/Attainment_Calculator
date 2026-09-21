@@ -41,6 +41,7 @@ const formatRawMarks = require('./routes/tempSubjectMarks');
 
 const labMarks = require('./routes/calculatedLabMarks');
 const finalAttainment = require('./routes/finalLabAttainment');
+const labPo = require('./routes/calculatedLabPo');
 
 
 const app = express();
@@ -99,6 +100,7 @@ app.use("/raw", formatRawMarks);
 
 app.use("/lab", labMarks);
 app.use("/final-lab", finalAttainment);
+app.use("/po-lab", labPo);
 
 
 

@@ -3,15 +3,12 @@ const router = express.Router();
 const multer = require('multer');
 
 // Import middlewares for Verification And Validation
-const verifyRoles = require('../middleware/verifyRoles');
+const verifyRoles = require('../middleware/verifyRoles'); // Adjust path if needed
 
-// Import existing controllers for the pipeline
-const { handleUploadMarks, getRawMarksData } = require('../controllers/marks');
-const { handleCalculatedMarks, getCalculatedWithStudentMarks } = require('../controllers/calculatedMarks');
-const { handleFinalAttainment, getFinalAttainmentData } = require('../controllers/finalAttainment');
-
-// IMPORT ONLY THE POST HANDLER: calculatedPO
-const { generateAndSavePoAttainment } = require('../controllers/calculatedPO');
+// Import existing controllers for the LAB pipeline
+const { uploadAndCalculateLabMarks } = require('../controllers/labUploadController');
+const { handleFinalLabAttainment, handleGetFinalLabAttainment } = require('../controllers/labFinalAttainmentController');
+const { generateAndSaveLabPoAttainment, getLabPoAttainmentData } = require('../controllers/labPoAttainmentController');
 
 // 1. Multer Configuration WITH File Filter
 const storage = multer.memoryStorage();
@@ -35,8 +32,8 @@ const upload = multer({
 });
 
 /**
- * @route   POST /api/marks/upload-raw
- * @desc    Upload Excel, Calculate 4-Row Marks, Generate Final Direct Attainment, and Calculate PO
+ * @route   POST /api/lab/upload-raw
+ * @desc    Upload Lab Excel, Calculate Thresholds, Generate Final Lab Attainment, and Calculate Lab PO
  * @access  Private
  */
 router.post('/upload-raw', verifyRoles('admin', 'faculty'), (req, res) => {
@@ -58,29 +55,25 @@ router.post('/upload-raw', verifyRoles('admin', 'faculty'), (req, res) => {
                 return res.status(400).json({ success: false, error: "No Excel file provided." });
             }
 
-            // STEP 1: Process and Save Raw Marks
-            const isUpdate = await handleUploadMarks(req, res, true);
+            // STEP 1: Process Raw Lab Marks and Calculate 60% Thresholds
+            // (Note: For labs, your upload controller handles both extraction & initial calc)
+            await uploadAndCalculateLabMarks(req, res, true);
 
-            // STEP 2: Generate 4-Row Attainment 
-            await handleCalculatedMarks(req, res, true);
+            // STEP 2: Generate Final Lab Attainment (Averaging the Internal Labs)
+            await handleFinalLabAttainment(req, res, true);
 
-            // STEP 3: Generate Final Direct Attainment
-            await handleFinalAttainment(req, res, true);
+            // STEP 3: Cross-reference with mapping and Calculate Lab PO
+            await generateAndSaveLabPoAttainment(req, res, true);
 
-            // STEP 4: Calculate PO 
-            await generateAndSavePoAttainment(req, res, true);
-
-            // FINAL RESPONSE: Send only one response after all 4 steps finish
+            // FINAL RESPONSE: Send only one response after all 3 steps finish
             return res.status(200).json({ 
                 success: true, 
-                message: isUpdate 
-                    ? "Data updated and all attainment & PO reports recalculated." 
-                    : "New data uploaded and attainment & PO reports generated successfully." 
+                message: "New lab data uploaded and all attainment & PO reports generated successfully." 
             });
 
         } catch (error) {
             // Always log the full error to your backend console
-            console.error("Pipeline Failure:", error);
+            console.error("Lab Pipeline Failure:", error);
             
             // 3. Smart, Environment-Aware Error Handler
             if (!res.headersSent) {
@@ -120,12 +113,14 @@ router.post('/upload-raw', verifyRoles('admin', 'faculty'), (req, res) => {
     });
 });
 
-// --- GET ROUTES ---
+// ==========================================
+// --- GET ROUTES (Fetching the Data) ---
+// ==========================================
 
-router.get('/raw-data', verifyRoles('admin', 'faculty'), getRawMarksData);
+// Fetch Step 2 Data (Final Averaged Attainment Table)
+router.get('/get-final-attainment', verifyRoles('admin', 'faculty'), handleGetFinalLabAttainment);
 
-router.get('/get-calculations', verifyRoles('admin', 'faculty'), getCalculatedWithStudentMarks);
-
-router.get('/get-final-attainment', verifyRoles('admin', 'faculty'), getFinalAttainmentData);
+// Fetch Step 3 Data (Final Calculated PO)
+router.get('/get-po-attainment', verifyRoles('admin', 'faculty'), getLabPoAttainmentData);
 
 module.exports = router;
