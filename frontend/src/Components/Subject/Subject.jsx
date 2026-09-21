@@ -54,6 +54,9 @@ function Subject() {
             <SubjectHeader
                 toggleUpdate={toggleUpdate}
                 setSearchQuery={setSearchQuery}
+                filterYear={filterYear}
+                filterCourse={filterCourse}
+                filterSemester={filterSemester}
                 setFilterYear={setFilterYear}
                 setFilterCourse={setFilterCourse}
                 setFilterSemester={setFilterSemester}

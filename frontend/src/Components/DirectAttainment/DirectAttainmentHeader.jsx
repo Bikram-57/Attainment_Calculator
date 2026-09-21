@@ -1,25 +1,26 @@
 import React, { useState } from 'react'
-import { BsSearch } from 'react-icons/bs'
-import { MdOutlineCancelPresentation } from "react-icons/md";
 import { COLORS } from '../../constants/theme';
 import GenerateAttainmentForm from './GenerateAttainmentForm';
+// import SearchBar from '../../utils/SearchBar';
+import Filters from '../../utils/Filters';
 
-function DirectAttainmentHeader({ toggleUpdate, setSearchQuery }) {
-    const [search, setSearch] = useState('');
+// function DirectAttainmentHeader({ toggleUpdate, setSearchQuery }) {
+function DirectAttainmentHeader({ toggleUpdate, filterYear, filterCourse, setFilterYear, setFilterCourse }) {
+    // const [search, setSearch] = useState('');
     const [isGenerateOpen, setIsGenerateOpen] = useState(false);
 
-    const handleChange = (e) => {
-        if (e.target.value == '') {
-            setSearchQuery('');
-        }
-        setSearch(e.target.value);
-        setSearchQuery(e.target.value);
-    }
+    // const handleChange = (e) => {
+    //     if (e.target.value == '') {
+    //         setSearchQuery('');
+    //     }
+    //     setSearch(e.target.value);
+    //     setSearchQuery(e.target.value);
+    // }
 
-    const handleClear = () => {
-        setSearch('');
-        setSearchQuery('')
-    }
+    // const handleClear = () => {
+    //     setSearch('');
+    //     setSearchQuery('')
+    // }
 
     return (
         <div className="flex flex-col gap-4 border-b border-gray-200 bg-white px-4 py-4 sm:px-5 lg:px-6 xl:flex-row xl:items-center xl:justify-between">
@@ -34,33 +35,20 @@ function DirectAttainmentHeader({ toggleUpdate, setSearchQuery }) {
                     Direct Attainment
                 </h2>
 
-                <div className="relative w-full lg:w-80 xl:w-96">
+                <Filters
+                    showYear
+                    showCourse
+                    defaultYear={filterYear}
+                    defaultCourse={filterCourse}
+                    onYearChange={setFilterYear}
+                    onCourseChange={setFilterCourse}
+                />
 
-                    <BsSearch
-                        className="absolute left-3 top-1/2 -translate-y-1/2"
-                        style={{ color: COLORS.mintDark }}
-                    />
-
-                    <input
-                        type="text"
-                        placeholder="Search by course or academic year..."
-                        value={search}
-                        onChange={handleChange}
-                        className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-10 text-sm outline-none transition focus:border-gray-400 focus:ring-2"
-                        style={{
-                            color: COLORS.mintDark,
-                            "--tw-ring-color": COLORS.mint,
-                        }}
-                    />
-
-                    {search.length > 0 && (
-                        <MdOutlineCancelPresentation
-                            className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 cursor-pointer text-gray-500 transition hover:text-red-500"
-                            onClick={handleClear}
-                        />
-                    )}
-
-                </div>
+                {/* <SearchBar
+                    search={search}
+                    handleChange={handleChange}
+                    handleClear={handleClear}
+                /> */}
 
             </div>
 

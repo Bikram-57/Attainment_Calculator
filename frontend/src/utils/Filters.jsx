@@ -169,6 +169,7 @@ import { useState } from 'react';
 import Select from 'react-select';
 
 function Filters({
+    forRubrics = false,
     showYear = false,
     showSemester = false,
     showCourse = false,
@@ -185,9 +186,9 @@ function Filters({
     isSemesterClearable = true,
     isCourseClearable = true,
 }) {
-    const [academicYear, setAcademicYear] = useState(defaultYear);
-    const [semester, setSemester] = useState(defaultSemester);
-    const [course, setCourse] = useState(defaultCourse);
+    // const [academicYear, setAcademicYear] = useState(defaultYear);
+    // const [semester, setSemester] = useState(defaultSemester);
+    // const [course, setCourse] = useState(defaultCourse);
     
     const yearOptions = [
         { value: '2024', label: '2024' },
@@ -206,21 +207,26 @@ function Filters({
         { value: '8', label: 'Sem 8' },
     ];
 
+    const semesterTypeOptions = [
+        { value: 'ODD', label: 'ODD' },
+        { value: 'EVEN', label: 'EVEN' },
+    ]
+
     const courseOptions = [
         { value: 'BCA', label: 'BCA' },
         { value: 'MCA', label: 'MCA' },
     ];
 
     const handleYearChange = (selected) => {
-        setAcademicYear(selected);
+        // setAcademicYear(selected);
         onYearChange?.(selected);
     }
     const handleSemesterChange = (selected) => {
-        setSemester(selected);
+        // setSemester(selected);
         onSemesterChange?.(selected);
     }
     const handleCourseChange = (selected) => {
-        setCourse(selected);
+        // setCourse(selected);
         onCourseChange?.(selected);
     }
     
@@ -232,7 +238,8 @@ function Filters({
                         placeholder="Year"
                         options={yearOptions}
                         value={yearOptions.find(
-                            option => option.value === academicYear
+                            // option => option.value === academicYear
+                            option => option.value === String(defaultYear)
                         )}
                         onChange={(selected) =>
                             handleYearChange(selected?.value || '')
@@ -246,9 +253,10 @@ function Filters({
                 <div className="w-40">
                     <Select
                         placeholder="Semester"
-                        options={semesterOptions}
+                        options={!forRubrics ? semesterOptions : semesterTypeOptions}
                         value={semesterOptions.find(
-                            option => option.value === semester
+                            // option => option.value === semester
+                            option => option.value === String(defaultSemester)
                         )}
                         onChange={(selected) =>
                             handleSemesterChange(selected?.value || '')
@@ -264,7 +272,8 @@ function Filters({
                         placeholder="Course"
                         options={courseOptions}
                         value={courseOptions.find(
-                            option => option.value === course
+                            // option => option.value === course
+                            option => option.value === String(defaultCourse)
                         )}
                         onChange={(selected) =>
                             handleCourseChange(selected?.value || '')

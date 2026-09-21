@@ -1,10 +1,17 @@
 import React, { useState } from 'react'
 import { COLORS } from '../../constants/theme'
-import { BsSearch } from "react-icons/bs";
-import { MdOutlineCancelPresentation } from "react-icons/md";
 import Filters from '../../utils/Filters';
+import SearchBar from '../../utils/SearchBar';
 
-function CoPoRelationHeader({ setSearchQuery, setFilterYear, setFilterCourse, setFilterSemester }) {
+function CoPoRelationHeader({
+    setSearchQuery,
+    filterYear,
+    filterCourse,
+    filterSemester,
+    setFilterYear,
+    setFilterCourse,
+    setFilterSemester
+}) {
     const [search, setSearch] = useState("");
     const handleChange = (e) => {
         if (e.target.value == '') {
@@ -32,33 +39,12 @@ function CoPoRelationHeader({ setSearchQuery, setFilterYear, setFilterCourse, se
                     CO-PO Relations
                 </h2>
 
-                <div className="relative w-full lg:w-80 xl:w-96">
-
-                    <BsSearch
-                        className="absolute left-3 top-1/2 -translate-y-1/2"
-                        style={{ color: COLORS.mintDark }}
-                    />
-
-                    <input
-                        type="text"
-                        placeholder="Search by subject code or name..."
-                        value={search}
-                        onChange={handleChange}
-                        className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-10 text-sm outline-none transition focus:ring-2"
-                        style={{
-                            color: COLORS.mintDark,
-                            "--tw-ring-color": COLORS.mint,
-                        }}
-                    />
-
-                    {search.length > 0 && (
-                        <MdOutlineCancelPresentation
-                            className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 cursor-pointer text-gray-500 transition hover:text-red-500"
-                            onClick={handleClear}
-                        />
-                    )}
-
-                </div>
+                <SearchBar
+                    search={search}
+                    placeholderText="Search by subject code or name..."
+                    handleChange={handleChange}
+                    handleClear={handleClear}
+                />
 
             </div>
 
@@ -67,12 +53,14 @@ function CoPoRelationHeader({ setSearchQuery, setFilterYear, setFilterCourse, se
                 <div className="flex flex-wrap items-center gap-3 xl:justify-end">
                     <Filters
                         showYear
-                        defaultYear={String(new Date().getFullYear())}
+                        defaultYear={filterYear}
                         onYearChange={setFilterYear}
                         isYearClearable={false}
                         showCourse
+                        defaultCourse={filterCourse}
                         onCourseChange={setFilterCourse}
                         showSemester
+                        defaultSemester={filterSemester}
                         onSemesterChange={setFilterSemester}
                     />
                 </div>

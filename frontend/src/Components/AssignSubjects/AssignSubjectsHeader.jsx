@@ -4,20 +4,20 @@ import AssignSubjectForm from './AssignSubjectForm';
 import { COLORS } from '../../constants/theme';
 import { FaFilter } from "react-icons/fa";
 import { MdOutlineCancelPresentation } from "react-icons/md";
-import { Filters } from '../index';
+import { Filters, SearchBar } from '../index';
 
-function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFilterYear }) {
+function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, filterYear, setFilterYear }) {
     const [isAssignSubjectOpen, setIsAssignSubjectOpen] = useState(false);
     const [search, setSearch] = useState('');
-    const [year, setYear] = useState('');
-    const defaultYear = new Date().getFullYear();
+    // const [year, setYear] = useState('');
+    // const defaultYear = new Date().getFullYear();
 
-    const yearList = [2025, 2024];
+    // const yearList = [2025, 2024];
 
-    const handleYear = (e) => {
-        setYear(e.target.value);
-        setFilterYear(e.target.value);
-    }
+    // const handleYear = (e) => {
+    //     setYear(e.target.value);
+    //     setFilterYear(e.target.value);
+    // }
 
     const handleChange = (e) => {
         if (e.target.value == '') {
@@ -127,7 +127,13 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                     Assigned Subjects
                 </h2>
 
-                <div className="relative">
+                <SearchBar
+                    search={search}
+                    placeholderText='Search by faculty or subject...'
+                    handleChange={handleChange}
+                    handleClear={handleClear}
+                />
+                {/* <div className="relative">
 
                     <BsSearch
                         className="absolute left-3 top-1/2 -translate-y-1/2"
@@ -151,7 +157,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
                             onClick={handleClear}
                         />
                     }
-                </div>
+                </div> */}
 
             </div>
 
@@ -160,7 +166,7 @@ function AssignSubjectsHeader({ toggleUpdate, setSearchQuery, currentYear, setFi
 
                 <Filters
                     showYear
-                    defaultYear={String(new Date().getFullYear())}
+                    defaultYear={filterYear}
                     isYearClearable={false}
                     onYearChange={setFilterYear}
                 />
