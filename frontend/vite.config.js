@@ -91,6 +91,7 @@ export default defineConfig({
             '/sub-upload/': secureProxy,
             '/user-dashboard': secureProxy,
             '/raw/': secureProxy,
+            '/master-route/': secureProxy,
         },
     },
 })
