@@ -3,6 +3,224 @@ const CalculatedLabMark = require('../models/calculatedLabMarks');
 const { getActiveRubric } = require('../utils/rubricHelper');
 
 // 🌟 ADDED: isPipelineArg = false
+// async function handleUploadAndCalculateLabMarks(req, res, isPipelineArg = false) {
+//     // 🛡️ THE PIPELINE SHIELD
+//     const isPipeline = typeof isPipelineArg === 'boolean' ? isPipelineArg : false;
+
+//     try {
+//         const { subjectId, academicYear, course } = req.body;
+
+//         const cleanSubjectId = subjectId?.trim().toUpperCase();
+//         const cleanCourse = course?.trim().toUpperCase();
+//         const cleanAcademicYear = academicYear?.trim();
+
+//         if (!req.file) {
+//             const errMsg = "Please upload an Excel file.";
+//             if (isPipeline) throw new Error(errMsg);
+//             return res.status(400).json({ success: false, message: errMsg });
+//         }
+
+//         // 1. Read the Excel File
+//         const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+//         const sheetName = workbook.SheetNames[0]; 
+//         const sheet = workbook.Sheets[sheetName];
+        
+//         const rawExcelData = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+
+//         if (rawExcelData.length < 3) {
+//             const errMsg = "Excel file does not contain enough data rows.";
+//             if (isPipeline) throw new Error(errMsg);
+//             return res.status(400).json({ success: false, message: errMsg });
+//         }
+
+//         // 2. Parse the Multi-Level Headers (With Duplicate Protection)
+//         const row0 = rawExcelData[0];
+//         const row1 = rawExcelData[1];
+        
+//         const keys = []; 
+//         const validColumnIndices = []; 
+//         let currentLab = "";
+        
+//         // 🌟 FIX 1: Prevent duplicate column headers from overwriting each other
+//         const keyCounts = {}; 
+
+//         const maxCols = Math.max(row0.length, row1.length);
+
+//         for (let i = 0; i < maxCols; i++) {
+//             if (i === 0) {
+//                 keys.push("RegNo");
+//                 validColumnIndices.push(i);
+//                 continue;
+//             }
+            
+//             if (row0[i]) {
+//                 currentLab = row0[i].toString().trim().replace(/\s+/g, '_'); 
+//             }
+            
+//             const subHeader = row1[i]?.toString().trim().replace(/\s+/g, '_'); 
+            
+//             if (currentLab && subHeader) {
+//                 let baseKey = `${currentLab}_${subHeader}`;
+                
+//                 // If the key already exists (e.g., the second 'Lab 11' at the end of the sheet), append a number
+//                 if (keyCounts[baseKey]) {
+//                     keyCounts[baseKey]++;
+//                     baseKey = `${baseKey}_${keyCounts[baseKey]}`; // Becomes Lab_11_CO1_2
+//                 } else {
+//                     keyCounts[baseKey] = 1;
+//                 }
+
+//                 keys.push(baseKey); 
+//                 validColumnIndices.push(i);
+//             }
+//         }
+
+//         // 3. Extract Max Marks and Actual Student Marks
+//         let maxMarks = {};
+//         let actualMarks = [];
+
+//         for (let r = 2; r < rawExcelData.length; r++) {
+//             const row = rawExcelData[r];
+//             if (!row || row.length === 0) continue;
+
+//             const firstCell = String(row[0] || '').trim();
+//             if (!firstCell) continue; 
+
+//             // 🌟 FIX 2: Uses .includes() to catch "Max Marks/CO" perfectly at the bottom of the sheet
+//             if (firstCell.toLowerCase().includes('max marks')) {
+//                 for (let k = 1; k < keys.length; k++) {
+//                     const colIndex = validColumnIndices[k];
+//                     maxMarks[keys[k]] = Number(row[colIndex]) || 0;
+//                 }
+//             } else if (
+//                 firstCell.toLowerCase().includes('target') || 
+//                 firstCell.toLowerCase().includes('students') || 
+//                 firstCell.toLowerCase().includes('attainment')
+//             ) {
+//                 continue; 
+//             } else {
+//                 let studentMarks = {};
+//                 for (let k = 1; k < keys.length; k++) {
+//                     const colIndex = validColumnIndices[k];
+//                     studentMarks[keys[k]] = Number(row[colIndex]) || 0;
+//                 }
+//                 actualMarks.push({ regNo: firstCell, marks: studentMarks });
+//             }
+//         }
+
+//         const totalStudents = actualMarks.length;
+
+//         // 4. Fetch the Dynamic Rubric Thresholds
+//         const { rubric: activeRubric, formattedYear, semesterType } = await getActiveRubric(
+//             cleanSubjectId, 
+//             cleanAcademicYear
+//         );
+
+//         if (!activeRubric?.thresholds?.length) {
+//             const errMsg = `Calculation Logic: No rubric found for Exam Year ${formattedYear} in ${semesterType} Semester.`;
+//             if (isPipeline) throw new Error(errMsg);
+//             return res.status(404).json({ success: false, message: errMsg });
+//         }
+
+//         // 5. Perform the Attainment Math 
+//         const attainmentReport = {};
+//         const sortedThresholds = [...activeRubric.thresholds].sort((a, b) => b.minPercent - a.minPercent);
+
+//         for (const [key, max] of Object.entries(maxMarks)) {
+//             if (!max || max <= 0) continue; 
+
+//             const target = max * 0.60; 
+//             let countAbove = 0;
+            
+//             for (let i = 0; i < totalStudents; i++) {
+//                 const score = actualMarks[i].marks[key] || 0;
+//                 if (score >= target) {
+//                     countAbove++;
+//                 }
+//             }
+
+//             const percent = totalStudents > 0 ? parseFloat(((countAbove / totalStudents) * 100).toFixed(2)) : 0;
+
+//             let level = 0; 
+//             for (const threshold of sortedThresholds) {
+//                 if (percent >= threshold.minPercent) {
+//                     level = threshold.level;
+//                     break; 
+//                 }
+//             }
+
+//             attainmentReport[key] = {
+//                 maxMarks: max, 
+//                 targetMarks: parseFloat(target.toFixed(2)),
+//                 studentsAboveTarget: countAbove,
+//                 attainmentPercent: percent,
+//                 attainmentLevel: level
+//             };
+//         }
+
+//         // 6. Save the Fully Calculated Report to Database
+//         let calculatedData = await CalculatedLabMark.findOneAndUpdate(
+//             { subjectId: cleanSubjectId, academicYear: cleanAcademicYear, course: cleanCourse },
+//             { 
+//                 $set: { 
+//                     maxMarks: maxMarks,       
+//                     actualMarks: actualMarks, 
+//                     reportData: attainmentReport,     
+//                     totalStudents: totalStudents,
+//                     calculatedAt: new Date() 
+//                 } 
+//             },
+//             { upsert: true, new: true, strict: false, lean: true } 
+//         );
+
+//         // 🌟 PIPELINE EXIT 🌟
+//         if (isPipeline) return true;
+
+//         // 🛡️ 7. STRIP THE _id FROM THE REGISTRATION ARRAY BEFORE SENDING RESPONSE
+//         if (!res.headersSent) {
+//             if (calculatedData && calculatedData.actualMarks) {
+//                 calculatedData.actualMarks = calculatedData.actualMarks.map(student => {
+//                     const { _id, ...rest } = student; 
+//                     return rest;
+//                 });
+//             }
+
+//             return res.status(200).json({
+//                 success: true,
+//                 message: `Excel uploaded and lab attainment calculated successfully!`,
+//                 data: calculatedData
+//             });
+//         }
+
+//     } catch (error) {
+//         console.error("Excel Upload & Calc Error:", error.message);
+        
+//         // 🌟 PIPELINE ERROR EXIT 🌟
+//         if (isPipeline) throw error;
+        
+//         if (!res.headersSent) {
+//             if (error.message.includes("Could not determine the semester")) {
+//                 return res.status(404).json({ success: false, message: error.message });
+//             }
+
+//             return res.status(500).json({ success: false, message: "Error processing Excel file.", error: error.message });
+//         }
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 🌟 ADDED: isPipelineArg = false
 async function handleUploadAndCalculateLabMarks(req, res, isPipelineArg = false) {
     // 🛡️ THE PIPELINE SHIELD
     const isPipeline = typeof isPipelineArg === 'boolean' ? isPipelineArg : false;
@@ -27,21 +245,28 @@ async function handleUploadAndCalculateLabMarks(req, res, isPipelineArg = false)
         
         const rawExcelData = xlsx.utils.sheet_to_json(sheet, { header: 1 });
 
-        if (rawExcelData.length < 3) {
-            const errMsg = "Excel file does not contain enough data rows.";
+        if (rawExcelData.length < 4) {
+            const errMsg = "Invalid format: Excel file does not contain enough data rows to match the Lab template.";
             if (isPipeline) throw new Error(errMsg);
             return res.status(400).json({ success: false, message: errMsg });
         }
 
-        // 2. Parse the Multi-Level Headers (With Duplicate Protection)
         const row0 = rawExcelData[0];
         const row1 = rawExcelData[1];
-        
+
+        // 🛡️ STRICT FORMAT GUARD 1: Check if Cell A1 matches the template (Reg No)
+        const cellA1 = String(row0[0] || '').trim().toLowerCase();
+        if (!cellA1.includes("reg")) {
+            const errMsg = "Invalid file format: The first cell (A1) must be 'Reg No'. Please use the official Lab template.";
+            if (isPipeline) throw new Error(errMsg);
+            return res.status(400).json({ success: false, message: errMsg });
+        }
+
+        // 2. Parse the Multi-Level Headers 
         const keys = []; 
         const validColumnIndices = []; 
         let currentLab = "";
         
-        // 🌟 FIX 1: Prevent duplicate column headers from overwriting each other
         const keyCounts = {}; 
 
         const maxCols = Math.max(row0.length, row1.length);
@@ -53,19 +278,21 @@ async function handleUploadAndCalculateLabMarks(req, res, isPipelineArg = false)
                 continue;
             }
             
-            if (row0[i]) {
+            // This captures "Lab 1" and applies it to all the COs underneath it until it hits "Lab 2"
+            if (row0[i] !== undefined && row0[i] !== null && String(row0[i]).trim() !== "") {
                 currentLab = row0[i].toString().trim().replace(/\s+/g, '_'); 
             }
             
+            // This flexibly accepts whatever COs are present on Row 2
             const subHeader = row1[i]?.toString().trim().replace(/\s+/g, '_'); 
             
             if (currentLab && subHeader) {
                 let baseKey = `${currentLab}_${subHeader}`;
                 
-                // If the key already exists (e.g., the second 'Lab 11' at the end of the sheet), append a number
+                // Duplicate column protection
                 if (keyCounts[baseKey]) {
                     keyCounts[baseKey]++;
-                    baseKey = `${baseKey}_${keyCounts[baseKey]}`; // Becomes Lab_11_CO1_2
+                    baseKey = `${baseKey}_${keyCounts[baseKey]}`; 
                 } else {
                     keyCounts[baseKey] = 1;
                 }
@@ -86,7 +313,7 @@ async function handleUploadAndCalculateLabMarks(req, res, isPipelineArg = false)
             const firstCell = String(row[0] || '').trim();
             if (!firstCell) continue; 
 
-            // 🌟 FIX 2: Uses .includes() to catch "Max Marks/CO" perfectly at the bottom of the sheet
+            // Looks for the specific Max Marks row at the bottom of your format
             if (firstCell.toLowerCase().includes('max marks')) {
                 for (let k = 1; k < keys.length; k++) {
                     const colIndex = validColumnIndices[k];
@@ -106,6 +333,13 @@ async function handleUploadAndCalculateLabMarks(req, res, isPipelineArg = false)
                 }
                 actualMarks.push({ regNo: firstCell, marks: studentMarks });
             }
+        }
+
+        // 🛡️ STRICT FORMAT GUARD 2: Ensure the Max Marks row actually existed
+        if (Object.keys(maxMarks).length === 0) {
+            const errMsg = "Invalid file format: Could not find the 'Max Marks/CO' row. It is required for calculation.";
+            if (isPipeline) throw new Error(errMsg);
+            return res.status(400).json({ success: false, message: errMsg });
         }
 
         const totalStudents = actualMarks.length;
@@ -207,14 +441,6 @@ async function handleUploadAndCalculateLabMarks(req, res, isPipelineArg = false)
         }
     }
 }
-
-
-
-
-
-
-
-
 
 
 
