@@ -4,9 +4,10 @@ import { useParams } from 'react-router-dom'
 import FinalCOAttainTable from './FinalCOAttainTable';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useFileDownload from '../../../hooks/useFileDownload';
+import FinalCOAttainLabTable from './FinalCOAttainLabTable';
 
 function FinalCOAttainment() {
-    const { academicYear, course, subjectId } = useParams();
+    const { subjectType, academicYear, course, subjectId } = useParams();
     const [data, setData] = useState(null);
     const [subjectName, setSubjectName] = useState('');
 
@@ -15,7 +16,9 @@ function FinalCOAttainment() {
     useEffect(() => {
         const getFinalCOData = async () => {
             try {
-                const res = await axios.get('/mark/get-final-attainment', {
+                const url = subjectType === 'theory' ? '/mark/get-final-attainment' : '/master-route/get-final-attainment';
+
+                const res = await axios.get(url, {
                     params: {
                         academicYear: academicYear,
                         course: course,
@@ -110,7 +113,13 @@ function FinalCOAttainment() {
 
                 {/* Table */}
                 <div className="p-2">
-                    {data && <FinalCOAttainTable data={data} />}
+                    {data && (
+                        subjectType === 'theory' ? (
+                            <FinalCOAttainTable data={data} />
+                        ) : (
+                            <FinalCOAttainLabTable data={data} />
+                        )
+                    )}
                 </div>
 
             </div>
