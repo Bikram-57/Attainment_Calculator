@@ -44,6 +44,9 @@ const finalAttainment = require('./routes/finalLabAttainment');
 const labPo = require('./routes/calculatedLabPo');
 
 
+const masterRoute = require('./routes/labMarks');
+
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const mongoUri = process.env.MONGO_URI;
@@ -101,6 +104,9 @@ app.use("/raw", formatRawMarks);
 app.use("/lab", labMarks);
 app.use("/final-lab", finalAttainment);
 app.use("/po-lab", labPo);
+
+
+app.use("/master-route", masterRoute);
 
 
 
