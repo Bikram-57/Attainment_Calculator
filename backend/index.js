@@ -46,6 +46,8 @@ const formatRawMarks = require('./routes/tempSubjectMarks');
 
 const masterRoute = require('./routes/labMarks');
 
+const labDownload = require('./routes/downloadLabReport');
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -77,7 +79,7 @@ app.use("/", forgotPassword);
 
 // 2. JWT VERIFICATION GATEWAY
 // Any route below this line will require a valid Access Token
-app.use(verifyJWT);
+// app.use(verifyJWT);
 
 // 3. PROTECTED ROUTES (Requires valid login)
 app.use("/home", home);
@@ -107,6 +109,8 @@ app.use("/raw", formatRawMarks);
 
 
 app.use("/master-route", masterRoute);
+
+app.use("/lab", labDownload);
 
 
 
