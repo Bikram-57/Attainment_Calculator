@@ -7,7 +7,7 @@ const logActivity = require('../utils/activityLogger');
 // ---------------------------------------------------------------------------
 // 1. Generate & Save Lab PO Attainment
 // ---------------------------------------------------------------------------
-async function generateAndSaveLabPoAttainment(req, res, isPipelineArg = false) {
+async function handleGenerateAndSaveLabPoAttainment(req, res, isPipelineArg = false) {
     // 🛡️ THE PIPELINE SHIELD
     const isPipeline = typeof isPipelineArg === 'boolean' ? isPipelineArg : false;
 
@@ -148,7 +148,7 @@ async function generateAndSaveLabPoAttainment(req, res, isPipelineArg = false) {
 // ---------------------------------------------------------------------------
 // 2. Get Lab PO Attainment Data
 // ---------------------------------------------------------------------------
-const getLabPoAttainmentData = async (req, res) => {
+const handleGetLabPoAttainmentData = async (req, res) => {
     try {
         let { course, academicYear, subjectId } = req.query;
 
@@ -197,6 +197,6 @@ const getLabPoAttainmentData = async (req, res) => {
 };
 
 module.exports = {
-    generateAndSaveLabPoAttainment,
-    getLabPoAttainmentData
+    handleGenerateAndSaveLabPoAttainment,
+    handleGetLabPoAttainmentData
 };
