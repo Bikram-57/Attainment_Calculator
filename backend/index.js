@@ -48,6 +48,9 @@ const masterRoute = require('./routes/labMarks');
 
 const labDownload = require('./routes/downloadLabReport');
 
+const printReadyDownload = require('./routes/LabPrintReadyPDFDownload');
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -111,6 +114,8 @@ app.use("/raw", formatRawMarks);
 app.use("/master-route", masterRoute);
 
 app.use("/lab", labDownload);
+
+app.use("/print-ready", printReadyDownload);
 
 
 
