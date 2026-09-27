@@ -4,9 +4,10 @@ import { useParams } from 'react-router-dom'
 import POAttainTable from './POAttainTable';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useFileDownload from '../../../hooks/useFileDownload';
+import POAttainLabTable from './POAttainLabTable';
 
 function POAttainment() {
-    const { academicYear, course, subjectId } = useParams();
+    const { subjectType, academicYear, course, subjectId } = useParams();
     const [data, setData] = useState(null);
     const [subjectName, setSubjectName] = useState('');
 
@@ -16,7 +17,9 @@ function POAttainment() {
         const getPOData = async () => {
             try {
                 // const res = await axios.get('/co-po/relation', {
-                const res = await axios.get('/calpo/', {
+                const url = subjectType === 'theory' ? '/calpo/' : '/master-route/get-po-attainment';
+
+                const res = await axios.get(url, {
                     params: {
                         academicYear: academicYear,
                         course: course,
@@ -29,7 +32,7 @@ function POAttainment() {
                 console.log('ERROR || useEffect - getPOData(): ', err);
             }
         };
-        
+
         const getSubject = async () => {
             try {
                 const res = await axios.get(`/sub/${subjectId}`);
@@ -41,7 +44,7 @@ function POAttainment() {
         getPOData();
         getSubject();
     }, []);
-    
+
     const handleDownload = async () => {
         try {
             const response = await axios.get('/file/FinalPo', {
@@ -52,24 +55,24 @@ function POAttainment() {
                 },
                 responseType: 'blob'
             });
-            
+
             useFileDownload(
                 response.data,
                 `Final_PO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`
             );
-            
+
             // const url = window.URL.createObjectURL(response.data);
-            
+
             // const link = document.createElement('a');
             // link.href = url;
             // link.download = `Final_PO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
-            
+
             // document.body.appendChild(link);
             // link.click();
-            
+
             // link.remove();
             // window.URL.revokeObjectURL(url);
-            
+
         } catch (err) {
             console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
             console.error('Download failed:', err);
@@ -109,7 +112,14 @@ function POAttainment() {
 
                 {/* Table */}
                 <div className="p-2">
-                    {data && <POAttainTable data={data} />}
+                    {/* {data && <POAttainTable data={data} />} */}
+                    {data && (
+                        subjectType === 'theory' ? (
+                            <POAttainTable data={data} />
+                        ) : (
+                            <POAttainLabTable data={data} />
+                        )
+                    )}
                 </div>
 
             </div>
