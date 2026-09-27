@@ -14,6 +14,7 @@ import {
     FinalCOAttainTable,
     POAttainment,
     POAttainTable,
+    COAttainLabTable
 } from "./Attainment/index";
 
 // CoPoRelation
@@ -130,6 +131,7 @@ export {
     FinalCOAttainTable,
     POAttainment,
     POAttainTable,
+    COAttainLabTable,
     AddFacultyForm,
     FacultyViewModal,
     FacultyEditModal,

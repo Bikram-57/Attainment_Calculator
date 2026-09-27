@@ -166,7 +166,7 @@ const router = createBrowserRouter([
 
 	// Full-screen routes (outside App layout)
 	{
-		path: 'co-attainment/:academicYear/:course/:subjectId',
+		path: 'co-attainment/:subjectType/:academicYear/:course/:subjectId',
 		element: (
 			<ProtectedRoute>
 				<COAttainment />
@@ -175,7 +175,7 @@ const router = createBrowserRouter([
 		handle: { title: 'CO Attainment' },
 	},
 	{
-		path: 'final-co-attainment/:academicYear/:course/:subjectId',
+		path: 'final-co-attainment/:subjectType/:academicYear/:course/:subjectId',
 		element: (
 			<ProtectedRoute>
 				<FinalCOAttainment />
@@ -184,7 +184,7 @@ const router = createBrowserRouter([
 		handle: { title: 'Final CO Attainment' },
 	},
 	{
-		path: 'po-attainment/:academicYear/:course/:subjectId',
+		path: 'po-attainment/:subjectType/:academicYear/:course/:subjectId',
 		element: (
 			<ProtectedRoute>
 				<POAttainment />

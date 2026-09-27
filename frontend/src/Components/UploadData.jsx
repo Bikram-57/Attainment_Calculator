@@ -109,12 +109,10 @@ function UploadData() {
 		setErrorMsg('');
 		try {
 			// const res = await axios.post('/mark/upload-raw', formData);
-			let res;
-			if (subjectType === 'theory'){
-				res = await axios.post('/mark/upload-raw', formData);
-			} else {
-				res = await axios.post('/master-route/upload-raw', formData);
-			}
+			const url = subjectType === 'theory' ? '/mark/upload-raw' : '/master-route/upload-raw';
+			
+			const res = await axios.post(url, formData);
+
 			setSuccessMsg(res.data.message);
 			setFile(null);
 			setAcademicYear('');

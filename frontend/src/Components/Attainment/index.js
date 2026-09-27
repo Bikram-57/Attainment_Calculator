@@ -5,6 +5,7 @@ import FinalCOAttainment from "./FinalCOAttainment/FinalCOAttainment";
 import FinalCOAttainTable from "./FinalCOAttainment/FinalCOAttainTable";
 import POAttainment from "./POAttainment/POAttainment";
 import POAttainTable from "./POAttainment/POAttainTable";
+import COAttainLabTable from "./COAttainment/COAttainLabTable";
 
 export {
     Attainment,
@@ -13,5 +14,6 @@ export {
     FinalCOAttainment,
     FinalCOAttainTable,
     POAttainment,
-    POAttainTable,    
+    POAttainTable,
+    COAttainLabTable,
 };

@@ -1,16 +1,17 @@
 import axios from 'axios';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import COAttainTable from './COAttainTable';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useFileDownload from '../../../hooks/useFileDownload';
+import COAttainLabTable from './COAttainLabTable';
 
 function COAttainment() {
     // const location = useLocation();
     // const data = location.state?.coAttainData;
     const [data, setData] = useState(null);
-    const { academicYear, course, subjectId } = useParams();
+    const { subjectType, academicYear, course, subjectId } = useParams();
     const [subjectName, setSubjectName] = useState('');
 
     useDocumentTitle('CO Attainment Report');
@@ -18,7 +19,10 @@ function COAttainment() {
     useEffect(() => {
         const getCOData = async () => {
             try {
-                const res = await axios.get('/mark/get-calculations',
+                // const res = await axios.get('/mark/get-calculations',
+                const url = subjectType === 'theory' ? '/mark/get-calculations' : '/master-route/get-co-attainment';
+
+                const res = await axios.get(url,
                     {
                         params: {
                             academicYear: academicYear,
@@ -118,7 +122,14 @@ function COAttainment() {
 
                 {/* Table */}
                 <div className="p-2">
-                    {data && <COAttainTable data={data} />}
+                    {/* {data && <COAttainTable data={data} />} */}
+                    {data && (
+                        subjectType === 'theory' ? (
+                            <COAttainTable data={data} />
+                        ) : (
+                            <COAttainLabTable data={data} />
+                        )
+                    )}
                 </div>
 
             </div>

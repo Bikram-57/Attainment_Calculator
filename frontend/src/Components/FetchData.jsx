@@ -10,6 +10,7 @@ import useDocumentTitle from '../hooks/useDocumentTitle';
 function FetchData() {
 	const userData = useSelector(state => state.auth.userData);
 
+	const [subjectType, setSubjectType] = useState('theory');
 	const [academicYear, setAcademicYear] = useState('')
 	const [course, setCourse] = useState('')
 	const [subjectId, setSubjectId] = useState('')
@@ -30,6 +31,11 @@ function FetchData() {
 	for (let year = yearList[0] + 1; year <= currentYear; year++) {
 		yearList.push(year);
 	}
+
+	const subjectTypeOptions = [
+		{ value: "theory", label: "Theory" },
+		{ value: "lab", label: "Lab" },
+	];
 
 	const yearOptions = yearList.map(year => (
 		{
@@ -152,6 +158,30 @@ function FetchData() {
 			<div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
 
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+
+					{/* Subject Type */}
+					<div>
+						<label
+							className="mb-2 block text-sm font-semibold"
+							style={{ color: COLORS.mintDark }}
+						>
+							Subject type
+						</label>
+
+						<Select
+							options={subjectTypeOptions}
+							placeholder="Select year"
+							value={
+								subjectTypeOptions.find(
+									(option) => option.value === subjectType
+								) || null
+							}
+							onChange={(selected) =>
+								setSubjectType(selected?.value || "")
+							}
+							maxMenuHeight={180}
+						/>
+					</div>
 
 					{/* Academic Year */}
 					<div>
@@ -433,6 +463,7 @@ function FetchData() {
 		// ))
 		(
 			<Attainment
+				subjectType={subjectType}
 				academicYear={academicYear}
 				course={course}
 				subjectId={subjectId}

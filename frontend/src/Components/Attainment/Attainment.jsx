@@ -3,15 +3,15 @@ import { COLORS } from '../../constants/theme'
 import { FaArrowLeft } from 'react-icons/fa';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
-function Attainment({ academicYear, course, subjectId, setFetchClicked }) {
+function Attainment({ subjectType, academicYear, course, subjectId, setFetchClicked }) {
     const handleCOAttain = () => {
-        window.open(`/co-attainment/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
+        window.open(`/co-attainment/${subjectType}/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
     }
     const handleFinalCOAttain = () => {
-        window.open(`/final-co-attainment/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
+        window.open(`/final-co-attainment/${subjectType}/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
     }
     const handlePOAttain = () => {
-        window.open(`/po-attainment/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
+        window.open(`/po-attainment/${subjectType}/${academicYear}/${course}/${subjectId}`, "_blank", "noopener,noreferrer");
     }
 
     useDocumentTitle('Attainment - Fetch Data | Menu');
