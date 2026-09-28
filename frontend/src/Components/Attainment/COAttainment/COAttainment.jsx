@@ -6,15 +6,25 @@ import COAttainTable from './COAttainTable';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useFileDownload from '../../../hooks/useFileDownload';
 import COAttainLabTable from './COAttainLabTable';
+import Select from 'react-select';
+import { COLORS } from '../../../constants/theme';
+import { IoMdDownload } from "react-icons/io";
 
 function COAttainment() {
     // const location = useLocation();
     // const data = location.state?.coAttainData;
     const [data, setData] = useState(null);
-    const { subjectType, academicYear, course, subjectId } = useParams();
     const [subjectName, setSubjectName] = useState('');
+    const [downloadType, setDownloadType] = useState('excel');
+
+    const { subjectType, academicYear, course, subjectId } = useParams();
 
     useDocumentTitle('CO Attainment Report');
+
+    const downloadTypeOptions = [
+        { value: "excel", label: "Excel" },
+        { value: "print-ready", label: "Print Ready" },
+    ];
 
     useEffect(() => {
         const getCOData = async () => {
@@ -55,9 +65,50 @@ function COAttainment() {
         getSubject();
     }, []);
 
+    // const handleDownload = async () => {
+    //     try {
+    //         const response = await axios.get('/file/calMark', {
+    //             params: {
+    //                 subjectId,
+    //                 course,
+    //                 academicYear
+    //             },
+    //             responseType: 'blob'
+    //         });
+
+    //         useFileDownload(
+    //             response.data,
+    //             `CalculatedMarks_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`
+    //         );
+
+    //         // const url = window.URL.createObjectURL(response.data);
+
+    //         // const link = document.createElement('a');
+    //         // link.href = url;
+    //         // link.download = `CalculatedMarks_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
+
+    //         // document.body.appendChild(link);
+    //         // link.click();
+
+    //         // link.remove();
+    //         window.URL.revokeObjectURL(url);
+
+    //     } catch (err) {
+    //         console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+    //         console.error('Download failed:', err);
+    //     }
+    // }
+
     const handleDownload = async () => {
         try {
-            const response = await axios.get('/file/calMark', {
+            let apiUrl;
+            if (subjectType === 'theory') {
+                apiUrl = downloadType === 'excel' ? '/file/calMark' : '/theory-print-ready/download-calculated-co-attainment';
+            } else {
+                apiUrl = downloadType === 'excel' ? '/lab/download-coAttainment' : '/lab-print-ready/download-co-attainment-pdf';
+            }
+
+            const response = await axios.get(apiUrl, {
                 params: {
                     subjectId,
                     course,
@@ -68,20 +119,8 @@ function COAttainment() {
 
             useFileDownload(
                 response.data,
-                `CalculatedMarks_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`
+                `CalculatedMarks_${subjectId}_${academicYear.replace(/\//g, '-')}.${downloadType === 'excel' ? 'xlsx' : 'pdf'}`
             );
-
-            // const url = window.URL.createObjectURL(response.data);
-
-            // const link = document.createElement('a');
-            // link.href = url;
-            // link.download = `CalculatedMarks_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
-
-            // document.body.appendChild(link);
-            // link.click();
-
-            // link.remove();
-            window.URL.revokeObjectURL(url);
 
         } catch (err) {
             console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
@@ -111,12 +150,35 @@ function COAttainment() {
                         </p>
                     </div>
 
-                    <button
-                        onClick={handleDownload}
-                        className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-800 shadow-sm transition hover:bg-slate-100 cursor-pointer"
-                    >
-                        Download
-                    </button>
+                    <div className='flex gap-2 z-40 items-center'>
+                        <label
+                            className="block text-md font-semibold"
+                            style={{ color: COLORS.font }}
+                        >
+                            Download type:
+                        </label>
+                        <div className='w-35'>
+                            <Select
+                                options={downloadTypeOptions}
+                                placeholder="Select download type"
+                                value={
+                                    downloadTypeOptions.find(
+                                        (option) => option.value === downloadType
+                                    ) || null
+                                }
+                                onChange={(selected) =>
+                                    setDownloadType(selected?.value || "")
+                                }
+                                maxMenuHeight={120}
+                            />
+                        </div>
+                        <button
+                            onClick={handleDownload}
+                            className="rounded-md bg-white px-1 py-1 text-2xl font-medium text-slate-800 shadow-sm transition hover:bg-slate-100 cursor-pointer"
+                        >
+                            <IoMdDownload />
+                        </button>
+                    </div>
 
                 </div>
 

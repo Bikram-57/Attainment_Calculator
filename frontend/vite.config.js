@@ -92,6 +92,9 @@ export default defineConfig({
             '/user-dashboard': secureProxy,
             '/raw/': secureProxy,
             '/master-route/': secureProxy,
+            '/theory-print-ready/': secureProxy,
+            '/lab-print-ready/': secureProxy,
+            '/lab/': secureProxy,
         },
     },
 })
