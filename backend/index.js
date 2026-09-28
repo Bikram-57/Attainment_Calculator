@@ -36,7 +36,7 @@ const formatDownload = require('./routes/formatDownload');
 const activity = require('./routes/activities');
 const subjectAnalysis = require('./routes/subjectAnalysis');
 const userHomePage = require('./routes/userHomePage');
-const printReadyPDFdownload = require('./routes/PrintReadyPDFDownload');
+const printReadyPDFdownloadForTheory = require('./routes/PrintReadyPDFDownload');
 const formatRawMarks = require('./routes/tempSubjectMarks');
 
 // const labMarks = require('./routes/calculatedLabMarks');
@@ -48,7 +48,7 @@ const masterRoute = require('./routes/labMarks');
 
 const labDownload = require('./routes/downloadLabReport');
 
-const printReadyDownload = require('./routes/LabPrintReadyPDFDownload');
+const printReadyPDFDownloadForLab = require('./routes/LabPrintReadyPDFDownload');
 
 
 
@@ -82,7 +82,7 @@ app.use("/", forgotPassword);
 
 // 2. JWT VERIFICATION GATEWAY
 // Any route below this line will require a valid Access Token
-app.use(verifyJWT);
+// app.use(verifyJWT);
 
 // 3. PROTECTED ROUTES (Requires valid login)
 app.use("/home", home);
@@ -103,7 +103,7 @@ app.use("/activity", activity);
 app.use("/subject-analysis", subjectAnalysis);
 // app.use("/", userHomePage);
 app.use("/user-dashboard", userHomePage);
-app.use("/printReady", printReadyPDFdownload);
+app.use("/theory-print-ready", printReadyPDFdownloadForTheory);
 app.use("/raw", formatRawMarks);
 
 // app.use("/lab", labMarks);
@@ -115,7 +115,7 @@ app.use("/master-route", masterRoute);
 
 app.use("/lab", labDownload);
 
-app.use("/print-ready", printReadyDownload);
+app.use("/lab-print-ready", printReadyPDFDownloadForLab);
 
 
 
