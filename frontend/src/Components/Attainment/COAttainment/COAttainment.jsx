@@ -103,9 +103,9 @@ function COAttainment() {
         try {
             let apiUrl;
             if (subjectType === 'theory') {
-                apiUrl = downloadType === 'excel' ? '/file/calMark' : '/theory-print-ready/download-calculated-co-attainment';
+                apiUrl = downloadType === 'excel' ? '/file/calMark' : '/theory-print-ready/theory/download-calculated-marks';
             } else {
-                apiUrl = downloadType === 'excel' ? '/lab/download-coAttainment' : '/lab-print-ready/download-co-attainment-pdf';
+                apiUrl = downloadType === 'excel' ? '/lab/download-coAttainment' : '/lab-print-ready/lab/download-co-attainment';
             }
 
             const response = await axios.get(apiUrl, {

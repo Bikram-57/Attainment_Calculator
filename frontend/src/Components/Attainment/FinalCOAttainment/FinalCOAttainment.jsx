@@ -59,10 +59,10 @@ function FinalCOAttainment() {
         try {
             let apiUrl;
             if (subjectType === 'theory') {
-                apiUrl = downloadType === 'excel' ? '/file/FinalCo' : '/theory-print-ready/download-finl-co-attainment';
+                apiUrl = downloadType === 'excel' ? '/file/FinalCo' : '/theory-print-ready/theory/download-final-co';
             } else {
                 apiUrl = downloadType === 'excel' ?
-                    '/lab/download-finalCoAttainment' : '/lab-print-ready/download-final-co-attainment-pdf';
+                    '/lab/download-finalCoAttainment' : '/lab-print-ready/lab/download-final-co-attainment';
             }
 
             const response = await axios.get(apiUrl, {
