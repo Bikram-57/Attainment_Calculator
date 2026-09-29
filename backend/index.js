@@ -48,7 +48,7 @@ const masterRoute = require('./routes/labMarks');
 
 const labDownload = require('./routes/downloadLabReport');
 
-// const printReadyPDFDownloadForLab = require('./routes/LabPrintReadyPDFDownload');
+const printReadyPDFDownloadForLab = require('./routes/LabPrintReadyPDFDownload');
 
 
 
@@ -115,7 +115,7 @@ app.use("/master-route", masterRoute);
 
 app.use("/lab", labDownload);
 
-// app.use("/lab-print-ready", printReadyPDFDownloadForLab);
+app.use("/lab-print-ready", printReadyPDFDownloadForLab);
 
 
 

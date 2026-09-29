@@ -1249,9 +1249,9 @@
 const puppeteer = require('puppeteer');
 
 // Models
-const calculatedMarks = require("../models/calculatedMarks");
-const FinalCoAttainment = require("../models/finalAttainment");
-const PoAttainment = require("../models/calculatedPo");
+const calculatedMarks = require("../models/calculatedLabMarks");
+const FinalCoAttainment = require("../models/finalLabAttainment");
+const PoAttainment = require("../models/calculatedLabPo");
 
 // ============================================================================
 // CONSTANTS & HELPERS
@@ -1523,6 +1523,51 @@ function extractComponents(marksDoc) {
 }
 
 // 1. Download Master Report (All 3 Tables)
+// async function handleDownloadPdfReport(req, res) {
+//     try {
+//         const inputs = getSanitizedInputs(req);
+//         if (!inputs) return res.status(400).json({ success: false, message: "Missing inputs." });
+//         const { cleanSubjectId, cleanCourse, cleanYear } = inputs;
+
+//         const [calcData, finalData, poData] = await Promise.all([
+//             calculatedMarks.findOne({ subjectId: cleanSubjectId, course: cleanCourse, academicYear: cleanYear }).lean(),
+//             FinalCoAttainment.findOne({ subjectId: cleanSubjectId, course: cleanCourse, academicYear: cleanYear }).lean(),
+//             PoAttainment.findOne({ subjectId: cleanSubjectId, course: cleanCourse, academicYear: cleanYear }).lean()
+//         ]);
+
+//         if (!calcData && !finalData && !poData) return res.status(404).json({ success: false, message: "No data found." });
+
+//         const { orderedComponents, componentMap } = extractComponents(calcData);
+//         const colorMap = buildColorMap(orderedComponents);
+
+//         let html = getBaseHtml(`Attainment Report - ${cleanSubjectId} (${cleanYear})`);
+
+//         html += getTable1Html(calcData, colorMap, orderedComponents, componentMap, '1. Calculated Marks & Attainment');
+        
+//         const hasT1 = !!calcData;
+//         const pageBreakT2 = hasT1 ? '<h3 class="page-break">2. Final CO Attainment</h3>' : '<h3>2. Final CO Attainment</h3>';
+//         html += getTable2Html(finalData, colorMap, pageBreakT2);
+
+//         const pageBreakT3 = (hasT1 || !!finalData) ? '<h3 class="page-break">3. Final PO Attainment</h3>' : '<h3>3. Final PO Attainment</h3>';
+//         html += getTable3Html(poData, finalData, pageBreakT3);
+        
+//         html += `</body></html>`;
+
+//         const pdfBuffer = await generatePdfBuffer(html);
+//         res.setHeader('Content-Type', 'application/pdf');
+//         res.setHeader('Content-Disposition', `inline; filename="Report_${cleanSubjectId}_${cleanYear}.pdf"`);
+//         return res.send(pdfBuffer);
+
+//     } catch (error) {
+//         console.error("Master PDF Error:", error.message);
+//         if (!res.headersSent) return res.status(500).json({ success: false, message: 'Internal server error' });
+//     }
+// }
+
+
+
+
+
 async function handleDownloadPdfReport(req, res) {
     try {
         const inputs = getSanitizedInputs(req);
@@ -1542,13 +1587,17 @@ async function handleDownloadPdfReport(req, res) {
 
         let html = getBaseHtml(`Attainment Report - ${cleanSubjectId} (${cleanYear})`);
 
+        // Table 1 stays on Page 1 naturally
         html += getTable1Html(calcData, colorMap, orderedComponents, componentMap, '1. Calculated Marks & Attainment');
         
         const hasT1 = !!calcData;
+        
+        // Table 2 adds a page break to move to Page 2
         const pageBreakT2 = hasT1 ? '<h3 class="page-break">2. Final CO Attainment</h3>' : '<h3>2. Final CO Attainment</h3>';
         html += getTable2Html(finalData, colorMap, pageBreakT2);
 
-        const pageBreakT3 = (hasT1 || !!finalData) ? '<h3 class="page-break">3. Final PO Attainment</h3>' : '<h3>3. Final PO Attainment</h3>';
+        // Table 3 NO LONGER has a page break, so it stays on Page 2 with Table 2
+        const pageBreakT3 = '<h3>3. Final PO Attainment</h3>';
         html += getTable3Html(poData, finalData, pageBreakT3);
         
         html += `</body></html>`;
