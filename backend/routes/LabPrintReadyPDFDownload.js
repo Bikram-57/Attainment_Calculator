@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { handleDownloadPrintReadyReportForLab, handleDownloadCOAttainmentPDF, handleDownloadFinalCOAttainmentPDF, handleDownloadPOAttainmentPDF } = require('../controllers/LabPrintReadyPDFDownload'); 
+const {
+    handleDownloadPrintReadyReportForLab,
+    handleDownloadCOAttainmentPDF,
+    handleDownloadFinalCOAttainmentPDF,
+    handleDownloadPOAttainmentPDF
+} = require('../controllers/LabPrintReadyPDFDownload');
 
 // ... your excel routes ...
 router.get('/download-pdf', handleDownloadPrintReadyReportForLab);

@@ -48,7 +48,7 @@ const masterRoute = require('./routes/labMarks');
 
 const labDownload = require('./routes/downloadLabReport');
 
-const printReadyPDFDownloadForLab = require('./routes/LabPrintReadyPDFDownload');
+// const printReadyPDFDownloadForLab = require('./routes/LabPrintReadyPDFDownload');
 
 
 
@@ -82,7 +82,7 @@ app.use("/", forgotPassword);
 
 // 2. JWT VERIFICATION GATEWAY
 // Any route below this line will require a valid Access Token
-app.use(verifyJWT);
+// app.use(verifyJWT);
 
 // 3. PROTECTED ROUTES (Requires valid login)
 app.use("/home", home);
@@ -115,7 +115,7 @@ app.use("/master-route", masterRoute);
 
 app.use("/lab", labDownload);
 
-app.use("/lab-print-ready", printReadyPDFDownloadForLab);
+// app.use("/lab-print-ready", printReadyPDFDownloadForLab);
 
 
 

@@ -1,1997 +1,410 @@
-// // const puppeteer = require('puppeteer');
-
-// // // Models
-// // const calculatedMarks = require("../models/calculatedMarks");
-// // const FinalCoAttainment = require("../models/finalAttainment");
-// // const PoAttainment = require("../models/calculatedPo"); // Updated to correct model
-
-// // // Helper: Format values safely
-// // const formatVal = (val) => (val !== undefined && val !== null && val !== '') ? val : '-';
-
-// // // ============================================================================
-// // // Download Master Report as PDF
-// // // ============================================================================
-// // async function handleDownloadPdfReport(req, res) {
-// //     try {
-// //         const { subjectId, course, academicYear } = req.query;
-
-// //         if (!subjectId || !course || !academicYear) {
-// //             return res.status(400).json({ message: "Missing subjectId, course, or academicYear" });
-// //         }
-
-// //         const safeYear = academicYear.replace(/\//g, '-');
-// //         const fileName = `Report_${subjectId}_${safeYear}.pdf`;
-
-// //         // 1. FETCH DATA
-// //         const [marksDoc, coDoc, poDoc] = await Promise.all([
-// //             calculatedMarks.findOne({ subjectId, course, academicYear }).lean(),
-// //             FinalCoAttainment.findOne({ subjectId, course, academicYear }).lean(),
-// //             PoAttainment.findOne({ subjectId, course, academicYear }).lean() // Updated database query
-// //         ]);
-
-// //         if (!marksDoc?.actualMarks?.length) {
-// //             return res.status(404).json({ message: "No marks data found for this subject and year." });
-// //         }
-
-// //         // 2. PREPARE DYNAMIC DATA MAPPINGS
-// //         const sampleMarks = marksDoc.actualMarks[0].marks;
-// //         const componentMap = {};
-// //         const orderedComponents = [];
-
-// //         Object.keys(sampleMarks).forEach(key => {
-// //             if (key.endsWith('_TOTAL')) return;
-// //             const match = key.match(/(.*)_(CO\d+)/);
-// //             if (match) {
-// //                 const [, compName, coName] = match;
-// //                 if (!componentMap[compName]) {
-// //                     componentMap[compName] = [];
-// //                     orderedComponents.push(compName);
-// //                 }
-// //                 componentMap[compName].push(coName);
-// //             }
-// //         });
-
-// //         orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
-
-// //         // 3. BUILD HTML CONTENT
-// //         let htmlContent = `
-// //         <!DOCTYPE html>
-// //         <html>
-// //         <head>
-// //             <style>
-// //                 body { font-family: Arial, sans-serif; font-size: 10px; margin: 0; padding: 0; }
-// //                 h2 { text-align: center; font-size: 16px; margin-bottom: 5px; }
-// //                 h3 { text-align: left; font-size: 14px; margin-top: 20px; margin-bottom: 10px; color: #333; }
-// //                 table { width: 100%; border-collapse: collapse; margin-bottom: 20px; page-break-inside: auto; }
-// //                 tr { page-break-inside: avoid; page-break-after: auto; }
-// //                 th, td { border: 1px solid black; padding: 4px; text-align: center; }
-// //                 .page-break { page-break-before: always; }
-                
-// //                 /* Colors matching your Excel styles */
-// //                 .bg-reg { background-color: #D99694; font-weight: bold; }
-// //                 .bg-comp-0 { background-color: #CCC1DA; font-weight: bold; }
-// //                 .bg-comp-1 { background-color: #C5D9F1; font-weight: bold; }
-// //                 .bg-header-gray { background-color: #F2F2F2; font-weight: bold; }
-// //                 .bg-footer-gray { background-color: #E6E6E6; font-weight: bold; }
-// //                 .text-right { text-align: right; padding-right: 10px; }
-// //             </style>
-// //         </head>
-// //         <body>
-// //             <h2>Attainment Report: ${subjectId} (${safeYear})</h2>
-            
-// //             <!-- SECTION 1: CALCULATED MARKS -->
-// //             <h3>1. Calculated Marks & Attainment</h3>
-// //             <table>
-// //                 <thead>
-// //                     <tr>
-// //                         <th rowspan="2" class="bg-reg">Reg No</th>`;
-        
-// //         // Headers Row 1 (Components)
-// //         orderedComponents.forEach((comp, index) => {
-// //             const colspan = componentMap[comp].length + 1;
-// //             const bgClass = `bg-comp-${index % 2}`;
-// //             htmlContent += `<th colspan="${colspan}" class="${bgClass}">${comp.replace(/_/g, ' ')}</th>`;
-// //         });
-        
-// //         htmlContent += `</tr><tr>`;
-        
-// //         // Headers Row 2 (COs & Totals)
-// //         orderedComponents.forEach((comp, index) => {
-// //             const bgClass = `bg-comp-${index % 2}`;
-// //             componentMap[comp].forEach(co => {
-// //                 htmlContent += `<th class="${bgClass}">${co}</th>`;
-// //             });
-// //             htmlContent += `<th class="${bgClass}">Total</th>`;
-// //         });
-        
-// //         htmlContent += `</tr></thead><tbody>`;
-
-// //         // Student Marks Rows
-// //         marksDoc.actualMarks.forEach(({ regNo, marks: m }) => {
-// //             htmlContent += `<tr><td><b>${regNo}</b></td>`;
-// //             orderedComponents.forEach(comp => {
-// //                 componentMap[comp].forEach(co => {
-// //                     htmlContent += `<td>${formatVal(m[`${comp}_${co}`])}</td>`;
-// //                 });
-// //                 htmlContent += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
-// //             });
-// //             htmlContent += `</tr>`;
-// //         });
-
-// //         // Calculation Rows (Max, Target, Attainment, etc.)
-// //         const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
-// //         calcLabels.forEach((label, i) => {
-// //             htmlContent += `<tr><td style="font-weight: bold;">${label}</td>`;
-// //             orderedComponents.forEach(comp => {
-// //                 [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
-// //                     const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
-// //                     const calc = marksDoc.reportData[key] || {};
-                    
-// //                     let val = '-';
-// //                     if (i === 0) val = formatVal(calc.maxMarks);
-// //                     if (i === 1) val = formatVal(calc.targetMarks);
-// //                     if (i === 2) val = formatVal(calc.studentsAboveTarget);
-// //                     if (i === 3) val = formatVal(calc.attainmentPercent);
-// //                     if (i === 4) val = formatVal(calc.attainmentLevel);
-                    
-// //                     htmlContent += `<td>${val}</td>`;
-// //                 });
-// //             });
-// //             htmlContent += `</tr>`;
-// //         });
-        
-// //         htmlContent += `</tbody></table>`;
-
-// //         // SECTION 2: FINAL CO ATTAINMENT
-// //         if (coDoc?.attainmentTable) {
-// //             htmlContent += `<div class="page-break"></div>
-// //                             <h3>2. Final CO Attainment</h3>
-// //                             <table>
-// //                                 <thead>
-// //                                     <tr class="bg-header-gray">
-// //                                         <th>CO's</th>
-// //                                         <th>Quiz 1</th>
-// //                                         <th>Sessional 1</th>
-// //                                         <th>Quiz 2</th>
-// //                                         <th>Sessional 2</th>
-// //                                         <th>Assignment</th>
-// //                                         <th>End Sem</th>
-// //                                         <th>Total Avg Int</th>
-// //                                         <th>Grand Total (50% int + 50% End term)</th>
-// //                                     </tr>
-// //                                 </thead>
-// //                                 <tbody>`;
-                                
-// //             Object.entries(coDoc.attainmentTable).forEach(([coName, coData]) => {
-// //                 htmlContent += `<tr>
-// //                     <td><b>${coName}</b></td>
-// //                     <td>${formatVal(coData.Quiz_1)}</td>
-// //                     <td>${formatVal(coData.Mid_Term)}</td>
-// //                     <td>${formatVal(coData.Quiz_2)}</td>
-// //                     <td>${formatVal(coData.Surprise_Quiz)}</td>
-// //                     <td>${formatVal(coData.Assignment)}</td>
-// //                     <td>${formatVal(coData.externalLevel)}</td>
-// //                     <td>${formatVal(coData.internalAvg)}</td>
-// //                     <td>${formatVal(coData.grandTotal)}</td>
-// //                 </tr>`;
-// //             });
-
-// //             // Calculate Final CO Attainment Average if missing
-// //             let finalAttainmentValue = coDoc.finalSubjectAttainment;
-// //             if (finalAttainmentValue === undefined) {
-// //                 let sumGrandTotal = 0, countGrandTotal = 0;
-// //                 Object.values(coDoc.attainmentTable).forEach(co => {
-// //                     if (typeof co.grandTotal === 'number') { sumGrandTotal += co.grandTotal; countGrandTotal++; }
-// //                 });
-// //                 finalAttainmentValue = countGrandTotal > 0 ? parseFloat((sumGrandTotal / countGrandTotal).toFixed(2)) : undefined;
-// //             }
-
-// //             htmlContent += `<tr class="bg-footer-gray">
-// //                                 <td colspan="8" class="text-right">Final CO Attainment</td>
-// //                                 <td>${formatVal(finalAttainmentValue)}</td>
-// //                             </tr>
-// //                         </tbody>
-// //                     </table>`;
-// //         }
-
-// //         // SECTION 3: FINAL PO ATTAINMENT
-// //         if (poDoc?.mappingData && poDoc?.averageCo) {
-// //             const poKeys = Object.keys(poDoc.averageCo).sort((a, b) => {
-// //                 const numA = parseInt(a.replace(/\D/g, '')) || 0, numB = parseInt(b.replace(/\D/g, '')) || 0;
-// //                 const textA = a.replace(/\d/g, ''), textB = b.replace(/\d/g, '');
-// //                 return textA === textB ? numA - numB : textA.localeCompare(textB);
-// //             });
-
-// //             // Replaced page-break with <br> to keep on the same page as Section 2
-// //             htmlContent += `<br>
-// //                             <h3>3. Final PO Attainment</h3>
-// //                             <table>
-// //                                 <thead>
-// //                                     <tr class="bg-header-gray">
-// //                                         <th>CO's</th>`;
-            
-// //             poKeys.forEach(po => htmlContent += `<th>${po.toUpperCase()}</th>`);
-            
-// //             htmlContent += `</tr></thead><tbody>`;
-
-// //             // Mapping Rows
-// //             Object.keys(poDoc.mappingData).forEach(co => {
-// //                 htmlContent += `<tr><td><b>${co}</b></td>`;
-// //                 poKeys.forEach(po => htmlContent += `<td>${formatVal(poDoc.mappingData[co][po])}</td>`);
-// //                 htmlContent += `</tr>`;
-// //             });
-
-// //             // Average CO Row
-// //             htmlContent += `<tr style="background-color: #F9F9F9; font-weight: bold;">
-// //                                 <td>Average</td>`;
-// //             poKeys.forEach(po => htmlContent += `<td>${formatVal(poDoc.averageCo[po])}</td>`);
-// //             htmlContent += `</tr>`;
-
-// //             // Final Subject Attainment Row
-// //             htmlContent += `<tr class="bg-footer-gray">
-// //                                 <td>Final Subject Attainment</td>
-// //                                 <td colspan="${poKeys.length}">${formatVal(poDoc.finalSubjectAttainment)}</td>
-// //                             </tr>`;
-
-// //             // PO Attainment Row
-// //             const poAttnData = poDoc.poAttainment || poDoc.poAttainments || {};
-// //             htmlContent += `<tr style="background-color: #E0E0E0; font-weight: bold;">
-// //                                 <td>Final PO Attainment</td>`;
-            
-// //             poKeys.forEach(po => {
-// //                 let val = poAttnData[po] ?? poAttnData[Object.keys(poAttnData).find(k => k.toLowerCase() === po.toLowerCase())];
-// //                 htmlContent += `<td>${formatVal(val)}</td>`;
-// //             });
-
-// //             htmlContent += `</tr></tbody></table>`;
-// //         }
-
-// //         htmlContent += `</body></html>`;
-
-// //         // 4. GENERATE PDF VIA PUPPETEER
-// //         const browser = await puppeteer.launch({ 
-// //             headless: 'new',
-// //             args: ['--no-sandbox', '--disable-setuid-sandbox'] // Recommended for server environments
-// //         });
-        
-// //         const page = await browser.newPage();
-// //         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-
-// //         const pdfBuffer = await page.pdf({
-// //             format: 'A4',
-// //             landscape: true, // Landscape works best for wide data tables
-// //             margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
-// //             printBackground: true // Ensures the alternating table header colors show up
-// //         });
-
-// //         await browser.close();
-
-// //         // 5. STREAM PDF TO BROWSER
-// //         res.setHeader('Content-Type', 'application/pdf');
-// //         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-// //         res.send(pdfBuffer);
-
-// //     } catch (error) {
-// //         console.error('Error generating PDF report:', error);
-// //         if (!res.headersSent) res.status(500).json({ message: 'Internal server error while generating PDF report.' });
-// //     }
-// // }
-
-// // module.exports = {
-// //     handleDownloadPdfReport
-// // };
-
-
-
-// const puppeteer = require('puppeteer');
-
-// // Models
-// const calculatedMarks = require("../models/calculatedMarks");
-// const FinalCoAttainment = require("../models/finalAttainment");
-// const PoAttainment = require("../models/calculatedPo"); // Updated to correct model
-
-// // Helper: Format values safely
-// const formatVal = (val) => (val !== undefined && val !== null && val !== '') ? val : '-';
-
-// // Shared HTML Base Template for consistent styling in individual reports
-// const getBaseHtml = (title, tableHtml) => `
-// <!DOCTYPE html>
-// <html>
-// <head>
-//     <style>
-//         body { font-family: Arial, sans-serif; font-size: 10px; margin: 0; padding: 0; }
-//         h2 { text-align: center; font-size: 16px; margin-bottom: 20px; }
-//         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; page-break-inside: auto; }
-//         tr { page-break-inside: avoid; page-break-after: auto; }
-//         th, td { border: 1px solid black; padding: 5px; text-align: center; }
-        
-//         /* Excel matching styles */
-//         .bg-reg { background-color: #D99694; font-weight: bold; }
-//         .bg-comp-0 { background-color: #CCC1DA; font-weight: bold; }
-//         .bg-comp-1 { background-color: #C5D9F1; font-weight: bold; }
-//         .bg-header-gray { background-color: #F2F2F2; font-weight: bold; }
-//         .bg-footer-gray { background-color: #E6E6E6; font-weight: bold; }
-//         .text-right { text-align: right; padding-right: 10px; }
-//     </style>
-// </head>
-// <body>
-//     <h2>${title}</h2>
-//     ${tableHtml}
-// </body>
-// </html>
-// `;
-
-// // ============================================================================
-// // 1. Download Master Report as PDF
-// // ============================================================================
-// async function handleDownloadPdfReport(req, res) {
-//     try {
-//         const { subjectId, course, academicYear } = req.query;
-
-//         if (!subjectId || !course || !academicYear) {
-//             return res.status(400).json({ message: "Missing subjectId, course, or academicYear" });
-//         }
-
-//         const safeYear = academicYear.replace(/\//g, '-');
-//         const fileName = `Report_${subjectId}_${safeYear}.pdf`;
-
-//         // 1. FETCH DATA
-//         const [marksDoc, coDoc, poDoc] = await Promise.all([
-//             calculatedMarks.findOne({ subjectId, course, academicYear }).lean(),
-//             FinalCoAttainment.findOne({ subjectId, course, academicYear }).lean(),
-//             PoAttainment.findOne({ subjectId, course, academicYear }).lean() // Updated database query
-//         ]);
-
-//         if (!marksDoc?.actualMarks?.length) {
-//             return res.status(404).json({ message: "No marks data found for this subject and year." });
-//         }
-
-//         // 2. PREPARE DYNAMIC DATA MAPPINGS
-//         const sampleMarks = marksDoc.actualMarks[0].marks;
-//         const componentMap = {};
-//         const orderedComponents = [];
-
-//         Object.keys(sampleMarks).forEach(key => {
-//             if (key.endsWith('_TOTAL')) return;
-//             const match = key.match(/(.*)_(CO\d+)/);
-//             if (match) {
-//                 const [, compName, coName] = match;
-//                 if (!componentMap[compName]) {
-//                     componentMap[compName] = [];
-//                     orderedComponents.push(compName);
-//                 }
-//                 componentMap[compName].push(coName);
-//             }
-//         });
-
-//         orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
-
-//         // 3. BUILD HTML CONTENT
-//         let htmlContent = `
-//         <!DOCTYPE html>
-//         <html>
-//         <head>
-//             <style>
-//                 body { font-family: Arial, sans-serif; font-size: 10px; margin: 0; padding: 0; }
-//                 h2 { text-align: center; font-size: 16px; margin-bottom: 5px; }
-//                 h3 { text-align: left; font-size: 14px; margin-top: 20px; margin-bottom: 10px; color: #333; }
-//                 table { width: 100%; border-collapse: collapse; margin-bottom: 20px; page-break-inside: auto; }
-//                 tr { page-break-inside: avoid; page-break-after: auto; }
-//                 th, td { border: 1px solid black; padding: 4px; text-align: center; }
-//                 .page-break { page-break-before: always; }
-                
-//                 /* Colors matching your Excel styles */
-//                 .bg-reg { background-color: #D99694; font-weight: bold; }
-//                 .bg-comp-0 { background-color: #CCC1DA; font-weight: bold; }
-//                 .bg-comp-1 { background-color: #C5D9F1; font-weight: bold; }
-//                 .bg-header-gray { background-color: #F2F2F2; font-weight: bold; }
-//                 .bg-footer-gray { background-color: #E6E6E6; font-weight: bold; }
-//                 .text-right { text-align: right; padding-right: 10px; }
-//             </style>
-//         </head>
-//         <body>
-//             <h2>Attainment Report: ${subjectId} (${safeYear})</h2>
-            
-//             <!-- SECTION 1: CALCULATED MARKS -->
-//             <h3>1. Calculated Marks & Attainment</h3>
-//             <table>
-//                 <thead>
-//                     <tr>
-//                         <th rowspan="2" class="bg-reg">Reg No</th>`;
-        
-//         // Headers Row 1 (Components)
-//         orderedComponents.forEach((comp, index) => {
-//             const colspan = componentMap[comp].length + 1;
-//             const bgClass = `bg-comp-${index % 2}`;
-//             htmlContent += `<th colspan="${colspan}" class="${bgClass}">${comp.replace(/_/g, ' ')}</th>`;
-//         });
-        
-//         htmlContent += `</tr><tr>`;
-        
-//         // Headers Row 2 (COs & Totals)
-//         orderedComponents.forEach((comp, index) => {
-//             const bgClass = `bg-comp-${index % 2}`;
-//             componentMap[comp].forEach(co => {
-//                 htmlContent += `<th class="${bgClass}">${co}</th>`;
-//             });
-//             htmlContent += `<th class="${bgClass}">Total</th>`;
-//         });
-        
-//         htmlContent += `</tr></thead><tbody>`;
-
-//         // Student Marks Rows
-//         marksDoc.actualMarks.forEach(({ regNo, marks: m }) => {
-//             htmlContent += `<tr><td><b>${regNo}</b></td>`;
-//             orderedComponents.forEach(comp => {
-//                 componentMap[comp].forEach(co => {
-//                     htmlContent += `<td>${formatVal(m[`${comp}_${co}`])}</td>`;
-//                 });
-//                 htmlContent += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
-//             });
-//             htmlContent += `</tr>`;
-//         });
-
-//         // Calculation Rows (Max, Target, Attainment, etc.)
-//         const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
-//         calcLabels.forEach((label, i) => {
-//             htmlContent += `<tr><td style="font-weight: bold;">${label}</td>`;
-//             orderedComponents.forEach(comp => {
-//                 [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
-//                     const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
-//                     const calc = marksDoc.reportData[key] || {};
-                    
-//                     let val = '-';
-//                     if (i === 0) val = formatVal(calc.maxMarks);
-//                     if (i === 1) val = formatVal(calc.targetMarks);
-//                     if (i === 2) val = formatVal(calc.studentsAboveTarget);
-//                     if (i === 3) val = formatVal(calc.attainmentPercent);
-//                     if (i === 4) val = formatVal(calc.attainmentLevel);
-                    
-//                     htmlContent += `<td>${val}</td>`;
-//                 });
-//             });
-//             htmlContent += `</tr>`;
-//         });
-        
-//         htmlContent += `</tbody></table>`;
-
-//         // SECTION 2: FINAL CO ATTAINMENT
-//         if (coDoc?.attainmentTable) {
-//             htmlContent += `<div class="page-break"></div>
-//                             <h3>2. Final CO Attainment</h3>
-//                             <table>
-//                                 <thead>
-//                                     <tr class="bg-header-gray">
-//                                         <th>CO's</th>
-//                                         <th>Quiz 1</th>
-//                                         <th>Sessional 1</th>
-//                                         <th>Quiz 2</th>
-//                                         <th>Sessional 2</th>
-//                                         <th>Assignment</th>
-//                                         <th>End Sem</th>
-//                                         <th>Total Avg Int</th>
-//                                         <th>Grand Total (50% int + 50% End term)</th>
-//                                     </tr>
-//                                 </thead>
-//                                 <tbody>`;
-                                
-//             Object.entries(coDoc.attainmentTable).forEach(([coName, coData]) => {
-//                 htmlContent += `<tr>
-//                     <td><b>${coName}</b></td>
-//                     <td>${formatVal(coData.Quiz_1)}</td>
-//                     <td>${formatVal(coData.Mid_Term)}</td>
-//                     <td>${formatVal(coData.Quiz_2)}</td>
-//                     <td>${formatVal(coData.Surprise_Quiz)}</td>
-//                     <td>${formatVal(coData.Assignment)}</td>
-//                     <td>${formatVal(coData.externalLevel)}</td>
-//                     <td>${formatVal(coData.internalAvg)}</td>
-//                     <td>${formatVal(coData.grandTotal)}</td>
-//                 </tr>`;
-//             });
-
-//             // Calculate Final CO Attainment Average if missing
-//             let finalAttainmentValue = coDoc.finalSubjectAttainment;
-//             if (finalAttainmentValue === undefined) {
-//                 let sumGrandTotal = 0, countGrandTotal = 0;
-//                 Object.values(coDoc.attainmentTable).forEach(co => {
-//                     if (typeof co.grandTotal === 'number') { sumGrandTotal += co.grandTotal; countGrandTotal++; }
-//                 });
-//                 finalAttainmentValue = countGrandTotal > 0 ? parseFloat((sumGrandTotal / countGrandTotal).toFixed(2)) : undefined;
-//             }
-
-//             htmlContent += `<tr class="bg-footer-gray">
-//                                 <td colspan="8" class="text-right">Final CO Attainment</td>
-//                                 <td>${formatVal(finalAttainmentValue)}</td>
-//                             </tr>
-//                         </tbody>
-//                     </table>`;
-//         }
-
-//         // SECTION 3: FINAL PO ATTAINMENT
-//         if (poDoc?.mappingData && poDoc?.averageCo) {
-//             const poKeys = Object.keys(poDoc.averageCo).sort((a, b) => {
-//                 const numA = parseInt(a.replace(/\D/g, '')) || 0, numB = parseInt(b.replace(/\D/g, '')) || 0;
-//                 const textA = a.replace(/\d/g, ''), textB = b.replace(/\d/g, '');
-//                 return textA === textB ? numA - numB : textA.localeCompare(textB);
-//             });
-
-//             // Replaced page-break with <br> to keep on the same page as Section 2
-//             htmlContent += `<br>
-//                             <h3>3. Final PO Attainment</h3>
-//                             <table>
-//                                 <thead>
-//                                     <tr class="bg-header-gray">
-//                                         <th>CO's</th>`;
-            
-//             poKeys.forEach(po => htmlContent += `<th>${po.toUpperCase()}</th>`);
-            
-//             htmlContent += `</tr></thead><tbody>`;
-
-//             // Mapping Rows
-//             Object.keys(poDoc.mappingData).forEach(co => {
-//                 htmlContent += `<tr><td><b>${co}</b></td>`;
-//                 poKeys.forEach(po => htmlContent += `<td>${formatVal(poDoc.mappingData[co][po])}</td>`);
-//                 htmlContent += `</tr>`;
-//             });
-
-//             // Average CO Row
-//             htmlContent += `<tr style="background-color: #F9F9F9; font-weight: bold;">
-//                                 <td>Average</td>`;
-//             poKeys.forEach(po => htmlContent += `<td>${formatVal(poDoc.averageCo[po])}</td>`);
-//             htmlContent += `</tr>`;
-
-//             // Final Subject Attainment Row
-//             htmlContent += `<tr class="bg-footer-gray">
-//                                 <td>Final Subject Attainment</td>
-//                                 <td colspan="${poKeys.length}">${formatVal(poDoc.finalSubjectAttainment)}</td>
-//                             </tr>`;
-
-//             // PO Attainment Row
-//             const poAttnData = poDoc.poAttainment || poDoc.poAttainments || {};
-//             htmlContent += `<tr style="background-color: #E0E0E0; font-weight: bold;">
-//                                 <td>Final PO Attainment</td>`;
-            
-//             poKeys.forEach(po => {
-//                 let val = poAttnData[po] ?? poAttnData[Object.keys(poAttnData).find(k => k.toLowerCase() === po.toLowerCase())];
-//                 htmlContent += `<td>${formatVal(val)}</td>`;
-//             });
-
-//             htmlContent += `</tr></tbody></table>`;
-//         }
-
-//         htmlContent += `</body></html>`;
-
-//         // 4. GENERATE PDF VIA PUPPETEER
-//         const browser = await puppeteer.launch({ 
-//             headless: 'new',
-//             args: ['--no-sandbox', '--disable-setuid-sandbox'] // Recommended for server environments
-//         });
-        
-//         const page = await browser.newPage();
-//         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-
-//         const pdfBuffer = await page.pdf({
-//             format: 'A4',
-//             landscape: true, // Landscape works best for wide data tables
-//             margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
-//             printBackground: true // Ensures the alternating table header colors show up
-//         });
-
-//         await browser.close();
-
-//         // 5. STREAM PDF TO BROWSER
-//         res.setHeader('Content-Type', 'application/pdf');
-//         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-//         res.send(pdfBuffer);
-
-//     } catch (error) {
-//         console.error('Error generating PDF report:', error);
-//         if (!res.headersSent) res.status(500).json({ message: 'Internal server error while generating PDF report.' });
-//     }
-// }
-
-// // ============================================================================
-// // 2. Download Calculated Marks ONLY (PDF)
-// // ============================================================================
-// async function handleDownloadCalculatedMarksPdf(req, res) {
-//     try {
-//         const { subjectId, course, academicYear } = req.query;
-//         if (!subjectId || !course || !academicYear) {
-//             return res.status(400).json({ message: "Missing parameters" });
-//         }
-
-//         const safeYear = academicYear.replace(/\//g, '-');
-//         const fileName = `CalculatedMarks_${subjectId}_${safeYear}.pdf`;
-
-//         const marksDoc = await calculatedMarks.findOne({ subjectId, course, academicYear }).lean();
-        
-//         if (!marksDoc?.actualMarks?.length) {
-//             return res.status(404).json({ message: "No marks data found." });
-//         }
-
-//         const sampleMarks = marksDoc.actualMarks[0].marks;
-//         const componentMap = {};
-//         const orderedComponents = [];
-
-//         Object.keys(sampleMarks).forEach(key => {
-//             if (key.endsWith('_TOTAL')) return;
-//             const match = key.match(/(.*)_(CO\d+)/);
-//             if (match) {
-//                 const [, compName, coName] = match;
-//                 if (!componentMap[compName]) { 
-//                     componentMap[compName] = []; 
-//                     orderedComponents.push(compName); 
-//                 }
-//                 componentMap[compName].push(coName);
-//             }
-//         });
-
-//         orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
-
-//         let tableHtml = `<table><thead><tr><th rowspan="2" class="bg-reg">Reg No</th>`;
-        
-//         orderedComponents.forEach((comp, index) => {
-//             const colspan = componentMap[comp].length + 1;
-//             tableHtml += `<th colspan="${colspan}" class="bg-comp-${index % 2}">${comp.replace(/_/g, ' ')}</th>`;
-//         });
-        
-//         tableHtml += `</tr><tr>`;
-        
-//         orderedComponents.forEach((comp, index) => {
-//             const bgClass = `bg-comp-${index % 2}`;
-//             componentMap[comp].forEach(co => tableHtml += `<th class="${bgClass}">${co}</th>`);
-//             tableHtml += `<th class="${bgClass}">Total</th>`;
-//         });
-        
-//         tableHtml += `</tr></thead><tbody>`;
-
-//         marksDoc.actualMarks.forEach(({ regNo, marks: m }) => {
-//             tableHtml += `<tr><td><b>${regNo}</b></td>`;
-//             orderedComponents.forEach(comp => {
-//                 componentMap[comp].forEach(co => tableHtml += `<td>${formatVal(m[`${comp}_${co}`])}</td>`);
-//                 tableHtml += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
-//             });
-//             tableHtml += `</tr>`;
-//         });
-
-//         const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
-//         calcLabels.forEach((label, i) => {
-//             tableHtml += `<tr><td style="font-weight: bold;">${label}</td>`;
-//             orderedComponents.forEach(comp => {
-//                 [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
-//                     const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
-//                     const calc = marksDoc.reportData[key] || {};
-//                     let val = '-';
-//                     if (i === 0) val = formatVal(calc.maxMarks);
-//                     if (i === 1) val = formatVal(calc.targetMarks);
-//                     if (i === 2) val = formatVal(calc.studentsAboveTarget);
-//                     if (i === 3) val = formatVal(calc.attainmentPercent);
-//                     if (i === 4) val = formatVal(calc.attainmentLevel);
-//                     tableHtml += `<td>${val}</td>`;
-//                 });
-//             });
-//             tableHtml += `</tr>`;
-//         });
-        
-//         tableHtml += `</tbody></table>`;
-
-//         const htmlContent = getBaseHtml(`Calculated Marks & Attainment: ${subjectId} (${safeYear})`, tableHtml);
-
-//         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-//         const page = await browser.newPage();
-//         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-//         const pdfBuffer = await page.pdf({ format: 'A4', landscape: true, margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }, printBackground: true });
-//         await browser.close();
-
-//         res.setHeader('Content-Type', 'application/pdf');
-//         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-//         res.send(pdfBuffer);
-
-//     } catch (error) {
-//         console.error('Error generating Calculated Marks PDF:', error);
-//         if (!res.headersSent) res.status(500).json({ message: 'Internal server error' });
-//     }
-// }
-
-// // ============================================================================
-// // 3. Download Final CO Attainment ONLY (PDF)
-// // ============================================================================
-// async function handleDownloadFinalCoAttainmentPdf(req, res) {
-//     try {
-//         const { subjectId, course, academicYear } = req.query;
-//         if (!subjectId || !course || !academicYear) return res.status(400).json({ message: "Missing parameters" });
-
-//         const safeYear = academicYear.replace(/\//g, '-');
-//         const fileName = `Final_CO_Attainment_${subjectId}_${safeYear}.pdf`;
-
-//         const firstDoc = await FinalCoAttainment.findOne({ subjectId, course, academicYear }).lean();
-//         if (!firstDoc?.attainmentTable) return res.status(404).json({ message: "No CO Attainment data found." });
-
-//         let tableHtml = `
-//             <table>
-//                 <thead>
-//                     <tr class="bg-header-gray">
-//                         <th>CO's</th><th>Quiz 1</th><th>Sessional 1</th><th>Quiz 2</th>
-//                         <th>Sessional 2</th><th>Assignment</th><th>End Sem</th>
-//                         <th>Total Avg Int</th><th>Grand Total (50% int + 50% End term)</th>
-//                     </tr>
-//                 </thead>
-//                 <tbody>`;
-                
-//         Object.entries(firstDoc.attainmentTable).forEach(([coName, coData]) => {
-//             tableHtml += `<tr>
-//                 <td><b>${coName}</b></td>
-//                 <td>${formatVal(coData.Quiz_1)}</td><td>${formatVal(coData.Mid_Term)}</td>
-//                 <td>${formatVal(coData.Quiz_2)}</td><td>${formatVal(coData.Surprise_Quiz)}</td>
-//                 <td>${formatVal(coData.Assignment)}</td><td>${formatVal(coData.externalLevel)}</td>
-//                 <td>${formatVal(coData.internalAvg)}</td><td>${formatVal(coData.grandTotal)}</td>
-//             </tr>`;
-//         });
-
-//         let finalAttainmentValue = firstDoc.finalSubjectAttainment;
-//         if (finalAttainmentValue === undefined) {
-//             let sumGrandTotal = 0, countGrandTotal = 0;
-//             Object.values(firstDoc.attainmentTable).forEach(co => {
-//                 if (typeof co.grandTotal === 'number') { sumGrandTotal += co.grandTotal; countGrandTotal++; }
-//             });
-//             finalAttainmentValue = countGrandTotal > 0 ? parseFloat((sumGrandTotal / countGrandTotal).toFixed(2)) : undefined;
-//         }
-
-//         tableHtml += `<tr class="bg-footer-gray">
-//                         <td colspan="8" class="text-right">Final CO Attainment</td>
-//                         <td>${formatVal(finalAttainmentValue)}</td>
-//                     </tr></tbody></table>`;
-
-//         const htmlContent = getBaseHtml(`Final CO Attainment: ${subjectId} (${safeYear})`, tableHtml);
-
-//         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-//         const page = await browser.newPage();
-//         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-//         const pdfBuffer = await page.pdf({ format: 'A4', landscape: true, margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }, printBackground: true });
-//         await browser.close();
-
-//         res.setHeader('Content-Type', 'application/pdf');
-//         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-//         res.send(pdfBuffer);
-
-//     } catch (error) {
-//         console.error('Error generating CO Attainment PDF:', error);
-//         if (!res.headersSent) res.status(500).json({ message: 'Internal server error' });
-//     }
-// }
-
-// // ============================================================================
-// // 4. Download PO Attainment ONLY (PDF)
-// // ============================================================================
-// async function handleDownloadPoAttainmentPdf(req, res) {
-//     try {
-//         const { subjectId, course, academicYear } = req.query;
-//         if (!subjectId || !course || !academicYear) return res.status(400).json({ message: "Missing parameters" });
-
-//         const safeYear = academicYear.replace(/\//g, '-');
-//         const fileName = `Final_PO_Attainment_${subjectId}_${safeYear}.pdf`;
-
-//         const firstPoDoc = await PoAttainment.findOne({ subjectId, course, academicYear }).lean();
-//         if (!firstPoDoc?.mappingData || !firstPoDoc?.averageCo) return res.status(404).json({ message: "No PO Attainment data found." });
-
-//         const poKeys = Object.keys(firstPoDoc.averageCo).sort((a, b) => {
-//             const numA = parseInt(a.replace(/\D/g, '')) || 0, numB = parseInt(b.replace(/\D/g, '')) || 0;
-//             const textA = a.replace(/\d/g, ''), textB = b.replace(/\d/g, '');
-//             return textA === textB ? numA - numB : textA.localeCompare(textB);
-//         });
-
-//         let tableHtml = `<table><thead><tr class="bg-header-gray"><th>CO's</th>`;
-//         poKeys.forEach(po => tableHtml += `<th>${po.toUpperCase()}</th>`);
-//         tableHtml += `</tr></thead><tbody>`;
-
-//         Object.keys(firstPoDoc.mappingData).forEach(co => {
-//             tableHtml += `<tr><td><b>${co}</b></td>`;
-//             poKeys.forEach(po => tableHtml += `<td>${formatVal(firstPoDoc.mappingData[co][po])}</td>`);
-//             tableHtml += `</tr>`;
-//         });
-
-//         tableHtml += `<tr style="background-color: #F9F9F9; font-weight: bold;"><td>Average</td>`;
-//         poKeys.forEach(po => tableHtml += `<td>${formatVal(firstPoDoc.averageCo[po])}</td>`);
-//         tableHtml += `</tr>`;
-
-//         tableHtml += `<tr class="bg-footer-gray">
-//                         <td>Final Subject Attainment</td>
-//                         <td colspan="${poKeys.length}">${formatVal(firstPoDoc.finalSubjectAttainment)}</td>
-//                     </tr>`;
-
-//         const poAttnData = firstPoDoc.poAttainment || firstPoDoc.poAttainments || {};
-//         tableHtml += `<tr style="background-color: #E0E0E0; font-weight: bold;"><td>Final PO Attainment</td>`;
-        
-//         poKeys.forEach(po => {
-//             let val = poAttnData[po] ?? poAttnData[Object.keys(poAttnData).find(k => k.toLowerCase() === po.toLowerCase())];
-//             tableHtml += `<td>${formatVal(val)}</td>`;
-//         });
-//         tableHtml += `</tr></tbody></table>`;
-
-//         const htmlContent = getBaseHtml(`Final PO Attainment: ${subjectId} (${safeYear})`, tableHtml);
-
-//         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-//         const page = await browser.newPage();
-//         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-//         const pdfBuffer = await page.pdf({ format: 'A4', landscape: true, margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }, printBackground: true });
-//         await browser.close();
-
-//         res.setHeader('Content-Type', 'application/pdf');
-//         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-//         res.send(pdfBuffer);
-
-//     } catch (error) {
-//         console.error('Error generating PO Attainment PDF:', error);
-//         if (!res.headersSent) res.status(500).json({ message: 'Internal server error' });
-//     }
-// }
-
-// // Export all the compiled controllers
-// module.exports = {
-//     handleDownloadPdfReport,
-//     handleDownloadCalculatedMarksPdf,
-//     handleDownloadFinalCoAttainmentPdf,
-//     handleDownloadPoAttainmentPdf
-// };
-
-
-// const puppeteer = require('puppeteer');
-
-// // Models
-// const calculatedMarks = require("../models/calculatedMarks");
-// const FinalCoAttainment = require("../models/finalAttainment");
-// const PoAttainment = require("../models/calculatedPo"); // Updated to correct model
-
-// // Helper: Format values safely
-// const formatVal = (val) => (val !== undefined && val !== null && val !== '') ? val : '-';
-
-// // Shared HTML Base Template for consistent styling in individual reports
-// // ADDED: tabTitle parameter to set the browser tab name
-// const getBaseHtml = (title, tableHtml, tabTitle) => `
-// <!DOCTYPE html>
-// <html>
-// <head>
-//     <title>${tabTitle}</title> 
-//     <style>
-//         body { font-family: Arial, sans-serif; font-size: 10px; margin: 0; padding: 0; }
-//         h2 { text-align: center; font-size: 16px; margin-bottom: 20px; }
-//         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; page-break-inside: auto; }
-//         tr { page-break-inside: avoid; page-break-after: auto; }
-//         th, td { border: 1px solid black; padding: 5px; text-align: center; }
-        
-//         /* Excel matching styles */
-//         .bg-reg { background-color: #D99694; font-weight: bold; }
-//         .bg-comp-0 { background-color: #CCC1DA; font-weight: bold; }
-//         .bg-comp-1 { background-color: #C5D9F1; font-weight: bold; }
-//         .bg-header-gray { background-color: #F2F2F2; font-weight: bold; }
-//         .bg-footer-gray { background-color: #E6E6E6; font-weight: bold; }
-//         .text-right { text-align: right; padding-right: 10px; }
-//     </style>
-// </head>
-// <body>
-//     <h2>${title}</h2>
-//     ${tableHtml}
-// </body>
-// </html>
-// `;
-
-// // ============================================================================
-// // 1. Download Master Report as PDF
-// // ============================================================================
-// async function handleDownloadPdfReport(req, res) {
-//     try {
-//         const { subjectId, course, academicYear } = req.query;
-
-//         if (!subjectId || !course || !academicYear) {
-//             return res.status(400).json({ message: "Missing subjectId, course, or academicYear" });
-//         }
-
-//         const safeYear = academicYear.replace(/\//g, '-');
-//         const fileName = `Report_${subjectId}_${safeYear}.pdf`;
-
-//         // 1. FETCH DATA
-//         const [marksDoc, coDoc, poDoc] = await Promise.all([
-//             calculatedMarks.findOne({ subjectId, course, academicYear }).lean(),
-//             FinalCoAttainment.findOne({ subjectId, course, academicYear }).lean(),
-//             PoAttainment.findOne({ subjectId, course, academicYear }).lean() 
-//         ]);
-
-//         if (!marksDoc?.actualMarks?.length) {
-//             return res.status(404).json({ message: "No marks data found for this subject and year." });
-//         }
-
-//         // 2. PREPARE DYNAMIC DATA MAPPINGS
-//         const sampleMarks = marksDoc.actualMarks[0].marks;
-//         const componentMap = {};
-//         const orderedComponents = [];
-
-//         Object.keys(sampleMarks).forEach(key => {
-//             if (key.endsWith('_TOTAL')) return;
-//             const match = key.match(/(.*)_(CO\d+)/);
-//             if (match) {
-//                 const [, compName, coName] = match;
-//                 if (!componentMap[compName]) {
-//                     componentMap[compName] = [];
-//                     orderedComponents.push(compName);
-//                 }
-//                 componentMap[compName].push(coName);
-//             }
-//         });
-
-//         orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
-
-//         // 3. BUILD HTML CONTENT
-//         let htmlContent = `
-//         <!DOCTYPE html>
-//         <html>
-//         <head>
-//             <title>${subjectId}</title> <!-- Set Tab Title for Master Report -->
-//             <style>
-//                 body { font-family: Arial, sans-serif; font-size: 10px; margin: 0; padding: 0; }
-//                 h2 { text-align: center; font-size: 16px; margin-bottom: 5px; }
-//                 h3 { text-align: left; font-size: 14px; margin-top: 20px; margin-bottom: 10px; color: #333; }
-//                 table { width: 100%; border-collapse: collapse; margin-bottom: 20px; page-break-inside: auto; }
-//                 tr { page-break-inside: avoid; page-break-after: auto; }
-//                 th, td { border: 1px solid black; padding: 4px; text-align: center; }
-//                 .page-break { page-break-before: always; }
-                
-//                 /* Colors matching your Excel styles */
-//                 .bg-reg { background-color: #D99694; font-weight: bold; }
-//                 .bg-comp-0 { background-color: #CCC1DA; font-weight: bold; }
-//                 .bg-comp-1 { background-color: #C5D9F1; font-weight: bold; }
-//                 .bg-header-gray { background-color: #F2F2F2; font-weight: bold; }
-//                 .bg-footer-gray { background-color: #E6E6E6; font-weight: bold; }
-//                 .text-right { text-align: right; padding-right: 10px; }
-//             </style>
-//         </head>
-//         <body>
-//             <h2>Attainment Report: ${subjectId} (${safeYear})</h2>
-            
-//             <!-- SECTION 1: CALCULATED MARKS -->
-//             <h3>1. Calculated Marks & Attainment</h3>
-//             <table>
-//                 <thead>
-//                     <tr>
-//                         <th rowspan="2" class="bg-reg">Reg No</th>`;
-        
-//         // Headers Row 1 (Components)
-//         orderedComponents.forEach((comp, index) => {
-//             const colspan = componentMap[comp].length + 1;
-//             const bgClass = `bg-comp-${index % 2}`;
-//             htmlContent += `<th colspan="${colspan}" class="${bgClass}">${comp.replace(/_/g, ' ')}</th>`;
-//         });
-        
-//         htmlContent += `</tr><tr>`;
-        
-//         // Headers Row 2 (COs & Totals)
-//         orderedComponents.forEach((comp, index) => {
-//             const bgClass = `bg-comp-${index % 2}`;
-//             componentMap[comp].forEach(co => {
-//                 htmlContent += `<th class="${bgClass}">${co}</th>`;
-//             });
-//             htmlContent += `<th class="${bgClass}">Total</th>`;
-//         });
-        
-//         htmlContent += `</tr></thead><tbody>`;
-
-//         // Student Marks Rows
-//         marksDoc.actualMarks.forEach(({ regNo, marks: m }) => {
-//             htmlContent += `<tr><td><b>${regNo}</b></td>`;
-//             orderedComponents.forEach(comp => {
-//                 componentMap[comp].forEach(co => {
-//                     htmlContent += `<td>${formatVal(m[`${comp}_${co}`])}</td>`;
-//                 });
-//                 htmlContent += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
-//             });
-//             htmlContent += `</tr>`;
-//         });
-
-//         // Calculation Rows (Max, Target, Attainment, etc.)
-//         const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
-//         calcLabels.forEach((label, i) => {
-//             htmlContent += `<tr><td style="font-weight: bold;">${label}</td>`;
-//             orderedComponents.forEach(comp => {
-//                 [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
-//                     const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
-//                     const calc = marksDoc.reportData[key] || {};
-                    
-//                     let val = '-';
-//                     if (i === 0) val = formatVal(calc.maxMarks);
-//                     if (i === 1) val = formatVal(calc.targetMarks);
-//                     if (i === 2) val = formatVal(calc.studentsAboveTarget);
-//                     if (i === 3) val = formatVal(calc.attainmentPercent);
-//                     if (i === 4) val = formatVal(calc.attainmentLevel);
-                    
-//                     htmlContent += `<td>${val}</td>`;
-//                 });
-//             });
-//             htmlContent += `</tr>`;
-//         });
-        
-//         htmlContent += `</tbody></table>`;
-
-//         // SECTION 2: FINAL CO ATTAINMENT
-//         if (coDoc?.attainmentTable) {
-//             htmlContent += `<div class="page-break"></div>
-//                             <h3>2. Final CO Attainment</h3>
-//                             <table>
-//                                 <thead>
-//                                     <tr class="bg-header-gray">
-//                                         <th>CO's</th>
-//                                         <th>Quiz 1</th>
-//                                         <th>Sessional 1</th>
-//                                         <th>Quiz 2</th>
-//                                         <th>Sessional 2</th>
-//                                         <th>Assignment</th>
-//                                         <th>End Sem</th>
-//                                         <th>Total Avg Int</th>
-//                                         <th>Grand Total (50% int + 50% End term)</th>
-//                                     </tr>
-//                                 </thead>
-//                                 <tbody>`;
-                                
-//             Object.entries(coDoc.attainmentTable).forEach(([coName, coData]) => {
-//                 htmlContent += `<tr>
-//                     <td><b>${coName}</b></td>
-//                     <td>${formatVal(coData.Quiz_1)}</td>
-//                     <td>${formatVal(coData.Mid_Term)}</td>
-//                     <td>${formatVal(coData.Quiz_2)}</td>
-//                     <td>${formatVal(coData.Surprise_Quiz)}</td>
-//                     <td>${formatVal(coData.Assignment)}</td>
-//                     <td>${formatVal(coData.externalLevel)}</td>
-//                     <td>${formatVal(coData.internalAvg)}</td>
-//                     <td>${formatVal(coData.grandTotal)}</td>
-//                 </tr>`;
-//             });
-
-//             // Calculate Final CO Attainment Average if missing
-//             let finalAttainmentValue = coDoc.finalSubjectAttainment;
-//             if (finalAttainmentValue === undefined) {
-//                 let sumGrandTotal = 0, countGrandTotal = 0;
-//                 Object.values(coDoc.attainmentTable).forEach(co => {
-//                     if (typeof co.grandTotal === 'number') { sumGrandTotal += co.grandTotal; countGrandTotal++; }
-//                 });
-//                 finalAttainmentValue = countGrandTotal > 0 ? parseFloat((sumGrandTotal / countGrandTotal).toFixed(2)) : undefined;
-//             }
-
-//             htmlContent += `<tr class="bg-footer-gray">
-//                                 <td colspan="8" class="text-right">Final CO Attainment</td>
-//                                 <td>${formatVal(finalAttainmentValue)}</td>
-//                             </tr>
-//                         </tbody>
-//                     </table>`;
-//         }
-
-//         // SECTION 3: FINAL PO ATTAINMENT
-//         if (poDoc?.mappingData && poDoc?.averageCo) {
-//             const poKeys = Object.keys(poDoc.averageCo).sort((a, b) => {
-//                 const numA = parseInt(a.replace(/\D/g, '')) || 0, numB = parseInt(b.replace(/\D/g, '')) || 0;
-//                 const textA = a.replace(/\d/g, ''), textB = b.replace(/\d/g, '');
-//                 return textA === textB ? numA - numB : textA.localeCompare(textB);
-//             });
-
-//             htmlContent += `<br>
-//                             <h3>3. Final PO Attainment</h3>
-//                             <table>
-//                                 <thead>
-//                                     <tr class="bg-header-gray">
-//                                         <th>CO's</th>`;
-            
-//             poKeys.forEach(po => htmlContent += `<th>${po.toUpperCase()}</th>`);
-            
-//             htmlContent += `</tr></thead><tbody>`;
-
-//             // Mapping Rows
-//             Object.keys(poDoc.mappingData).forEach(co => {
-//                 htmlContent += `<tr><td><b>${co}</b></td>`;
-//                 poKeys.forEach(po => htmlContent += `<td>${formatVal(poDoc.mappingData[co][po])}</td>`);
-//                 htmlContent += `</tr>`;
-//             });
-
-//             // Average CO Row
-//             htmlContent += `<tr style="background-color: #F9F9F9; font-weight: bold;">
-//                                 <td>Average</td>`;
-//             poKeys.forEach(po => htmlContent += `<td>${formatVal(poDoc.averageCo[po])}</td>`);
-//             htmlContent += `</tr>`;
-
-//             // Final Subject Attainment Row
-//             htmlContent += `<tr class="bg-footer-gray">
-//                                 <td>Final Subject Attainment</td>
-//                                 <td colspan="${poKeys.length}">${formatVal(poDoc.finalSubjectAttainment)}</td>
-//                             </tr>`;
-
-//             // PO Attainment Row
-//             const poAttnData = poDoc.poAttainment || poDoc.poAttainments || {};
-//             htmlContent += `<tr style="background-color: #E0E0E0; font-weight: bold;">
-//                                 <td>Final PO Attainment</td>`;
-            
-//             poKeys.forEach(po => {
-//                 let val = poAttnData[po] ?? poAttnData[Object.keys(poAttnData).find(k => k.toLowerCase() === po.toLowerCase())];
-//                 htmlContent += `<td>${formatVal(val)}</td>`;
-//             });
-
-//             htmlContent += `</tr></tbody></table>`;
-//         }
-
-//         htmlContent += `</body></html>`;
-
-//         // 4. GENERATE PDF VIA PUPPETEER
-//         const browser = await puppeteer.launch({ 
-//             headless: 'new',
-//             args: ['--no-sandbox', '--disable-setuid-sandbox'] 
-//         });
-        
-//         const page = await browser.newPage();
-//         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-
-//         const pdfBuffer = await page.pdf({
-//             format: 'A4',
-//             landscape: true, 
-//             scale: 0.65, // Shrinks wide tables to fit
-//             margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
-//             printBackground: true 
-//         });
-
-//         await browser.close();
-
-//         // 5. STREAM PDF TO BROWSER INLINE
-//         res.setHeader('Content-Type', 'application/pdf');
-//         res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-//         res.send(pdfBuffer);
-
-//     } catch (error) {
-//         console.error('Error generating PDF report:', error);
-//         if (!res.headersSent) res.status(500).json({ message: 'Internal server error while generating PDF report.' });
-//     }
-// }
-
-// // ============================================================================
-// // 2. Download Calculated Marks ONLY (PDF)
-// // ============================================================================
-// async function handleDownloadCalculatedMarksPdf(req, res) {
-//     try {
-//         const { subjectId, course, academicYear } = req.query;
-//         if (!subjectId || !course || !academicYear) {
-//             return res.status(400).json({ message: "Missing parameters" });
-//         }
-
-//         const safeYear = academicYear.replace(/\//g, '-');
-//         const fileName = `CalculatedMarks_${subjectId}_${safeYear}.pdf`;
-
-//         const marksDoc = await calculatedMarks.findOne({ subjectId, course, academicYear }).lean();
-        
-//         if (!marksDoc?.actualMarks?.length) {
-//             return res.status(404).json({ message: "No marks data found." });
-//         }
-
-//         const sampleMarks = marksDoc.actualMarks[0].marks;
-//         const componentMap = {};
-//         const orderedComponents = [];
-
-//         Object.keys(sampleMarks).forEach(key => {
-//             if (key.endsWith('_TOTAL')) return;
-//             const match = key.match(/(.*)_(CO\d+)/);
-//             if (match) {
-//                 const [, compName, coName] = match;
-//                 if (!componentMap[compName]) { 
-//                     componentMap[compName] = []; 
-//                     orderedComponents.push(compName); 
-//                 }
-//                 componentMap[compName].push(coName);
-//             }
-//         });
-
-//         orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
-
-//         let tableHtml = `<table><thead><tr><th rowspan="2" class="bg-reg">Reg No</th>`;
-        
-//         orderedComponents.forEach((comp, index) => {
-//             const colspan = componentMap[comp].length + 1;
-//             tableHtml += `<th colspan="${colspan}" class="bg-comp-${index % 2}">${comp.replace(/_/g, ' ')}</th>`;
-//         });
-        
-//         tableHtml += `</tr><tr>`;
-        
-//         orderedComponents.forEach((comp, index) => {
-//             const bgClass = `bg-comp-${index % 2}`;
-//             componentMap[comp].forEach(co => tableHtml += `<th class="${bgClass}">${co}</th>`);
-//             tableHtml += `<th class="${bgClass}">Total</th>`;
-//         });
-        
-//         tableHtml += `</tr></thead><tbody>`;
-
-//         marksDoc.actualMarks.forEach(({ regNo, marks: m }) => {
-//             tableHtml += `<tr><td><b>${regNo}</b></td>`;
-//             orderedComponents.forEach(comp => {
-//                 componentMap[comp].forEach(co => tableHtml += `<td>${formatVal(m[`${comp}_${co}`])}</td>`);
-//                 tableHtml += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
-//             });
-//             tableHtml += `</tr>`;
-//         });
-
-//         const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
-//         calcLabels.forEach((label, i) => {
-//             tableHtml += `<tr><td style="font-weight: bold;">${label}</td>`;
-//             orderedComponents.forEach(comp => {
-//                 [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
-//                     const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
-//                     const calc = marksDoc.reportData[key] || {};
-//                     let val = '-';
-//                     if (i === 0) val = formatVal(calc.maxMarks);
-//                     if (i === 1) val = formatVal(calc.targetMarks);
-//                     if (i === 2) val = formatVal(calc.studentsAboveTarget);
-//                     if (i === 3) val = formatVal(calc.attainmentPercent);
-//                     if (i === 4) val = formatVal(calc.attainmentLevel);
-//                     tableHtml += `<td>${val}</td>`;
-//                 });
-//             });
-//             tableHtml += `</tr>`;
-//         });
-        
-//         tableHtml += `</tbody></table>`;
-
-//         // Pass subjectId for the Tab Title
-//         const htmlContent = getBaseHtml(`Calculated Marks & Attainment: ${subjectId} (${safeYear})`, tableHtml, subjectId);
-
-//         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-//         const page = await browser.newPage();
-//         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        
-//         const pdfBuffer = await page.pdf({ 
-//             format: 'A4', 
-//             landscape: true, 
-//             scale: 0.65, // Shrinks wide tables to fit
-//             margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }, 
-//             printBackground: true 
-//         });
-//         await browser.close();
-
-//         res.setHeader('Content-Type', 'application/pdf');
-//         res.setHeader('Content-Disposition', `inline; filename="${fileName}"`); // INLINE
-//         res.send(pdfBuffer);
-
-//     } catch (error) {
-//         console.error('Error generating Calculated Marks PDF:', error);
-//         if (!res.headersSent) res.status(500).json({ message: 'Internal server error' });
-//     }
-// }
-
-// // ============================================================================
-// // 3. Download Final CO Attainment ONLY (PDF)
-// // ============================================================================
-// async function handleDownloadFinalCoAttainmentPdf(req, res) {
-//     try {
-//         const { subjectId, course, academicYear } = req.query;
-//         if (!subjectId || !course || !academicYear) return res.status(400).json({ message: "Missing parameters" });
-
-//         const safeYear = academicYear.replace(/\//g, '-');
-//         const fileName = `Final_CO_Attainment_${subjectId}_${safeYear}.pdf`;
-
-//         const firstDoc = await FinalCoAttainment.findOne({ subjectId, course, academicYear }).lean();
-//         if (!firstDoc?.attainmentTable) return res.status(404).json({ message: "No CO Attainment data found." });
-
-//         let tableHtml = `
-//             <table>
-//                 <thead>
-//                     <tr class="bg-header-gray">
-//                         <th>CO's</th><th>Quiz 1</th><th>Sessional 1</th><th>Quiz 2</th>
-//                         <th>Sessional 2</th><th>Assignment</th><th>End Sem</th>
-//                         <th>Total Avg Int</th><th>Grand Total (50% int + 50% End term)</th>
-//                     </tr>
-//                 </thead>
-//                 <tbody>`;
-                
-//         Object.entries(firstDoc.attainmentTable).forEach(([coName, coData]) => {
-//             tableHtml += `<tr>
-//                 <td><b>${coName}</b></td>
-//                 <td>${formatVal(coData.Quiz_1)}</td><td>${formatVal(coData.Mid_Term)}</td>
-//                 <td>${formatVal(coData.Quiz_2)}</td><td>${formatVal(coData.Surprise_Quiz)}</td>
-//                 <td>${formatVal(coData.Assignment)}</td><td>${formatVal(coData.externalLevel)}</td>
-//                 <td>${formatVal(coData.internalAvg)}</td><td>${formatVal(coData.grandTotal)}</td>
-//             </tr>`;
-//         });
-
-//         let finalAttainmentValue = firstDoc.finalSubjectAttainment;
-//         if (finalAttainmentValue === undefined) {
-//             let sumGrandTotal = 0, countGrandTotal = 0;
-//             Object.values(firstDoc.attainmentTable).forEach(co => {
-//                 if (typeof co.grandTotal === 'number') { sumGrandTotal += co.grandTotal; countGrandTotal++; }
-//             });
-//             finalAttainmentValue = countGrandTotal > 0 ? parseFloat((sumGrandTotal / countGrandTotal).toFixed(2)) : undefined;
-//         }
-
-//         tableHtml += `<tr class="bg-footer-gray">
-//                         <td colspan="8" class="text-right">Final CO Attainment</td>
-//                         <td>${formatVal(finalAttainmentValue)}</td>
-//                     </tr></tbody></table>`;
-
-//         // Pass subjectId for the Tab Title
-//         const htmlContent = getBaseHtml(`Final CO Attainment: ${subjectId} (${safeYear})`, tableHtml, subjectId);
-
-//         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-//         const page = await browser.newPage();
-//         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        
-//         const pdfBuffer = await page.pdf({ 
-//             format: 'A4', 
-//             landscape: true, 
-//             scale: 0.65, // Shrinks wide tables to fit
-//             margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }, 
-//             printBackground: true 
-//         });
-//         await browser.close();
-
-//         res.setHeader('Content-Type', 'application/pdf');
-//         res.setHeader('Content-Disposition', `inline; filename="${fileName}"`); // INLINE
-//         res.send(pdfBuffer);
-
-//     } catch (error) {
-//         console.error('Error generating CO Attainment PDF:', error);
-//         if (!res.headersSent) res.status(500).json({ message: 'Internal server error' });
-//     }
-// }
-
-// // ============================================================================
-// // 4. Download PO Attainment ONLY (PDF)
-// // ============================================================================
-// async function handleDownloadPoAttainmentPdf(req, res) {
-//     try {
-//         const { subjectId, course, academicYear } = req.query;
-//         if (!subjectId || !course || !academicYear) return res.status(400).json({ message: "Missing parameters" });
-
-//         const safeYear = academicYear.replace(/\//g, '-');
-//         const fileName = `Final_PO_Attainment_${subjectId}_${safeYear}.pdf`;
-
-//         const firstPoDoc = await PoAttainment.findOne({ subjectId, course, academicYear }).lean();
-//         if (!firstPoDoc?.mappingData || !firstPoDoc?.averageCo) return res.status(404).json({ message: "No PO Attainment data found." });
-
-//         const poKeys = Object.keys(firstPoDoc.averageCo).sort((a, b) => {
-//             const numA = parseInt(a.replace(/\D/g, '')) || 0, numB = parseInt(b.replace(/\D/g, '')) || 0;
-//             const textA = a.replace(/\d/g, ''), textB = b.replace(/\d/g, '');
-//             return textA === textB ? numA - numB : textA.localeCompare(textB);
-//         });
-
-//         let tableHtml = `<table><thead><tr class="bg-header-gray"><th>CO's</th>`;
-//         poKeys.forEach(po => tableHtml += `<th>${po.toUpperCase()}</th>`);
-//         tableHtml += `</tr></thead><tbody>`;
-
-//         Object.keys(firstPoDoc.mappingData).forEach(co => {
-//             tableHtml += `<tr><td><b>${co}</b></td>`;
-//             poKeys.forEach(po => tableHtml += `<td>${formatVal(firstPoDoc.mappingData[co][po])}</td>`);
-//             tableHtml += `</tr>`;
-//         });
-
-//         tableHtml += `<tr style="background-color: #F9F9F9; font-weight: bold;"><td>Average</td>`;
-//         poKeys.forEach(po => tableHtml += `<td>${formatVal(firstPoDoc.averageCo[po])}</td>`);
-//         tableHtml += `</tr>`;
-
-//         tableHtml += `<tr class="bg-footer-gray">
-//                         <td>Final Subject Attainment</td>
-//                         <td colspan="${poKeys.length}">${formatVal(firstPoDoc.finalSubjectAttainment)}</td>
-//                     </tr>`;
-
-//         const poAttnData = firstPoDoc.poAttainment || firstPoDoc.poAttainments || {};
-//         tableHtml += `<tr style="background-color: #E0E0E0; font-weight: bold;"><td>Final PO Attainment</td>`;
-        
-//         poKeys.forEach(po => {
-//             let val = poAttnData[po] ?? poAttnData[Object.keys(poAttnData).find(k => k.toLowerCase() === po.toLowerCase())];
-//             tableHtml += `<td>${formatVal(val)}</td>`;
-//         });
-//         tableHtml += `</tr></tbody></table>`;
-
-//         // Pass subjectId for the Tab Title
-//         const htmlContent = getBaseHtml(`Final PO Attainment: ${subjectId} (${safeYear})`, tableHtml, subjectId);
-
-//         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-//         const page = await browser.newPage();
-//         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        
-//         const pdfBuffer = await page.pdf({ 
-//             format: 'A4', 
-//             landscape: true, 
-//             scale: 0.65, // Shrinks wide tables to fit
-//             margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }, 
-//             printBackground: true 
-//         });
-//         await browser.close();
-
-//         res.setHeader('Content-Type', 'application/pdf');
-//         res.setHeader('Content-Disposition', `inline; filename="${fileName}"`); // INLINE
-//         res.send(pdfBuffer);
-
-//     } catch (error) {
-//         console.error('Error generating PO Attainment PDF:', error);
-//         if (!res.headersSent) res.status(500).json({ message: 'Internal server error' });
-//     }
-// }
-
-// // Export all the compiled controllers
-// module.exports = {
-//     handleDownloadPdfReport,
-//     handleDownloadCalculatedMarksPdf,
-//     handleDownloadFinalCoAttainmentPdf,
-//     handleDownloadPoAttainmentPdf
-// };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 const puppeteer = require('puppeteer');
 
-// Models
-const calculatedMarks = require("../models/calculatedMarks");
-const FinalCoAttainment = require("../models/finalAttainment");
-const PoAttainment = require("../models/calculatedPo");
+// ============================================================================
+// MODELS (Adjust the file paths to your actual Theory models)
+// ============================================================================
+const TheoryCalculatedMarks = require("../models/calculatedMarks");
+const TheoryFinalCoAttainment = require("../models/finalAttainment");
+const TheoryPoAttainment = require("../models/calculatedPo");
 
-// Helper: Format values safely
-const formatVal = (val) => (val !== undefined && val !== null && val !== '') ? val : '-';
-
-// Shared HTML Base Template with DYNAMIC SCALING
-// ADDED: colCount parameter to calculate dynamic font-size and padding
-const getBaseHtml = (title, tableHtml, tabTitle, colCount = 10) => {
-    
-    // Dynamic Fitting Logic: Shrink text and padding only if the table is exceptionally wide
-    let fontSize = '10px';
-    let cellPadding = '5px';
-
-    if (colCount > 24) {
-        fontSize = '6.5px';
-        cellPadding = '2px';
-    } else if (colCount > 18) {
-        fontSize = '7.5px';
-        cellPadding = '3px';
-    } else if (colCount > 14) {
-        fontSize = '8.5px';
-        cellPadding = '4px';
-    }
-
-    return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>${tabTitle}</title> 
-        <style>
-            body { font-family: Arial, sans-serif; font-size: ${fontSize}; margin: 0; padding: 0; }
-            h2 { text-align: center; font-size: 16px; margin: 10px 0 20px 0; }
-            h3 { text-align: left; font-size: 14px; margin: 15px 0 5px 0; color: #333; }
-            
-            table { width: 100%; max-width: 100%; border-collapse: collapse; margin-bottom: 20px; page-break-inside: auto; table-layout: auto; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            
-            /* Dynamically injected padding */
-            th, td { border: 1px solid black; padding: ${cellPadding}; text-align: center; word-wrap: break-word; }
-            
-            .page-break { page-break-before: always; }
-            
-            /* Excel matching styles */
-            .bg-reg { background-color: #D99694; font-weight: bold; }
-            .bg-comp-0 { background-color: #CCC1DA; font-weight: bold; }
-            .bg-comp-1 { background-color: #C5D9F1; font-weight: bold; }
-            .bg-header-gray { background-color: #F2F2F2; font-weight: bold; }
-            .bg-footer-gray { background-color: #E6E6E6; font-weight: bold; }
-            .text-right { text-align: right; padding-right: 10px; }
-        </style>
-    </head>
-    <body>
-        <h2>${title}</h2>
-        ${tableHtml}
-    </body>
-    </html>
-    `;
+// ============================================================================
+// CONSTANTS & HELPERS
+// ============================================================================
+const COLORS = {
+    alternating: ['#CCC1DA', '#C5D9F1'], // Lavender, Light Blue
+    pink: '#D99694',
+    gray: '#D9D9D9',
+    lightGray: '#EBEBEB'
 };
 
-// ============================================================================
-// 1. Download Master Report as PDF
-// ============================================================================
-async function handleDownloadPdfReport(req, res) {
-    try {
-        const { subjectId, course, academicYear } = req.query;
+const formatVal = (val) => (val !== undefined && val !== null && val !== '') ? val : '-';
 
-        if (!subjectId || !course || !academicYear) {
-            return res.status(400).json({ message: "Missing subjectId, course, or academicYear" });
+function getSanitizedInputs(req) {
+    const { subjectId, academicYear, course } = req.query;
+    if (!subjectId || !academicYear || !course) return null;
+    
+    let cleanYear = academicYear.trim();
+    if (cleanYear.includes('/')) cleanYear = cleanYear.replace(/\//g, '-');
+    else if (cleanYear.includes('-')) cleanYear = cleanYear.split('-')[1].trim(); 
+
+    return {
+        cleanSubjectId: subjectId.trim().toUpperCase(),
+        cleanCourse: course.trim().toUpperCase(),
+        cleanYear
+    };
+}
+
+// Builds dynamic color map based on parsed component headers (e.g., MidSem, Assignment, etc.)
+function buildColorMap(orderedComponents) {
+    const map = {};
+    orderedComponents.forEach((comp, index) => {
+        map[comp] = COLORS.alternating[index % 2];
+    });
+    return map;
+}
+
+function getBaseHtml(title) {
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; font-size: 10px; margin: 0; padding: 20px; }
+                h2 { text-align: center; color: #333; margin-bottom: 20px; font-size: 16px; font-weight: bold; }
+                h3 { color: #555; font-size: 14px; margin-bottom: 10px; margin-top: 20px; }
+                table { width: max-content; min-width: 100%; border-collapse: collapse; margin-bottom: 30px; margin-left: auto; margin-right: auto; }
+                tr { page-break-inside: avoid; page-break-after: auto; }
+                thead { display: table-header-group; }
+                th, td { border: 1px solid #000; padding: 6px; text-align: center; vertical-align: middle; white-space: nowrap; }
+                th { font-weight: bold; color: #000; }
+                .page-break { page-break-before: always; }
+            </style>
+        </head>
+        <body>
+            <h2>${title}</h2>
+    `;
+}
+
+// Extract ordered components helper for parsing DB data dynamically
+function extractComponents(marksDoc) {
+    if (!marksDoc || !marksDoc.actualMarks || marksDoc.actualMarks.length === 0) return { orderedComponents: [], componentMap: {} };
+    
+    const sampleMarks = marksDoc.actualMarks[0].marks;
+    const componentMap = {};
+    const orderedComponents = [];
+
+    Object.keys(sampleMarks).forEach(key => {
+        if (key.endsWith('_TOTAL')) return;
+        const match = key.match(/(.*)_(CO\d+)/);
+        if (match) {
+            const [, compName, coName] = match;
+            if (!componentMap[compName]) {
+                componentMap[compName] = [];
+                orderedComponents.push(compName);
+            }
+            componentMap[compName].push(coName);
+        }
+    });
+
+    orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
+    return { orderedComponents, componentMap };
+}
+
+// ============================================================================
+// HTML GENERATORS FOR EACH TABLE
+// ============================================================================
+
+// 1. Generate Table 1: Calculated Marks & Attainment
+function getTable1Html(calcData, colorMap, orderedComponents, componentMap, heading = '') {
+    if (!calcData || !calcData.actualMarks || calcData.actualMarks.length === 0) return '';
+    let html = heading ? `<h3>${heading}</h3>` : '';
+
+    html += `<table><thead><tr><th rowspan="2" style="background-color: ${COLORS.pink};">Reg No</th>`;
+    
+    // Top Header Row (Component Names)
+    orderedComponents.forEach(comp => {
+        const colspan = componentMap[comp].length + 1;
+        html += `<th colspan="${colspan}" style="background-color: ${colorMap[comp]};">${comp.replace(/_/g, ' ')}</th>`;
+    });
+    html += `</tr><tr>`;
+    
+    // Sub Header Row (CO1, CO2, Total)
+    orderedComponents.forEach(comp => {
+        componentMap[comp].forEach(co => {
+            html += `<th style="background-color: ${colorMap[comp]};">${co}</th>`;
+        });
+        html += `<th style="background-color: ${colorMap[comp]};">Total</th>`;
+    });
+    html += `</tr></thead><tbody>`;
+
+    // Student Rows
+    calcData.actualMarks.forEach(({ regNo, marks: m }) => {
+        html += `<tr><td><b>${regNo}</b></td>`;
+        orderedComponents.forEach(comp => {
+            componentMap[comp].forEach(co => {
+                html += `<td>${formatVal(m[`${comp}_${co}`])}</td>`;
+            });
+            html += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
+        });
+        html += `</tr>`;
+    });
+
+    // Footer Rows (Max Marks, Target, etc.)
+    const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
+    const keys = ['maxMarks', 'targetMarks', 'studentsAboveTarget', 'attainmentPercent', 'attainmentLevel'];
+    
+    calcLabels.forEach((label, i) => {
+        html += `<tr><th style="background-color: #fff;">${label}</th>`;
+        orderedComponents.forEach(comp => {
+            [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
+                const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
+                const calc = calcData.reportData?.[key] || {};
+                html += `<th>${formatVal(calc[keys[i]])}</th>`;
+            });
+        });
+        html += `</tr>`;
+    });
+
+    return html + `</tbody></table>`;
+}
+
+// 2. Generate Table 2: Final CO Attainment
+function getTable2Html(finalData, colorMap, heading = '') {
+    if (!finalData || !finalData.attainmentTable) return '';
+    let html = heading;
+    const coKeys = Object.keys(finalData.attainmentTable).sort();
+    if (coKeys.length === 0) return '';
+
+    const dynamicExams = new Set();
+    coKeys.forEach(co => Object.keys(finalData.attainmentTable[co]).forEach(k => {
+        if (!['internalAvg', 'externalLevel', 'grandTotal'].includes(k)) dynamicExams.add(k);
+    }));
+    const examHeaders = Array.from(dynamicExams);
+
+    html += `<table><thead><tr><th style="background-color: ${COLORS.pink};">CO's</th>`;
+    examHeaders.forEach(exam => html += `<th style="background-color: ${colorMap[exam] || COLORS.gray};">${exam.replace(/_/g, ' ')}</th>`);
+    
+    html += `<th style="background-color: ${COLORS.gray};">Total Avg Int</th>`;
+    html += `<th style="background-color: ${COLORS.gray};">End Sem</th>`;
+    html += `<th style="background-color: ${COLORS.gray};">Grand Total (50% int + 50% End term)</th></tr></thead><tbody>`;
+
+    coKeys.forEach(co => {
+        html += `<tr><td><b>${co}</b></td>`;
+        const info = finalData.attainmentTable[co];
+        examHeaders.forEach(exam => html += `<td>${formatVal(info[exam])}</td>`);
+        html += `<td>${formatVal(info.internalAvg)}</td><td>${formatVal(info.externalLevel)}</td><td>${formatVal(info.grandTotal)}</td></tr>`;
+    });
+
+    let finalAttainmentValue = finalData.finalSubjectAttainment;
+    if (finalAttainmentValue === undefined) {
+        let sum = 0, count = 0;
+        Object.values(finalData.attainmentTable).forEach(co => {
+            if (typeof co.grandTotal === 'number') { sum += co.grandTotal; count++; }
+        });
+        finalAttainmentValue = count > 0 ? parseFloat((sum / count).toFixed(2)) : undefined;
+    }
+
+    const totalCols = examHeaders.length + 4;
+    html += `<tr><th colspan="${totalCols - 1}" style="background-color: ${COLORS.lightGray}; text-align: right; padding-right: 15px;">Final CO Attainment</th>`;
+    html += `<th style="background-color: ${COLORS.lightGray};">${formatVal(finalAttainmentValue)}</th></tr></tbody></table>`;
+
+    return html;
+}
+
+// 3. Generate Table 3: PO Attainment
+function getTable3Html(poData, finalData = null, heading = '') {
+    if (!poData || !poData.mappingData || !poData.averageCo) return '';
+    let html = heading;
+
+    const poKeys = Object.keys(poData.averageCo).sort((a, b) => {
+        const numA = parseInt(a.replace(/\D/g, '')) || 0, numB = parseInt(b.replace(/\D/g, '')) || 0;
+        const textA = a.replace(/\d/g, ''), textB = b.replace(/\d/g, '');
+        return textA === textB ? numA - numB : textA.localeCompare(textB);
+    });
+
+    html += `<table><thead><tr><th style="background-color: ${COLORS.pink};">CO's</th>`;
+    poKeys.forEach((po, i) => html += `<th style="background-color: ${COLORS.alternating[i % 2]};">${po.toUpperCase()}</th>`);
+    html += `</tr></thead><tbody>`;
+
+    Object.keys(poData.mappingData).sort().forEach(co => {
+        html += `<tr><td><b>${co}</b></td>`;
+        poKeys.forEach(po => html += `<td>${formatVal(poData.mappingData[co][po])}</td>`);
+        html += `</tr>`;
+    });
+
+    html += `<tr><th style="background-color: #fff;">Average</th>`;
+    poKeys.forEach(po => html += `<th>${formatVal(poData.averageCo[po])}</th>`);
+    
+    const subjAttain = poData.finalSubjectAttainment ?? finalData?.finalSubjectAttainment ?? 0;
+    html += `</tr><tr><th style="background-color: #fff;">Final Subject Attainment</th>`;
+    html += `<th colspan="${poKeys.length}" style="background-color: #fff;">${formatVal(subjAttain)}</th></tr>`;
+
+    const poAttnData = poData.poAttainment || poData.poAttainments || {};
+    html += `<tr><th style="background-color: ${COLORS.lightGray};">Final PO Attainment</th>`;
+    
+    poKeys.forEach(po => {
+        let val = poAttnData[po] ?? poAttnData[Object.keys(poAttnData).find(k => k.toLowerCase() === po.toLowerCase())];
+        html += `<th style="background-color: ${COLORS.lightGray};">${formatVal(val)}</th>`;
+    });
+    
+    return html + `</tr></tbody></table>`;
+}
+
+// ============================================================================
+// PUPPETEER PDF GENERATOR (Portrait Shrink-to-Fit)
+// ============================================================================
+async function generatePdfBuffer(htmlContent) {
+    let browser;
+    try {
+        browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+        const contentWidth = await page.evaluate(() => {
+            let maxWidth = 0;
+            document.querySelectorAll('table').forEach(table => {
+                if (table.offsetWidth > maxWidth) maxWidth = table.offsetWidth;
+            });
+            return maxWidth;
+        });
+
+        const printableA4PortraitWidth = 754; 
+        let scaleFactor = 1;
+        
+        if (contentWidth > printableA4PortraitWidth) {
+            scaleFactor = printableA4PortraitWidth / (contentWidth + 10); 
         }
 
-        const safeYear = academicYear.replace(/\//g, '-');
-        const fileName = `Report_${subjectId}_${safeYear}.pdf`;
+        return await page.pdf({
+            format: 'A4', 
+            landscape: false, 
+            printBackground: true, 
+            scale: scaleFactor,
+            margin: { top: '20px', bottom: '20px', left: '20px', right: '20px' }
+        });
+    } finally {
+        if (browser) await browser.close();
+    }
+}
 
-        const [marksDoc, coDoc, poDoc] = await Promise.all([
-            calculatedMarks.findOne({ subjectId, course, academicYear }).lean(),
-            FinalCoAttainment.findOne({ subjectId, course, academicYear }).lean(),
-            PoAttainment.findOne({ subjectId, course, academicYear }).lean() 
+// ============================================================================
+// CONTROLLERS FOR THEORY SUBJECTS
+// ============================================================================
+
+// 1. Download Master Report (All 3 Tables)
+async function handleDownloadTheoryPdfReport(req, res) {
+    try {
+        const inputs = getSanitizedInputs(req);
+        if (!inputs) return res.status(400).json({ success: false, message: "Missing inputs." });
+        const { cleanSubjectId, cleanCourse, cleanYear } = inputs;
+
+        const [calcData, finalData, poData] = await Promise.all([
+            TheoryCalculatedMarks.findOne({ subjectId: cleanSubjectId, course: cleanCourse, academicYear: cleanYear }).lean(),
+            TheoryFinalCoAttainment.findOne({ subjectId: cleanSubjectId, course: cleanCourse, academicYear: cleanYear }).lean(),
+            TheoryPoAttainment.findOne({ subjectId: cleanSubjectId, course: cleanCourse, academicYear: cleanYear }).lean()
         ]);
 
-        if (!marksDoc?.actualMarks?.length) {
-            return res.status(404).json({ message: "No marks data found for this subject and year." });
-        }
+        if (!calcData && !finalData && !poData) return res.status(404).json({ success: false, message: "No data found." });
 
-        const sampleMarks = marksDoc.actualMarks[0].marks;
-        const componentMap = {};
-        const orderedComponents = [];
+        const { orderedComponents, componentMap } = extractComponents(calcData);
+        const colorMap = buildColorMap(orderedComponents);
 
-        Object.keys(sampleMarks).forEach(key => {
-            if (key.endsWith('_TOTAL')) return;
-            const match = key.match(/(.*)_(CO\d+)/);
-            if (match) {
-                const [, compName, coName] = match;
-                if (!componentMap[compName]) {
-                    componentMap[compName] = [];
-                    orderedComponents.push(compName);
-                }
-                componentMap[compName].push(coName);
-            }
-        });
+        let html = getBaseHtml(`Theory Attainment Report - ${cleanSubjectId} (${cleanYear})`);
 
-        orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
-
-        // Calculate maximum columns dynamically to pass to the HTML generator
-        let calcMarksCols = 1; 
-        orderedComponents.forEach(comp => { calcMarksCols += componentMap[comp].length + 1; });
+        html += getTable1Html(calcData, colorMap, orderedComponents, componentMap, '1. Calculated Marks & Attainment');
         
-        let poKeysCols = 0;
-        if (poDoc?.averageCo) { poKeysCols = Object.keys(poDoc.averageCo).length + 1; }
+        const hasT1 = !!calcData;
+        const pageBreakT2 = hasT1 ? '<h3 class="page-break">2. Final CO Attainment</h3>' : '<h3>2. Final CO Attainment</h3>';
+        html += getTable2Html(finalData, colorMap, pageBreakT2);
+
+        const pageBreakT3 = (hasT1 || !!finalData) ? '<h3 class="page-break">3. Final PO Attainment</h3>' : '<h3>3. Final PO Attainment</h3>';
+        html += getTable3Html(poData, finalData, pageBreakT3);
         
-        const maxColsForMasterReport = Math.max(calcMarksCols, 9, poKeysCols);
+        html += `</body></html>`;
 
-        let tableHtml = `
-            <h3>1. Calculated Marks & Attainment</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th rowspan="2" class="bg-reg">Reg No</th>`;
-        
-        orderedComponents.forEach((comp, index) => {
-            const colspan = componentMap[comp].length + 1;
-            const bgClass = `bg-comp-${index % 2}`;
-            tableHtml += `<th colspan="${colspan}" class="${bgClass}">${comp.replace(/_/g, ' ')}</th>`;
-        });
-        
-        tableHtml += `</tr><tr>`;
-        
-        orderedComponents.forEach((comp, index) => {
-            const bgClass = `bg-comp-${index % 2}`;
-            componentMap[comp].forEach(co => {
-                tableHtml += `<th class="${bgClass}">${co}</th>`;
-            });
-            tableHtml += `<th class="${bgClass}">Total</th>`;
-        });
-        
-        tableHtml += `</tr></thead><tbody>`;
-
-        marksDoc.actualMarks.forEach(({ regNo, marks: m }) => {
-            tableHtml += `<tr><td><b>${regNo}</b></td>`;
-            orderedComponents.forEach(comp => {
-                componentMap[comp].forEach(co => {
-                    tableHtml += `<td>${formatVal(m[`${comp}_${co}`])}</td>`;
-                });
-                tableHtml += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
-            });
-            tableHtml += `</tr>`;
-        });
-
-        const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
-        calcLabels.forEach((label, i) => {
-            tableHtml += `<tr><td style="font-weight: bold;">${label}</td>`;
-            orderedComponents.forEach(comp => {
-                [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
-                    const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
-                    const calc = marksDoc.reportData[key] || {};
-                    let val = '-';
-                    if (i === 0) val = formatVal(calc.maxMarks);
-                    if (i === 1) val = formatVal(calc.targetMarks);
-                    if (i === 2) val = formatVal(calc.studentsAboveTarget);
-                    if (i === 3) val = formatVal(calc.attainmentPercent);
-                    if (i === 4) val = formatVal(calc.attainmentLevel);
-                    tableHtml += `<td>${val}</td>`;
-                });
-            });
-            tableHtml += `</tr>`;
-        });
-        
-        tableHtml += `</tbody></table>`;
-
-        if (coDoc?.attainmentTable) {
-            tableHtml += `<div class="page-break"></div>
-                            <h3>2. Final CO Attainment</h3>
-                            <table>
-                                <thead>
-                                    <tr class="bg-header-gray">
-                                        <th>CO's</th>
-                                        <th>Quiz 1</th>
-                                        <th>Sessional 1</th>
-                                        <th>Quiz 2</th>
-                                        <th>Sessional 2</th>
-                                        <th>Assignment</th>
-                                        <th>End Sem</th>
-                                        <th>Total Avg Int</th>
-                                        <th>Grand Total (50% int + 50% End term)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
-                                
-            Object.entries(coDoc.attainmentTable).forEach(([coName, coData]) => {
-                tableHtml += `<tr>
-                    <td><b>${coName}</b></td>
-                    <td>${formatVal(coData.Quiz_1)}</td>
-                    <td>${formatVal(coData.Mid_Term)}</td>
-                    <td>${formatVal(coData.Quiz_2)}</td>
-                    <td>${formatVal(coData.Surprise_Quiz)}</td>
-                    <td>${formatVal(coData.Assignment)}</td>
-                    <td>${formatVal(coData.externalLevel)}</td>
-                    <td>${formatVal(coData.internalAvg)}</td>
-                    <td>${formatVal(coData.grandTotal)}</td>
-                </tr>`;
-            });
-
-            let finalAttainmentValue = coDoc.finalSubjectAttainment;
-            if (finalAttainmentValue === undefined) {
-                let sumGrandTotal = 0, countGrandTotal = 0;
-                Object.values(coDoc.attainmentTable).forEach(co => {
-                    if (typeof co.grandTotal === 'number') { sumGrandTotal += co.grandTotal; countGrandTotal++; }
-                });
-                finalAttainmentValue = countGrandTotal > 0 ? parseFloat((sumGrandTotal / countGrandTotal).toFixed(2)) : undefined;
-            }
-
-            tableHtml += `<tr class="bg-footer-gray">
-                                <td colspan="8" class="text-right">Final CO Attainment</td>
-                                <td>${formatVal(finalAttainmentValue)}</td>
-                            </tr>
-                        </tbody>
-                    </table>`;
-        }
-
-        if (poDoc?.mappingData && poDoc?.averageCo) {
-            const poKeys = Object.keys(poDoc.averageCo).sort((a, b) => {
-                const numA = parseInt(a.replace(/\D/g, '')) || 0, numB = parseInt(b.replace(/\D/g, '')) || 0;
-                const textA = a.replace(/\d/g, ''), textB = b.replace(/\d/g, '');
-                return textA === textB ? numA - numB : textA.localeCompare(textB);
-            });
-
-            tableHtml += `<br>
-                            <h3>3. Final PO Attainment</h3>
-                            <table>
-                                <thead>
-                                    <tr class="bg-header-gray">
-                                        <th>CO's</th>`;
-            
-            poKeys.forEach(po => tableHtml += `<th>${po.toUpperCase()}</th>`);
-            
-            tableHtml += `</tr></thead><tbody>`;
-
-            Object.keys(poDoc.mappingData).forEach(co => {
-                tableHtml += `<tr><td><b>${co}</b></td>`;
-                poKeys.forEach(po => tableHtml += `<td>${formatVal(poDoc.mappingData[co][po])}</td>`);
-                tableHtml += `</tr>`;
-            });
-
-            tableHtml += `<tr style="background-color: #F9F9F9; font-weight: bold;">
-                                <td>Average</td>`;
-            poKeys.forEach(po => tableHtml += `<td>${formatVal(poDoc.averageCo[po])}</td>`);
-            tableHtml += `</tr>`;
-
-            tableHtml += `<tr class="bg-footer-gray">
-                                <td>Final Subject Attainment</td>
-                                <td colspan="${poKeys.length}">${formatVal(poDoc.finalSubjectAttainment)}</td>
-                            </tr>`;
-
-            const poAttnData = poDoc.poAttainment || poDoc.poAttainments || {};
-            tableHtml += `<tr style="background-color: #E0E0E0; font-weight: bold;">
-                                <td>Final PO Attainment</td>`;
-            
-            poKeys.forEach(po => {
-                let val = poAttnData[po] ?? poAttnData[Object.keys(poAttnData).find(k => k.toLowerCase() === po.toLowerCase())];
-                tableHtml += `<td>${formatVal(val)}</td>`;
-            });
-
-            tableHtml += `</tr></tbody></table>`;
-        }
-
-        // Generate full HTML passing the max column count for dynamic scaling
-        const htmlContent = getBaseHtml(`Attainment Report: ${subjectId} (${safeYear})`, tableHtml, subjectId, maxColsForMasterReport);
-
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-        const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-
-        const pdfBuffer = await page.pdf({
-            format: 'A4',
-            landscape: true, 
-            margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' }, // Removed scale
-            printBackground: true 
-        });
-
-        await browser.close();
-
+        const pdfBuffer = await generatePdfBuffer(html);
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-        res.send(pdfBuffer);
+        res.setHeader('Content-Disposition', `inline; filename="Theory_Report_${cleanSubjectId}_${cleanYear}.pdf"`);
+        return res.send(pdfBuffer);
 
     } catch (error) {
-        console.error('Error generating PDF report:', error);
-        if (!res.headersSent) res.status(500).json({ message: 'Internal server error while generating PDF report.' });
+        console.error("Master Theory PDF Error:", error.message);
+        if (!res.headersSent) return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
 
-// ============================================================================
-// 2. Download Calculated Marks ONLY (PDF)
-// ============================================================================
-async function handleDownloadCalculatedMarksPdf(req, res) {
+// 2. Download Calculated Marks ONLY
+async function handleDownloadTheoryCalculatedMarksPdf(req, res) {
     try {
-        const { subjectId, course, academicYear } = req.query;
-        if (!subjectId || !course || !academicYear) {
-            return res.status(400).json({ message: "Missing parameters" });
-        }
-
-        const safeYear = academicYear.replace(/\//g, '-');
-        const fileName = `CalculatedMarks_${subjectId}_${safeYear}.pdf`;
-
-        const marksDoc = await calculatedMarks.findOne({ subjectId, course, academicYear }).lean();
+        const inputs = getSanitizedInputs(req);
+        if (!inputs) return res.status(400).json({ success: false, message: "Missing inputs." });
         
-        if (!marksDoc?.actualMarks?.length) {
-            return res.status(404).json({ message: "No marks data found." });
-        }
+        const calcData = await TheoryCalculatedMarks.findOne({ subjectId: inputs.cleanSubjectId, course: inputs.cleanCourse, academicYear: inputs.cleanYear }).lean();
+        if (!calcData) return res.status(404).json({ success: false, message: "No marks data found." });
 
-        const sampleMarks = marksDoc.actualMarks[0].marks;
-        const componentMap = {};
-        const orderedComponents = [];
+        const { orderedComponents, componentMap } = extractComponents(calcData);
+        const colorMap = buildColorMap(orderedComponents);
 
-        Object.keys(sampleMarks).forEach(key => {
-            if (key.endsWith('_TOTAL')) return;
-            const match = key.match(/(.*)_(CO\d+)/);
-            if (match) {
-                const [, compName, coName] = match;
-                if (!componentMap[compName]) { 
-                    componentMap[compName] = []; 
-                    orderedComponents.push(compName); 
-                }
-                componentMap[compName].push(coName);
-            }
-        });
+        let html = getBaseHtml(`Theory Calculated Marks - ${inputs.cleanSubjectId} (${inputs.cleanYear})`);
+        html += getTable1Html(calcData, colorMap, orderedComponents, componentMap);
+        html += `</body></html>`;
 
-        orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
-
-        // Calculate dynamic columns for this specific table
-        let calcMarksCols = 1; 
-        orderedComponents.forEach(comp => { calcMarksCols += componentMap[comp].length + 1; });
-
-        let tableHtml = `<table><thead><tr><th rowspan="2" class="bg-reg">Reg No</th>`;
-        
-        orderedComponents.forEach((comp, index) => {
-            const colspan = componentMap[comp].length + 1;
-            tableHtml += `<th colspan="${colspan}" class="bg-comp-${index % 2}">${comp.replace(/_/g, ' ')}</th>`;
-        });
-        
-        tableHtml += `</tr><tr>`;
-        
-        orderedComponents.forEach((comp, index) => {
-            const bgClass = `bg-comp-${index % 2}`;
-            componentMap[comp].forEach(co => tableHtml += `<th class="${bgClass}">${co}</th>`);
-            tableHtml += `<th class="${bgClass}">Total</th>`;
-        });
-        
-        tableHtml += `</tr></thead><tbody>`;
-
-        marksDoc.actualMarks.forEach(({ regNo, marks: m }) => {
-            tableHtml += `<tr><td><b>${regNo}</b></td>`;
-            orderedComponents.forEach(comp => {
-                componentMap[comp].forEach(co => tableHtml += `<td>${formatVal(m[`${comp}_${co}`])}</td>`);
-                tableHtml += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
-            });
-            tableHtml += `</tr>`;
-        });
-
-        const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
-        calcLabels.forEach((label, i) => {
-            tableHtml += `<tr><td style="font-weight: bold;">${label}</td>`;
-            orderedComponents.forEach(comp => {
-                [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
-                    const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
-                    const calc = marksDoc.reportData[key] || {};
-                    let val = '-';
-                    if (i === 0) val = formatVal(calc.maxMarks);
-                    if (i === 1) val = formatVal(calc.targetMarks);
-                    if (i === 2) val = formatVal(calc.studentsAboveTarget);
-                    if (i === 3) val = formatVal(calc.attainmentPercent);
-                    if (i === 4) val = formatVal(calc.attainmentLevel);
-                    tableHtml += `<td>${val}</td>`;
-                });
-            });
-            tableHtml += `</tr>`;
-        });
-        
-        tableHtml += `</tbody></table>`;
-
-        // Pass calculated columns dynamically
-        const htmlContent = getBaseHtml(`Calculated Marks & Attainment: ${subjectId} (${safeYear})`, tableHtml, subjectId, calcMarksCols);
-
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-        const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        
-        const pdfBuffer = await page.pdf({ 
-            format: 'A4', 
-            landscape: true, 
-            margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' }, // Removed scale
-            printBackground: true 
-        });
-        await browser.close();
-
+        const pdfBuffer = await generatePdfBuffer(html);
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`); 
-        res.send(pdfBuffer);
+        res.setHeader('Content-Disposition', `inline; filename="Theory_CalculatedMarks_${inputs.cleanSubjectId}_${inputs.cleanYear}.pdf"`);
+        return res.send(pdfBuffer);
 
     } catch (error) {
-        console.error('Error generating Calculated Marks PDF:', error);
-        if (!res.headersSent) res.status(500).json({ message: 'Internal server error' });
+        console.error("Theory Calculated Marks PDF Error:", error.message);
+        if (!res.headersSent) return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
 
-// ============================================================================
-// 3. Download Final CO Attainment ONLY (PDF)
-// ============================================================================
-async function handleDownloadFinalCoAttainmentPdf(req, res) {
+// 3. Download Final CO Attainment ONLY
+async function handleDownloadTheoryFinalCoAttainmentPdf(req, res) {
     try {
-        const { subjectId, course, academicYear } = req.query;
-        if (!subjectId || !course || !academicYear) return res.status(400).json({ message: "Missing parameters" });
+        const inputs = getSanitizedInputs(req);
+        if (!inputs) return res.status(400).json({ success: false, message: "Missing inputs." });
 
-        const safeYear = academicYear.replace(/\//g, '-');
-        const fileName = `Final_CO_Attainment_${subjectId}_${safeYear}.pdf`;
+        const [calcData, finalData] = await Promise.all([
+            TheoryCalculatedMarks.findOne({ subjectId: inputs.cleanSubjectId, course: inputs.cleanCourse, academicYear: inputs.cleanYear }).lean(),
+            TheoryFinalCoAttainment.findOne({ subjectId: inputs.cleanSubjectId, course: inputs.cleanCourse, academicYear: inputs.cleanYear }).lean()
+        ]);
 
-        const firstDoc = await FinalCoAttainment.findOne({ subjectId, course, academicYear }).lean();
-        if (!firstDoc?.attainmentTable) return res.status(404).json({ message: "No CO Attainment data found." });
+        if (!finalData) return res.status(404).json({ success: false, message: "No final CO data found." });
 
-        let tableHtml = `
-            <table>
-                <thead>
-                    <tr class="bg-header-gray">
-                        <th>CO's</th><th>Quiz 1</th><th>Sessional 1</th><th>Quiz 2</th>
-                        <th>Sessional 2</th><th>Assignment</th><th>End Sem</th>
-                        <th>Total Avg Int</th><th>Grand Total (50% int + 50% End term)</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-                
-        Object.entries(firstDoc.attainmentTable).forEach(([coName, coData]) => {
-            tableHtml += `<tr>
-                <td><b>${coName}</b></td>
-                <td>${formatVal(coData.Quiz_1)}</td><td>${formatVal(coData.Mid_Term)}</td>
-                <td>${formatVal(coData.Quiz_2)}</td><td>${formatVal(coData.Surprise_Quiz)}</td>
-                <td>${formatVal(coData.Assignment)}</td><td>${formatVal(coData.externalLevel)}</td>
-                <td>${formatVal(coData.internalAvg)}</td><td>${formatVal(coData.grandTotal)}</td>
-            </tr>`;
-        });
+        const { orderedComponents } = extractComponents(calcData);
+        const colorMap = buildColorMap(orderedComponents);
 
-        let finalAttainmentValue = firstDoc.finalSubjectAttainment;
-        if (finalAttainmentValue === undefined) {
-            let sumGrandTotal = 0, countGrandTotal = 0;
-            Object.values(firstDoc.attainmentTable).forEach(co => {
-                if (typeof co.grandTotal === 'number') { sumGrandTotal += co.grandTotal; countGrandTotal++; }
-            });
-            finalAttainmentValue = countGrandTotal > 0 ? parseFloat((sumGrandTotal / countGrandTotal).toFixed(2)) : undefined;
-        }
+        let html = getBaseHtml(`Theory Final CO Attainment - ${inputs.cleanSubjectId} (${inputs.cleanYear})`);
+        html += getTable2Html(finalData, colorMap);
+        html += `</body></html>`;
 
-        tableHtml += `<tr class="bg-footer-gray">
-                        <td colspan="8" class="text-right">Final CO Attainment</td>
-                        <td>${formatVal(finalAttainmentValue)}</td>
-                    </tr></tbody></table>`;
-
-        // Fixed 9 columns for CO table
-        const htmlContent = getBaseHtml(`Final CO Attainment: ${subjectId} (${safeYear})`, tableHtml, subjectId, 9);
-
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-        const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        
-        const pdfBuffer = await page.pdf({ 
-            format: 'A4', 
-            landscape: true, 
-            margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' }, // Removed scale
-            printBackground: true 
-        });
-        await browser.close();
-
+        const pdfBuffer = await generatePdfBuffer(html);
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`); 
-        res.send(pdfBuffer);
+        res.setHeader('Content-Disposition', `inline; filename="Theory_Final_CO_Attainment_${inputs.cleanSubjectId}_${inputs.cleanYear}.pdf"`);
+        return res.send(pdfBuffer);
 
     } catch (error) {
-        console.error('Error generating CO Attainment PDF:', error);
-        if (!res.headersSent) res.status(500).json({ message: 'Internal server error' });
+        console.error("Theory Final CO Attainment PDF Error:", error.message);
+        if (!res.headersSent) return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
 
-// ============================================================================
-// 4. Download PO Attainment ONLY (PDF)
-// ============================================================================
-async function handleDownloadPoAttainmentPdf(req, res) {
+// 4. Download PO Attainment ONLY
+async function handleDownloadTheoryPoAttainmentPdf(req, res) {
     try {
-        const { subjectId, course, academicYear } = req.query;
-        if (!subjectId || !course || !academicYear) return res.status(400).json({ message: "Missing parameters" });
+        const inputs = getSanitizedInputs(req);
+        if (!inputs) return res.status(400).json({ success: false, message: "Missing inputs." });
 
-        const safeYear = academicYear.replace(/\//g, '-');
-        const fileName = `Final_PO_Attainment_${subjectId}_${safeYear}.pdf`;
+        const [finalData, poData] = await Promise.all([
+            TheoryFinalCoAttainment.findOne({ subjectId: inputs.cleanSubjectId, course: inputs.cleanCourse, academicYear: inputs.cleanYear }).lean(),
+            TheoryPoAttainment.findOne({ subjectId: inputs.cleanSubjectId, course: inputs.cleanCourse, academicYear: inputs.cleanYear }).lean()
+        ]);
 
-        const firstPoDoc = await PoAttainment.findOne({ subjectId, course, academicYear }).lean();
-        if (!firstPoDoc?.mappingData || !firstPoDoc?.averageCo) return res.status(404).json({ message: "No PO Attainment data found." });
+        if (!poData) return res.status(404).json({ success: false, message: "No PO data found." });
 
-        const poKeys = Object.keys(firstPoDoc.averageCo).sort((a, b) => {
-            const numA = parseInt(a.replace(/\D/g, '')) || 0, numB = parseInt(b.replace(/\D/g, '')) || 0;
-            const textA = a.replace(/\d/g, ''), textB = b.replace(/\d/g, '');
-            return textA === textB ? numA - numB : textA.localeCompare(textB);
-        });
+        let html = getBaseHtml(`Theory Final PO Attainment - ${inputs.cleanSubjectId} (${inputs.cleanYear})`);
+        html += getTable3Html(poData, finalData);
+        html += `</body></html>`;
 
-        let tableHtml = `<table><thead><tr class="bg-header-gray"><th>CO's</th>`;
-        poKeys.forEach(po => tableHtml += `<th>${po.toUpperCase()}</th>`);
-        tableHtml += `</tr></thead><tbody>`;
-
-        Object.keys(firstPoDoc.mappingData).forEach(co => {
-            tableHtml += `<tr><td><b>${co}</b></td>`;
-            poKeys.forEach(po => tableHtml += `<td>${formatVal(firstPoDoc.mappingData[co][po])}</td>`);
-            tableHtml += `</tr>`;
-        });
-
-        tableHtml += `<tr style="background-color: #F9F9F9; font-weight: bold;"><td>Average</td>`;
-        poKeys.forEach(po => tableHtml += `<td>${formatVal(firstPoDoc.averageCo[po])}</td>`);
-        tableHtml += `</tr>`;
-
-        tableHtml += `<tr class="bg-footer-gray">
-                        <td>Final Subject Attainment</td>
-                        <td colspan="${poKeys.length}">${formatVal(firstPoDoc.finalSubjectAttainment)}</td>
-                    </tr>`;
-
-        const poAttnData = firstPoDoc.poAttainment || firstPoDoc.poAttainments || {};
-        tableHtml += `<tr style="background-color: #E0E0E0; font-weight: bold;"><td>Final PO Attainment</td>`;
-        
-        poKeys.forEach(po => {
-            let val = poAttnData[po] ?? poAttnData[Object.keys(poAttnData).find(k => k.toLowerCase() === po.toLowerCase())];
-            tableHtml += `<td>${formatVal(val)}</td>`;
-        });
-        tableHtml += `</tr></tbody></table>`;
-
-        // Calculate columns for PO table dynamically
-        const poColsCount = poKeys.length + 1;
-        const htmlContent = getBaseHtml(`Final PO Attainment: ${subjectId} (${safeYear})`, tableHtml, subjectId, poColsCount);
-
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-        const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        
-        const pdfBuffer = await page.pdf({ 
-            format: 'A4', 
-            landscape: true, 
-            margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' }, // Removed scale
-            printBackground: true 
-        });
-        await browser.close();
-
+        const pdfBuffer = await generatePdfBuffer(html);
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`); 
-        res.send(pdfBuffer);
+        res.setHeader('Content-Disposition', `inline; filename="Theory_Final_PO_Attainment_${inputs.cleanSubjectId}_${inputs.cleanYear}.pdf"`);
+        return res.send(pdfBuffer);
 
     } catch (error) {
-        console.error('Error generating PO Attainment PDF:', error);
-        if (!res.headersSent) res.status(500).json({ message: 'Internal server error' });
+        console.error("Theory PO Attainment PDF Error:", error.message);
+        if (!res.headersSent) return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
 
-// Export all the compiled controllers
 module.exports = {
-    handleDownloadPdfReport,
-    handleDownloadCalculatedMarksPdf,
-    handleDownloadFinalCoAttainmentPdf,
-    handleDownloadPoAttainmentPdf
+    handleDownloadTheoryPdfReport,
+    handleDownloadTheoryCalculatedMarksPdf,
+    handleDownloadTheoryFinalCoAttainmentPdf,
+    handleDownloadTheoryPoAttainmentPdf
 };
