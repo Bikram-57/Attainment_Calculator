@@ -170,7 +170,7 @@ function FetchData() {
 
 						<Select
 							options={subjectTypeOptions}
-							placeholder="Select year"
+							placeholder="Select subject type"
 							value={
 								subjectTypeOptions.find(
 									(option) => option.value === subjectType

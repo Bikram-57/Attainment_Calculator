@@ -5,11 +5,20 @@ import POAttainTable from './POAttainTable';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useFileDownload from '../../../hooks/useFileDownload';
 import POAttainLabTable from './POAttainLabTable';
+import { COLORS } from '../../../constants/theme';
+import { IoMdDownload } from "react-icons/io";
+import Select from 'react-select';
 
 function POAttainment() {
     const { subjectType, academicYear, course, subjectId } = useParams();
     const [data, setData] = useState(null);
     const [subjectName, setSubjectName] = useState('');
+    const [downloadType, setDownloadType] = useState('excel');
+
+    const downloadTypeOptions = [
+        { value: "excel", label: "Excel" },
+        { value: "print-ready", label: "Print Ready" },
+    ];
 
     useDocumentTitle('PO Attainment Report');
 
@@ -45,9 +54,50 @@ function POAttainment() {
         getSubject();
     }, []);
 
+    // const handleDownload = async () => {
+    //     try {
+    //         const response = await axios.get('/file/FinalPo', {
+    //             params: {
+    //                 subjectId,
+    //                 course,
+    //                 academicYear
+    //             },
+    //             responseType: 'blob'
+    //         });
+
+    //         useFileDownload(
+    //             response.data,
+    //             `Final_PO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`
+    //         );
+
+    //         // const url = window.URL.createObjectURL(response.data);
+
+    //         // const link = document.createElement('a');
+    //         // link.href = url;
+    //         // link.download = `Final_PO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`;
+
+    //         // document.body.appendChild(link);
+    //         // link.click();
+
+    //         // link.remove();
+    //         // window.URL.revokeObjectURL(url);
+
+    //     } catch (err) {
+    //         console.log('Error: ', err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+    //         console.error('Download failed:', err);
+    //     }
+    // }
     const handleDownload = async () => {
         try {
-            const response = await axios.get('/file/FinalPo', {
+            let apiUrl;
+            if (subjectType === 'theory') {
+                apiUrl = downloadType === 'excel' ? '/file/FinalPo' : '/theory-print-ready/download-po-attainment';
+            } else {
+                apiUrl = downloadType === 'excel' ?
+                    '/lab/download-poAttainment' : '/lab-print-ready/download-po-attainment-pdf';
+            }
+
+            const response = await axios.get(apiUrl, {
                 params: {
                     subjectId,
                     course,
@@ -58,7 +108,7 @@ function POAttainment() {
 
             useFileDownload(
                 response.data,
-                `Final_PO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.xlsx`
+                `Final_PO_Attainment_${subjectId}_${academicYear.replace(/\//g, '-')}.${downloadType === 'excel' ? 'xlsx' : 'pdf'}`
             );
 
             // const url = window.URL.createObjectURL(response.data);
@@ -101,12 +151,42 @@ function POAttainment() {
                         </p>
                     </div>
 
-                    <button
+                    <div className='flex gap-2 z-40 items-center'>
+                        <label
+                            className="block text-md font-semibold"
+                            style={{ color: COLORS.font }}
+                        >
+                            Download type:
+                        </label>
+                        <div className='w-35'>
+                            <Select
+                                options={downloadTypeOptions}
+                                placeholder="Select download type"
+                                value={
+                                    downloadTypeOptions.find(
+                                        (option) => option.value === downloadType
+                                    ) || null
+                                }
+                                onChange={(selected) =>
+                                    setDownloadType(selected?.value || "")
+                                }
+                                maxMenuHeight={120}
+                            />
+                        </div>
+                        <button
+                            onClick={handleDownload}
+                            className="rounded-md bg-white px-1 py-1 text-2xl font-medium text-slate-800 shadow-sm transition hover:bg-slate-100 cursor-pointer"
+                        >
+                            <IoMdDownload />
+                        </button>
+                    </div>
+
+                    {/* <button
                         onClick={handleDownload}
                         className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-800 shadow-sm transition hover:bg-slate-100 cursor-pointer"
                     >
                         Download
-                    </button>
+                    </button> */}
 
                 </div>
 

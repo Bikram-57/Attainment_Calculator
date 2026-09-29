@@ -1,5 +1,3 @@
-import axios from "axios";
-
 function useFileDownload(data, fileName) {
     const blob = new Blob([data]);
     const url = window.URL.createObjectURL(blob);
