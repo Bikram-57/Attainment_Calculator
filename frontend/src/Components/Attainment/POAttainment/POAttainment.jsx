@@ -91,10 +91,10 @@ function POAttainment() {
         try {
             let apiUrl;
             if (subjectType === 'theory') {
-                apiUrl = downloadType === 'excel' ? '/file/FinalPo' : '/theory-print-ready/download-po-attainment';
+                apiUrl = downloadType === 'excel' ? '/file/FinalPo' : '/theory-print-ready/theory/download-po-attainment';
             } else {
                 apiUrl = downloadType === 'excel' ?
-                    '/lab/download-poAttainment' : '/lab-print-ready/download-po-attainment-pdf';
+                    '/lab/download-poAttainment' : '/lab-print-ready/lab/download-po-attainment';
             }
 
             const response = await axios.get(apiUrl, {
