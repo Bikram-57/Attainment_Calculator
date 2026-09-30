@@ -1316,6 +1316,82 @@ function getBaseHtml(title) {
 // ============================================================================
 
 // 1. Generate Table 1: Calculated Marks & Attainment
+// function getTable1Html(calcData, colorMap, orderedComponents, componentMap, heading = '') {
+//     if (!calcData || !calcData.actualMarks || calcData.actualMarks.length === 0) return '';
+//     let html = heading ? `<h3>${heading}</h3>` : '';
+
+//     html += `<table><thead><tr><th rowspan="2" style="background-color: ${COLORS.pink};">Reg No</th>`;
+    
+//     // Top Header Row (Component Names)
+//     orderedComponents.forEach(comp => {
+//         const colspan = componentMap[comp].length + 1;
+//         html += `<th colspan="${colspan}" style="background-color: ${colorMap[comp]};">${comp.replace(/_/g, ' ')}</th>`;
+//     });
+//     html += `</tr><tr>`;
+    
+//     // Sub Header Row (CO1, CO2, Total)
+//     orderedComponents.forEach(comp => {
+//         componentMap[comp].forEach(co => {
+//             html += `<th style="background-color: ${colorMap[comp]};">${co}</th>`;
+//         });
+//         html += `<th style="background-color: ${colorMap[comp]};">Total</th>`;
+//     });
+//     html += `</tr></thead><tbody>`;
+
+    // Student Rows
+    // calcData.actualMarks.forEach(({ regNo, marks: m }) => {
+    //     html += `<tr><td><b>${regNo}</b></td>`;
+    //     orderedComponents.forEach(comp => {
+    //         componentMap[comp].forEach(co => {
+    //             html += `<td>${formatVal(m[`${comp}_${co}`])}</td>`;
+    //         });
+    //         html += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
+    //     });
+    //     html += `</tr>`;
+    // });
+
+
+// Footer Rows (Max Marks, Target, etc.)
+    // const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
+    // const keys = ['maxMarks', 'targetMarks', 'studentsAboveTarget', 'attainmentPercent', 'attainmentLevel'];
+    
+//     calcLabels.forEach((label, i) => {
+//         html += `<tr><th style="background-color: #fff;">${label}</th>`;
+//         orderedComponents.forEach(comp => {
+//             // FIX: Changed 'TOTAL' to 'Total'
+//             [...componentMap[comp], 'Total'].forEach(coSuffix => { 
+//                 // FIX: Changed 'TOTAL' to 'Total' and _TOTAL to _Total
+//                 const key = coSuffix === 'Total' ? `${comp}_Total` : `${comp}_${coSuffix}`;
+//                 const calc = calcData.reportData?.[key] || {};
+//                 html += `<th>${formatVal(calc[keys[i]])}</th>`;
+//             });
+//         });
+//         html += `</tr>`;
+//     });
+
+
+//     // Footer Rows (Max Marks, Target, etc.)
+//     const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
+//     const keys = ['maxMarks', 'targetMarks', 'studentsAboveTarget', 'attainmentPercent', 'attainmentLevel'];
+    
+//     calcLabels.forEach((label, i) => {
+//         html += `<tr><th style="background-color: #fff;">${label}</th>`;
+//         orderedComponents.forEach(comp => {
+//             [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
+//                 const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
+//                 const calc = calcData.reportData?.[key] || {};
+//                 html += `<th>${formatVal(calc[keys[i]])}</th>`;
+//             });
+//         });
+//         html += `</tr>`;
+//     });
+
+//     return html + `</tbody></table>`;
+// }
+
+
+
+// 1. Generate Table 1: Calculated Marks & Attainment
 function getTable1Html(calcData, colorMap, orderedComponents, componentMap, heading = '') {
     if (!calcData || !calcData.actualMarks || calcData.actualMarks.length === 0) return '';
     let html = heading ? `<h3>${heading}</h3>` : '';
@@ -1345,20 +1421,23 @@ function getTable1Html(calcData, colorMap, orderedComponents, componentMap, head
             componentMap[comp].forEach(co => {
                 html += `<td>${formatVal(m[`${comp}_${co}`])}</td>`;
             });
-            html += `<td>${formatVal(m[`${comp}_TOTAL`])}</td>`;
+            // FIX: Using _Total to match the DB
+            html += `<td>${formatVal(m[`${comp}_Total`])}</td>`; 
         });
         html += `</tr>`;
     });
 
     // Footer Rows (Max Marks, Target, etc.)
+    // MUST BE DECLARED BEFORE THE LOOP
     const calcLabels = ['Max Marks', 'Target Marks', 'Students Above Target', 'Attainment %', 'Attainment Level'];
     const keys = ['maxMarks', 'targetMarks', 'studentsAboveTarget', 'attainmentPercent', 'attainmentLevel'];
     
     calcLabels.forEach((label, i) => {
         html += `<tr><th style="background-color: #fff;">${label}</th>`;
         orderedComponents.forEach(comp => {
-            [...componentMap[comp], 'TOTAL'].forEach(coSuffix => {
-                const key = coSuffix === 'TOTAL' ? `${comp}_TOTAL` : `${comp}_${coSuffix}`;
+            // FIX: Checking for 'Total' instead of 'TOTAL'
+            [...componentMap[comp], 'Total'].forEach(coSuffix => {
+                const key = coSuffix === 'Total' ? `${comp}_Total` : `${comp}_${coSuffix}`;
                 const calc = calcData.reportData?.[key] || {};
                 html += `<th>${formatVal(calc[keys[i]])}</th>`;
             });
@@ -1368,6 +1447,54 @@ function getTable1Html(calcData, colorMap, orderedComponents, componentMap, head
 
     return html + `</tbody></table>`;
 }
+
+
+// 2. Generate Table 2: Final CO Attainment
+// function getTable2Html(finalData, colorMap, heading = '') {
+//     if (!finalData || !finalData.attainmentTable) return '';
+//     let html = heading;
+//     const coKeys = Object.keys(finalData.attainmentTable).sort();
+//     if (coKeys.length === 0) return '';
+
+//     const dynamicExams = new Set();
+//     coKeys.forEach(co => Object.keys(finalData.attainmentTable[co]).forEach(k => {
+//         if (!['internalAvg', 'externalLevel', 'grandTotal'].includes(k)) dynamicExams.add(k);
+//     }));
+//     const examHeaders = Array.from(dynamicExams);
+
+//     html += `<table><thead><tr><th style="background-color: ${COLORS.pink};">CO's</th>`;
+//     examHeaders.forEach(exam => html += `<th style="background-color: ${colorMap[exam] || COLORS.gray};">${exam.replace(/_/g, ' ')}</th>`);
+    
+//     html += `<th style="background-color: ${COLORS.gray};">Total Avg Int</th>`;
+//     html += `<th style="background-color: ${COLORS.gray};">End Sem</th>`;
+//     html += `<th style="background-color: ${COLORS.gray};">Grand Total (50% int + 50% End term)</th></tr></thead><tbody>`;
+
+//     coKeys.forEach(co => {
+//         html += `<tr><td><b>${co}</b></td>`;
+//         const info = finalData.attainmentTable[co];
+//         examHeaders.forEach(exam => html += `<td>${formatVal(info[exam])}</td>`);
+//         html += `<td>${formatVal(info.internalAvg)}</td><td>${formatVal(info.externalLevel)}</td><td>${formatVal(info.grandTotal)}</td></tr>`;
+//     });
+
+//     // Fallback calculation if finalSubjectAttainment is missing
+//     let finalAttainmentValue = finalData.finalSubjectAttainment;
+//     if (finalAttainmentValue === undefined) {
+//         let sum = 0, count = 0;
+//         Object.values(finalData.attainmentTable).forEach(co => {
+//             if (typeof co.grandTotal === 'number') { sum += co.grandTotal; count++; }
+//         });
+//         finalAttainmentValue = count > 0 ? parseFloat((sum / count).toFixed(2)) : undefined;
+//     }
+
+//     const totalCols = examHeaders.length + 4;
+//     html += `<tr><th colspan="${totalCols - 1}" style="background-color: ${COLORS.lightGray}; text-align: right; padding-right: 15px;">Final CO Attainment</th>`;
+//     html += `<th style="background-color: ${COLORS.lightGray};">${formatVal(finalAttainmentValue)}</th></tr></tbody></table>`;
+
+//     return html;
+// }
+
+
+
 
 // 2. Generate Table 2: Final CO Attainment
 function getTable2Html(finalData, colorMap, heading = '') {
@@ -1380,7 +1507,15 @@ function getTable2Html(finalData, colorMap, heading = '') {
     coKeys.forEach(co => Object.keys(finalData.attainmentTable[co]).forEach(k => {
         if (!['internalAvg', 'externalLevel', 'grandTotal'].includes(k)) dynamicExams.add(k);
     }));
-    const examHeaders = Array.from(dynamicExams);
+    
+    // FIX: Apply natural alphanumeric sorting to accurately order Lab_1, Lab_2, ..., Lab_10
+    const examHeaders = Array.from(dynamicExams).sort((a, b) => {
+        const numA = parseInt(a.replace(/\D/g, '')) || 0;
+        const numB = parseInt(b.replace(/\D/g, '')) || 0;
+        const textA = a.replace(/\d/g, '');
+        const textB = b.replace(/\d/g, '');
+        return textA === textB ? numA - numB : textA.localeCompare(textB);
+    });
 
     html += `<table><thead><tr><th style="background-color: ${COLORS.pink};">CO's</th>`;
     examHeaders.forEach(exam => html += `<th style="background-color: ${colorMap[exam] || COLORS.gray};">${exam.replace(/_/g, ' ')}</th>`);
@@ -1498,6 +1633,34 @@ async function generatePdfBuffer(htmlContent) {
 // ============================================================================
 
 // Extract ordered components helper for parsing DB data
+// function extractComponents(marksDoc) {
+//     if (!marksDoc || !marksDoc.actualMarks || marksDoc.actualMarks.length === 0) return { orderedComponents: [], componentMap: {} };
+    
+//     const sampleMarks = marksDoc.actualMarks[0].marks;
+//     const componentMap = {};
+//     const orderedComponents = [];
+
+//     Object.keys(sampleMarks).forEach(key => {
+//         if (key.endsWith('_TOTAL')) return;
+//         const match = key.match(/(.*)_(CO\d+)/);
+//         if (match) {
+//             const [, compName, coName] = match;
+//             if (!componentMap[compName]) {
+//                 componentMap[compName] = [];
+//                 orderedComponents.push(compName);
+//             }
+//             componentMap[compName].push(coName);
+//         }
+//     });
+
+//     orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
+//     return { orderedComponents, componentMap };
+// }
+
+
+
+
+
 function extractComponents(marksDoc) {
     if (!marksDoc || !marksDoc.actualMarks || marksDoc.actualMarks.length === 0) return { orderedComponents: [], componentMap: {} };
     
@@ -1506,7 +1669,8 @@ function extractComponents(marksDoc) {
     const orderedComponents = [];
 
     Object.keys(sampleMarks).forEach(key => {
-        if (key.endsWith('_TOTAL')) return;
+        // FIX: Changed to _Total to match DB schema
+        if (key.endsWith('_Total')) return; 
         const match = key.match(/(.*)_(CO\d+)/);
         if (match) {
             const [, compName, coName] = match;
@@ -1521,6 +1685,8 @@ function extractComponents(marksDoc) {
     orderedComponents.forEach(comp => componentMap[comp].sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2))));
     return { orderedComponents, componentMap };
 }
+
+
 
 // 1. Download Master Report (All 3 Tables)
 // async function handleDownloadPdfReport(req, res) {

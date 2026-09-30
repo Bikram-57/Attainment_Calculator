@@ -11,6 +11,7 @@ const {
 router.get('/lab/download-master-report', handleDownloadPdfReport);
 router.get('/lab/download-co-attainment', handleDownloadCalculatedMarksPdf);
 router.get('/lab/download-final-co-attainment', handleDownloadFinalCoAttainmentPdf);
-router.get('/lab/download-po-attainment ', handleDownloadPoAttainmentPdf);
+router.get('/lab/download-po-attainment', handleDownloadPoAttainmentPdf);
+
 
 module.exports = router;
