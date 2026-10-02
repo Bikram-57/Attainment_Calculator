@@ -9,6 +9,7 @@ const {
   handleUploadRubricsFormatDownload,
   handleInternalMarksFormatDownload,
   handleExternalMarksFormatDownload,
+  handleLabMarksFormatDownload
 } = require("../controllers/formatDownload");
 
 // Create a simple GET route that doesn't need any parameters
@@ -19,5 +20,6 @@ router.get("/subject", verifyRoles('admin'), handleUploadAllSubjectFormatDownloa
 router.get("/rubrics", verifyRoles('admin'), handleUploadRubricsFormatDownload);
 router.get("/internal",  verifyRoles('admin', 'faculty'), handleInternalMarksFormatDownload);
 router.get("/external", verifyRoles('admin', 'faculty'), handleExternalMarksFormatDownload);
+router.get("/lab-marks", verifyRoles('admin', 'faculty'), handleLabMarksFormatDownload);
 
 module.exports = router;

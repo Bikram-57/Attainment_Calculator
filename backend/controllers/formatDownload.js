@@ -101,6 +101,14 @@ const handleExternalMarksFormatDownload = (req, res) => {
         'uploadExternalMarksFormat.xlsx'
     );
 };
+// @desc    Download the External Marks upload format Excel file
+const handleLabMarksFormatDownload = (req, res) => {
+    downloadFile(
+        res,
+        '../public/uploadLabMarksFormat/uploadLabMarksFormat.xlsx',
+        'uploadLabMarksFormat.xlsx'
+    );
+};
 
 
 module.exports = {
@@ -111,6 +119,7 @@ module.exports = {
     handleUploadRubricsFormatDownload,
     handleInternalMarksFormatDownload,
     handleExternalMarksFormatDownload,
+    handleLabMarksFormatDownload
 };
 
 
