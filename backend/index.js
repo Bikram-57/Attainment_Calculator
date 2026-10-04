@@ -39,9 +39,10 @@ const userHomePage = require('./routes/userHomePage');
 const printReadyPDFdownloadForTheory = require('./routes/PrintReadyPDFDownload');
 const formatRawMarks = require('./routes/tempSubjectMarks');
 
-// const labMarks = require('./routes/calculatedLabMarks');
-// const finalAttainment = require('./routes/finalLabAttainment');
-// const labPo = require('./routes/calculatedLabPo');
+
+
+const psoMapping = require('./routes/coPsoMapping');
+
 
 
 const masterRoute = require('./routes/labMarks');
@@ -106,9 +107,10 @@ app.use("/user-dashboard", userHomePage);
 app.use("/theory-print-ready", printReadyPDFdownloadForTheory);
 app.use("/raw", formatRawMarks);
 
-// app.use("/lab", labMarks);
-// app.use("/final-lab", finalAttainment);
-// app.use("/po-lab", labPo);
+
+
+app.use("/pso", psoMapping);
+
 
 
 app.use("/master-route", masterRoute);

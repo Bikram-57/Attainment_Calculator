@@ -4,7 +4,8 @@ const Subject = require('../models/subject');
 const User = require('../models/user');
 const AssignSubject = require('../models/assignSubject');
 const logActivity = require('../utils/activityLogger');
-const { generateAndSavePoAttainment } = require('../controllers/calculatedPo');
+// const { generateAndSavePoAttainment } = require('../controllers/calculatedPo');
+const { generateAndSavePoAttainment } = require('../controllers/calculatedPO');
 // ============================================================================
 // 1. Fetch Subjects Pending CO-PO Mapping
 // ============================================================================
