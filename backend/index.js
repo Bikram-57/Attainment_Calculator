@@ -41,7 +41,7 @@ const formatRawMarks = require('./routes/tempSubjectMarks');
 
 
 
-const psoMapping = require('./routes/coPsoMapping');
+// const psoMapping = require('./routes/coPsoMapping');
 
 
 
@@ -109,7 +109,7 @@ app.use("/raw", formatRawMarks);
 
 
 
-app.use("/pso", psoMapping);
+// app.use("/pso", psoMapping);
 
 
 
