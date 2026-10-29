@@ -166,7 +166,7 @@ function SideBar() {
                         icon={IoOptionsOutline}
                         to="/"
                         text="Dashboard"
-                        tabClassNames="flex items-center gap-1"
+                        tabClassNames="flex w-full items-center gap-1 pl-1"
                     />
 
                     <IoClose

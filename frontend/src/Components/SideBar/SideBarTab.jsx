@@ -11,6 +11,7 @@ function SideBarTab({ icon: Icon, to, text, tabClassNames }) {
             )}
             style={({ isActive }) => ({
                 backgroundColor: isActive ? COLORS.mintDark : 'transparent',
+                borderLeft: isActive ? '3px solid #ffffff' : null,
                 color: COLORS.font
             })}
         >
