@@ -30,7 +30,13 @@ export default function ForgotPassword({ mode }) {
     };
 
     return openForgotPassword ? (
-        <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
+        <div
+            className="min-h-screen bg-slate-100 flex items-center justify-center px-4"
+            style={{
+                background:
+                    "radial-gradient(circle at top left, #F7F2EA 0%, #EEF5F2 55%, #E3F0EA 100%)",
+            }}
+        >
             <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold text-slate-900">

@@ -59,7 +59,13 @@ export default function ResetPassword({ resetToken }) {
     }, [isResetPasswordOpen]);
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
+        <div
+            className="flex min-h-screen items-center justify-center bg-slate-100 px-4"
+            style={{
+                background:
+                    "radial-gradient(circle at top left, #F7F2EA 0%, #EEF5F2 55%, #E3F0EA 100%)",
+            }}
+        >
             <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold text-slate-900">
