@@ -65,7 +65,8 @@ function ProgressCharts({ userRole }) {
             {progressCharts.map((chart) => (
                 <div
                     key={chart.title}
-                    className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                    // className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                    className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm"
                 >
                     <div className="border-b px-4 py-3 sm:px-5 sm:py-4">
                         <h3 className="truncate text-base font-semibold text-slate-800 sm:text-lg">

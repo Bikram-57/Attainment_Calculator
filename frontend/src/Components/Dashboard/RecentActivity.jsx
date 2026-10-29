@@ -198,7 +198,7 @@ function RecentActivity({ activeSubjectCount, userRole }) {
                 </div>
 
                 {activeSubjectCount.length > 0 ? (
-                    <div className="flex flex-1 flex-col p-4 sm:p-5">
+                    <div className="flex flex-1 flex-col p-3">
                         <div className="flex justify-center">
                             <ResponsiveContainer
                                 width="100%"

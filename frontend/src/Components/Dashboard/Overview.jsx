@@ -89,7 +89,8 @@ function Overview({ activeSubjectCount, userRole }) {
                 {stats.map((item) => (
                     <div
                         key={item.title}
-                        className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                        className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm"
+                        // className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                     >
                         <div className={`h-2 w-full ${item.topBar}`} />
 
