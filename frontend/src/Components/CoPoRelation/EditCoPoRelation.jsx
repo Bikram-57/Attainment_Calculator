@@ -25,7 +25,7 @@ function EditCoPoRelation({ data, setOpenEdit }) {
 
     const prevData = data?.mappingData || defaultMappingData;
     const coRows = ['CO1', 'CO2', 'CO3', 'CO4', 'CO5'];
-    const poColumns = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8'];
+    const poColumns = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PSO1', 'PSO2', 'PSO3'];
 
     const handleChange = (co, po, val) => {
         if (val !== '' && !['0', '1', '2', '3'].includes(val)) return;
