@@ -104,7 +104,7 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
                     );
 
                     const poColumns = Object.keys(rows[0]).filter((key) =>
-                        key.startsWith("PO")
+                        key.startsWith("P")
                     );
 
                     return (
