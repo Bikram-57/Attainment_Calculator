@@ -482,7 +482,7 @@
 //     const [subjectList, setSubjectList] = useState([]);
 //     const [errorMsg, setErrorMsg] = useState('');
 //     const [downloading, setDownloading] = useState(false);
-    
+
 //     // Dropdown state and ref
 //     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 //     const dropdownRef = useRef(null);
@@ -545,7 +545,7 @@
 //         setErrorMsg('');
 //         try {
 //             setDownloading(true);
-            
+
 //             // TODO: Update the PDF route here to match your actual backend endpoint 
 //             const apiUrl = type === 'excel' ? '/file/download' : '/file/download-pdf';
 
@@ -774,9 +774,6 @@
 
 
 
-
-
-
 import React, { useState, useEffect, useRef } from 'react'
 import { COLORS } from '../../constants/theme'
 import axios from 'axios';
@@ -799,7 +796,7 @@ function DownloadSubjectReport() {
     const [subjectList, setSubjectList] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
     const [downloading, setDownloading] = useState(false);
-    
+
     // Dropdown state and ref
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -862,9 +859,11 @@ function DownloadSubjectReport() {
         setErrorMsg('');
         try {
             setDownloading(true);
-            
-            // TODO: Update the PDF route here to match your actual backend endpoint 
-            const apiUrl = type === 'excel' ? '/file/download' : '/file/download-pdf';
+
+            // Updated to use the requested PDF endpoint
+            const apiUrl = type === 'excel'
+                ? '/file/download'
+                : '/theory-print-ready/theory/download-master-report';
 
             const response = await axios.get(apiUrl, {
                 params: {
@@ -875,9 +874,14 @@ function DownloadSubjectReport() {
                 responseType: 'blob',
             });
 
+            // useFileDownload(
+            //     response.data,
+            //     `Subject_Report_${subjectId}_${academicYear.replace(/\//g, '-')}.${type === 'excel' ? 'xlsx' : 'pdf'}`
+            // )
+
             useFileDownload(
                 response.data,
-                `Subject_Report_${subjectId}_${academicYear}.${type === 'excel' ? 'xlsx' : 'pdf'}`
+                `Subject_Report_${subjectId}_${String(academicYear).replace(/\//g, '-')}.${type === 'excel' ? 'xlsx' : 'pdf'}`
             )
 
         } catch (error) {
@@ -928,7 +932,7 @@ function DownloadSubjectReport() {
             }
         };
         fetchSubjects();
-    }, [academicYear, course]);
+    }, [academicYear, course, userData.role]);
 
     return (
         <div
