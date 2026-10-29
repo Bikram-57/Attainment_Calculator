@@ -4,6 +4,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { ErrorSuccessMsg } from "../index";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { COLORS } from "../../constants/theme";
 
 export default function ResetPassword({ resetToken }) {
     const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(true);
@@ -82,7 +83,7 @@ export default function ResetPassword({ resetToken }) {
                                 placeholder="Enter new password"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full rounded-lg border border-slate-300 px-4 py-3 pr-12 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                                className="w-full rounded-lg border border-slate-300 px-4 py-3 pr-12 outline-none transition focus:ring-1 focus:ring-pink-800"
                             />
 
                             <button
@@ -130,7 +131,7 @@ export default function ResetPassword({ resetToken }) {
                                 placeholder="Confirm new password"
                                 value={confirmNewPassword}
                                 onChange={(e) => setConfirmNewPassword(e.target.value)}
-                                className="w-full rounded-lg border border-slate-300 px-4 py-3 pr-12 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                                className="w-full rounded-lg border border-slate-300 px-4 py-3 pr-12 outline-none transition focus:ring-1 focus:ring-pink-800"
                             />
 
                             <button
@@ -161,7 +162,10 @@ export default function ResetPassword({ resetToken }) {
                     <button
                         onClick={handleResetPassword}
                         disabled={!passwordsMatch}
-                        className="w-full rounded-lg bg-indigo-600 py-3 font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="w-full rounded-lg py-3 font-medium text-white transitio cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                        style={{
+                            backgroundColor: COLORS.mint
+                        }}
                     >
                         Reset Password
                     </button>

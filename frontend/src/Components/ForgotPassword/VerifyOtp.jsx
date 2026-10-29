@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React from 'react'
 import { useState, useEffect } from "react";
+import { COLORS } from '../../constants/theme';
 
 function VerifyOtp({ email, handleSendOtp, setErrorMsg, setSuccessMsg, setResetToken }) {
 	const [otp, setOtp] = useState("");
@@ -67,21 +68,24 @@ function VerifyOtp({ email, handleSendOtp, setErrorMsg, setSuccessMsg, setResetT
 					placeholder="Enter 6-digit OTP"
 					value={otp}
 					onChange={(e) => setOtp(e.target.value)}
-					className="w-full rounded-lg border border-slate-300 px-4 py-3 text-center tracking-[0.5em] outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+					className="w-full rounded-lg border border-slate-300 px-4 py-3 text-center tracking-[0.5em] outline-none transition focus:ring-1 focus:ring-pink-800"
 				/>
 			</div>
 
 			<button
 				onClick={handleVerifyOtp}
 				disabled={timeLeft <= 0}
-				className="w-full rounded-lg bg-green-600 py-3 font-medium text-white transition hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+				className="w-full rounded-lg py-3 font-medium text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+				style={{
+					backgroundColor: COLORS.mint
+				}}
 			>
 				{timeLeft > 0 ? 'Verify OTP' : 'OTP Expired'}
 			</button>
 
 			<button
 				onClick={handleResendOtp}
-				className="w-full text-sm font-medium text-indigo-600 hover:text-indigo-700"
+				className="w-full text-sm font-medium text-indigo-600 hover:text-indigo-700 cursor-pointer"
 			>
 				Resend OTP
 			</button>

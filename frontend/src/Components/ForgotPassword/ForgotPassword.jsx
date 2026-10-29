@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { ErrorSuccessMsg, Loading, ResetPassword, VerifyOtp } from '../index'
+import { COLORS } from "../../constants/theme";
 
 export default function ForgotPassword({ mode }) {
     const [email, setEmail] = useState("");
@@ -60,7 +61,10 @@ export default function ForgotPassword({ mode }) {
                             {!otpSent && (
                                 <button
                                     onClick={handleSendOtp}
-                                    className="rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition hover:bg-indigo-700"
+                                    className="rounded-lg px-4 py-3 font-medium text-white cursor-pointer"
+                                    style={{
+                                        backgroundColor: COLORS.mint
+                                    }}
                                 >
                                     {!loading ? 'Send OTP' : <Loading type='forgot-password' h='6' w='6' />}
                                 </button>
