@@ -754,7 +754,6 @@
 
 
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { open, close } from '../../store/sideBarSlice';
@@ -790,7 +789,7 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
         try {
             setDownloading(true);
             
-            // TODO: Update the PDF route here to match your actual backend endpoint
+            // Using the requested APIs for Excel and PDF downloads
             const apiUrl = type === 'excel' ? '/report/direct-po' : '/report/direct-po-pdf';
 
             const response = await axios.post(apiUrl,
@@ -850,7 +849,7 @@ function DirectPOAttainmentTable({ data, setIsOpen }) {
 
                 <div className="flex flex-col gap-3 sm:flex-row">
 
-                    {/* Unified Dropdown Button (Matched to your image) */}
+                    {/* Unified Dropdown Button */}
                     <div className="relative z-40" ref={dropdownRef}>
                         <button
                             onClick={() => setIsDropdownOpen((prev) => !prev)}

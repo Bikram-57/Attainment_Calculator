@@ -344,6 +344,7 @@ const handleDownloadDirectPoReport = async (req, res) => {
  * @desc    Download Direct Attainment Report in PDF Format (Using Puppeteer & EJS)
  * @route   POST or GET /api/copo/download-direct-pdf
  */
+
 const handleDownloadDirectPoReportPDF = async (req, res) => {
     let browser = null;
 
@@ -370,22 +371,18 @@ const handleDownloadDirectPoReportPDF = async (req, res) => {
         <head>
             <meta charset="UTF-8">
             <style>
-                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 10px; color: #333; }
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 10px; color: #333; margin: 0; }
                 h1 { text-align: center; margin-bottom: 5px; font-size: 18px; }
                 .subtitle { text-align: center; margin-bottom: 20px; font-size: 12px; color: #555; }
                 .subject-section { page-break-inside: avoid; margin-bottom: 30px; }
                 h2 { font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
                 table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed; }
-                th, td { border: 1px solid #ddd; padding: 6px; text-align: center; word-wrap: break-word; }
-                th { background-color: #f4f4f4; font-weight: bold; font-size: 11px; }
-                .course-col { width: 12%; }
-                .co-col { width: 8%; }
-                .level-col { width: 10%; }
-                .score-col { width: 5%; }
+                th, td { border: 1px solid #ddd; padding: 6px; word-wrap: break-word; }
+                th { background-color: #f4f4f4; font-weight: bold; font-size: 11px; text-align: center; }
                 .summary-row { font-weight: bold; background-color: #f9f9f9; }
                 .summary-row td { border-top: 2px solid #666; }
-                .text-left { text-align: left; }
-                .text-right { text-align: right; }
+                .text-center { text-align: center; }
+                .text-right { text-align: right; padding-right: 15px; }
             </style>
         </head>
         <body>
@@ -396,22 +393,39 @@ const handleDownloadDirectPoReportPDF = async (req, res) => {
                 <div class="subject-section">
                     <h2><%= subject.subjectId %> - <%= subject.subjectName || 'Unknown Subject' %></h2>
                     <table>
+                        <!-- Strict column sizing prevents shifted calculations in PDF -->
+                        <colgroup>
+                            <col style="width: 14%;">
+                            <col style="width: 8%;">
+                            <col style="width: 12%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                            <col style="width: 6%;">
+                        </colgroup>
                         <thead>
                             <tr>
-                                <th class="course-col">Course</th>
-                                <th class="co-col">CO</th>
-                                <th class="level-col">Level</th>
-                                <th class="score-col">PO1</th>
-                                <th class="score-col">PO2</th>
-                                <th class="score-col">PO3</th>
-                                <th class="score-col">PO4</th>
-                                <th class="score-col">PO5</th>
-                                <th class="score-col">PO6</th>
-                                <th class="score-col">PO7</th>
-                                <th class="score-col">PO8</th>
-                                <th class="score-col">PSO1</th>
-                                <th class="score-col">PSO2</th>
-                                <th class="score-col">PSO3</th>
+                                <th>Course</th>
+                                <th>CO</th>
+                                <th>Level</th>
+                                <th>PO1</th>
+                                <th>PO2</th>
+                                <th>PO3</th>
+                                <th>PO4</th>
+                                <th>PO5</th>
+                                <th>PO6</th>
+                                <th>PO7</th>
+                                <th>PO8</th>
+                                <th>PSO1</th>
+                                <th>PSO2</th>
+                                <th>PSO3</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -420,26 +434,28 @@ const handleDownloadDirectPoReportPDF = async (req, res) => {
                                 const printCourse = index === 0 ? subject.subjectId : (isSummary ? 'Direct Attainment' : '');
                             %>
                                 <tr class="<%= isSummary ? 'summary-row' : '' %>">
-                                    <td class="<%= isSummary ? 'text-right' : 'text-center' %>" <%= isSummary ? 'colspan="3"' : '' %> >
-                                        <%= printCourse %>
-                                    </td>
                                     
-                                    <% if (!isSummary) { %>
-                                        <td><%= row.co || '' %></td>
-                                        <td><%= (row.attainmentLevel === null || row.attainmentLevel === undefined || row.attainmentLevel === '') ? '-' : row.attainmentLevel %></td>
+                                    <!-- Clean separation of Summary vs Normal row prevents missing cells -->
+                                    <% if (isSummary) { %>
+                                        <td class="text-right" colspan="3"><%= printCourse %></td>
+                                    <% } else { %>
+                                        <td class="text-center"><%= printCourse %></td>
+                                        <td class="text-center"><%= row.co || '' %></td>
+                                        <td class="text-center"><%= (row.attainmentLevel === null || row.attainmentLevel === undefined || row.attainmentLevel === '') ? '-' : row.attainmentLevel %></td>
                                     <% } %>
 
-                                    <td><%= (row.PO1 === null || row.PO1 === undefined || row.PO1 === '') ? '-' : row.PO1 %></td>
-                                    <td><%= (row.PO2 === null || row.PO2 === undefined || row.PO2 === '') ? '-' : row.PO2 %></td>
-                                    <td><%= (row.PO3 === null || row.PO3 === undefined || row.PO3 === '') ? '-' : row.PO3 %></td>
-                                    <td><%= (row.PO4 === null || row.PO4 === undefined || row.PO4 === '') ? '-' : row.PO4 %></td>
-                                    <td><%= (row.PO5 === null || row.PO5 === undefined || row.PO5 === '') ? '-' : row.PO5 %></td>
-                                    <td><%= (row.PO6 === null || row.PO6 === undefined || row.PO6 === '') ? '-' : row.PO6 %></td>
-                                    <td><%= (row.PO7 === null || row.PO7 === undefined || row.PO7 === '') ? '-' : row.PO7 %></td>
-                                    <td><%= (row.PO8 === null || row.PO8 === undefined || row.PO8 === '') ? '-' : row.PO8 %></td>
-                                    <td><%= (row.PSO1 === null || row.PSO1 === undefined || row.PSO1 === '') ? '-' : row.PSO1 %></td>
-                                    <td><%= (row.PSO2 === null || row.PSO2 === undefined || row.PSO2 === '') ? '-' : row.PSO2 %></td>
-                                    <td><%= (row.PSO3 === null || row.PSO3 === undefined || row.PSO3 === '') ? '-' : row.PSO3 %></td>
+                                    <!-- Standard 11 Calculation Columns -->
+                                    <td class="text-center"><%= (row.PO1 === null || row.PO1 === undefined || row.PO1 === '') ? '-' : row.PO1 %></td>
+                                    <td class="text-center"><%= (row.PO2 === null || row.PO2 === undefined || row.PO2 === '') ? '-' : row.PO2 %></td>
+                                    <td class="text-center"><%= (row.PO3 === null || row.PO3 === undefined || row.PO3 === '') ? '-' : row.PO3 %></td>
+                                    <td class="text-center"><%= (row.PO4 === null || row.PO4 === undefined || row.PO4 === '') ? '-' : row.PO4 %></td>
+                                    <td class="text-center"><%= (row.PO5 === null || row.PO5 === undefined || row.PO5 === '') ? '-' : row.PO5 %></td>
+                                    <td class="text-center"><%= (row.PO6 === null || row.PO6 === undefined || row.PO6 === '') ? '-' : row.PO6 %></td>
+                                    <td class="text-center"><%= (row.PO7 === null || row.PO7 === undefined || row.PO7 === '') ? '-' : row.PO7 %></td>
+                                    <td class="text-center"><%= (row.PO8 === null || row.PO8 === undefined || row.PO8 === '') ? '-' : row.PO8 %></td>
+                                    <td class="text-center"><%= (row.PSO1 === null || row.PSO1 === undefined || row.PSO1 === '') ? '-' : row.PSO1 %></td>
+                                    <td class="text-center"><%= (row.PSO2 === null || row.PSO2 === undefined || row.PSO2 === '') ? '-' : row.PSO2 %></td>
+                                    <td class="text-center"><%= (row.PSO3 === null || row.PSO3 === undefined || row.PSO3 === '') ? '-' : row.PSO3 %></td>
                                 </tr>
                             <% }); %>
                         </tbody>
@@ -455,8 +471,8 @@ const handleDownloadDirectPoReportPDF = async (req, res) => {
 
         // 5. Launch Puppeteer to generate the PDF
         browser = await puppeteer.launch({
-            headless: 'new', // Optimized headless mode
-            args: ['--no-sandbox', '--disable-setuid-sandbox'] // Prevents errors in containerized environments (like Docker/Linux)
+            headless: 'new',
+            args: ['--no-sandbox', '--disable-setuid-sandbox'] 
         });
 
         const page = await browser.newPage();
@@ -467,17 +483,12 @@ const handleDownloadDirectPoReportPDF = async (req, res) => {
         // Generate the PDF Buffer in Landscape mode
         const pdfBuffer = await page.pdf({
             format: 'A4',
-            landscape: true, // Required to fit all 14 columns nicely
+            landscape: true, 
             printBackground: true,
-            margin: { top: '0.8in', right: '0.5in', bottom: '0.8in', left: '0.5in' },
-            displayHeaderFooter: true,
-            headerTemplate: '<div></div>', // Empty header
-            footerTemplate: `
-                <div style="width: 100%; font-size: 8px; padding: 0 0.5in; display: flex; justify-content: space-between; color: #888;">
-                    <span>Generated by Attainment Calculator</span>
-                    <span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
-                </div>
-            `
+            // Adjusted margins to utilize empty space
+            margin: { top: '0.4in', right: '0.4in', bottom: '0.4in', left: '0.4in' },
+            // Removed header and footer completely
+            displayHeaderFooter: false
         });
 
         // 6. Send the PDF to the client
@@ -496,13 +507,11 @@ const handleDownloadDirectPoReportPDF = async (req, res) => {
             return res.status(500).json({ success: false, error: 'Internal Server Error while generating PDF file.' });
         }
     } finally {
-        // ALWAYS ensure the browser closes to prevent memory leaks!
         if (browser) {
             await browser.close();
         }
     }
 };
-
 
 
 module.exports = {
