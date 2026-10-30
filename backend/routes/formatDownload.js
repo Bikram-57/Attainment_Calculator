@@ -13,7 +13,7 @@ const {
 } = require("../controllers/formatDownload");
 
 // Create a simple GET route that doesn't need any parameters
-router.get("/", verifyRoles('admin', 'faculty'), handleFormatDownload);
+router.get("/theory-marks", verifyRoles('admin', 'faculty'), handleFormatDownload);
 router.get("/assign-sub", verifyRoles('admin'), handleUploadAssignSubjectDownload);
 router.get("/copo-mapping", verifyRoles('admin', 'faculty'), handleCoPoMappingFormatDownload);
 router.get("/subject", verifyRoles('admin'), handleUploadAllSubjectFormatDownload);

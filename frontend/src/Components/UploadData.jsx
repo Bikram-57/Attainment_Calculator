@@ -1,398 +1,398 @@
-import React, { useEffect, useRef, useState } from 'react'
-import axios from 'axios'
-import { IoMdClose } from "react-icons/io";
-import { COLORS } from '../constants/theme';
-import { ErrorSuccessMsg } from './index';
-import { Loading } from './index';
-import Select from "react-select";
-import { useSelector } from 'react-redux';
-import useDocumentTitle from '../hooks/useDocumentTitle.js';
-import useFileDownload from '../hooks/useFileDownload.js';
+// import React, { useEffect, useRef, useState } from 'react'
+// import axios from 'axios'
+// import { IoMdClose } from "react-icons/io";
+// import { COLORS } from '../constants/theme';
+// import { ErrorSuccessMsg } from './index';
+// import { Loading } from './index';
+// import Select from "react-select";
+// import { useSelector } from 'react-redux';
+// import useDocumentTitle from '../hooks/useDocumentTitle.js';
+// import useFileDownload from '../hooks/useFileDownload.js';
 
-function UploadData() {
-	const userData = useSelector(state => state.auth.userData);
-	const fileInputRef = useRef(null);
+// function UploadData() {
+// 	const userData = useSelector(state => state.auth.userData);
+// 	const fileInputRef = useRef(null);
 
-	const [subjectType, setSubjectType] = useState('theory');
-	const [academicYear, setAcademicYear] = useState('')
-	const [course, setCourse] = useState('')
-	const [subjectId, setSubjectId] = useState('')
-	const [file, setFile] = useState(null);
-	const [isDisabled, setIsDisabled] = useState(true);
-	const [errorMsg, setErrorMsg] = useState('');
-	const [successMsg, setSuccessMsg] = useState('');
-	const [subjectList, setSubjectList] = useState([]);
-	const [uploading, setUploading] = useState(false);
+// 	const [subjectType, setSubjectType] = useState('theory');
+// 	const [academicYear, setAcademicYear] = useState('')
+// 	const [course, setCourse] = useState('')
+// 	const [subjectId, setSubjectId] = useState('')
+// 	const [file, setFile] = useState(null);
+// 	const [isDisabled, setIsDisabled] = useState(true);
+// 	const [errorMsg, setErrorMsg] = useState('');
+// 	const [successMsg, setSuccessMsg] = useState('');
+// 	const [subjectList, setSubjectList] = useState([]);
+// 	const [uploading, setUploading] = useState(false);
 
-	useDocumentTitle('Upload Data - Menu');
+// 	useDocumentTitle('Upload Data - Menu');
 
-	const currentYear = new Date().getFullYear();
-	const yearList = [2024];
-	for (let year = yearList[0] + 1; year <= currentYear; year++) {
-		yearList.push(year);
-	}
+// 	const currentYear = new Date().getFullYear();
+// 	const yearList = [2024];
+// 	for (let year = yearList[0] + 1; year <= currentYear; year++) {
+// 		yearList.push(year);
+// 	}
 
-	const subjectTypeOptions = [
-		{ value: "theory", label: "Theory" },
-		{ value: "lab", label: "Lab" },
-	];
+// 	const subjectTypeOptions = [
+// 		{ value: "theory", label: "Theory" },
+// 		{ value: "lab", label: "Lab" },
+// 	];
 
-	const yearOptions = yearList.map((year) => (
-		{
-			value: year,
-			label: year,
-		}
-	));
+// 	const yearOptions = yearList.map((year) => (
+// 		{
+// 			value: year,
+// 			label: year,
+// 		}
+// 	));
 
-	const courseOptions = [
-		{ value: "BCA", label: "BCA" },
-		{ value: "MCA", label: "MCA" },
-	];
+// 	const courseOptions = [
+// 		{ value: "BCA", label: "BCA" },
+// 		{ value: "MCA", label: "MCA" },
+// 	];
 
-	const subjectOptions = subjectList.map((sub) => (
-		{
-			value: sub.subjectId,
-			label: `${sub.subjectId} - ${sub.subjectName}`,
-		}
-	));
+// 	const subjectOptions = subjectList.map((sub) => (
+// 		{
+// 			value: sub.subjectId,
+// 			label: `${sub.subjectId} - ${sub.subjectName}`,
+// 		}
+// 	));
 
-	const handleCourse = (selectedCourse) => {
-		setCourse(selectedCourse);
-		setSubjectId('');
-	}
+// 	const handleCourse = (selectedCourse) => {
+// 		setCourse(selectedCourse);
+// 		setSubjectId('');
+// 	}
 
-	const handleYear = (selectedYear) => {
-		setAcademicYear(selectedYear);
-		setSubjectId('');
-	}
+// 	const handleYear = (selectedYear) => {
+// 		setAcademicYear(selectedYear);
+// 		setSubjectId('');
+// 	}
 
-	const handleFileChange = (e) => {
-		const selectedFile = e.target.files[0];
+// 	const handleFileChange = (e) => {
+// 		const selectedFile = e.target.files[0];
 
-		const validTypes = [
-			"application/vnd.ms-excel", // .xls
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
-		];
+// 		const validTypes = [
+// 			"application/vnd.ms-excel", // .xls
+// 			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+// 		];
 
-		if (!selectedFile) return;
-		if (!validTypes.includes(selectedFile.type)) {
-			setErrorMsg('Only Excel files (.xls, .xlsx) are allowed');
-			setFile(null);
-			return;
-		}
+// 		if (!selectedFile) return;
+// 		if (!validTypes.includes(selectedFile.type)) {
+// 			setErrorMsg('Only Excel files (.xls, .xlsx) are allowed');
+// 			setFile(null);
+// 			return;
+// 		}
 
-		setErrorMsg('');
-		setFile(selectedFile);
-	}
+// 		setErrorMsg('');
+// 		setFile(selectedFile);
+// 	}
 
-	const handleRemoveFile = () => {
-		setFile(null);
-		fileInputRef.current.value = '';
-	}
+// 	const handleRemoveFile = () => {
+// 		setFile(null);
+// 		fileInputRef.current.value = '';
+// 	}
 
-	const handleUpload = async () => {
-		if (!subjectId || !academicYear || !course) {
-			setErrorMsg("Please fill all the fields");
-			return;
-		}
-		if (!file) {
-			setErrorMsg("Please choose a file!");
-			return;
-		}
-		setUploading(true);
-		const formData = new FormData();
-		formData.append('excelFile', file);
-		formData.append('subjectId', subjectId);
-		formData.append('academicYear', academicYear);
-		formData.append('course', course);
+// 	const handleUpload = async () => {
+// 		if (!subjectId || !academicYear || !course) {
+// 			setErrorMsg("Please fill all the fields");
+// 			return;
+// 		}
+// 		if (!file) {
+// 			setErrorMsg("Please choose a file!");
+// 			return;
+// 		}
+// 		setUploading(true);
+// 		const formData = new FormData();
+// 		formData.append('excelFile', file);
+// 		formData.append('subjectId', subjectId);
+// 		formData.append('academicYear', academicYear);
+// 		formData.append('course', course);
 
-		setErrorMsg('');
-		try {
-			// const res = await axios.post('/mark/upload-raw', formData);
-			const url = subjectType === 'theory' ? '/mark/upload-raw' : '/master-route/upload-raw';
+// 		setErrorMsg('');
+// 		try {
+// 			// const res = await axios.post('/mark/upload-raw', formData);
+// 			const url = subjectType === 'theory' ? '/mark/upload-raw' : '/master-route/upload-raw';
 			
-			const res = await axios.post(url, formData);
+// 			const res = await axios.post(url, formData);
 
-			setSuccessMsg(res.data.message);
-			setFile(null);
-			setAcademicYear('');
-			setCourse('');
-			setSubjectId('');
-			setIsDisabled(true);
-			console.log(res);
-		} catch (err) {
-			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
-			console.log("Error on handleUpload || ", err);
-		} finally {
-			setUploading(false);
-			if (fileInputRef.current) {
-				fileInputRef.current.value = '';
-			}
-		}
-	}
+// 			setSuccessMsg(res.data.message);
+// 			setFile(null);
+// 			setAcademicYear('');
+// 			setCourse('');
+// 			setSubjectId('');
+// 			setIsDisabled(true);
+// 			console.log(res);
+// 		} catch (err) {
+// 			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+// 			console.log("Error on handleUpload || ", err);
+// 		} finally {
+// 			setUploading(false);
+// 			if (fileInputRef.current) {
+// 				fileInputRef.current.value = '';
+// 			}
+// 		}
+// 	}
 
-	const handleDownloadFormat = async () => {
-		try {
-			const response = await axios.get('/download-format/',
-				{
-					responseType: 'blob',
-				}
-			);
+// 	const handleDownloadFormat = async () => {
+// 		try {
+// 			const response = await axios.get('/download-format/',
+// 				{
+// 					responseType: 'blob',
+// 				}
+// 			);
 
-			useFileDownload(response.data, 'uploadDataFormat.xlsx');
+// 			useFileDownload(response.data, 'uploadDataFormat.xlsx');
 
-		} catch (err) {
-			console.error('Download failed:', err);
-			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
-		}
-	}
+// 		} catch (err) {
+// 			console.error('Download failed:', err);
+// 			setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
+// 		}
+// 	}
 
-	useEffect(() => {
-		if (!course || !academicYear) {
-			setSubjectList([]);
-			setIsDisabled(true);
-			return;
-		}
-		const fetchSubjects = async () => {
-			try {
-				let res;
-				if (userData.role === 'admin') {
-					res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
-				} else {
-					res = await axios.get('/assignSub/sub', {
-						params: {
-							year: academicYear,
-							course
-						}
-					});
-				}
-				if (res.data.data.length === 0) {
-					setErrorMsg('No data for the selected year and course!');
-					setSubjectList([]);
-					setIsDisabled(true);
-					return;
-				}
-				setSubjectList(res.data.data);
-				setIsDisabled(false);
-				setErrorMsg('');
-			} catch (err) {
-				console.log('Error fetching subjects || ', err);
-				setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch subjects!');
-				setSubjectList([]);
-				setIsDisabled(true);
-			}
-		};
-		fetchSubjects();
-	}, [academicYear, course]);
+// 	useEffect(() => {
+// 		if (!course || !academicYear) {
+// 			setSubjectList([]);
+// 			setIsDisabled(true);
+// 			return;
+// 		}
+// 		const fetchSubjects = async () => {
+// 			try {
+// 				let res;
+// 				if (userData.role === 'admin') {
+// 					res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
+// 				} else {
+// 					res = await axios.get('/assignSub/sub', {
+// 						params: {
+// 							year: academicYear,
+// 							course
+// 						}
+// 					});
+// 				}
+// 				if (res.data.data.length === 0) {
+// 					setErrorMsg('No data for the selected year and course!');
+// 					setSubjectList([]);
+// 					setIsDisabled(true);
+// 					return;
+// 				}
+// 				setSubjectList(res.data.data);
+// 				setIsDisabled(false);
+// 				setErrorMsg('');
+// 			} catch (err) {
+// 				console.log('Error fetching subjects || ', err);
+// 				setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch subjects!');
+// 				setSubjectList([]);
+// 				setIsDisabled(true);
+// 			}
+// 		};
+// 		fetchSubjects();
+// 	}, [academicYear, course]);
 
-	return (
-		<div
-			className="h-full w-full rounded-2xl border border-gray-200 bg-white/30 p-4 sm:p-5 lg:p-6"
-			style={{ backgroundColor: COLORS.latte }}
-		>
-			{/* Header */}
-			<div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-				<div className="min-w-0">
-					<h2
-						className="text-xl font-semibold sm:text-2xl"
-						style={{ color: COLORS.mintDark }}
-					>
-						Upload Data
-					</h2>
+// 	return (
+// 		<div
+// 			className="h-full w-full rounded-2xl border border-gray-200 bg-white/30 p-4 sm:p-5 lg:p-6"
+// 			style={{ backgroundColor: COLORS.latte }}
+// 		>
+// 			{/* Header */}
+// 			<div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+// 				<div className="min-w-0">
+// 					<h2
+// 						className="text-xl font-semibold sm:text-2xl"
+// 						style={{ color: COLORS.mintDark }}
+// 					>
+// 						Upload Data
+// 					</h2>
 
-					<p className="mt-1 text-sm text-gray-600 sm:text-base">
-						Select the academic details and upload the Excel sheet.
-					</p>
-				</div>
+// 					<p className="mt-1 text-sm text-gray-600 sm:text-base">
+// 						Select the academic details and upload the Excel sheet.
+// 					</p>
+// 				</div>
 
-				<button
-					onClick={handleDownloadFormat}
-					className="w-full rounded-xl border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100 sm:w-auto cursor-pointer"
-				>
-					Download Format
-				</button>
-			</div>
+// 				<button
+// 					onClick={handleDownloadFormat}
+// 					className="w-full rounded-xl border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100 sm:w-auto cursor-pointer"
+// 				>
+// 					Download Format
+// 				</button>
+// 			</div>
 
-			{/* Selection Card */}
-			<div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
-				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+// 			{/* Selection Card */}
+// 			<div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
+// 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 
-					<div>
-						<label
-							className="mb-2 block text-sm font-semibold"
-							style={{ color: COLORS.mintDark }}
-						>
-							Subject type
-						</label>
+// 					<div>
+// 						<label
+// 							className="mb-2 block text-sm font-semibold"
+// 							style={{ color: COLORS.mintDark }}
+// 						>
+// 							Subject type
+// 						</label>
 
-						<Select
-							options={subjectTypeOptions}
-							placeholder="Select year"
-							value={
-								subjectTypeOptions.find(
-									(option) => option.value === subjectType
-								) || null
-							}
-							onChange={(selected) =>
-								setSubjectType(selected?.value || "")
-							}
-							maxMenuHeight={180}
-						/>
-					</div>
+// 						<Select
+// 							options={subjectTypeOptions}
+// 							placeholder="Select year"
+// 							value={
+// 								subjectTypeOptions.find(
+// 									(option) => option.value === subjectType
+// 								) || null
+// 							}
+// 							onChange={(selected) =>
+// 								setSubjectType(selected?.value || "")
+// 							}
+// 							maxMenuHeight={180}
+// 						/>
+// 					</div>
 
-					<div>
-						<label
-							className="mb-2 block text-sm font-semibold"
-							style={{ color: COLORS.mintDark }}
-						>
-							Academic Year
-						</label>
+// 					<div>
+// 						<label
+// 							className="mb-2 block text-sm font-semibold"
+// 							style={{ color: COLORS.mintDark }}
+// 						>
+// 							Academic Year
+// 						</label>
 
-						<Select
-							options={yearOptions}
-							placeholder="Select year"
-							value={
-								yearOptions.find(
-									(option) => option.value === academicYear
-								) || null
-							}
-							onChange={(selected) =>
-								handleYear(selected?.value || "")
-							}
-							maxMenuHeight={180}
-						/>
-					</div>
+// 						<Select
+// 							options={yearOptions}
+// 							placeholder="Select year"
+// 							value={
+// 								yearOptions.find(
+// 									(option) => option.value === academicYear
+// 								) || null
+// 							}
+// 							onChange={(selected) =>
+// 								handleYear(selected?.value || "")
+// 							}
+// 							maxMenuHeight={180}
+// 						/>
+// 					</div>
 
-					<div>
-						<label
-							className="mb-2 block text-sm font-semibold"
-							style={{ color: COLORS.mintDark }}
-						>
-							Course
-						</label>
+// 					<div>
+// 						<label
+// 							className="mb-2 block text-sm font-semibold"
+// 							style={{ color: COLORS.mintDark }}
+// 						>
+// 							Course
+// 						</label>
 
-						<Select
-							options={courseOptions}
-							placeholder="Select course"
-							value={
-								courseOptions.find(
-									(option) => option.value === course
-								) || null
-							}
-							onChange={(selected) =>
-								handleCourse(selected?.value || "")
-							}
-							maxMenuHeight={180}
-						/>
-					</div>
+// 						<Select
+// 							options={courseOptions}
+// 							placeholder="Select course"
+// 							value={
+// 								courseOptions.find(
+// 									(option) => option.value === course
+// 								) || null
+// 							}
+// 							onChange={(selected) =>
+// 								handleCourse(selected?.value || "")
+// 							}
+// 							maxMenuHeight={180}
+// 						/>
+// 					</div>
 
-					<div>
-						<label
-							className="mb-2 block text-sm font-semibold"
-							style={{ color: COLORS.mintDark }}
-						>
-							Subject
-						</label>
+// 					<div>
+// 						<label
+// 							className="mb-2 block text-sm font-semibold"
+// 							style={{ color: COLORS.mintDark }}
+// 						>
+// 							Subject
+// 						</label>
 
-						<Select
-							options={subjectOptions}
-							placeholder="Select subject"
-							value={
-								subjectOptions.find(
-									(option) => option.value === subjectId
-								) || null
-							}
-							onChange={(selected) =>
-								setSubjectId(selected?.value || "")
-							}
-							isDisabled={isDisabled}
-							maxMenuHeight={180}
-						/>
-					</div>
+// 						<Select
+// 							options={subjectOptions}
+// 							placeholder="Select subject"
+// 							value={
+// 								subjectOptions.find(
+// 									(option) => option.value === subjectId
+// 								) || null
+// 							}
+// 							onChange={(selected) =>
+// 								setSubjectId(selected?.value || "")
+// 							}
+// 							isDisabled={isDisabled}
+// 							maxMenuHeight={180}
+// 						/>
+// 					</div>
 
-				</div>
+// 				</div>
 
-				{/* Upload */}
-				<div className="mt-6">
-					<label
-						className="mb-2 block text-sm font-semibold"
-						style={{ color: COLORS.mintDark }}
-					>
-						Excel File
-					</label>
+// 				{/* Upload */}
+// 				<div className="mt-6">
+// 					<label
+// 						className="mb-2 block text-sm font-semibold"
+// 						style={{ color: COLORS.mintDark }}
+// 					>
+// 						Excel File
+// 					</label>
 
-					<div className="flex flex-col overflow-hidden rounded-xl border border-gray-300 bg-white sm:flex-row sm:items-center">
+// 					<div className="flex flex-col overflow-hidden rounded-xl border border-gray-300 bg-white sm:flex-row sm:items-center">
 
-						<label
-							className="cursor-pointer border-b border-gray-300 px-4 py-3 text-center text-sm font-medium transition hover:bg-gray-100 sm:border-b-0 sm:border-r"
-							style={{
-								backgroundColor: COLORS.latteDark,
-								color: COLORS.mintDark,
-							}}
-						>
-							Choose File
+// 						<label
+// 							className="cursor-pointer border-b border-gray-300 px-4 py-3 text-center text-sm font-medium transition hover:bg-gray-100 sm:border-b-0 sm:border-r"
+// 							style={{
+// 								backgroundColor: COLORS.latteDark,
+// 								color: COLORS.mintDark,
+// 							}}
+// 						>
+// 							Choose File
 
-							<input
-								ref={fileInputRef}
-								type="file"
-								accept=".xls,.xlsx"
-								className="hidden"
-								onChange={handleFileChange}
-							/>
-						</label>
+// 							<input
+// 								ref={fileInputRef}
+// 								type="file"
+// 								accept=".xls,.xlsx"
+// 								className="hidden"
+// 								onChange={handleFileChange}
+// 							/>
+// 						</label>
 
-						<div className="min-w-0 flex-1 truncate px-4 py-3 text-sm text-gray-600">
-							{file ? file.name : "No file selected"}
-						</div>
+// 						<div className="min-w-0 flex-1 truncate px-4 py-3 text-sm text-gray-600">
+// 							{file ? file.name : "No file selected"}
+// 						</div>
 
-						{file && (
-							<button
-								type="button"
-								onClick={handleRemoveFile}
-								className="flex items-center justify-center px-4 py-3 text-gray-500 transition hover:text-red-700 cursor-pointer sm:px-3"
-							>
-								<IoMdClose className="h-6 w-6" />
-								{/* <MdOutlineCancelPresentation className="h-6 w-6" /> */}
-							</button>
-						)}
-					</div>
+// 						{file && (
+// 							<button
+// 								type="button"
+// 								onClick={handleRemoveFile}
+// 								className="flex items-center justify-center px-4 py-3 text-gray-500 transition hover:text-red-700 cursor-pointer sm:px-3"
+// 							>
+// 								<IoMdClose className="h-6 w-6" />
+// 								{/* <MdOutlineCancelPresentation className="h-6 w-6" /> */}
+// 							</button>
+// 						)}
+// 					</div>
 
-					<p className="mt-2 text-xs text-gray-500">
-						Supported formats: <strong>.xls</strong>, <strong>.xlsx</strong>
-					</p>
-				</div>
+// 					<p className="mt-2 text-xs text-gray-500">
+// 						Supported formats: <strong>.xls</strong>, <strong>.xlsx</strong>
+// 					</p>
+// 				</div>
 
-				{/* Footer */}
-				<div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+// 				{/* Footer */}
+// 				<div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-					<div className="min-w-0 flex-1">
-						<ErrorSuccessMsg
-							errorMsg={errorMsg}
-							successMsg={successMsg}
-							setSuccessMsg={setSuccessMsg}
-						/>
-					</div>
+// 					<div className="min-w-0 flex-1">
+// 						<ErrorSuccessMsg
+// 							errorMsg={errorMsg}
+// 							successMsg={successMsg}
+// 							setSuccessMsg={setSuccessMsg}
+// 						/>
+// 					</div>
 
-					<div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+// 					<div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
 
-						{uploading && <Loading type="upload" />}
+// 						{uploading && <Loading type="upload" />}
 
-						<button
-							onClick={handleUpload}
-							className="w-full rounded-xl px-6 py-3 text-sm font-medium shadow-sm transition hover:opacity-90 sm:w-auto cursor-pointer"
-							style={{
-								backgroundColor: COLORS.mint,
-								color: COLORS.font,
-							}}
-						>
-							Upload Data
-						</button>
+// 						<button
+// 							onClick={handleUpload}
+// 							className="w-full rounded-xl px-6 py-3 text-sm font-medium shadow-sm transition hover:opacity-90 sm:w-auto cursor-pointer"
+// 							style={{
+// 								backgroundColor: COLORS.mint,
+// 								color: COLORS.font,
+// 							}}
+// 						>
+// 							Upload Data
+// 						</button>
 
-					</div>
+// 					</div>
 
-				</div>
-			</div>
-		</div>
+// 				</div>
+// 			</div>
+// 		</div>
 
 		// <div
 		// 	className="h-full rounded-2xl border border-gray-200 p-5"
@@ -665,7 +665,468 @@ function UploadData() {
 		// 		setSuccessMsg={setSuccessMsg}
 		// 	/>
 		// </div>
-	)
+// 	)
+// }
+
+// export default UploadData
+
+
+
+
+
+
+
+
+
+
+
+import React, { useEffect, useRef, useState } from 'react'
+import axios from 'axios'
+import { IoMdClose, IoMdDownload } from "react-icons/io";
+import { IoChevronDown } from "react-icons/io5";
+import { COLORS } from '../constants/theme';
+import { ErrorSuccessMsg } from './index';
+import { Loading } from './index';
+import Select from "react-select";
+import { useSelector } from 'react-redux';
+import useDocumentTitle from '../hooks/useDocumentTitle.js';
+import useFileDownload from '../hooks/useFileDownload.js';
+
+function UploadData() {
+    const userData = useSelector(state => state.auth.userData);
+    const fileInputRef = useRef(null);
+
+    const [subjectType, setSubjectType] = useState('theory');
+    const [academicYear, setAcademicYear] = useState('')
+    const [course, setCourse] = useState('')
+    const [subjectId, setSubjectId] = useState('')
+    const [file, setFile] = useState(null);
+    const [isDisabled, setIsDisabled] = useState(true);
+    const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
+    const [subjectList, setSubjectList] = useState([]);
+    const [uploading, setUploading] = useState(false);
+    const [formatDownloading, setFormatDownloading] = useState(false);
+
+    // Dropdown state and ref for Download Format
+    const [isFormatDropdownOpen, setIsFormatDropdownOpen] = useState(false);
+    const formatDropdownRef = useRef(null);
+
+    useDocumentTitle('Upload Data - Menu');
+
+    const currentYear = new Date().getFullYear();
+    const yearList = [2024];
+    for (let year = yearList[0] + 1; year <= currentYear; year++) {
+        yearList.push(year);
+    }
+
+    const subjectTypeOptions = [
+        { value: "theory", label: "Theory" },
+        { value: "lab", label: "Lab" },
+    ];
+
+    const yearOptions = yearList.map((year) => (
+        {
+            value: year,
+            label: year,
+        }
+    ));
+
+    const courseOptions = [
+        { value: "BCA", label: "BCA" },
+        { value: "MCA", label: "MCA" },
+    ];
+
+    const subjectOptions = subjectList.map((sub) => (
+        {
+            value: sub.subjectId,
+            label: `${sub.subjectId} - ${sub.subjectName}`,
+        }
+    ));
+
+    // Handle clicks outside the dropdown to close it automatically
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (formatDropdownRef.current && !formatDropdownRef.current.contains(event.target)) {
+                setIsFormatDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleCourse = (selectedCourse) => {
+        setCourse(selectedCourse);
+        setSubjectId('');
+    }
+
+    const handleYear = (selectedYear) => {
+        setAcademicYear(selectedYear);
+        setSubjectId('');
+    }
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+
+        const validTypes = [
+            "application/vnd.ms-excel", // .xls
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+        ];
+
+        if (!selectedFile) return;
+        if (!validTypes.includes(selectedFile.type)) {
+            setErrorMsg('Only Excel files (.xls, .xlsx) are allowed');
+            setFile(null);
+            return;
+        }
+
+        setErrorMsg('');
+        setFile(selectedFile);
+    }
+
+    const handleRemoveFile = () => {
+        setFile(null);
+        fileInputRef.current.value = '';
+    }
+
+    const handleUpload = async () => {
+        if (!subjectId || !academicYear || !course) {
+            setErrorMsg("Please fill all the fields");
+            return;
+        }
+        if (!file) {
+            setErrorMsg("Please choose a file!");
+            return;
+        }
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('excelFile', file);
+        formData.append('subjectId', subjectId);
+        formData.append('academicYear', academicYear);
+        formData.append('course', course);
+
+        setErrorMsg('');
+        try {
+            const url = subjectType === 'theory' ? '/mark/upload-raw' : '/master-route/upload-raw';
+            
+            const res = await axios.post(url, formData);
+
+            setSuccessMsg(res.data.message);
+            setFile(null);
+            setAcademicYear('');
+            setCourse('');
+            setSubjectId('');
+            setIsDisabled(true);
+            console.log(res);
+        } catch (err) {
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Something went wrong!');
+            console.log("Error on handleUpload || ", err);
+        } finally {
+            setUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    }
+
+    const handleDownloadFormat = async (type) => {
+        setIsFormatDropdownOpen(false); // Close dropdown upon selection
+        try {
+            setFormatDownloading(true);
+            const apiUrl = type === 'theory' ? '/download-format/theory-marks' : '/download-format/lab-marks';
+
+            const response = await axios.get(apiUrl,
+                {
+                    responseType: 'blob',
+                }
+            );
+
+            // useFileDownload(response.data, `uploadDataFormat_${type}.xlsx`);
+			useFileDownload(response.data, `uploadDataFormat_${type.trim()}.xlsx`);
+
+        } catch (err) {
+            console.error('Download failed:', err);
+            setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to download report.');
+        } finally {
+            setFormatDownloading(false);
+        }
+    }
+
+    useEffect(() => {
+        if (!course || !academicYear) {
+            setSubjectList([]);
+            setIsDisabled(true);
+            return;
+        }
+        const fetchSubjects = async () => {
+            try {
+                let res;
+                if (userData.role === 'admin') {
+                    res = await axios.get(`/sub/year/${academicYear}/course/${course}`);
+                } else {
+                    res = await axios.get('/assignSub/sub', {
+                        params: {
+                            year: academicYear,
+                            course
+                        }
+                    });
+                }
+                if (res.data.data.length === 0) {
+                    setErrorMsg('No data for the selected year and course!');
+                    setSubjectList([]);
+                    setIsDisabled(true);
+                    return;
+                }
+                setSubjectList(res.data.data);
+                setIsDisabled(false);
+                setErrorMsg('');
+            } catch (err) {
+                console.log('Error fetching subjects || ', err);
+                setErrorMsg(err?.response?.data?.message || err?.response?.data?.error || 'Failed to fetch subjects!');
+                setSubjectList([]);
+                setIsDisabled(true);
+            }
+        };
+        fetchSubjects();
+    }, [academicYear, course, userData.role]);
+
+    return (
+        <div
+            className="h-full w-full rounded-2xl border border-gray-200 bg-white/30 p-4 sm:p-5 lg:p-6"
+            style={{ backgroundColor: COLORS.latte }}
+        >
+            {/* Header */}
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                    <h2
+                        className="text-xl font-semibold sm:text-2xl"
+                        style={{ color: COLORS.mintDark }}
+                    >
+                        Upload Data
+                    </h2>
+
+                    <p className="mt-1 text-sm text-gray-600 sm:text-base">
+                        Select the academic details and upload the Excel sheet.
+                    </p>
+                </div>
+
+                {/* Unified Dropdown Button for Formats */}
+                <div className="relative z-40" ref={formatDropdownRef}>
+                    <button
+                        onClick={() => setIsFormatDropdownOpen((prev) => !prev)}
+                        disabled={formatDownloading}
+                        className="flex w-full items-center justify-between gap-3 rounded-xl border border-gray-400 bg-gray-200 px-4 py-2 text-sm font-medium text-slate-800 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer sm:w-auto"
+                    >
+                        <div className="flex items-center gap-2">
+                            <IoMdDownload className="text-lg" />
+                            <span>{formatDownloading ? "Downloading..." : "Download Format"}</span>
+                        </div>
+                        <IoChevronDown className={`ml-1 transition-transform duration-200 ${isFormatDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {isFormatDropdownOpen && (
+                        <div className="absolute right-0 top-full mt-2 w-40 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+                            <button
+                                onClick={() => handleDownloadFormat('theory')}
+                                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 cursor-pointer"
+                            >
+                                <span>Theory Format</span>
+                            </button>
+                            
+                            <div className="h-px w-full bg-gray-100"></div> {/* Divider */}
+                            
+                            <button
+                                onClick={() => handleDownloadFormat('lab')}
+                                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 cursor-pointer"
+                            >
+                                <span>Lab Format</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Selection Card */}
+            <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+
+                    <div>
+                        <label
+                            className="mb-2 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
+                            Subject type
+                        </label>
+
+                        <Select
+                            options={subjectTypeOptions}
+                            placeholder="Select year"
+                            value={
+                                subjectTypeOptions.find(
+                                    (option) => option.value === subjectType
+                                ) || null
+                            }
+                            onChange={(selected) =>
+                                setSubjectType(selected?.value || "")
+                            }
+                            maxMenuHeight={180}
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            className="mb-2 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
+                            Academic Year
+                        </label>
+
+                        <Select
+                            options={yearOptions}
+                            placeholder="Select year"
+                            value={
+                                yearOptions.find(
+                                    (option) => option.value === academicYear
+                                ) || null
+                            }
+                            onChange={(selected) =>
+                                handleYear(selected?.value || "")
+                            }
+                            maxMenuHeight={180}
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            className="mb-2 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
+                            Course
+                        </label>
+
+                        <Select
+                            options={courseOptions}
+                            placeholder="Select course"
+                            value={
+                                courseOptions.find(
+                                    (option) => option.value === course
+                                ) || null
+                            }
+                            onChange={(selected) =>
+                                handleCourse(selected?.value || "")
+                            }
+                            maxMenuHeight={180}
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            className="mb-2 block text-sm font-semibold"
+                            style={{ color: COLORS.mintDark }}
+                        >
+                            Subject
+                        </label>
+
+                        <Select
+                            options={subjectOptions}
+                            placeholder="Select subject"
+                            value={
+                                subjectOptions.find(
+                                    (option) => option.value === subjectId
+                                ) || null
+                            }
+                            onChange={(selected) =>
+                                setSubjectId(selected?.value || "")
+                            }
+                            isDisabled={isDisabled}
+                            maxMenuHeight={180}
+                        />
+                    </div>
+
+                </div>
+
+                {/* Upload */}
+                <div className="mt-6">
+                    <label
+                        className="mb-2 block text-sm font-semibold"
+                        style={{ color: COLORS.mintDark }}
+                    >
+                        Excel File
+                    </label>
+
+                    <div className="flex flex-col overflow-hidden rounded-xl border border-gray-300 bg-white sm:flex-row sm:items-center">
+
+                        <label
+                            className="cursor-pointer border-b border-gray-300 px-4 py-3 text-center text-sm font-medium transition hover:bg-gray-100 sm:border-b-0 sm:border-r"
+                            style={{
+                                backgroundColor: COLORS.latteDark,
+                                color: COLORS.mintDark,
+                            }}
+                        >
+                            Choose File
+
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".xls,.xlsx"
+                                className="hidden"
+                                onChange={handleFileChange}
+                            />
+                        </label>
+
+                        <div className="min-w-0 flex-1 truncate px-4 py-3 text-sm text-gray-600">
+                            {file ? file.name : "No file selected"}
+                        </div>
+
+                        {file && (
+                            <button
+                                type="button"
+                                onClick={handleRemoveFile}
+                                className="flex items-center justify-center px-4 py-3 text-gray-500 transition hover:text-red-700 cursor-pointer sm:px-3"
+                            >
+                                <IoMdClose className="h-6 w-6" />
+                            </button>
+                        )}
+                    </div>
+
+                    <p className="mt-2 text-xs text-gray-500">
+                        Supported formats: <strong>.xls</strong>, <strong>.xlsx</strong>
+                    </p>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+
+                    <div className="min-w-0 flex-1">
+                        <ErrorSuccessMsg
+                            errorMsg={errorMsg}
+                            successMsg={successMsg}
+                            setSuccessMsg={setSuccessMsg}
+                        />
+                    </div>
+
+                    <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+
+                        {uploading && <Loading type="upload" />}
+
+                        <button
+                            onClick={handleUpload}
+                            className="w-full rounded-xl px-6 py-3 text-sm font-medium shadow-sm transition hover:opacity-90 sm:w-auto cursor-pointer"
+                            style={{
+                                backgroundColor: COLORS.mint,
+                                color: COLORS.font,
+                            }}
+                        >
+                            Upload Data
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    )
 }
 
 export default UploadData

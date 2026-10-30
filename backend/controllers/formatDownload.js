@@ -105,7 +105,7 @@ const handleExternalMarksFormatDownload = (req, res) => {
 const handleLabMarksFormatDownload = (req, res) => {
     downloadFile(
         res,
-        '../public/uploadLabMarksFormat/uploadLabMarksFormat.xlsx',
+        '../public/uploadLabMarksFormat/uploadRawMarksFormat.xlsx',
         'uploadLabMarksFormat.xlsx'
     );
 };
