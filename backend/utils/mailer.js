@@ -62,7 +62,7 @@ const htmlTemplate = `
       <div style="font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 40px 20px;">
         <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
 
-          <div style="background-color: #5850ec; padding: 20px; text-align: center;">
+          <div style="background-color: #69073b; padding: 20px; text-align: center;">
             <h2 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">Your OTP Code</h2>
           </div>
 
