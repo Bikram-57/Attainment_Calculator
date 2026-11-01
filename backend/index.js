@@ -136,3 +136,114 @@ https.createServer(httpsOptions, app).listen(PORT, '0.0.0.0', () => {
     console.log(`Secure Server Started at https://${hostIp}:${PORT}`);
 });
 
+
+
+
+// const express = require('express');
+// const path = require("path");
+// const cookieParser = require('cookie-parser');
+// const fs = require('fs');
+// require('dotenv').config();
+
+// const { connectMongoDB } = require("./connection");
+// const verifyJWT = require('./middleware/verifyJWT');
+// const startTokenCleanupJob = require('./middleware/cornJob');
+
+// // --- REQUIRE ROUTERS ---
+// // (Your routers remain exactly the same)
+// const login = require('./routes/login');       
+// const refresh = require('./routes/refresh'); 
+// const logout = require('./routes/logOut');   
+// const forgotPassword = require('./routes/forgotPassword');
+// const home = require('./routes/homePageAPIs');
+// const user = require('./routes/user');
+// const subject = require('./routes/subject');
+// const marks = require('./routes/marks');
+// const coPoMapping = require('./routes/coPoMapping');
+// const assignSubject = require('./routes/assignSubject');
+// const uploadAllAssignSubjects = require('./routes/uploadAllAssignSubjects');
+// const calculatedPo = require('./routes/calculatedPo');
+// const directAttainemt = require('./routes/directAttainemt');
+// const uploadAllSubjects = require('./routes/uploadAllSubjects');
+// const uploadRubrics = require('./routes/rubrics');
+// const downloadReport = require('./routes/downloadReport');
+// const downloadDirectAttainmentReport = require('./routes/downloadDirectAttainmentReport');
+// const formatDownload = require('./routes/formatDownload');
+// const activity = require('./routes/activities');
+// const subjectAnalysis = require('./routes/subjectAnalysis');
+// const userHomePage = require('./routes/userHomePage');
+// const printReadyPDFdownloadForTheory = require('./routes/PrintReadyPDFDownload');
+// const formatRawMarks = require('./routes/tempSubjectMarks');
+// const masterRoute = require('./routes/labMarks');
+// const labDownload = require('./routes/downloadLabReport');
+// const printReadyPDFDownloadForLab = require('./routes/LabPrintReadyPDFDownload');
+
+// const app = express();
+// const PORT = process.env.PORT || 3000;
+// const mongoUri = process.env.MONGO_URI;
+
+// // --- 1. EXPRESS OPTIMIZATIONS ---
+// // Disable these to save CPU cycles on every request
+// app.set('etag', false);
+// app.set('x-powered-by', false);
+
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+// app.use(express.static(path.join(__dirname, 'public')));
+// app.use(cookieParser()); 
+
+// app.set('view engine', "ejs");
+// app.set("views", path.resolve("./view"));
+
+// connectMongoDB(mongoUri)
+//     .then(() => console.log(`MongoDB Connected on Worker ${process.pid}!`))
+//     .catch((err) => console.log("Error: ", err));
+
+// app.use("/login", login);
+// app.use("/refresh", refresh);
+// app.use("/logout", logout);
+// app.use("/", forgotPassword);
+
+// app.use(verifyJWT);
+
+// app.use("/home", home);
+// app.use("/user", user);
+// app.use("/sub", subject);
+// app.use("/mark", marks);
+// app.use("/co-po", coPoMapping);
+// app.use("/assignSub", assignSubject);
+// app.use("/sub-upload", uploadAllAssignSubjects);
+// app.use("/calpo", calculatedPo);
+// app.use("/dir", directAttainemt);
+// app.use("/uploadAll", uploadAllSubjects);
+// app.use("/rubrics", uploadRubrics);
+// app.use("/file", downloadReport);
+// app.use("/report", downloadDirectAttainmentReport);
+// app.use("/download-format", formatDownload);
+// app.use("/activity", activity);
+// app.use("/subject-analysis", subjectAnalysis);
+// app.use("/user-dashboard", userHomePage);
+// app.use("/theory-print-ready", printReadyPDFdownloadForTheory);
+// app.use("/raw", formatRawMarks);
+// app.use("/master-route", masterRoute);
+// app.use("/lab", labDownload);
+// app.use("/lab-print-ready", printReadyPDFDownloadForLab);
+
+// // --- 2. PREVENT PM2 CRON JOB DUPLICATION ---
+// // PM2 sets a NODE_APP_INSTANCE environment variable. 
+// // We only allow the VERY FIRST worker (instance 0) to run the cron job.
+// if (process.env.NODE_APP_INSTANCE === '0' || !process.env.NODE_APP_INSTANCE) {
+//     console.log("Starting Token Cleanup Job on Primary Worker...");
+//     startTokenCleanupJob();
+// }
+
+// // --- 3. SWITCH TO HTTP AND ADD KEEP-ALIVE ---
+// // We remove `https.createServer`. Node.js will run standard HTTP.
+// // Nginx will handle the SSL certificates and proxy the traffic to this HTTP port.
+// const server = app.listen(PORT, '0.0.0.0', () => {
+//     console.log(`Worker ${process.pid} Started HTTP Server on port ${PORT}`);
+// });
+
+// // Force Node.js to keep connections open to bypass Windows port exhaustion
+// server.keepAliveTimeout = 65000;
+// server.headersTimeout = 66000;
