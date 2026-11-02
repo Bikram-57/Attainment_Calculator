@@ -1,6 +1,6 @@
 import http from 'k6/http';
 import { check } from 'k6';
-import exec from 'k6/execution'; // Imports execution context to generate unique IDs
+import exec from 'k6/execution'; 
 
 export const options = {
   vus: 100, 
@@ -8,12 +8,12 @@ export const options = {
   noConnectionReuse: false, 
 };
 
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VySWQiOiI2YWJmOWI2NjliYmZjMGU5ZGRlYjA1ZWYiLCJmYWN1bHR5SWQiOiJDQTIwMjYiLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNzkzNDY5MTM1LCJleHAiOjE3OTM0NzAwMzV9.s3VJzbV6BlbwyA4ZiUjLQ1EjSqiOlUzPl-gR5kE7l7Q';
+const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VySWQiOiI2YWJmOWI2NjliYmZjMGU5ZGRlYjA1ZWYiLCJmYWN1bHR5SWQiOiJDQTIwMjYiLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNzkzNTU1ODU0LCJleHAiOjE3OTM1NTY3NTR9.xEyTa7mKKf2eWI_8b_iIXR9mVG1lTFA48sRuY9fCOqc';
 
 export default function () {
-  const url = 'http://127.0.0.1/user';
+  // Pointing to Nginx HTTPS port 443
+  const url = 'https://127.0.0.1/user';
   
-  // Generate a unique identifier using the Virtual User ID and Iteration number
   const uniqueSuffix = `${exec.vu.idInTest}${exec.vu.iterationInScenario}`;
 
   const payload = JSON.stringify({
@@ -35,7 +35,8 @@ export default function () {
   const res = http.post(url, payload, params);
   
   check(res, {
-    'status is 200/201': (r) => r.status === 200 || r.status === 201,
+    // Accepts the 202 status from the Redis queue
+    'status is 201 or 202': (r) => r.status === 201 || r.status === 202,
     'under 200ms': (r) => r.timings.duration < 200,
   });
 }
